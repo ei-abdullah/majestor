@@ -1,0 +1,95 @@
+package com.majestor.api.modules.lostfound.lostitem;
+
+import com.majestor.api.modules.lostfound.lostitem.dto.CreateLostItemRequestDTO;
+import com.majestor.api.modules.lostfound.lostitem.dto.LostItemAndFoundersResponseDTO;
+import com.majestor.api.modules.lostfound.lostitem.dto.LostItemResponseDTO;
+import com.majestor.api.modules.lostfound.lostitem.dto.LostItemsResponseDTO;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/lostItem")
+@RequiredArgsConstructor
+public class LostItemController {
+
+    private final LostItemService lostItemService;
+
+    // Create lost item's request
+    @PostMapping("/createRequest/{user_id}")
+    public ResponseEntity<?> createLostItemRequest(
+            @Valid @RequestBody CreateLostItemRequestDTO createLostItemRequestDTO,
+            @PathVariable("user_id") Long ownerId
+    ) {
+        lostItemService.createLostItemRequest(createLostItemRequestDTO, ownerId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
+    }
+
+    // Get a list of all lost items, including images, of a user and filter it by status, FOUND/LOST
+    @GetMapping("/findLostItemsByUserId/{user_id}")
+    public ResponseEntity<List<LostItemResponseDTO>> findLostItemsByUserId(
+            @PathVariable("user_id") Long ownerId,
+            @RequestParam("status") String status
+    ) {
+        List<LostItemResponseDTO> lostItemsList = lostItemService.findLostItemsByUserId(ownerId, status);
+
+        return ResponseEntity
+                .ok()
+                .body(lostItemsList);
+    }
+
+    // Get all lost items with the status of LOST
+    @GetMapping("/findAllLostItems")
+    public ResponseEntity<List<LostItemsResponseDTO>> findAllLostItems(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortDir
+    ) {
+        Sort sort = sortDir.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        Page<LostItemsResponseDTO> response = lostItemService.findAllLostItems(pageable);
+
+        return ResponseEntity
+                .ok()
+                .body(response.getContent());
+    }
+
+    // Get a specific lost item by its id along with its images and its founders
+    @GetMapping("/findLostItemWithFounders/{lostItemId}")
+    public ResponseEntity<List<LostItemAndFoundersResponseDTO>> findLostItemWithFounders(
+            @PathVariable("lostItemId") Long lostItemId
+    ) {
+        List<LostItemAndFoundersResponseDTO> response = lostItemService.findLostItemWithFounders(lostItemId);
+
+        return ResponseEntity
+                .ok()
+                .body(response);
+    }
+
+    // Mark lostItem as found
+    @PatchMapping("/markLostItemFound/{lostItemId}")
+    public ResponseEntity<?> markLostItemFound(
+            @PathVariable("lostItemId") Long lostItemId
+    ) {
+        lostItemService.markLostItemFound(lostItemId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+}
