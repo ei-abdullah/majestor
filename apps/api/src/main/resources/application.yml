@@ -2,10 +2,10 @@ security:
   jwt:
     secret-key: ${JWT_SECRET_KEY}
 
-#aws:
-#  s3:
-#    buckets:
-#      bucket: ${S3_BUCKET_NAME}
+aws:
+  s3:
+    buckets:
+      bucket: ${S3_BUCKET_NAME}
 
 spring:
   application:
