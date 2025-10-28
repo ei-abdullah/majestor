@@ -17,6 +17,5 @@ public class CreateLostItemRequestDTO {
     private String phone;
     private String lastLocationDescription;
     private LastLocation lastLocation;
-
     private MultipartFile[] lostItemImages;
 }

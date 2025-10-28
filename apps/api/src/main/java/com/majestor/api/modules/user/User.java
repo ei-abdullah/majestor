@@ -36,6 +36,9 @@ public class User {
     private String passwordHash;
 
     private String phone;
+    private String personalEmail;
+
+    private String avatar;
 
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
