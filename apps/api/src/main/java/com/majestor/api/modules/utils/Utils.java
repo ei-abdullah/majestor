@@ -16,13 +16,18 @@ public class Utils {
     private final S3Service s3Service;
 
     public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
-        return "user/%s/%s/lostItems/%s"
+        return "user/%s/lostItems/%s/%s"
                 .formatted(userId, lostItemId, lostItemImageId);
     }
 
     public String GetUploadFoundItemKey(Long userId, Long foundItemId, String foundItemImageId) {
-        return "user/%s/%s/foundItems/%s"
+        return "user/%s/foundItems/%s/%s"
                 .formatted(userId, foundItemId, foundItemImageId);
+    }
+
+    public String GetUploadUserAvatarKey(Long userId, String avatarId) {
+        return "user/%s/avatar/%s"
+                .formatted(userId, avatarId);
     }
 
     public void CleanupUploadedImages(List<String> uploadedKeys, String bucketName) {
