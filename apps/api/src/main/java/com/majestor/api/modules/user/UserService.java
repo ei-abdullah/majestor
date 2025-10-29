@@ -28,10 +28,6 @@ public class UserService {
     private final Utils utils;
 
     public GetUserDetailsResponseDTO getUserDetails(Long userId) {
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("User id must be provided!");
-        }
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
@@ -62,14 +58,6 @@ public class UserService {
          * Remove the image from the aws and upload the new one.
          * Replace the image uri from the database also.
          */
-
-        if (userId == null || userId <= 0) {
-            throw new IllegalArgumentException("User id must be provided!");
-        }
-
-        if (requestDTO == null) {
-            throw new IllegalArgumentException("user details cannot be null");
-        }
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
