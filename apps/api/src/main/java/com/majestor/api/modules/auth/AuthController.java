@@ -4,13 +4,16 @@ import com.majestor.api.modules.auth.dto.AuthResponseDTO;
 import com.majestor.api.modules.auth.dto.LoginRequestDTO;
 import com.majestor.api.modules.auth.dto.SignupRequestDTO;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -20,7 +23,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(
-            @RequestBody @Valid LoginRequestDTO request
+            @Valid @RequestBody LoginRequestDTO request
     ) {
         AuthResponseDTO response = authService.login(request);
 
@@ -31,7 +34,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(
-            @RequestBody @Valid SignupRequestDTO request
+            @Valid @RequestBody SignupRequestDTO request
     ) {
         authService.signup(request);
 
@@ -42,7 +45,7 @@ public class AuthController {
 
     @GetMapping("/signup/verify")
     public ResponseEntity<?> verifyEmail(
-            @RequestParam("token") String token
+            @RequestParam("token") @NotBlank String token
     ) {
         authService.verifyEmail(token);
 
