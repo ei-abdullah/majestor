@@ -15,7 +15,6 @@ import com.majestor.api.modules.user.UserRepository;
 import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,7 +40,7 @@ public class AuthService {
 
     @Transactional
     public void signup(
-            @Valid SignupRequestDTO request
+            SignupRequestDTO request
     ) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new DuplicateRequestException("Email already exists");
@@ -84,7 +83,7 @@ public class AuthService {
     }
 
     public AuthResponseDTO login(
-            @Valid LoginRequestDTO request
+            LoginRequestDTO request
     ) {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

@@ -5,6 +5,7 @@ import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class User {
     @Column(unique = true)
     private String email;
 
+    @Size(min = 2, max = 20, message = "Username must be greater than 2 and less than 20 characters")
     @Column(unique = true)
     private String username;
 
