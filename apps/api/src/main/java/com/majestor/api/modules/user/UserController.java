@@ -2,6 +2,9 @@ package com.majestor.api.modules.user;
 
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +19,7 @@ public class UserController {
 
     @GetMapping("/getUserDetails/{userId}")
     public ResponseEntity<GetUserDetailsResponseDTO> getUserDetails(
-            @PathVariable("userId") Long userId
+            @PathVariable("userId") @NotNull @Positive Long userId
     ) {
         GetUserDetailsResponseDTO response = userService.getUserDetails(userId);
 
@@ -27,8 +30,8 @@ public class UserController {
 
     @PatchMapping("/updateUserDetails/{userId}")
     public ResponseEntity<?> updateUserDetails(
-            @PathVariable("userId") Long userId,
-            @RequestBody UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
+            @PathVariable("userId") @NotNull @Positive Long userId,
+            @Valid @RequestBody UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
     ) {
         userService.updateUserDetails(userId, updateUserDetailsRequestDTO);
 
