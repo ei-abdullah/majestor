@@ -1,6 +1,5 @@
 package com.majestor.api.infra.exception;
 
-import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -102,9 +101,9 @@ public class GlobalExceptionHandler {
     }
 
     // Duplicating/Conflicting resource on server
-    @ExceptionHandler(DuplicateRequestException.class)
+    @ExceptionHandler(DuplicateResourceException.class)
     public ResponseEntity<ApiError> handleException(
-            DuplicateRequestException exception,
+            DuplicateResourceException exception,
             HttpServletRequest request
     ) {
         ApiError apiError = ApiError

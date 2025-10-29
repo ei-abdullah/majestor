@@ -5,6 +5,9 @@ import com.majestor.api.modules.lostfound.lostitem.dto.LostItemAndFoundersRespon
 import com.majestor.api.modules.lostfound.lostitem.dto.LostItemResponseDTO;
 import com.majestor.api.modules.lostfound.lostitem.dto.LostItemsResponseDTO;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,10 +15,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/lostItem")
 @RequiredArgsConstructor
@@ -27,7 +32,7 @@ public class LostItemController {
     @PostMapping("/createRequest/{user_id}")
     public ResponseEntity<?> createLostItemRequest(
             @Valid @RequestBody CreateLostItemRequestDTO createLostItemRequestDTO,
-            @PathVariable("user_id") Long ownerId
+            @PathVariable("user_id") @NotNull @Positive Long ownerId
     ) {
         lostItemService.createLostItemRequest(createLostItemRequestDTO, ownerId);
 
@@ -39,8 +44,8 @@ public class LostItemController {
     // Get a list of all lost items, including images, of a user and filter it by status, FOUND/LOST
     @GetMapping("/findLostItemsByUserId/{user_id}")
     public ResponseEntity<List<LostItemResponseDTO>> findLostItemsByUserId(
-            @PathVariable("user_id") Long ownerId,
-            @RequestParam("status") String status
+            @PathVariable("user_id") @NotNull @Positive Long ownerId,
+            @RequestParam("status") @NotBlank String status
     ) {
         List<LostItemResponseDTO> lostItemsList = lostItemService.findLostItemsByUserId(ownerId, status);
 
@@ -72,7 +77,7 @@ public class LostItemController {
     // Get a specific lost item by its id along with its images and its founders
     @GetMapping("/findLostItemWithFounders/{lostItemId}")
     public ResponseEntity<List<LostItemAndFoundersResponseDTO>> findLostItemWithFounders(
-            @PathVariable("lostItemId") Long lostItemId
+            @PathVariable("lostItemId") @NotNull @Positive Long lostItemId
     ) {
         List<LostItemAndFoundersResponseDTO> response = lostItemService.findLostItemWithFounders(lostItemId);
 
@@ -84,7 +89,7 @@ public class LostItemController {
     // Mark lostItem as found
     @PatchMapping("/markLostItemFound/{lostItemId}")
     public ResponseEntity<?> markLostItemFound(
-            @PathVariable("lostItemId") Long lostItemId
+            @PathVariable("lostItemId") @NotNull @Positive Long lostItemId
     ) {
         lostItemService.markLostItemFound(lostItemId);
 
