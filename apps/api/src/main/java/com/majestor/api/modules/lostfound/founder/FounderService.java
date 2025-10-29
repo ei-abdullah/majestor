@@ -42,12 +42,6 @@ public class FounderService {
             Long lostItemId,
             FoundLostItemRequestDTO foundLostItemRequestDTO
     ) {
-        if (founderId == null || lostItemId == null) {
-            throw new IllegalArgumentException(
-                    "Founder id and lost item id must be provided!"
-            );
-        }
-
         LostItem lostItem = lostItemRepository.findById(lostItemId)
                 .orElseThrow(() -> new EntityNotFoundException(
                         "Lost item not found with id: " + lostItemId

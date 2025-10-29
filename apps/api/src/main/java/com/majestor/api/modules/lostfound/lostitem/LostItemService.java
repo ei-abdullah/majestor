@@ -47,13 +47,6 @@ public class LostItemService {
             CreateLostItemRequestDTO createLostItemRequestDTO,
             Long ownerId
     ) {
-        if (createLostItemRequestDTO == null) {
-            throw new IllegalArgumentException("CreateLostItemRequestDTO cannot be null");
-        }
-        if (ownerId == null) {
-            throw new IllegalArgumentException("Student ID cannot be null");
-        }
-
         User user = userRepository.findById(ownerId)
                 .orElseThrow(() -> new EntityNotFoundException("Student not found with id: " + ownerId));
 
@@ -146,10 +139,6 @@ public class LostItemService {
             Long ownerId,
             String statusQuery
     ) {
-        if (ownerId == null || ownerId <= 0) {
-            throw new IllegalArgumentException("Student ID cannot be null or less than 1");
-        }
-
         String status = validateAndNormalizeStatus(statusQuery);
 
         List<LostItem> lostItems = lostItemRepository.findLostItemsByUserId(ownerId, status);
@@ -161,7 +150,6 @@ public class LostItemService {
         return lostItems
                 .stream()
                 .map(lostItem -> {
-                    // Images are already loaded due to JOIN FETCH
                     List<byte[]> imageBytes = lostItem.getLostItemImages()
                             .stream()
                             .map(image -> downloadImage(lostItem, image.getImageUri()))
@@ -185,10 +173,6 @@ public class LostItemService {
     }
 
     private String validateAndNormalizeStatus(String statusQuery) {
-        if (statusQuery == null) {
-            return Status.LOST.name();
-        }
-
         String normalizedStatus = statusQuery.trim().toUpperCase();
 
         try {

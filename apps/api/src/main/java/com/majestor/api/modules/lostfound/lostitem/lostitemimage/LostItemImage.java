@@ -2,6 +2,9 @@ package com.majestor.api.modules.lostfound.lostitem.lostitemimage;
 
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,9 +25,14 @@ public class LostItemImage {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @NotEmpty(message = "Image URI is required")
     private String imageUri;
+
+    @NotNull(message = "Serial number is required")
+    @Positive(message = "Serial number must be a positive number")
     private Long serialNo;
 
+    @NotNull(message = "Lost item is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lost_item_id")
     private LostItem lostItem;
