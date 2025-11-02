@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -30,8 +29,8 @@ public class LostItemResponseDTO {
     @Positive(message = "OwnerID must be a positive number")
     private Long ownerId;
 
-    @NotEmpty(message = "Lost item images are required")
-    private List<byte[]> imageUris;
+    @NotEmpty(message = "Lost item image is required")
+    private byte[] imageUri;
 
     @NotNull(message = "Created at is required")
     private LocalDateTime createdAt;

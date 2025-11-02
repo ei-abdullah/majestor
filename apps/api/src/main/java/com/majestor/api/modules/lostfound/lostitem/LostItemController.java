@@ -29,10 +29,13 @@ public class LostItemController {
     private final LostItemService lostItemService;
 
     // Create lost item's request
-    @PostMapping("/createRequest/{user_id}")
+    @PostMapping(
+            value = "/createRequest/{userId}",
+            consumes = "multipart/form-data"
+    )
     public ResponseEntity<?> createLostItemRequest(
-            @Valid @RequestBody CreateLostItemRequestDTO createLostItemRequestDTO,
-            @PathVariable("user_id") @NotNull @Positive Long ownerId
+            @Valid @ModelAttribute CreateLostItemRequestDTO createLostItemRequestDTO,
+            @PathVariable("userId") @NotNull @Positive Long ownerId
     ) {
         lostItemService.createLostItemRequest(createLostItemRequestDTO, ownerId);
 
@@ -42,9 +45,9 @@ public class LostItemController {
     }
 
     // Get a list of all lost items, including images, of a user and filter it by status, FOUND/LOST
-    @GetMapping("/findLostItemsByUserId/{user_id}")
+    @GetMapping("/findLostItemsByUserId/{userId}")
     public ResponseEntity<List<LostItemResponseDTO>> findLostItemsByUserId(
-            @PathVariable("user_id") @NotNull @Positive Long ownerId,
+            @PathVariable("userId") @NotNull @Positive Long ownerId,
             @RequestParam("status") @NotBlank String status
     ) {
         List<LostItemResponseDTO> lostItemsList = lostItemService.findLostItemsByUserId(ownerId, status);

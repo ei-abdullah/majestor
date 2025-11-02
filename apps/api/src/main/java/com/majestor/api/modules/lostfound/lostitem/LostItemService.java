@@ -2,6 +2,7 @@ package com.majestor.api.modules.lostfound.lostitem;
 
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
+import com.majestor.api.modules.lostfound.founder.FounderRepository;
 import com.majestor.api.modules.lostfound.lostitem.dto.CreateLostItemRequestDTO;
 import com.majestor.api.modules.lostfound.lostitem.dto.LostItemAndFoundersResponseDTO;
 import com.majestor.api.modules.lostfound.lostitem.dto.LostItemResponseDTO;
@@ -41,6 +42,7 @@ public class LostItemService {
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
     private final Utils utils;
+    private final FounderRepository founderRepository;
 
     @Transactional
     public void createLostItemRequest(
@@ -52,7 +54,6 @@ public class LostItemService {
 
         LostItem lostItem = lostItemMapper.toLostItem(createLostItemRequestDTO, user);
         lostItem = lostItemRepository.save(lostItem);
-
 
         List<LostItemImage> lostItemImages = new ArrayList<>();
         List<String> successfulUploadedKeys = new ArrayList<>();
@@ -94,11 +95,14 @@ public class LostItemService {
         }
 
         try {
-            lostItemImageRepository.saveAll(lostItemImages);
+            List<LostItemImage> savedImage = lostItemImageRepository.saveAll(lostItemImages);
+            lostItem.setLostItemImages(savedImage);
+            lostItemRepository.save(lostItem);
+            log.info("Saved lost item images: {}", savedImage);
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());
+            log.error("Failed to save lost item images metadata: {}", e.getMessage());
             throw new RuntimeException("Failed to save image metadata: " + e.getMessage(), e);
-
         }
     }
 
@@ -139,8 +143,7 @@ public class LostItemService {
             Long ownerId,
             String statusQuery
     ) {
-        String status = validateAndNormalizeStatus(statusQuery);
-
+        Status status = Status.valueOf(validateAndNormalizeStatus(statusQuery));
         List<LostItem> lostItems = lostItemRepository.findLostItemsByUserId(ownerId, status);
 
         if (lostItems.isEmpty()) {
@@ -150,11 +153,13 @@ public class LostItemService {
         return lostItems
                 .stream()
                 .map(lostItem -> {
-                    List<byte[]> imageBytes = lostItem.getLostItemImages()
+                    byte[] imageBytes = lostItemImageRepository
+                            .findByLostItemId(lostItem.getId())
                             .stream()
                             .map(image -> downloadImage(lostItem, image.getImageUri()))
                             .filter(Objects::nonNull)
-                            .toList();
+                            .findFirst()
+                            .orElse(null);
 
                     return lostItemMapper.toLostItemResponseDto(lostItem, imageBytes);
                 })
@@ -166,10 +171,14 @@ public class LostItemService {
     ) {
         List<LostItem> lostItemsList = lostItemRepository.findLostItemWithFounders(lostItemId);
 
-        return lostItemsList
-                .stream()
-                .map(lostItemMapper::toLostItemAndFoundersDTO)
-                .toList();
+        if (lostItemsList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> foundersDTOS = new ArrayList<>();
+
+
+        return null;
     }
 
     private String validateAndNormalizeStatus(String statusQuery) {

@@ -14,7 +14,7 @@ public interface LostItemRepository extends JpaRepository<LostItem, Long> {
     @Query("""
             SELECT li
             FROM LostItem li
-            LEFT JOIN li.owner o
+            JOIN FETCH li.owner o
             WHERE li.status = 'LOST'
             ORDER BY li.id DESC
             """)
@@ -24,22 +24,22 @@ public interface LostItemRepository extends JpaRepository<LostItem, Long> {
     @Query("""
             SELECT li
             FROM LostItem li
-            JOIN FETCH li.owner o
-            LEFT JOIN FETCH li.lostItemImages img
-            WHERE o.id = :ownerId
+            JOIN FETCH li.lostItemImages
+            WHERE li.owner.id = :ownerId
             AND li.status = :status
-            ORDER BY li.id DESC, img.serialNo ASC
+            ORDER BY li.id DESC
             """)
     List<LostItem> findLostItemsByUserId(
             @Param("ownerId") Long ownerId,
-            @Param("status") String status
+            @Param("status") Status status
     );
 
 
     @Query("""
             SELECT li
             FROM LostItem li
-            LEFT JOIN FETCH li.founders f
+            JOIN FETCH li.founders f
+            JOIN FETCH li.lostItemImages lii
             WHERE li.id = :lostItemId
             ORDER BY li.id DESC
             """)

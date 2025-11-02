@@ -48,7 +48,6 @@ public class LostItem {
     @Embedded
     private LastLocation lastLocation;
 
-    @NotNull(message = "Status is required")
     @Enumerated(EnumType.STRING)
     private Status status;
 

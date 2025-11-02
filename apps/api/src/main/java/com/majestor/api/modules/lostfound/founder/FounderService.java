@@ -13,6 +13,7 @@ import com.majestor.api.modules.utils.Utils;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.UUID;
 
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FounderService {
@@ -94,9 +96,13 @@ public class FounderService {
         }
 
         try {
-            foundItemImageRepository.saveAll(foundItemImages);
+            List<FoundItemImage> savedImage = foundItemImageRepository.saveAll(foundItemImages);
+            founder.setFoundItemImages(savedImage);
+            founderRepository.save(founder);
+            log.info("Saved found item images: {}", savedImage);
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());
+            log.error("Failed to save found item images metadata: {}", e.getMessage());
             throw new RuntimeException("Failed to save image metadata: " + e.getMessage(), e);
         }
     }

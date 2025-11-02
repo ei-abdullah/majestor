@@ -6,9 +6,13 @@ import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.founder.FounderRepository;
+import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImage;
+import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImageRepository;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import com.majestor.api.modules.lostfound.lostitem.LostItemRepository;
 import com.majestor.api.modules.lostfound.lostitem.Status;
+import com.majestor.api.modules.lostfound.lostitem.lostitemimage.LostItemImage;
+import com.majestor.api.modules.lostfound.lostitem.lostitemimage.LostItemImageRepository;
 import com.majestor.api.modules.lostfound.shared.LastLocation;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
@@ -20,6 +24,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -32,7 +37,9 @@ public class DataInitializer implements CommandLineRunner {
     private final FacultyRepository facultyRepository;
     private final UserRepository userRepository;
     private final LostItemRepository lostItemRepository;
+    private final LostItemImageRepository lostItemImageRepository;
     private final FounderRepository founderRepository;
+    private final FoundItemImageRepository foundItemImageRepository;
     private final BCryptPasswordEncoder passwordEncoder;
 
     @Override
@@ -61,12 +68,12 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Sample users already exist, skipping initialization");
         }
 
-        if (lostItemRepository.count() == 0) {
-            initializeLostItemsAndFounders();
-            log.info("Lost items and founders initialized successfully!");
-        } else {
-            log.info("Lost items already exist, skipping initialization");
-        }
+//        if (lostItemRepository.count() == 0) {
+//            initializeLostItemsAndFounders();
+//            log.info("Lost items and founders initialized successfully!");
+//        } else {
+//            log.info("Lost items already exist, skipping initialization");
+//        }
     }
 
     private void initializeUniversitiesAndFaculties() {
@@ -186,7 +193,7 @@ public class DataInitializer implements CommandLineRunner {
                 .email("abdullah@gmail.com")
                 .username("abdullah_admin")
                 .passwordHash(passwordEncoder.encode("admin"))
-                .phone("+998901234567")
+                .phone("03000000000")
                 .avatar("")
                 .university(firstUniversity)
                 .faculty(firstFaculty)
@@ -210,7 +217,7 @@ public class DataInitializer implements CommandLineRunner {
                         .email("john.doe@student.com")
                         .username("john_doe")
                         .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("+998912345678")
+                        .phone("03091234567")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .faculty(faculties.get(random.nextInt(faculties.size())))
@@ -222,7 +229,7 @@ public class DataInitializer implements CommandLineRunner {
                         .email("jane.smith@student.com")
                         .username("jane_smith")
                         .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("+998923456789")
+                        .phone("03091234568")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .faculty(faculties.get(random.nextInt(faculties.size())))
@@ -234,7 +241,7 @@ public class DataInitializer implements CommandLineRunner {
                         .email("alex.johnson@student.com")
                         .username("alex_johnson")
                         .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("+998934567890")
+                        .phone("03091234569")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .faculty(faculties.get(random.nextInt(faculties.size())))
@@ -246,7 +253,7 @@ public class DataInitializer implements CommandLineRunner {
                         .email("sara.wilson@student.com")
                         .username("sara_wilson")
                         .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("+998945678901")
+                        .phone("03091234570")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .faculty(faculties.get(random.nextInt(faculties.size())))
@@ -266,130 +273,264 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        // Create lost items
+        // Create lost items with proper images
+        List<LostItem> lostItems = createLostItemsWithImages(users);
+        log.info("Created {} lost items with images", lostItems.size());
+
+        // Create founders for some lost items with their images
+        createFoundersWithImagesForLostItems(lostItems, users);
+    }
+
+    private List<LostItem> createLostItemsWithImages(List<User> users) {
+        // Create lost items first (without images)
         List<LostItem> lostItems = List.of(
                 LostItem.builder()
                         .title("Black iPhone 14 Pro")
                         .description("Black iPhone 14 Pro with cracked screen protector. Has a blue silicone case. Contains important photos and contacts.")
-                        .phone("+998901111111")
+                        .phone("03089999999")
                         .lastLocationDescription("Lost near the main library entrance at TSUE")
                         .lastLocation(LastLocation.builder().lat("41.311081").lng("69.240562").build())
                         .status(Status.LOST)
                         .owner(users.get(1))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 LostItem.builder()
                         .title("Red Nike Backpack")
                         .description("Red Nike backpack with laptop compartment. Contains MacBook Air, textbooks, and personal items. Very important!")
-                        .phone("+998902222222")
+                        .phone("03089999999")
                         .lastLocationDescription("Left in the cafeteria at NUU during lunch break")
                         .lastLocation(LastLocation.builder().lat("41.298600").lng("69.267700").build())
                         .status(Status.LOST)
                         .owner(users.get(2))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 LostItem.builder()
                         .title("Silver Car Keys")
                         .description("Silver Toyota car keys with black remote. Has a small Uzbekistan flag keychain attached.")
-                        .phone("+998903333333")
+                        .phone("03089999999")
                         .lastLocationDescription("Dropped somewhere in TUIT parking lot")
                         .lastLocation(LastLocation.builder().lat("41.327094").lng("69.228436").build())
                         .status(Status.LOST)
                         .owner(users.get(3))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 LostItem.builder()
                         .title("Gold Watch")
                         .description("Gold Casio wristwatch, family heirloom. Has inscription 'To my beloved son' on the back.")
-                        .phone("+998904444444")
+                        .phone("03089999999")
                         .lastLocationDescription("Lost in the sports complex at Westminster University")
                         .lastLocation(LastLocation.builder().lat("41.295800").lng("69.249200").build())
                         .status(Status.LOST)
                         .owner(users.get(0))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 LostItem.builder()
                         .title("Blue Wallet")
                         .description("Blue leather wallet containing student ID, driver's license, and some cash. Very important documents inside.")
-                        .phone("+998905555555")
+                        .phone("03089555555")
                         .lastLocationDescription("Dropped near the bus stop outside Samarkand State University")
                         .lastLocation(LastLocation.builder().lat("39.627012").lng("66.969604").build())
                         .status(Status.LOST)
                         .owner(users.size() > 4 ? users.get(4) : users.get(1))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 LostItem.builder()
                         .title("Black Headphones")
                         .description("Sony WH-1000XM4 wireless headphones in black. Expensive noise-canceling headphones, birthday gift from parents.")
-                        .phone("+998906666666")
+                        .phone("03089444444")
                         .lastLocationDescription("Left in study room 203 at TMA library")
                         .lastLocation(LastLocation.builder().lat("41.285350").lng("69.203760").build())
                         .status(Status.LOST)
                         .owner(users.get(2))
+                        .lostItemImages(new ArrayList<>()) // Initialize empty list
                         .build()
         );
 
-        lostItemRepository.saveAll(lostItems);
-        log.info("Created {} lost items", lostItems.size());
+        // Save lost items first
+        List<LostItem> savedLostItems = lostItemRepository.saveAll(lostItems);
 
-        // Create founders for some lost items
-        createFoundersForLostItems(lostItems, users);
+        // Now create and save images for each lost item
+        for (int i = 0; i < savedLostItems.size(); i++) {
+            LostItem lostItem = savedLostItems.get(i);
+            List<LostItemImage> images = createImagesForLostItem(lostItem, i);
+            lostItemImageRepository.saveAll(images);
+
+            // Update the lost item with the images
+            lostItem.setLostItemImages(images);
+        }
+
+        return savedLostItems;
     }
 
-    private void createFoundersForLostItems(List<LostItem> lostItems, List<User> users) {
+    private List<LostItemImage> createImagesForLostItem(LostItem lostItem, int itemIndex) {
+        List<String> imageUrls = getLostItemImageUrls(itemIndex);
+        List<LostItemImage> images = new ArrayList<>();
+
+        for (int i = 0; i < imageUrls.size(); i++) {
+            LostItemImage image = LostItemImage.builder()
+                    .imageUri(imageUrls.get(i))
+                    .serialNo((long) (i + 1))
+                    .lostItem(lostItem)
+                    .build();
+            images.add(image);
+        }
+
+        return images;
+    }
+
+    private List<String> getLostItemImageUrls(int itemIndex) {
+        // Sample image URLs for different lost items
+        return switch (itemIndex) {
+            case 0 -> List.of( // iPhone
+                    "https://example.com/images/lost/iphone-front.jpg",
+                    "https://example.com/images/lost/iphone-back.jpg",
+                    "https://example.com/images/lost/iphone-case.jpg"
+            );
+            case 1 -> List.of( // Backpack
+                    "https://example.com/images/lost/nike-backpack-front.jpg",
+                    "https://example.com/images/lost/nike-backpack-open.jpg"
+            );
+            case 2 -> List.of( // Car Keys
+                    "https://example.com/images/lost/toyota-keys.jpg",
+                    "https://example.com/images/lost/keychain.jpg"
+            );
+            case 3 -> List.of( // Gold Watch
+                    "https://example.com/images/lost/casio-watch-front.jpg",
+                    "https://example.com/images/lost/casio-watch-back.jpg"
+            );
+            case 4 -> List.of( // Blue Wallet
+                    "https://example.com/images/lost/blue-wallet-closed.jpg",
+                    "https://example.com/images/lost/blue-wallet-open.jpg",
+                    "https://example.com/images/lost/wallet-contents.jpg"
+            );
+            case 5 -> List.of( // Headphones
+                    "https://example.com/images/lost/sony-headphones.jpg",
+                    "https://example.com/images/lost/headphones-case.jpg"
+            );
+            default -> List.of("https://example.com/images/lost/default-item.jpg");
+        };
+    }
+
+    private void createFoundersWithImagesForLostItems(List<LostItem> lostItems, List<User> users) {
         Random random = new Random();
 
-        // Create founders for the first 3 lost items
+        // Create founders for the first 5 lost items (without images initially)
         List<Founder> founders = List.of(
                 Founder.builder()
                         .name("Abdullah")
-                        .phone("+998907777777")
+                        .phone("03089999999")
                         .foundLocationDescription("Found the iPhone near the library stairs, exactly where described")
                         .lastLocation(LastLocation.builder().lat("41.311000").lng("69.240500").build())
                         .foundLostItem(lostItems.get(0))
                         .founder(users.get(random.nextInt(users.size())))
+                        .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
                         .name("Jane")
-                        .phone("+998908888888")
+                        .phone("03089888888")
                         .foundLocationDescription("Saw the red backpack under table 5 in the cafeteria")
                         .lastLocation(LastLocation.builder().lat("41.298650").lng("69.267750").build())
                         .foundLostItem(lostItems.get(1))
                         .founder(users.get(random.nextInt(users.size())))
+                        .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
                         .name("Alex")
-                        .phone("+998909999999")
+                        .phone("03088777777")
                         .foundLocationDescription("Found car keys near the security booth in TUIT parking")
                         .lastLocation(LastLocation.builder().lat("41.327050").lng("69.228400").build())
                         .foundLostItem(lostItems.get(2))
                         .founder(users.get(random.nextInt(users.size())))
+                        .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
-                // Multiple founders for the gold watch
                 Founder.builder()
                         .name("Sara")
-                        .phone("+998910000000")
+                        .phone("03089666666")
                         .foundLocationDescription("Spotted the gold watch in the locker room after basketball practice")
                         .lastLocation(LastLocation.builder().lat("41.295820").lng("69.249180").build())
                         .foundLostItem(lostItems.get(3))
                         .founder(users.get(random.nextInt(users.size())))
+                        .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
                         .name("John")
-                        .phone("+998911111111")
-                        .foundLocationDescription("Saw someone wearing a similar gold watch in the cafeteria today")
-                        .lastLocation(LastLocation.builder().lat("41.295780").lng("69.249220").build())
-                        .foundLostItem(lostItems.get(3))
+                        .phone("03088555555")
+                        .foundLocationDescription("Found the blue wallet near the bus stop, contains ID and cash")
+                        .lastLocation(LastLocation.builder().lat("39.627050").lng("66.969650").build())
+                        .foundLostItem(lostItems.get(4))
                         .founder(users.get(random.nextInt(users.size())))
+                        .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build()
         );
 
-        founderRepository.saveAll(founders);
-        log.info("Created {} founders for lost items", founders.size());
+        // Save founders first
+        List<Founder> savedFounders = founderRepository.saveAll(founders);
+
+        // Now create and save images for each founder
+        for (int i = 0; i < savedFounders.size(); i++) {
+            Founder founder = savedFounders.get(i);
+            List<FoundItemImage> foundImages = createImagesForFounder(founder, i);
+            foundItemImageRepository.saveAll(foundImages);
+
+            // Update the founder with the images
+            founder.setFoundItemImages(foundImages);
+        }
+
+        log.info("Created {} founders with images for lost items", savedFounders.size());
+    }
+
+    private List<FoundItemImage> createImagesForFounder(Founder founder, int founderIndex) {
+        List<String> imageUrls = getFoundItemImageUrls(founderIndex);
+        List<FoundItemImage> images = new ArrayList<>();
+
+        for (int i = 0; i < imageUrls.size(); i++) {
+            FoundItemImage image = FoundItemImage.builder()
+                    .imageUri(imageUrls.get(i))
+                    .serialNo((long) (i + 1))
+                    .foundItem(founder)
+                    .build();
+            images.add(image);
+        }
+
+        return images;
+    }
+
+    private List<String> getFoundItemImageUrls(int founderIndex) {
+        // Sample image URLs for different found items (showing the actual found condition)
+        return switch (founderIndex) {
+            case 0 -> List.of( // iPhone found
+                    "https://example.com/images/found/iphone-found-library.jpg",
+                    "https://example.com/images/found/iphone-condition.jpg"
+            );
+            case 1 -> List.of( // Backpack found
+                    "https://example.com/images/found/nike-backpack-found-cafeteria.jpg",
+                    "https://example.com/images/found/backpack-under-table.jpg",
+                    "https://example.com/images/found/backpack-contents-visible.jpg"
+            );
+            case 2 -> List.of( // Car Keys found
+                    "https://example.com/images/found/toyota-keys-found-parking.jpg",
+                    "https://example.com/images/found/keys-near-security.jpg"
+            );
+            case 3 -> List.of( // Gold Watch found
+                    "https://example.com/images/found/casio-watch-found-locker.jpg",
+                    "https://example.com/images/found/watch-inscription-visible.jpg"
+            );
+            case 4 -> List.of( // Blue Wallet found
+                    "https://example.com/images/found/blue-wallet-found-busstop.jpg",
+                    "https://example.com/images/found/wallet-id-visible.jpg",
+                    "https://example.com/images/found/wallet-cash-contents.jpg"
+            );
+            default -> List.of("https://example.com/images/found/default-found-item.jpg");
+        };
     }
 
     private University createUniversity(String name, String address) {

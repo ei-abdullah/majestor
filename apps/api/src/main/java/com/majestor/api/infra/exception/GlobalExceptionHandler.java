@@ -2,19 +2,115 @@ package com.majestor.api.infra.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.ValidationException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+
+    // Validation errors
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<ApiError> handleException(
+            ConstraintViolationException exception,
+            HttpServletRequest request
+    ) {
+        List<String> errorMessage = exception.getConstraintViolations()
+                .stream()
+                .map(violation -> {
+                    String propertyPath = violation.getPropertyPath().toString();
+                    String fieldName = propertyPath.substring(propertyPath.lastIndexOf(".") + 1);
+                    return fieldName + " " + violation.getMessage();
+                })
+                .toList();
+
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(errorMessage)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    // Invalid form-data syntax in model attribute
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ApiError> handleException(
+            BindException exception,
+            HttpServletRequest request
+    ) {
+        List<String> errorMessage = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
+
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(errorMessage)
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    // Invalid JSON syntax in the request body
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiError> handleException(
+            HttpMessageNotReadableException exception,
+            HttpServletRequest request
+    ) {
+        String message = "Malformed JSON request";
+
+        // Optional: provide more specific error messages
+        if (exception.getMessage().contains("Required request body is missing")) {
+            message = "Request body is required";
+        }
+
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(Collections.singletonList(message))
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<ApiError> handleException(
+            ValidationException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(Collections.singletonList(exception.getMessage()))
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
 
     // Requested resource in not available
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -25,7 +121,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -41,7 +137,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -58,7 +154,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -75,7 +171,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -92,7 +188,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.FORBIDDEN.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -109,7 +205,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.CONFLICT.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -123,17 +219,16 @@ public class GlobalExceptionHandler {
             MethodArgumentNotValidException exception,
             HttpServletRequest request
     ) {
-        String errorMessage = exception.getBindingResult()
+        List<String> errorMessage = exception.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(error -> error.getField() + ": " + error.getDefaultMessage())
-                .findFirst()
-                .orElse("Invalid request");
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .toList();
 
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(errorMessage)  // now human-readable
+                .message(errorMessage)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -149,7 +244,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.NOT_FOUND.value())
                 .localDateTime(LocalDateTime.now())
                 .build();
@@ -166,7 +261,7 @@ public class GlobalExceptionHandler {
         ApiError apiError = ApiError
                 .builder()
                 .path(request.getRequestURI())
-                .message(exception.getMessage())
+                .message(Collections.singletonList(exception.getMessage()))
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
                 .localDateTime(LocalDateTime.now())
                 .build();

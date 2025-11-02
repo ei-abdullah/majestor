@@ -1,9 +1,11 @@
 package com.majestor.api.modules.lostfound.lostitem.lostitemimage;
 
+import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Arrays;
 import java.util.List;
 
 public interface LostItemImageRepository extends JpaRepository<LostItemImage, Long> {
@@ -21,4 +23,10 @@ public interface LostItemImageRepository extends JpaRepository<LostItemImage, Lo
                 WHERE li.lostItem = :lostItemId
             """)
     List<String> getAllByLostItem(@Param("lostItemId") Long lostItemId);
+
+    Arrays findByLostItem(LostItem lostItem);
+
+    List<LostItemImage> findByLostItemId(Long lostItemId);
+
+    List<LostItemImage> findByLostItemIdIn(List<Long> lostItemIds);
 }
