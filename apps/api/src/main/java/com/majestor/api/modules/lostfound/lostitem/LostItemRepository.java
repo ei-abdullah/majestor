@@ -9,8 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LostItemRepository extends JpaRepository<LostItem, Long> {
-
-
     @Query("""
             SELECT li
             FROM LostItem li
@@ -33,24 +31,4 @@ public interface LostItemRepository extends JpaRepository<LostItem, Long> {
             @Param("ownerId") Long ownerId,
             @Param("status") Status status
     );
-
-
-    @Query("""
-            SELECT li
-            FROM LostItem li
-            JOIN FETCH li.founders f
-            JOIN FETCH li.lostItemImages lii
-            WHERE li.id = :lostItemId
-            ORDER BY li.id DESC
-            """)
-    LostItem findLostItemWithFounders(
-            @Param("lostItemId") Long lostItemId
-    );
-
-    @Query("""
-            SELECT li
-            FROM LostItem li
-            WHERE li.id = :lostItemId
-            """)
-    LostItem findLostItemById(@Param("lostItemId") Long lostItemId);
 }
