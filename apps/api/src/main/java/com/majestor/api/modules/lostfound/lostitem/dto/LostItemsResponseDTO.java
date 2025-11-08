@@ -34,7 +34,7 @@ public class LostItemsResponseDTO {
     private String ownerEmail;
 
     @NotNull(message = "First image of lost items is required")
-    private byte[] firstImageUri;
+    private String lostItemImageUri;
 
     @NotNull(message = "Created at is required")
     private LocalDateTime createdAt;

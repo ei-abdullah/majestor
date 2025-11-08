@@ -12,7 +12,7 @@ public interface LostItemImageRepository extends JpaRepository<LostItemImage, Lo
     @Query("""
             SELECT li.imageUri
             FROM LostItemImage li
-            WHERE li.lostItem = :lostItemId
+            WHERE li.lostItem.id = :lostItemId
             AND li.serialNo = 1
             """)
     String getFirstLostItemImageById(@Param("lostItemId") Long lostItemId);
@@ -23,6 +23,13 @@ public interface LostItemImageRepository extends JpaRepository<LostItemImage, Lo
                 WHERE li.lostItem = :lostItemId
             """)
     List<String> getAllByLostItem(@Param("lostItemId") Long lostItemId);
+
+    @Query("""
+            SELECT i
+            FROM LostItemImage i
+            WHERE i.lostItem.id = :lostItemId
+            """)
+    List<LostItemImage> findImagesByLostItemId(@Param("lostItemId") Long lostItemId);
 
     Arrays findByLostItem(LostItem lostItem);
 

@@ -6,7 +6,11 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -92,4 +96,26 @@ public class S3Service {
         }
     }
 
+    public String createPresignedGetUrl(
+            String bucketName,
+            String key
+    ) {
+        try (S3Presigner presigner = S3Presigner.create()) {
+            GetObjectRequest getObjectRequest = GetObjectRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest
+                    .builder()
+                    .signatureDuration(Duration.ofHours(2))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedGetObjectRequest.url().toString();
+        }
+    }
 }

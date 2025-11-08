@@ -28,7 +28,7 @@ public class LostItemMapper {
                 .build();
     }
 
-    public LostItemsResponseDTO toLostItemsResponseDTO(LostItem lostItem, byte[] firstImageUri) {
+    public LostItemsResponseDTO toLostItemsResponseDTO(LostItem lostItem, String lostItemImageUri) {
         return LostItemsResponseDTO
                 .builder()
                 .id(lostItem.getId())
@@ -36,12 +36,12 @@ public class LostItemMapper {
                 .status(lostItem.getStatus())
                 .ownerId(lostItem.getOwner().getId())
                 .ownerEmail(lostItem.getOwner().getEmail())
-                .firstImageUri(firstImageUri)
+                .lostItemImageUri(lostItemImageUri)
                 .createdAt(lostItem.getCreatedAt())
                 .build();
     }
 
-    public LostItemResponseDTO toLostItemResponseDto(LostItem lostItem, byte[] imageUri) {
+    public LostItemResponseDTO toLostItemResponseDto(LostItem lostItem, String imageUri) {
         return LostItemResponseDTO
                 .builder()
                 .id(lostItem.getId())
@@ -56,7 +56,7 @@ public class LostItemMapper {
     /*
      * LostItemAndFoundersResponseDTO
      */
-    private LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO toLostItemAndFoundersDTO(Founder founder, List<byte[]> foundItemImages) {
+    public LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO toLostItemAndFoundersDTO(Founder founder, List<String> foundItemImageUris) {
         return LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO
                 .builder()
                 .id(founder.getId())
@@ -64,25 +64,15 @@ public class LostItemMapper {
                 .phone(founder.getPhone())
                 .foundLocationDescription(founder.getFoundLocationDescription())
                 .lastLocation(founder.getLastLocation())
-                .foundItemImages(foundItemImages)
+                .foundItemImageUris(foundItemImageUris)
                 .createdAt(founder.getCreatedAt())
                 .build();
     }
 
-    private List<LostItemAndFoundersResponseDTO> toLostItemAndFoundersDTOList(List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> lostItemAndFoundersDTOs) {
-        if (lostItemAndFoundersDTOs == null || lostItemAndFoundersDTOs.isEmpty()) {
-            return List.of();
-        }
-
-        return founders.stream()
-                .map(this::toLostItemAndFoundersDTO)
-                .toList();
-    }
-
     public LostItemAndFoundersResponseDTO toLostItemAndFoundersResponseDTO(
             LostItem lostItem,
-            List<byte[]> lostItemImages,
-            List<byte[]> foundItemImages
+            List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> itemFounders,
+            List<String> lostItemImageUris
     ) {
         return LostItemAndFoundersResponseDTO
                 .builder()
@@ -92,11 +82,10 @@ public class LostItemMapper {
                 .description(lostItem.getDescription())
                 .phone(lostItem.getPhone())
                 .lastLocationDescription(lostItem.getLastLocationDescription())
-                .lostItemImages(lostItemImages)
-                .itemFounders(toLostItemAndFoundersDTOList(lostItem.getFounders(), foundItemImages))
+                .itemFounders(itemFounders)
+                .lostItemImageUris(lostItemImageUris)
                 .createdAt(lostItem.getCreatedAt())
                 .build();
     }
-
 
 }

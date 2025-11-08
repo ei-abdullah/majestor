@@ -30,7 +30,7 @@ public class LostItemResponseDTO {
     private Long ownerId;
 
     @NotEmpty(message = "Lost item image is required")
-    private byte[] imageUri;
+    private String imageUri;
 
     @NotNull(message = "Created at is required")
     private LocalDateTime createdAt;

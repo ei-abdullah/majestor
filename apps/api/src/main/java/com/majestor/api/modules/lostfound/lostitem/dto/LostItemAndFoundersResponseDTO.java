@@ -45,7 +45,7 @@ public class LostItemAndFoundersResponseDTO {
     private List<LostItemAndFoundersDTO> itemFounders;
 
     @NotEmpty(message = "Lost item images are required")
-    private List<byte[]> lostItemImages;
+    private List<String> lostItemImageUris;
 
     @NotNull(message = "Created at is required")
     private LocalDateTime createdAt;
@@ -75,7 +75,7 @@ public class LostItemAndFoundersResponseDTO {
         private LastLocation lastLocation;
 
         @NotEmpty(message = "Found item images are required")
-        private List<byte[]> foundItemImages;
+        private List<String> foundItemImageUris;
 
         @NotNull(message = "Created at is required")
         private LocalDateTime createdAt;

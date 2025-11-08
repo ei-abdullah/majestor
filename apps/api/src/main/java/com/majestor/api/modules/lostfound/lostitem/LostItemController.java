@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -59,30 +58,24 @@ public class LostItemController {
 
     // Get all lost items with the status of LOST
     @GetMapping("/findAllLostItems")
-    public ResponseEntity<List<LostItemsResponseDTO>> findAllLostItems(
+    public ResponseEntity<Object> findAllLostItems(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Sort sort = sortDir.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size);
         Page<LostItemsResponseDTO> response = lostItemService.findAllLostItems(pageable);
 
         return ResponseEntity
                 .ok()
-                .body(response.getContent());
+                .body(response);
     }
 
     // Get a specific lost item by its id along with its images and its founders
     @GetMapping("/findLostItemWithFounders/{lostItemId}")
-    public ResponseEntity<List<LostItemAndFoundersResponseDTO>> findLostItemWithFounders(
+    public ResponseEntity<LostItemAndFoundersResponseDTO> findLostItemWithFounders(
             @PathVariable("lostItemId") @NotNull @Positive Long lostItemId
     ) {
-        List<LostItemAndFoundersResponseDTO> response = lostItemService.findLostItemWithFounders(lostItemId);
+        LostItemAndFoundersResponseDTO response = lostItemService.findLostItemWithFounders(lostItemId);
 
         return ResponseEntity
                 .ok()

@@ -43,7 +43,14 @@ public interface LostItemRepository extends JpaRepository<LostItem, Long> {
             WHERE li.id = :lostItemId
             ORDER BY li.id DESC
             """)
-    List<LostItem> findLostItemWithFounders(
+    LostItem findLostItemWithFounders(
             @Param("lostItemId") Long lostItemId
     );
+
+    @Query("""
+            SELECT li
+            FROM LostItem li
+            WHERE li.id = :lostItemId
+            """)
+    LostItem findLostItemById(@Param("lostItemId") Long lostItemId);
 }
