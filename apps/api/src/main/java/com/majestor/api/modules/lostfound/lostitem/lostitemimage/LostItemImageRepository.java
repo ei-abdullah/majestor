@@ -15,12 +15,5 @@ public interface LostItemImageRepository extends JpaRepository<LostItemImage, Lo
             """)
     String getFirstLostItemImageById(@Param("lostItemId") Long lostItemId);
 
-    @Query("""
-            SELECT i
-            FROM LostItemImage i
-            WHERE i.lostItem.id = :lostItemId
-            """)
-    List<LostItemImage> findImagesByLostItemId(@Param("lostItemId") Long lostItemId);
-
     List<LostItemImage> findByLostItemId(Long lostItemId);
 }
