@@ -5,10 +5,13 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.*;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
+
+import java.time.Duration;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -50,4 +53,69 @@ public class S3Service {
         s3Client.deleteObject(objectRequest);
     }
 
+    public void emptyBucket(String bucketName) {
+        try {
+            ListObjectsV2Request listRequest = ListObjectsV2Request.builder()
+                    .bucket(bucketName)
+                    .build();
+
+            ListObjectsV2Response listResponse;
+
+            do {
+                listResponse = s3Client.listObjectsV2(listRequest);
+
+                if (listResponse.contents().isEmpty()) {
+                    break;
+                }
+
+                List<ObjectIdentifier> objectsToDelete = listResponse.contents().stream()
+                        .map(s3Object -> ObjectIdentifier.builder()
+                                .key(s3Object.key())
+                                .build())
+                        .toList();
+
+                Delete delete = Delete.builder()
+                        .objects(objectsToDelete)
+                        .build();
+
+                DeleteObjectsRequest deleteRequest = DeleteObjectsRequest.builder()
+                        .bucket(bucketName)
+                        .delete(delete)
+                        .build();
+
+                s3Client.deleteObjects(deleteRequest);
+
+                listRequest = listRequest.toBuilder()
+                        .continuationToken(listResponse.nextContinuationToken())
+                        .build();
+
+            } while (listResponse.isTruncated());
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to empty bucket: " + e.getMessage());
+        }
+    }
+
+    public String createPresignedGetUrl(
+            String bucketName,
+            String key
+    ) {
+        try (S3Presigner presigner = S3Presigner.create()) {
+            GetObjectRequest getObjectRequest = GetObjectRequest
+                    .builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest
+                    .builder()
+                    .signatureDuration(Duration.ofHours(2))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(presignRequest);
+
+            return presignedGetObjectRequest.url().toString();
+        }
+    }
 }

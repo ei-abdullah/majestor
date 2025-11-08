@@ -41,8 +41,11 @@ public class LostItemAndFoundersResponseDTO {
     @Size(max = 255, message = "Last location description must be less than 255 characters")
     private String lastLocationDescription;
 
-    @NotEmpty(message = "Lost item images are required")
+    @NotEmpty(message = "Lost item founders are required")
     private List<LostItemAndFoundersDTO> itemFounders;
+
+    @NotEmpty(message = "Lost item images are required")
+    private List<String> lostItemImageUris;
 
     @NotNull(message = "Created at is required")
     private LocalDateTime createdAt;
@@ -70,6 +73,9 @@ public class LostItemAndFoundersResponseDTO {
 
         @Valid
         private LastLocation lastLocation;
+
+        @NotEmpty(message = "Found item images are required")
+        private List<String> foundItemImageUris;
 
         @NotNull(message = "Created at is required")
         private LocalDateTime createdAt;

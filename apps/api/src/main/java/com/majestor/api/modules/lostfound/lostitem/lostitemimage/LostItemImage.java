@@ -5,10 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -25,9 +22,11 @@ public class LostItemImage {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false)
     @NotEmpty(message = "Image URI is required")
     private String imageUri;
 
+    @Column(nullable = false)
     @NotNull(message = "Serial number is required")
     @Positive(message = "Serial number must be a positive number")
     private Long serialNo;
@@ -35,6 +34,8 @@ public class LostItemImage {
     @NotNull(message = "Lost item is required")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lost_item_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private LostItem lostItem;
 
     @CreationTimestamp

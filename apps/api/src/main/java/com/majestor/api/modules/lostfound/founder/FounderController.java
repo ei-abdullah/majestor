@@ -22,7 +22,7 @@ public class FounderController {
     public ResponseEntity<?> foundLostItem(
             @PathVariable("founderId") @NotNull @Positive Long founderId,
             @PathVariable("lostItemId") @NotNull @Positive Long lostItemId,
-            @Valid @RequestBody FoundLostItemRequestDTO foundLostItemRequestDTO
+            @Valid @ModelAttribute FoundLostItemRequestDTO foundLostItemRequestDTO
     ) {
         founderService.foundLostItem(
                 founderId,
@@ -31,7 +31,7 @@ public class FounderController {
         );
 
         return ResponseEntity
-                .status(HttpStatus.OK)
+                .status(HttpStatus.CREATED)
                 .build();
     }
 }

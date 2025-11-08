@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,10 +28,13 @@ public class LostItemController {
     private final LostItemService lostItemService;
 
     // Create lost item's request
-    @PostMapping("/createRequest/{user_id}")
+    @PostMapping(
+            value = "/createRequest/{userId}",
+            consumes = "multipart/form-data"
+    )
     public ResponseEntity<?> createLostItemRequest(
-            @Valid @RequestBody CreateLostItemRequestDTO createLostItemRequestDTO,
-            @PathVariable("user_id") @NotNull @Positive Long ownerId
+            @Valid @ModelAttribute CreateLostItemRequestDTO createLostItemRequestDTO,
+            @PathVariable("userId") @NotNull @Positive Long ownerId
     ) {
         lostItemService.createLostItemRequest(createLostItemRequestDTO, ownerId);
 
@@ -42,9 +44,9 @@ public class LostItemController {
     }
 
     // Get a list of all lost items, including images, of a user and filter it by status, FOUND/LOST
-    @GetMapping("/findLostItemsByUserId/{user_id}")
+    @GetMapping("/findLostItemsByUserId/{userId}")
     public ResponseEntity<List<LostItemResponseDTO>> findLostItemsByUserId(
-            @PathVariable("user_id") @NotNull @Positive Long ownerId,
+            @PathVariable("userId") @NotNull @Positive Long ownerId,
             @RequestParam("status") @NotBlank String status
     ) {
         List<LostItemResponseDTO> lostItemsList = lostItemService.findLostItemsByUserId(ownerId, status);
@@ -56,30 +58,24 @@ public class LostItemController {
 
     // Get all lost items with the status of LOST
     @GetMapping("/findAllLostItems")
-    public ResponseEntity<List<LostItemsResponseDTO>> findAllLostItems(
+    public ResponseEntity<Object> findAllLostItems(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "id") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir
+            @RequestParam(defaultValue = "10") int size
     ) {
-        Sort sort = sortDir.equalsIgnoreCase("desc")
-                ? Sort.by(sortBy).descending()
-                : Sort.by(sortBy).ascending();
-
-        Pageable pageable = PageRequest.of(page, size, sort);
+        Pageable pageable = PageRequest.of(page, size);
         Page<LostItemsResponseDTO> response = lostItemService.findAllLostItems(pageable);
 
         return ResponseEntity
                 .ok()
-                .body(response.getContent());
+                .body(response);
     }
 
     // Get a specific lost item by its id along with its images and its founders
     @GetMapping("/findLostItemWithFounders/{lostItemId}")
-    public ResponseEntity<List<LostItemAndFoundersResponseDTO>> findLostItemWithFounders(
+    public ResponseEntity<LostItemAndFoundersResponseDTO> findLostItemWithFounders(
             @PathVariable("lostItemId") @NotNull @Positive Long lostItemId
     ) {
-        List<LostItemAndFoundersResponseDTO> response = lostItemService.findLostItemWithFounders(lostItemId);
+        LostItemAndFoundersResponseDTO response = lostItemService.findLostItemWithFounders(lostItemId);
 
         return ResponseEntity
                 .ok()

@@ -8,6 +8,7 @@ import com.majestor.api.modules.lostfound.lostitem.dto.LostItemsResponseDTO;
 import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -23,10 +24,11 @@ public class LostItemMapper {
                 .lastLocation(createLostItemRequestDTO.getLastLocation())
                 .status(Status.LOST)
                 .owner(owner)
+                .createdAt(LocalDateTime.now())
                 .build();
     }
 
-    public LostItemsResponseDTO toLostItemsResponseDTO(LostItem lostItem, byte[] firstImageUri) {
+    public LostItemsResponseDTO toLostItemsResponseDTO(LostItem lostItem, String lostItemImageUri) {
         return LostItemsResponseDTO
                 .builder()
                 .id(lostItem.getId())
@@ -34,18 +36,18 @@ public class LostItemMapper {
                 .status(lostItem.getStatus())
                 .ownerId(lostItem.getOwner().getId())
                 .ownerEmail(lostItem.getOwner().getEmail())
-                .firstImageUri(firstImageUri)
+                .lostItemImageUri(lostItemImageUri)
                 .createdAt(lostItem.getCreatedAt())
                 .build();
     }
 
-    public LostItemResponseDTO toLostItemResponseDto(LostItem lostItem, List<byte[]> imageUris) {
+    public LostItemResponseDTO toLostItemResponseDto(LostItem lostItem, String imageUri) {
         return LostItemResponseDTO
                 .builder()
                 .id(lostItem.getId())
                 .title(lostItem.getTitle())
                 .status(lostItem.getStatus())
-                .imageUris(imageUris)
+                .imageUri(imageUri)
                 .ownerId(lostItem.getOwner().getId())
                 .createdAt(lostItem.getCreatedAt())
                 .build();
@@ -54,7 +56,7 @@ public class LostItemMapper {
     /*
      * LostItemAndFoundersResponseDTO
      */
-    private LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO toLostItemAndFoundersDTO(Founder founder) {
+    public LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO toLostItemAndFoundersDTO(Founder founder, List<String> foundItemImageUris) {
         return LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO
                 .builder()
                 .id(founder.getId())
@@ -62,21 +64,16 @@ public class LostItemMapper {
                 .phone(founder.getPhone())
                 .foundLocationDescription(founder.getFoundLocationDescription())
                 .lastLocation(founder.getLastLocation())
+                .foundItemImageUris(foundItemImageUris)
                 .createdAt(founder.getCreatedAt())
                 .build();
     }
 
-    private List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> toLostItemAndFoundersDTOList(List<Founder> founders) {
-        if (founders == null) {
-            return List.of();
-        }
-
-        return founders.stream()
-                .map(this::toLostItemAndFoundersDTO)
-                .toList();
-    }
-
-    public LostItemAndFoundersResponseDTO toLostItemAndFoundersDTO(LostItem lostItem) {
+    public LostItemAndFoundersResponseDTO toLostItemAndFoundersResponseDTO(
+            LostItem lostItem,
+            List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> itemFounders,
+            List<String> lostItemImageUris
+    ) {
         return LostItemAndFoundersResponseDTO
                 .builder()
                 .id(lostItem.getId())
@@ -85,8 +82,10 @@ public class LostItemMapper {
                 .description(lostItem.getDescription())
                 .phone(lostItem.getPhone())
                 .lastLocationDescription(lostItem.getLastLocationDescription())
-                .itemFounders(toLostItemAndFoundersDTOList(lostItem.getFounders()))
+                .itemFounders(itemFounders)
+                .lostItemImageUris(lostItemImageUris)
                 .createdAt(lostItem.getCreatedAt())
                 .build();
     }
+
 }

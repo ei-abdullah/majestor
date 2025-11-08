@@ -4,7 +4,6 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -34,7 +33,6 @@ public class University {
     @Size(max = 255, message = "University address must be less than 255 characters")
     private String address;
 
-    @NotEmpty(message = "University faculties are required")
     @OneToMany(mappedBy = "universityFaculties")
     private List<Faculty> faculties;
 

@@ -12,7 +12,6 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class Utils {
-
     private final S3Service s3Service;
 
     public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
