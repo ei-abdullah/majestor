@@ -7,10 +7,10 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface FounderRepository extends JpaRepository<Founder, Long> {
-
     @Query("""
             SELECT f
             FROM Founder f
+            LEFT JOIN FETCH f.foundLostItem
             WHERE f.foundLostItem.id = :lostItemId
             """)
     List<Founder> findFoundersByLostItemId(@Param("lostItemId") Long lostItemId);
