@@ -166,7 +166,7 @@ public class LostItemService {
     ) {
         LostItem lostItem = lostItemRepository.findById(lostItemId)
                 .orElseThrow(() -> new EntityNotFoundException("Lost item not found with id: " + lostItemId));
-        lostItem.setLostItemImages(lostItemImageRepository.findImagesByLostItemId(lostItemId));
+        lostItem.setLostItemImages(lostItemImageRepository.findByLostItemId(lostItemId));
         lostItem.setFounders(founderRepository.findFoundersByLostItemId(lostItemId));
 
         List<LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO> foundersDTOs;
