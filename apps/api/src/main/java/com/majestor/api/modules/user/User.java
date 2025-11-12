@@ -6,10 +6,7 @@ import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -22,26 +19,31 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "users")
+@Table(
+        name = "users",
+        indexes = {
+                @Index(name = "idx_user_email", columnList = "email")
+        }
+)
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email address")
-    @Column(unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
     @NotBlank(message = "Username is required")
     @Size(min = 2, max = 20, message = "Username must be greater than 2 and less than 20 characters")
-    @Column(unique = true)
     private String username;
 
+    @Column(nullable = false)
     @NotBlank(message = "Password is required")
     private String passwordHash;
 
-    @NotBlank(message = "Phone is required")
     @Pattern(regexp = "^03[0-9]{9}$", message = "Invalid phone number")
     private String phone;
 
@@ -55,27 +57,40 @@ public class User {
     @Enumerated(EnumType.STRING)
     @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
     @Column(name = "role")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Role> roles = new ArrayList<>();
 
     @NotNull(message = "University is required")
     @ManyToOne
     @JoinColumn(name = "university_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private University university;
 
     @NotNull(message = "Faculty is required")
     @ManyToOne
     @JoinColumn(name = "faculty_id")
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private Faculty faculty;
 
-    @OneToMany(mappedBy = "owner")
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<LostItem> lostItems;
 
-    @OneToMany(mappedBy = "founder")
+    @OneToMany(mappedBy = "founder", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     private List<Founder> founders;
 
     // For email-based verification
     private String verificationToken;
-    private Boolean isVerified;
+
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
+
     @Column(name = "reset_token")
     private String resetToken;
 

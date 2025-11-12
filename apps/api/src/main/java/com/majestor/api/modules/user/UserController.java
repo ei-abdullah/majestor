@@ -8,8 +8,10 @@ import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+@Validated
 @RestController
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
@@ -31,7 +33,7 @@ public class UserController {
     @PatchMapping("/updateUserDetails/{userId}")
     public ResponseEntity<?> updateUserDetails(
             @PathVariable("userId") @NotNull @Positive Long userId,
-            @Valid @RequestBody UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
+            @Valid @ModelAttribute UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
     ) {
         userService.updateUserDetails(userId, updateUserDetailsRequestDTO);
 
