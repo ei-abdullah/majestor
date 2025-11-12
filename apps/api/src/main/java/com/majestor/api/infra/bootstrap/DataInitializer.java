@@ -217,7 +217,6 @@ public class DataInitializer implements CommandLineRunner {
                         .email("john.doe@student.com")
                         .username("john_doe")
                         .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("03091234567")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .faculty(faculties.get(random.nextInt(faculties.size())))

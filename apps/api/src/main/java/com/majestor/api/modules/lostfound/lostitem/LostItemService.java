@@ -2,7 +2,6 @@ package com.majestor.api.modules.lostfound.lostitem;
 
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
-import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.founder.FounderRepository;
 import com.majestor.api.modules.lostfound.lostitem.dto.CreateLostItemRequestDTO;
 import com.majestor.api.modules.lostfound.lostitem.dto.LostItemAndFoundersResponseDTO;
@@ -151,7 +150,7 @@ public class LostItemService {
                     String imageUri = lostItemImageRepository
                             .findByLostItemId(lostItem.getId())
                             .stream()
-                            .map(image -> downloadLostItemImage(lostItem, image.getImageUri()))
+                            .map(image -> utils.DownloadLostItemImage(lostItem, image.getImageUri()))
                             .filter(Objects::nonNull)
                             .findFirst()
                             .orElse(null);
@@ -176,7 +175,7 @@ public class LostItemService {
                 .map(founder -> {
                     List<String> foundItemImages = founder.getFoundItemImages()
                             .stream()
-                            .map(image -> downloadFoundItemImage(founder, image.getImageUri()))
+                            .map(image -> utils.DownloadFoundItemImage(founder, image.getImageUri()))
                             .filter(Objects::nonNull)
                             .toList();
                     return lostItemMapper.toLostItemAndFoundersDTO(founder, foundItemImages);
@@ -188,10 +187,20 @@ public class LostItemService {
                 foundersDTOs,
                 lostItem.getLostItemImages()
                         .stream()
-                        .map(image -> downloadLostItemImage(lostItem, image.getImageUri()))
+                        .map(image -> utils.DownloadLostItemImage(lostItem, image.getImageUri()))
                         .filter(Objects::nonNull)
                         .toList()
         );
+    }
+
+
+    @Transactional
+    public void markLostItemFound(Long lostItemId) {
+        LostItem lostItem = lostItemRepository.findById(lostItemId)
+                .orElseThrow(() -> new EntityNotFoundException("Lost item not found with id: " + lostItemId));
+
+        lostItem.setStatus(Status.FOUND);
+        lostItemRepository.save(lostItem);
     }
 
     private String validateAndNormalizeStatus(String statusQuery) {
@@ -203,46 +212,6 @@ public class LostItemService {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid status: " + statusQuery +
                     ". Valid values are: " + java.util.Arrays.toString(Status.values()));
-        }
-    }
-
-    private String downloadLostItemImage(LostItem lostItem, String imageUri) {
-        if (imageUri == null || imageUri.trim().isEmpty()) {
-            return null;
-        }
-
-        try {
-            String key = utils.GetUploadLostItemKey(lostItem.getOwner().getId(), lostItem.getId(), imageUri);
-            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
-        } catch (Exception e) {
-            log.warn("Failed to download image {} for lost item {}: {}",
-                    imageUri, lostItem.getId(), e.getMessage());
-            return null;
-        }
-    }
-
-    @Transactional
-    public void markLostItemFound(Long lostItemId) {
-        LostItem lostItem = lostItemRepository.findById(lostItemId)
-                .orElseThrow(() -> new EntityNotFoundException("Lost item not found with id: " + lostItemId));
-
-        lostItem.setStatus(Status.FOUND);
-        lostItemRepository.save(lostItem);
-    }
-
-
-    private String downloadFoundItemImage(Founder founder, String imageUri) {
-        if (imageUri == null || imageUri.trim().isEmpty()) {
-            return null;
-        }
-
-        try {
-            String key = utils.GetUploadFoundItemKey(founder.getFounder().getId(), founder.getId(), imageUri);
-            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
-        } catch (Exception e) {
-            log.warn("Failed to download image {} for founder {}: {}",
-                    imageUri, founder.getId(), e.getMessage());
-            return null;
         }
     }
 }

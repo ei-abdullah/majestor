@@ -1,6 +1,9 @@
 package com.majestor.api.modules.utils;
 
+import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
+import com.majestor.api.modules.lostfound.founder.Founder;
+import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -13,6 +16,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Utils {
     private final S3Service s3Service;
+    private final S3Buckets s3Buckets;
+
+    public String DownloadLostItemImage(LostItem lostItem, String imageUri) {
+        if (imageUri == null || imageUri.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            String key = GetUploadLostItemKey(lostItem.getOwner().getId(), lostItem.getId(), imageUri);
+            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
+        } catch (Exception e) {
+            log.warn("Failed to download image {} for lost item {}: {}",
+                    imageUri, lostItem.getId(), e.getMessage());
+            return null;
+        }
+    }
+
+    public String DownloadFoundItemImage(Founder founder, String imageUri) {
+        if (imageUri == null || imageUri.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            String key = GetUploadFoundItemKey(founder.getFounder().getId(), founder.getId(), imageUri);
+            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
+        } catch (Exception e) {
+            log.warn("Failed to download image {} for founder {}: {}",
+                    imageUri, founder.getId(), e.getMessage());
+            return null;
+        }
+    }
 
     public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
         return "user/%s/lostItems/%s/%s"
