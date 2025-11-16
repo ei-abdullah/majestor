@@ -1,0 +1,45 @@
+# Documentation files (for local reference only)
+BACKEND_INTEGRATION.md
+INSTALLATION_COMPLETE.md
+DESIGN_IMPLEMENTATION.md
+IMAGE_UPLOAD_GUIDE.md
+IMAGE_UPLOAD_IMPLEMENTATION.md
+IMPLEMENTATION_SUMMARY.md
+INSTALL_DEPENDENCIES.md
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# MacOS
+.DS_Store
+
+# Environment
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Logs
+*.log
+
+# Temporary
+*.tmp
+*.temp
