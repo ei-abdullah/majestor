@@ -6,7 +6,10 @@ import com.majestor.api.modules.lostfound.shared.LastLocation;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -25,16 +28,6 @@ public class Founder {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, length = 100)
-    @NotBlank(message = "Name is required")
-    @Size(min = 2, max = 100, message = "Name must be greater than 2 and less than 100 characters")
-    private String name;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Phone is required")
-    @Pattern(regexp = "^03[0-9]{9}$", message = "Invalid phone number")
-    private String phone;
-
     @Column(nullable = false)
     @NotBlank(message = "Found location is required")
     @Size(max = 255, message = "Found location description must be less than 255 characters")
@@ -43,7 +36,7 @@ public class Founder {
     @Column(nullable = false)
     @Valid
     @Embedded
-    private LastLocation lastLocation;
+    private LastLocation foundLocation;
 
     @NotNull(message = "Lost item must be linked")
     @ManyToOne(fetch = FetchType.LAZY)
