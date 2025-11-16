@@ -14,10 +14,8 @@ public class FounderMapper {
     ) {
         return Founder
                 .builder()
-                .name(foundLostItemRequestDTO.getName())
-                .phone(foundLostItemRequestDTO.getPhone())
                 .foundLocationDescription(foundLostItemRequestDTO.getFoundLocationDescription())
-                .lastLocation(foundLostItemRequestDTO.getLocation())
+                .foundLocation(foundLostItemRequestDTO.getFoundLocation())
                 .foundLostItem(lostItem)
                 .founder(userFounder)
                 .build();

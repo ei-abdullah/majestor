@@ -68,12 +68,12 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Sample users already exist, skipping initialization");
         }
 
-//        if (lostItemRepository.count() == 0) {
-//            initializeLostItemsAndFounders();
-//            log.info("Lost items and founders initialized successfully!");
-//        } else {
-//            log.info("Lost items already exist, skipping initialization");
-//        }
+        if (lostItemRepository.count() == 0) {
+            initializeLostItemsAndFounders();
+            log.info("Lost items and founders initialized successfully!");
+        } else {
+            log.info("Lost items already exist, skipping initialization");
+        }
     }
 
     private void initializeUniversitiesAndFaculties() {
@@ -421,50 +421,40 @@ public class DataInitializer implements CommandLineRunner {
         // Create founders for the first 5 lost items (without images initially)
         List<Founder> founders = List.of(
                 Founder.builder()
-                        .name("Abdullah")
-                        .phone("03089999999")
                         .foundLocationDescription("Found the iPhone near the library stairs, exactly where described")
-                        .lastLocation(LastLocation.builder().lat("41.311000").lng("69.240500").build())
+                        .foundLocation(LastLocation.builder().lat("41.311000").lng("69.240500").build())
                         .foundLostItem(lostItems.get(0))
                         .founder(users.get(random.nextInt(users.size())))
                         .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
-                        .name("Jane")
-                        .phone("03089888888")
                         .foundLocationDescription("Saw the red backpack under table 5 in the cafeteria")
-                        .lastLocation(LastLocation.builder().lat("41.298650").lng("69.267750").build())
+                        .foundLocation(LastLocation.builder().lat("41.298650").lng("69.267750").build())
                         .foundLostItem(lostItems.get(1))
                         .founder(users.get(random.nextInt(users.size())))
                         .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
-                        .name("Alex")
-                        .phone("03088777777")
                         .foundLocationDescription("Found car keys near the security booth in TUIT parking")
-                        .lastLocation(LastLocation.builder().lat("41.327050").lng("69.228400").build())
+                        .foundLocation(LastLocation.builder().lat("41.327050").lng("69.228400").build())
                         .foundLostItem(lostItems.get(2))
                         .founder(users.get(random.nextInt(users.size())))
                         .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
-                        .name("Sara")
-                        .phone("03089666666")
                         .foundLocationDescription("Spotted the gold watch in the locker room after basketball practice")
-                        .lastLocation(LastLocation.builder().lat("41.295820").lng("69.249180").build())
+                        .foundLocation(LastLocation.builder().lat("41.295820").lng("69.249180").build())
                         .foundLostItem(lostItems.get(3))
                         .founder(users.get(random.nextInt(users.size())))
                         .foundItemImages(new ArrayList<>()) // Initialize empty list
                         .build(),
 
                 Founder.builder()
-                        .name("John")
-                        .phone("03088555555")
                         .foundLocationDescription("Found the blue wallet near the bus stop, contains ID and cash")
-                        .lastLocation(LastLocation.builder().lat("39.627050").lng("66.969650").build())
+                        .foundLocation(LastLocation.builder().lat("39.627050").lng("66.969650").build())
                         .foundLostItem(lostItems.get(4))
                         .founder(users.get(random.nextInt(users.size())))
                         .foundItemImages(new ArrayList<>()) // Initialize empty list

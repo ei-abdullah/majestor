@@ -60,10 +60,11 @@ public class LostItemMapper {
         return LostItemAndFoundersResponseDTO.LostItemAndFoundersDTO
                 .builder()
                 .id(founder.getId())
-                .name(founder.getName())
-                .phone(founder.getPhone())
+                .username(founder.getFounder().getUsername())
+                .founderEmail(founder.getFounder().getEmail())
+                .phone(founder.getFounder().getPhone())
                 .foundLocationDescription(founder.getFoundLocationDescription())
-                .lastLocation(founder.getLastLocation())
+                .lastLocation(founder.getFoundLocation())
                 .foundItemImageUris(foundItemImageUris)
                 .createdAt(founder.getCreatedAt())
                 .build();
@@ -78,12 +79,14 @@ public class LostItemMapper {
                 .builder()
                 .id(lostItem.getId())
                 .ownerId(lostItem.getOwner().getId())
+                .ownerEmail(lostItem.getOwner().getEmail())
                 .title(lostItem.getTitle())
                 .description(lostItem.getDescription())
                 .phone(lostItem.getPhone())
                 .lastLocationDescription(lostItem.getLastLocationDescription())
-                .itemFounders(itemFounders)
+                .lastLocation(lostItem.getLastLocation())
                 .lostItemImageUris(lostItemImageUris)
+                .itemFounders(itemFounders)
                 .createdAt(lostItem.getCreatedAt())
                 .build();
     }
