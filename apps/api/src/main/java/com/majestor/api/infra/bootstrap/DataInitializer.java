@@ -68,12 +68,12 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Sample users already exist, skipping initialization");
         }
 
-//        if (lostItemRepository.count() == 0) {
-//            initializeLostItemsAndFounders();
-//            log.info("Lost items and founders initialized successfully!");
-//        } else {
-//            log.info("Lost items already exist, skipping initialization");
-//        }
+        if (lostItemRepository.count() == 0) {
+            initializeLostItemsAndFounders();
+            log.info("Lost items and founders initialized successfully!");
+        } else {
+            log.info("Lost items already exist, skipping initialization");
+        }
     }
 
     private void initializeUniversitiesAndFaculties() {
