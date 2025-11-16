@@ -23,6 +23,7 @@ export default {
     },
     extra: {
       API_BASE_URL: process.env.API_BASE_URL || 'http://localhost:8080',
+      USE_MOCKS: process.env.USE_MOCKS || 'false', // Read from .env file
     },
   },
 };
