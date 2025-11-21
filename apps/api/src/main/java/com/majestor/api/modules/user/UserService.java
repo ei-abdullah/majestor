@@ -7,9 +7,12 @@ import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
 import com.majestor.api.modules.utils.Utils;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.IOException;
@@ -31,22 +34,23 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        byte[] avatarBytes = new byte[0];
+        String avatarUri = null;
 
-        String key = utils.GetUploadUserAvatarKey(user.getId(), user.getAvatar());
-        try {
-            avatarBytes = s3Service.downloadFile(
-                    key,
-                    s3Buckets.getBucket()
-            );
-        } catch (SdkClientException e) {
-            log.warn("Failed to download avatar from S3: {}", e.getMessage(), e);
-        } catch (Exception e) {
-            log.warn("Failed to read avatar from S3: {}", e.getMessage(), e);
+        if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+            String key = utils.GetUploadUserAvatarKey(user.getId(), user.getAvatar());
+            try {
+                avatarUri = s3Service.createPresignedGetUrl(
+                        s3Buckets.getBucket(),
+                        key
+                );
+            } catch (SdkClientException e) {
+                log.warn("Failed to download avatar from S3: {}", e.getMessage(), e);
+            } catch (Exception e) {
+                log.warn("Failed to read avatar from S3: {}", e.getMessage(), e);
+            }
         }
 
-        avatarBytes = avatarBytes.length > 0 ? avatarBytes : null;
-        return userMapper.toGetUserDetailsResponseDTO(user, avatarBytes);
+        return userMapper.toGetUserDetailsResponseDTO(user, avatarUri);
     }
 
     @Transactional
@@ -54,16 +58,31 @@ public class UserService {
             Long userId,
             UpdateUserDetailsRequestDTO requestDTO
     ) {
-        /*
-         * Remove the image from the aws and upload the new one.
-         * Replace the image uri from the database also.
-         */
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
+        if (requestDTO.getPersonalEmail() != null && !requestDTO.getPersonalEmail().trim().isEmpty()) {
+            user.setPersonalEmail(requestDTO.getPersonalEmail().trim());
+        }
+
+        if (requestDTO.getPhone() != null && !requestDTO.getPhone().trim().isEmpty()) {
+            user.setPhone(requestDTO.getPhone());
+        }
+
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updateProfileImage(
+            MultipartFile profileImage,
+            @NotNull @Positive Long userId
+    ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
         String oldAvatarUri = user.getAvatar();
 
+        // Check for already existing avatar and delete it from S3
         if (oldAvatarUri != null && !oldAvatarUri.trim().isEmpty()) {
             String key = utils.GetUploadUserAvatarKey(user.getId(), oldAvatarUri);
             try {
@@ -76,12 +95,13 @@ public class UserService {
             }
         }
 
-        if (requestDTO.getAvatar() != null && !requestDTO.getAvatar().isEmpty()) {
+        // Upload image to S3 and set avatar field
+        if (profileImage != null && !profileImage.isEmpty()) {
             String avatarId = UUID.randomUUID().toString();
             String key = utils.GetUploadUserAvatarKey(user.getId(), avatarId);
 
             try {
-                byte[] avatarImageBytes = requestDTO.getAvatar().getBytes();
+                byte[] avatarImageBytes = profileImage.getBytes();
                 s3Service.uploadFile(
                         avatarImageBytes,
                         key,
@@ -98,15 +118,5 @@ public class UserService {
                 throw new RuntimeException("Invalid avatar file: " + e.getMessage(), e);
             }
         }
-
-        if (requestDTO.getPersonalEmail() != null && !requestDTO.getPersonalEmail().trim().isEmpty()) {
-            user.setPersonalEmail(requestDTO.getPersonalEmail().trim());
-        }
-
-        if (requestDTO.getPhone() != null && requestDTO.getPhone().trim().isEmpty()) {
-            user.setPhone(requestDTO.getPhone());
-        }
-
-        userRepository.save(user);
     }
 }

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class UserMapper {
 
-    public GetUserDetailsResponseDTO toGetUserDetailsResponseDTO(User user, byte[] avatar) {
+    public GetUserDetailsResponseDTO toGetUserDetailsResponseDTO(User user, String avatar) {
         return GetUserDetailsResponseDTO
                 .builder()
                 .id(user.getId())

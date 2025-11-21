@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Validated
 @RestController
@@ -28,6 +29,21 @@ public class UserController {
         return ResponseEntity
                 .ok()
                 .body(response);
+    }
+
+    @PatchMapping(
+            value = "/updateProfileImage/{userId}",
+            consumes = "multipart/form-data"
+    )
+    public ResponseEntity<?> updateProfileImage(
+            @RequestParam("avatar") @NotNull MultipartFile profileImage,
+            @PathVariable("userId") @NotNull @Positive Long userId
+    ) {
+        userService.updateProfileImage(profileImage, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 
     @PatchMapping("/updateUserDetails/{userId}")

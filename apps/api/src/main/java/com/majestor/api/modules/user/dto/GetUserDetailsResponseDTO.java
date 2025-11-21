@@ -23,7 +23,7 @@ public class GetUserDetailsResponseDTO {
     private String name;
 
     @NotNull(message = "Avatar is required")
-    private byte[] avatar;
+    private String avatar;
 
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
