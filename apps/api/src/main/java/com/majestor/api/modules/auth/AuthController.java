@@ -54,4 +54,14 @@ public class AuthController {
                 .body(Map.of("message", "Email verified successfully!"));
     }
 
+    @PostMapping("/forgetPassword")
+    public ResponseEntity<?> forgetPassword(
+            @RequestParam("email") @NotBlank String email
+    ) {
+        authService.forgetPassword(email);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("message", "Password reset successfully!"));
+    }
 }

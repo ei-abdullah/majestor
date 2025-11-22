@@ -96,10 +96,8 @@ public class AuthService {
             throw new BadCredentialsException("Invalid credentials");
         }
 
-        User user = userRepository.findByEmail(request.getEmail());
-        if (user == null) {
-            throw new EntityNotFoundException("User not found with email: " + request.getEmail());
-        }
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + request.getEmail()));
 
         if (!Boolean.TRUE.equals(user.getIsVerified())) {
             throw new AccessDeniedException("Please verify your email before logging in!");
@@ -114,5 +112,19 @@ public class AuthService {
 
     private String generateVerificationToken() {
         return UUID.randomUUID().toString();
+    }
+
+    public void forgetPassword(String email) {
+        /*
+        TODO: Implement forget password functionality
+        1. Get user email
+        2. Generate password reset token
+        3. Save token to user entity with expiration time
+        4. Send email with password reset link
+        5. Create endpoint to reset password using token
+        6. Validate token and expiration time
+        7. Update user password
+        8. Invalidate the token after use
+        */
     }
 }
