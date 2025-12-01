@@ -1,7 +1,5 @@
 package com.majestor.api.modules.lostfound.lostitem;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +14,7 @@ public interface LostItemRepository extends JpaRepository<LostItem, Long> {
             WHERE li.status = 'LOST'
             ORDER BY li.id DESC
             """)
-    Page<LostItem> findAllLostItems(Pageable pageable);
+    List<LostItem> findAllLostItems();
 
 
     @Query("""
