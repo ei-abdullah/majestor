@@ -16,9 +16,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -106,12 +103,10 @@ public class LostItemService {
         }
     }
 
-    public Page<LostItemsResponseDTO> findAllLostItems(
-            Pageable pageable
-    ) {
-        Page<LostItem> lostItemsPage = lostItemRepository.findAllLostItems(pageable);
+    public List<LostItemsResponseDTO> findAllLostItems() {
+        List<LostItem> lostItemsList = lostItemRepository.findAllLostItems();
 
-        List<LostItemsResponseDTO> lostItemsResponseList = lostItemsPage.getContent()
+        return lostItemsList
                 .stream()
                 .map(lostItem -> {
                     String imageUri = lostItemImageRepository.getFirstLostItemImageById(lostItem.getId());
@@ -129,8 +124,6 @@ public class LostItemService {
                     return lostItemMapper.toLostItemsResponseDTO(lostItem, lostItemImageUri);
                 })
                 .toList();
-
-        return new PageImpl<>(lostItemsResponseList, pageable, lostItemsPage.getTotalElements());
     }
 
     public List<LostItemResponseDTO> findLostItemsByUserId(
