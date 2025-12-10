@@ -10,6 +10,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import java.io.InputStream;
 import java.time.Duration;
 import java.util.List;
 
@@ -41,6 +42,17 @@ public class S3Service {
         } catch (Exception e) {
             throw new RuntimeException("Failed to download file from S3: " + e.getMessage());
         }
+    }
+
+    public InputStream downloadFileAsStream(String key, String bucketName) {
+        GetObjectRequest objectRequest = GetObjectRequest
+                .builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        ResponseInputStream<GetObjectResponse> response = s3Client.getObject(objectRequest);
+        return response;
     }
 
     public void deleteFile(String key, String bucketName) {

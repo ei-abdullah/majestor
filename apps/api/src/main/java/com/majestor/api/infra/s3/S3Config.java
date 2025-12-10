@@ -8,7 +8,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 @Configuration
 public class S3Config {
-    @Value("me-central-1")
+    @Value("${aws.region:me-central-1}")
     private String region;
 
     @Bean

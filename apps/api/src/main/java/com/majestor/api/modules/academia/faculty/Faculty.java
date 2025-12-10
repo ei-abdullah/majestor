@@ -1,5 +1,6 @@
 package com.majestor.api.modules.academia.faculty;
 
+import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
@@ -23,6 +24,7 @@ import java.util.List;
 public class Faculty {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "faculty_id")
     private Long id;
 
     @NotBlank(message = "Name is required")
@@ -35,6 +37,9 @@ public class Faculty {
 
     @OneToMany(mappedBy = "faculty")
     private List<User> students;
+
+    @OneToMany(mappedBy = "facultyCourses")
+    private List<Course> courses;
 
     @CreationTimestamp
     private LocalDateTime createdAt;

@@ -7,6 +7,8 @@ aws:
     buckets:
       bucket: ${S3_BUCKET_NAME}
 
+  region: ${S3_BUCKET_REGION}
+
 spring:
   application:
     name: api
@@ -21,7 +23,7 @@ spring:
     hibernate:
       ddl-auto: create-drop
 
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true

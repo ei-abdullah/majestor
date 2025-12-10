@@ -1,5 +1,7 @@
 package com.majestor.api.infra.bootstrap;
 
+import com.majestor.api.modules.academia.course.Course;
+import com.majestor.api.modules.academia.course.CourseRepository;
 import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
@@ -41,6 +43,7 @@ public class DataInitializer implements CommandLineRunner {
     private final FounderRepository founderRepository;
     private final FoundItemImageRepository foundItemImageRepository;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final CourseRepository courseRepository;
 
     @Override
     @Transactional
@@ -54,7 +57,7 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Universities already exist, skipping initialization");
         }
 
-        if (userRepository.findByEmail("abdullah@gmail.com") == null) {
+        if (userRepository.findByEmail("abdullah@gmail.com").isEmpty()) {
             initializeAdminUser();
             log.info("Admin user initialized successfully!");
         } else {
@@ -74,6 +77,34 @@ public class DataInitializer implements CommandLineRunner {
         } else {
             log.info("Lost items already exist, skipping initialization");
         }
+
+        if (courseRepository.count() == 0) {
+            initializeCourses();
+        } else {
+            log.info("Courses already exist, skipping initialization");
+        }
+    }
+
+    private void initializeCourses() {
+        List<Faculty> faculties = facultyRepository.findAll();
+
+        List<Course> courses = new ArrayList<>();
+
+        for (Faculty faculty : faculties) {
+            // Add some sample courses for each faculty
+            courses.add(Course.builder()
+                    .name("Introduction to " + faculty.getName())
+                    .facultyCourses(faculty)
+                    .build());
+
+            courses.add(Course.builder()
+                    .name(faculty.getName() + " Advanced Studies")
+                    .facultyCourses(faculty)
+                    .build());
+        }
+
+        courseRepository.saveAll(courses);
+        log.info("Initialized {} courses across faculties", courses.size());
     }
 
     private void initializeUniversitiesAndFaculties() {
