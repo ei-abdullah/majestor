@@ -13,18 +13,18 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
     @Modifying
     @Query("""
             INSERT INTO Like (likedBy, likedDocument)
-            VALUES (:userId, :documentId)
+            VALUES (:user, :document)
             """)
     void createNewLike(
-            @Param("userId") Long userId,
-            @Param("documentId") Long documentId
+            @Param("userId") User user,
+            @Param("documentId") Document document
     );
 
     @Modifying
     @Query("""
-            DELETE FROM Like 
-            WHERE likedBy = :userId
-            AND likedDocument = :documentId
+            DELETE FROM Like
+            WHERE likedBy.id = :userId
+            AND likedDocument.id = :documentId
             """)
     void deleteLike(
             @Param("userId") Long userId,

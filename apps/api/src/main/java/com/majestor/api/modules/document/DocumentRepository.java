@@ -8,23 +8,6 @@ import java.util.List;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
-    /*
-    @Query("""
-            SELECT DISTINCT d
-            FROM Document d
-            LEFT JOIN FETCH d.likes lk
-            LEFT JOIN FETCH d.documentImages di
-            LEFT JOIN FETCH d.course c
-            WHERE d.uploader.id = :userId
-            AND d.uploader.faculty.id = :facultyId
-            AND di.serialNumber = 1
-            """)
-    List<Document> getDocumentsByUserIdAndFacultyId(
-            @Param("userId") Long userId,
-            @Param("facultyId") Long facultyId
-    );
-    */
-
     @Query("""
             SELECT DISTINCT d
             FROM Document d

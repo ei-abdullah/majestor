@@ -16,5 +16,5 @@ public interface FacultyRepository extends JpaRepository<Faculty, Long> {
             JOIN FETCH f.courses
             WHERE f.id = :facultyId
             """)
-    Faculty findFacultyByIdWithCourses(@Param("facultyId") Long facultyIdd);
+    Faculty findFacultyByIdWithCourses(@Param("facultyId") Long facultyId);
 }
