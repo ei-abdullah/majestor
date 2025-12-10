@@ -122,7 +122,7 @@ public class DocumentService {
             documentRepository.save(document);
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());
-            log.error("Failed to save lost item images metadata: {}", e.getMessage());
+            log.error("Failed to save document images metadata: {}", e.getMessage());
             throw new RuntimeException("Failed to save image metadata: " + e.getMessage(), e);
         }
     }
@@ -164,6 +164,7 @@ public class DocumentService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void likeDocument(
             Long userId,
             Long documentId
@@ -176,9 +177,9 @@ public class DocumentService {
 
         if (likeRepository.existsByLikedByAndLikedDocument(user, document)) {
             likeRepository.deleteLike(user.getId(), document.getId());
+        } else {
+            likeRepository.createNewLike(user, document);
         }
-
-        likeRepository.createNewLike(user.getId(), document.getId());
     }
 
     public void downloadDocument(
