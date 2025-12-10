@@ -95,7 +95,6 @@ public class LostItemService {
             List<LostItemImage> savedImage = lostItemImageRepository.saveAll(lostItemImages);
             lostItem.setLostItemImages(savedImage);
             lostItemRepository.save(lostItem);
-            log.info("Saved lost item images: {}", savedImage);
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());
             log.error("Failed to save lost item images metadata: {}", e.getMessage());

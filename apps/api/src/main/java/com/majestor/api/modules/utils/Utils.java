@@ -2,6 +2,7 @@ package com.majestor.api.modules.utils;
 
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
+import com.majestor.api.modules.document.Document;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,21 @@ public class Utils {
         }
     }
 
+    public String DownloadDocumentImage(Document document, String imageUri) {
+        if (imageUri == null || imageUri.trim().isEmpty()) {
+            return null;
+        }
+
+        try {
+            String key = GetUploadDocumentKey(document.getUploader().getId(), document.getId(), imageUri);
+            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
+        } catch (Exception e) {
+            log.warn("Failed to download image {} for document {}: {}",
+                    imageUri, document.getId(), e.getMessage());
+            return null;
+        }
+    }
+
     public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
         return "user/%s/lostItems/%s/%s"
                 .formatted(userId, lostItemId, lostItemImageId);
@@ -56,6 +72,11 @@ public class Utils {
     public String GetUploadFoundItemKey(Long userId, Long foundItemId, String foundItemImageId) {
         return "user/%s/foundItems/%s/%s"
                 .formatted(userId, foundItemId, foundItemImageId);
+    }
+
+    public String GetUploadDocumentKey(Long userId, Long documentId, String documentImageId) {
+        return "user/%s/documents/%s/%s"
+                .formatted(userId, documentId, documentImageId);
     }
 
     public String GetUploadUserAvatarKey(Long userId, String avatarId) {
@@ -72,4 +93,19 @@ public class Utils {
             }
         });
     }
+
+    public String RemoveSpace(String input) {
+        if (input == null) {
+            return null;
+        }
+        return input.replaceAll("\\s+", "");
+    }
+
+    public String ExtractFileExtension(String filename) {
+        if (filename == null || !filename.contains(".")) {
+            return "jpg"; // default
+        }
+        return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
+    }
+
 }
