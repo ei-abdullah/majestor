@@ -10,6 +10,7 @@ import com.majestor.api.modules.document.documentimage.DocumentImageRepository;
 import com.majestor.api.modules.document.dto.DocumentImageAndExtensionDTO;
 import com.majestor.api.modules.document.dto.DocumentUploadRequestDTO;
 import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.document.dto.GetAllDocumentsFiltersDTO;
 import com.majestor.api.modules.document.like.LikeRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -127,7 +128,13 @@ public class DocumentService {
         }
     }
 
-    public List<GetAllDocumentsDTO> getAllDocuments(Long userId) {
+    public List<GetAllDocumentsDTO> getAllDocuments(
+            Long userId,
+            GetAllDocumentsFiltersDTO filters
+    ) {
+        //1. Filter by stream or
+        //2. Filter by SQL query
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
 
