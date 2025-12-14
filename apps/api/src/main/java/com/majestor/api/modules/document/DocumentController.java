@@ -2,6 +2,7 @@ package com.majestor.api.modules.document;
 
 import com.majestor.api.modules.document.dto.DocumentUploadRequestDTO;
 import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.document.dto.GetAllDocumentsFiltersDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -37,11 +38,13 @@ public class DocumentController {
                 .build();
     }
 
+    // /getAllDocuments?courseTitle="CA"&year=2019&documentType=1&sortByLikes=FALSE
     @GetMapping("/getAllDocuments/{userId}")
     public ResponseEntity<List<GetAllDocumentsDTO>> getAllDocuments(
+            @Valid @ModelAttribute GetAllDocumentsFiltersDTO getAllDocumentsFiltersDTO,
             @PathVariable("userId") @NotNull @Positive Long userId
     ) {
-        List<GetAllDocumentsDTO> response = documentService.getAllDocuments(userId);
+        List<GetAllDocumentsDTO> response = documentService.getAllDocuments(userId, getAllDocumentsFiltersDTO);
 
         return ResponseEntity
                 .ok()
