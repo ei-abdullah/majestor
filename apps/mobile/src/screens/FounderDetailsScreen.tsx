@@ -90,7 +90,7 @@ export default function FounderDetailsScreen({ founder, onBack }: FounderDetails
         </View>
 
         {/* Contact Information Section */}
-        <View style={styles.section}>
+        <View style={styles.contactCard}>
           <Text style={styles.sectionTitle}>Contact Information</Text>
 
           {founder.phoneNumber && (
@@ -111,7 +111,7 @@ export default function FounderDetailsScreen({ founder, onBack }: FounderDetails
         </View>
 
         {/* Item Photos Section */}
-        <View style={styles.section}>
+        <View style={styles.photosCard}>
           <Text style={styles.sectionTitle}>Item Photos</Text>
 
           {hasPhotos ? (
@@ -185,12 +185,12 @@ export default function FounderDetailsScreen({ founder, onBack }: FounderDetails
         </View>
 
         {/* Discovery Location Section */}
-        <View style={styles.section}>
+        <View style={styles.locationCard}>
           <Text style={styles.sectionTitle}>Discovery Location</Text>
 
           {founder.discoveryLocation && (
             <View style={styles.locationTextContainer}>
-              <Ionicons name="location-outline" size={20} color="#3B82F6" />
+              <Ionicons name="location-outline" size={20} color="#10B981" />
               <Text style={styles.locationText}>{founder.discoveryLocation}</Text>
             </View>
           )}
@@ -214,11 +214,10 @@ export default function FounderDetailsScreen({ founder, onBack }: FounderDetails
                     latitude: founder.discoveryCoordinates.latitude,
                     longitude: founder.discoveryCoordinates.longitude,
                   }}
-                  pinColor="#3B82F6"
+                  pinColor="#10B981"
                 />
               </MapView>
               <View style={styles.mapOverlay}>
-                <Ionicons name="location" size={20} color="#3B82F6" />
                 <Text style={styles.mapOverlayText}>
                   {founder.discoveryLocation || 'Discovery location'}
                 </Text>
@@ -289,12 +288,12 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
     shadowRadius: 4,
-    elevation: 2,
+    elevation: 1,
   },
   founderAvatar: {
     width: 64,
@@ -320,6 +319,39 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#6B7280',
   },
+  contactCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  photosCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  locationCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   section: {
     marginBottom: 24,
   },
@@ -332,15 +364,10 @@ const styles = StyleSheet.create({
   contactItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     padding: 14,
     borderRadius: 12,
     marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 1,
   },
   contactIconContainer: {
     width: 36,
@@ -456,18 +483,21 @@ const styles = StyleSheet.create({
   locationTextContainer: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 12,
-    paddingHorizontal: 4,
+    marginBottom: 16,
+    backgroundColor: '#F0FDF4',
+    padding: 12,
+    borderRadius: 8,
   },
   locationText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: '#166534',
     marginLeft: 8,
     flex: 1,
     lineHeight: 20,
+    fontWeight: '500',
   },
   mapContainer: {
-    height: 200,
+    height: 180,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#E5E7EB',
@@ -479,26 +509,23 @@ const styles = StyleSheet.create({
   },
   mapOverlay: {
     position: 'absolute',
-    bottom: 12,
-    left: 12,
-    right: 12,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-    padding: 12,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-    flexDirection: 'row',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   mapOverlayText: {
     fontSize: 13,
     color: '#1F2937',
     fontWeight: '500',
-    marginLeft: 8,
-    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    textAlign: 'center',
+    maxWidth: '80%',
   },
   noMapContainer: {
     alignItems: 'center',

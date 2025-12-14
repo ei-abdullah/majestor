@@ -16,6 +16,7 @@ interface HomeScreenProps {
   onNotificationPress?: () => void;
   onSearchPress?: () => void;
   onFeaturePress?: (feature: string) => void;
+  onProfilePress?: () => void;
 }
 
 export const HomeScreen: React.FC<HomeScreenProps> = ({
@@ -23,6 +24,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   onNotificationPress,
   onSearchPress,
   onFeaturePress,
+  onProfilePress,
 }) => {
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
@@ -32,9 +34,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
-            <Text style={styles.greeting}>Hey, {userName}! 👋</Text>
-            <Text style={styles.subGreeting}>FAST-NUCES, Karachi</Text>
+          <View style={styles.headerLeft}>
+            <TouchableOpacity 
+              style={styles.profileAvatar}
+              onPress={onProfilePress}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.profileAvatarText}>AS</Text>
+            </TouchableOpacity>
+            <View>
+              <Text style={styles.greeting}>Hey, {userName}! 👋</Text>
+              <Text style={styles.subGreeting}>FAST-NUCES, Karachi</Text>
+            </View>
           </View>
           <TouchableOpacity 
             style={styles.notificationButton}
@@ -98,24 +109,48 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           style={styles.trendingScroll}
         >
           <TouchableOpacity style={styles.trendingCard}>
-            <Ionicons name="bulb-outline" size={24} color="#4A90E2" />
-            <Text style={styles.trendingTitle}>Influence Prep Tips</Text>
-            <Text style={styles.trendingSubtitle}>297 Students</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.trendingCard}>
-            <Ionicons name="book-outline" size={24} color="#4A90E2" />
-            <Text style={styles.trendingTitle}>Best Way To Revise</Text>
-            <Text style={styles.trendingSubtitle}>47 Students</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.trendingCard}>
-            <View style={styles.hotBadge}>
-              <Text style={styles.hotBadgeText}>HOT</Text>
+            <View style={styles.trendingContent}>
+              <View style={styles.trendingLeft}>
+                <View style={[styles.trendingIconCircle, { backgroundColor: '#EEF2FF' }]}>
+                  <Ionicons name="bulb-outline" size={20} color="#4A90E2" />
+                </View>
+                <View style={styles.trendingText}>
+                  <Text style={styles.trendingTitle}>Midterm Prep Tips</Text>
+                  <Text style={styles.trendingSubtitle}>297 students</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
             </View>
-            <Ionicons name="people-outline" size={24} color="#4A90E2" />
-            <Text style={styles.trendingTitle}>CS Study Group</Text>
-            <Text style={styles.trendingSubtitle}>33 Students</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.trendingCard}>
+            <View style={styles.trendingContent}>
+              <View style={styles.trendingLeft}>
+                <View style={[styles.trendingIconCircle, { backgroundColor: '#FEF3C7' }]}>
+                  <Ionicons name="navigate-outline" size={20} color="#F59E0B" />
+                </View>
+                <View style={styles.trendingText}>
+                  <Text style={styles.trendingTitle}>Weekend Trip to Murree</Text>
+                  <Text style={styles.trendingSubtitle}>45 students</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.trendingCard}>
+            <View style={styles.trendingContent}>
+              <View style={styles.trendingLeft}>
+                <View style={[styles.trendingIconCircle, { backgroundColor: '#F3E8FF' }]}>
+                  <Ionicons name="people-outline" size={20} color="#A855F7" />
+                </View>
+                <View style={styles.trendingText}>
+                  <Text style={styles.trendingTitle}>CS Study Group</Text>
+                  <Text style={styles.trendingSubtitle}>85 students</Text>
+                </View>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="#D1D5DB" />
+            </View>
           </TouchableOpacity>
         </ScrollView>
 
@@ -227,6 +262,24 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 16,
   },
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  profileAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#4A90E2',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  profileAvatarText: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
   greeting: {
     fontSize: 24,
     fontWeight: '700',
@@ -246,10 +299,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   notificationBadge: {
     position: 'absolute',
@@ -270,10 +323,10 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   searchPlaceholder: {
     marginLeft: 12,
@@ -286,10 +339,10 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 16,
     shadowColor: '#4A90E2',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 12,
-    elevation: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 2,
   },
   analyticsHeader: {
     marginBottom: 16,
@@ -348,61 +401,69 @@ const styles = StyleSheet.create({
   },
   trendingScroll: {
     paddingLeft: 20,
-    marginBottom: 24,
+    paddingRight: 20,
+    marginBottom: 27,
   },
   trendingCard: {
-    width: 160,
+    width: 300,
+    height: 68,
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
     marginRight: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
-  hotBadge: {
-    position: 'absolute',
-    top: 12,
-    right: 12,
-    backgroundColor: '#EF4444',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
+  trendingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  hotBadgeText: {
-    fontSize: 10,
-    fontWeight: '700',
-    color: '#FFFFFF',
+  trendingLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    gap: 12,
+  },
+  trendingIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  trendingText: {
+    flex: 1,
   },
   trendingTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     color: '#1F2937',
-    marginTop: 12,
-    marginBottom: 6,
+    marginBottom: 4,
   },
   trendingSubtitle: {
-    fontSize: 13,
+    fontSize: 12,
     color: '#6B7280',
   },
   featuresGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 14,
+    paddingHorizontal: 20,
+    gap: 12,
   },
   featureCard: {
-    width: '48%',
+    width: '47%',
     backgroundColor: '#FFFFFF',
     borderRadius: 16,
     padding: 16,
-    margin: 6,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   featureIcon: {
     width: 56,

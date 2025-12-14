@@ -13,11 +13,13 @@ import {
   TextInput,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import * as ImagePicker from 'expo-image-picker';
 import { useLostFoundStore } from '../stores/lostFound';
+import { useAuthContext } from '../contexts/AuthContext';
 
 interface NewLostItemScreenProps {
   onBack?: () => void;
@@ -37,15 +39,15 @@ interface Location {
 
 export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLocation: initialSelectedLocation }: NewLostItemScreenProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuthContext();
   const { addItem } = useLostFoundStore();
   const [itemTitle, setItemTitle] = useState('');
   const [description, setDescription] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [locationDescription, setLocationDescription] = useState('');
-  const [status, setStatus] = useState<'LOST' | 'FOUND'>('LOST');
-  const [showStatusDropdown, setShowStatusDropdown] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(initialSelectedLocation || null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Update selectedLocation when prop changes
   React.useEffect(() => {
@@ -77,7 +79,7 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
       });
 
       if (!result.canceled && result.assets[0]) {
-        setSelectedImage(result.assets[0].uri);
+        setSelectedImages(prev => [...prev, result.assets[0].uri]);
         console.log('Image selected:', result.assets[0].uri);
       }
     } catch (error) {
@@ -108,7 +110,7 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
       });
 
       if (!result.canceled && result.assets[0]) {
-        setSelectedImage(result.assets[0].uri);
+        setSelectedImages(prev => [...prev, result.assets[0].uri]);
         console.log('Photo taken:', result.assets[0].uri);
       }
     } catch (error) {
@@ -155,7 +157,13 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // Validate user is logged in
+    if (!user) {
+      Alert.alert('Not Logged In', 'Please login to report a lost item.');
+      return;
+    }
+
     // Validate required fields
     if (!itemTitle.trim()) {
       Alert.alert('Missing Information', 'Please enter an item title.');
@@ -169,41 +177,67 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
       Alert.alert('Missing Information', 'Please enter your phone number.');
       return;
     }
+    
+    // Validate phone format (03XXXXXXXXX)
+    const phoneRegex = /^03[0-9]{9}$/;
+    if (!phoneRegex.test(phoneNumber.trim())) {
+      Alert.alert('Invalid Phone', 'Phone number must be in format: 03XXXXXXXXX (11 digits)');
+      return;
+    }
+
     if (!locationDescription.trim() && !selectedLocation) {
       Alert.alert('Missing Information', 'Please enter a location or select one from the map.');
       return;
     }
 
-    // Create the item
-    addItem({
-      title: itemTitle.trim(),
-      description: description.trim(),
-      location: locationDescription.trim() || selectedLocation?.address || 'Location selected on map',
-      locationCoordinates: selectedLocation ? {
-        latitude: selectedLocation.latitude,
-        longitude: selectedLocation.longitude,
-      } : undefined,
-      phoneNumber: phoneNumber.trim(),
-      email: 'user@nu.edu.pk', // TODO: Get from auth context
-      status,
-      imageUri: selectedImage || undefined,
-    });
+    if (selectedImages.length === 0) {
+      Alert.alert('Missing Images', 'Please add at least one photo of the lost item.');
+      return;
+    }
 
-    // Show success message
-    Alert.alert(
-      'Success',
-      `Your ${status.toLowerCase()} item request has been submitted successfully!`,
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            // Clear form
-            setItemTitle('');
+    setIsSubmitting(true);
+
+    try {
+      // Convert image URIs to File objects for upload
+      const imageFiles = await Promise.all(
+        selectedImages.map(async (uri) => {
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          const filename = uri.split('/').pop() || 'image.jpg';
+          return new File([blob], filename, { type: 'image/jpeg' });
+        })
+      );
+
+      // Create the item via API
+      await addItem({
+        title: itemTitle.trim(),
+        description: description.trim(),
+        location: locationDescription.trim() || selectedLocation?.address || 'Location selected on map',
+        locationCoordinates: selectedLocation ? {
+          latitude: selectedLocation.latitude,
+          longitude: selectedLocation.longitude,
+        } : undefined,
+        phoneNumber: phoneNumber.trim(),
+        email: user.email,
+        status: 'LOST',
+        userId: user.id,
+        images: imageFiles,
+      });
+
+      // Show success message
+      Alert.alert(
+        'Success',
+        'Your lost item has been reported successfully!',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              // Clear form
+              setItemTitle('');
             setDescription('');
             setPhoneNumber('');
             setLocationDescription('');
-            setStatus('LOST');
-            setSelectedImage(null);
+            setSelectedImages([]);
             setSelectedLocation(null);
 
             // Navigate back to Lost & Found
@@ -213,7 +247,16 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
           },
         },
       ]
-    );
+      );
+    } catch (error: any) {
+      console.error('Failed to submit lost item:', error);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || error.message || 'Failed to submit lost item. Please try again.'
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -234,29 +277,30 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
         contentContainerStyle={styles.formContainer}
         showsVerticalScrollIndicator={false}
       >
-        {/* Upload Image */}
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>Upload Image</Text>
-          <TouchableOpacity style={styles.uploadBox} onPress={showImageOptions}>
-            {selectedImage ? (
-              <>
-                <Image source={{ uri: selectedImage }} style={styles.uploadedImage} />
+        {/* Form Card */}
+        <View style={styles.formCard}>
+          {/* Upload Images */}
+          <View style={styles.section}>
+          <Text style={styles.sectionLabel}>Upload Images <Text style={styles.required}>*</Text></Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.imagesScroll}>
+            {selectedImages.map((uri, index) => (
+              <View key={index} style={styles.imageContainer}>
+                <Image source={{ uri }} style={styles.uploadedImage} />
                 <TouchableOpacity 
                   style={styles.removeImageButton}
-                  onPress={() => setSelectedImage(null)}
+                  onPress={() => setSelectedImages(prev => prev.filter((_, i) => i !== index))}
                 >
                   <Ionicons name="close-circle" size={24} color="#FF6B6B" />
                 </TouchableOpacity>
-              </>
-            ) : (
-              <>
-                <View style={styles.uploadIconContainer}>
-                  <Ionicons name="camera-outline" size={40} color="#4A90E2" />
-                </View>
-                <Text style={styles.uploadText}>Tap to add photo</Text>
-              </>
-            )}
-          </TouchableOpacity>
+              </View>
+            ))}
+            <TouchableOpacity style={styles.addImageBox} onPress={showImageOptions}>
+              <View style={styles.uploadIconContainer}>
+                <Ionicons name="camera-outline" size={32} color="#4A90E2" />
+              </View>
+              <Text style={styles.uploadText}>Add Photo</Text>
+            </TouchableOpacity>
+          </ScrollView>
         </View>
 
         {/* Item Title */}
@@ -297,7 +341,7 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
           </Text>
           <TextInput
             style={styles.input}
-            placeholder="+92 300 1234567"
+            placeholder="03001234567 (11 digits)"
             placeholderTextColor="#C4C4C4"
             value={phoneNumber}
             onChangeText={setPhoneNumber}
@@ -336,66 +380,27 @@ export default function NewLostItemScreen({ onBack, onOpenMapPicker, selectedLoc
           </TouchableOpacity>
         </View>
 
-        {/* Status Dropdown */}
-        <View style={styles.section}>
-          <Text style={styles.sectionLabel}>
-            Status <Text style={styles.required}>*</Text>
-          </Text>
-          <TouchableOpacity
-            style={styles.dropdown}
-            onPress={() => setShowStatusDropdown(!showStatusDropdown)}
-          >
-            <Text style={styles.dropdownText}>{status}</Text>
-            <Ionicons
-              name={showStatusDropdown ? 'chevron-up' : 'chevron-down'}
-              size={20}
-              color="#666666"
-            />
-          </TouchableOpacity>
-
-          {/* Dropdown Menu */}
-          {showStatusDropdown && (
-            <View style={styles.dropdownMenu}>
-              <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setStatus('LOST');
-                  setShowStatusDropdown(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    status === 'LOST' && styles.dropdownItemTextActive,
-                  ]}
-                >
-                  LOST
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setStatus('FOUND');
-                  setShowStatusDropdown(false);
-                }}
-              >
-                <Text
-                  style={[
-                    styles.dropdownItemText,
-                    status === 'FOUND' && styles.dropdownItemTextActive,
-                  ]}
-                >
-                  FOUND
-                </Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-
         {/* Submit Button */}
-        <TouchableOpacity style={styles.submitButton} activeOpacity={0.8} onPress={handleSubmit}>
-          <Text style={styles.submitButtonText}>Submit Request</Text>
+        <TouchableOpacity 
+          style={[styles.submitButton, isSubmitting && styles.submitButtonDisabled]} 
+          activeOpacity={0.8} 
+          onPress={handleSubmit}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.submitButtonText}>Submit Request</Text>
+          )}
         </TouchableOpacity>
+
+        {/* Tip Message */}
+        <View style={styles.tipContainer}>
+          <Text style={styles.tipText}>
+            <Text style={styles.tipBold}>Tip:</Text> Include as many details as possible to help others identify your item. Your contact information will only be visible to verified users.
+          </Text>
+        </View>
+        </View>
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
@@ -441,6 +446,16 @@ const styles = StyleSheet.create({
   formContainer: {
     padding: 16,
   },
+  formCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   section: {
     marginBottom: 24,
   },
@@ -453,15 +468,32 @@ const styles = StyleSheet.create({
   required: {
     color: '#FF6B6B',
   },
+  imagesScroll: {
+    marginBottom: 8,
+  },
+  imageContainer: {
+    marginRight: 12,
+    position: 'relative',
+  },
+  addImageBox: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    marginRight: 12,
+  },
   uploadBox: {
-    backgroundColor: '#F0F4FF',
+    backgroundColor: '#F9FAFB',
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: '#E0E8FF',
-    borderStyle: 'dashed',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   uploadIconContainer: {
     width: 72,
@@ -477,8 +509,8 @@ const styles = StyleSheet.create({
     color: '#666666',
   },
   uploadedImage: {
-    width: '100%',
-    height: 200,
+    width: 120,
+    height: 120,
     borderRadius: 12,
     resizeMode: 'cover',
   },
@@ -495,14 +527,14 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
     borderRadius: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     fontSize: 14,
     color: '#1A1A1A',
     borderWidth: 1,
-    borderColor: '#E5E5E5',
+    borderColor: '#E5E7EB',
   },
   textArea: {
     height: 100,
@@ -514,6 +546,8 @@ const styles = StyleSheet.create({
     padding: 24,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
   },
   mapIconContainer: {
     width: 64,
@@ -534,49 +568,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999999',
   },
-  dropdown: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: '#1A1A1A',
-    fontWeight: '500',
-  },
-  dropdownMenu: {
-    marginTop: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 12,
-    elevation: 5,
-    borderWidth: 1,
-    borderColor: '#E5E5E5',
-    overflow: 'hidden',
-  },
-  dropdownItem: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
-  },
-  dropdownItemText: {
-    fontSize: 14,
-    color: '#666666',
-  },
-  dropdownItemTextActive: {
-    color: '#4A90E2',
-    fontWeight: '600',
-  },
   submitButton: {
     backgroundColor: '#4A90E2',
     borderRadius: 12,
@@ -585,15 +576,33 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 8,
     shadowColor: '#4A90E2',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 2,
   },
   submitButtonText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+  submitButtonDisabled: {
+    backgroundColor: '#9CA3AF',
+    opacity: 0.6,
+  },
+  tipContainer: {
+    backgroundColor: '#EFF6FF',
+    borderRadius: 8,
+    padding: 12,
+    marginTop: 16,
+  },
+  tipText: {
+    fontSize: 12,
+    color: '#1E40AF',
+    lineHeight: 18,
+  },
+  tipBold: {
+    fontWeight: '700',
   },
   bottomSpacer: {
     height: 40,

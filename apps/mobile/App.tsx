@@ -4,6 +4,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './src/stores/queryClient';
 import { LostFoundProvider } from './src/stores/lostFound';
+import { AuthProvider, useAuthContext } from './src/contexts/AuthContext';
 import { Alert } from 'react-native';
 
 // Hooks
@@ -18,11 +19,13 @@ import NewLostItemScreen from './src/screens/NewLostItemScreen';
 import MapPickerScreen from './src/screens/MapPickerScreen';
 import LostItemDetailsScreen from './src/screens/LostItemDetailsScreen';
 import FounderDetailsScreen from './src/screens/FounderDetailsScreen';
+import UserSettingsScreen from './src/screens/UserSettingsScreen';
 import { LostFoundItem } from './src/stores/lostFound';
 
-type AppScreen = 'login' | 'signup' | 'home' | 'lostAndFound' | 'newLostItem' | 'mapPicker' | 'lostItemDetails' | 'founderDetails';
+type AppScreen = 'login' | 'signup' | 'home' | 'lostAndFound' | 'newLostItem' | 'mapPicker' | 'lostItemDetails' | 'founderDetails' | 'userSettings';
 
 function AppContent() {
+  const { user } = useAuthContext();
   const [currentScreen, setCurrentScreen] = useState<AppScreen>('login');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState<{
@@ -137,7 +140,34 @@ function AppContent() {
     setCurrentScreen('lostItemDetails');
   };
 
+  const handleProfilePress = () => {
+    setCurrentScreen('userSettings');
+  };
+
+  const handleBackFromSettings = () => {
+    setCurrentScreen('home');
+  };
+
   const renderScreen = () => {
+    if (currentScreen === 'userSettings') {
+      return (
+        <UserSettingsScreen
+          onBack={handleBackFromSettings}
+          user={user ? {
+            initials: user.username?.substring(0, 2).toUpperCase() || 'U',
+            fullName: user.username || 'User',
+            studentId: user.email?.split('@')[0] || 'N/A',
+            universityName: 'FAST-NUCES',
+            facultyName: 'Computer Science',
+            universityEmail: user.email || 'N/A',
+            personalEmail: user.email || 'N/A',
+            phoneNumber: user.phone || 'N/A',
+            roles: ['Student'],
+          } : undefined}
+        />
+      );
+    }
+
     if (currentScreen === 'founderDetails' && selectedFounder) {
       return (
         <FounderDetailsScreen
@@ -159,7 +189,7 @@ function AppContent() {
     if (currentScreen === 'lostItemDetails' && selectedItem) {
       return (
         <LostItemDetailsScreen
-          item={selectedItem}
+          itemId={selectedItem.id}
           onBack={handleBackFromDetails}
           onFounderPress={handleViewFounderDetails}
         />
@@ -197,7 +227,7 @@ function AppContent() {
     }
 
     if (isAuthenticated || currentScreen === 'home') {
-      return <HomeScreenWithNav onFeaturePress={handleFeaturePress} />;
+      return <HomeScreenWithNav onFeaturePress={handleFeaturePress} onProfilePress={handleProfilePress} />;
     }
 
     if (currentScreen === 'signup') {
@@ -228,9 +258,11 @@ function AppContent() {
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <LostFoundProvider>
-        <AppContent />
-      </LostFoundProvider>
+      <AuthProvider>
+        <LostFoundProvider>
+          <AppContent />
+        </LostFoundProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }

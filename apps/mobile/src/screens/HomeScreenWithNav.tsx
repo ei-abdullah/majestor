@@ -2,14 +2,17 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { HomeScreen } from './HomeScreen';
 import { BottomNavBar } from '../components/BottomNavBar';
+import { useAuthContext } from '../contexts/AuthContext';
 
 type TabType = 'home' | 'search' | 'add' | 'calendar' | 'profile';
 
 interface HomeScreenWithNavProps {
   onFeaturePress?: (feature: string) => void;
+  onProfilePress?: () => void;
 }
 
-export const HomeScreenWithNav: React.FC<HomeScreenWithNavProps> = ({ onFeaturePress: onFeaturePressExternal }) => {
+export const HomeScreenWithNav: React.FC<HomeScreenWithNavProps> = ({ onFeaturePress: onFeaturePressExternal, onProfilePress }) => {
+  const { user } = useAuthContext();
   const [activeTab, setActiveTab] = useState<TabType>('home');
 
   const handleTabPress = (tab: TabType) => {
@@ -41,10 +44,11 @@ export const HomeScreenWithNav: React.FC<HomeScreenWithNavProps> = ({ onFeatureP
   return (
     <View style={styles.container}>
       <HomeScreen
-        userName="Ahmed"
+        userName={user?.username || 'User'}
         onNotificationPress={handleNotificationPress}
         onSearchPress={handleSearchPress}
         onFeaturePress={handleFeaturePress}
+        onProfilePress={onProfilePress}
       />
       <BottomNavBar
         activeTab={activeTab}

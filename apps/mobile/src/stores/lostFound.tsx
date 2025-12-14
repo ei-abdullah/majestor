@@ -1,9 +1,10 @@
 /**
  * Lost and Found Items Store
- * Simple state management for lost and found items
+ * State management for lost and found items with backend integration
  */
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { lostItemService, LostItemBasic, LostItemDetailed } from '../services/lostfound.service';
 
 export interface LostFoundItem {
   id: string;
@@ -16,7 +17,7 @@ export interface LostFoundItem {
   };
   phoneNumber: string;
   email: string;
-  status: 'LOST' | 'FOUND';
+  status: 'LOST' | 'FOUND' | 'RECLAIMED';
   imageUri?: string;
   createdAt: Date;
   userId?: string;
@@ -24,7 +25,10 @@ export interface LostFoundItem {
 
 interface LostFoundContextType {
   items: LostFoundItem[];
-  addItem: (item: Omit<LostFoundItem, 'id' | 'createdAt'>) => void;
+  isLoading: boolean;
+  error: string | null;
+  refreshItems: () => Promise<void>;
+  addItem: (item: Omit<LostFoundItem, 'id' | 'createdAt' | 'userId'> & { userId: number; images?: File[] }) => Promise<void>;
   removeItem: (id: string) => void;
   getUserItems: (userId?: string) => LostFoundItem[];
 }
@@ -85,18 +89,70 @@ const INITIAL_ITEMS: LostFoundItem[] = [
 
 const LostFoundContext = createContext<LostFoundContextType | undefined>(undefined);
 
+// Convert backend LostItemBasic to frontend LostFoundItem
+const convertToLostFoundItem = (item: LostItemBasic): LostFoundItem => ({
+  id: item.id.toString(),
+  title: item.title,
+  description: '', // Not available in list view
+  location: '', // Not available in list view
+  locationCoordinates: undefined,
+  phoneNumber: '', // Not available in list view
+  email: '', // Not available in list view
+  status: item.status,
+  imageUri: item.imageUri,
+  createdAt: new Date(item.createdAt),
+  userId: item.ownerId.toString(),
+});
+
 export function LostFoundProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<LostFoundItem[]>(INITIAL_ITEMS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const addItem = (item: Omit<LostFoundItem, 'id' | 'createdAt'>) => {
-    const newItem: LostFoundItem = {
-      ...item,
-      id: Date.now().toString(),
-      createdAt: new Date(),
-    };
+  // Don't fetch on mount - wait for user to be logged in
+  // useEffect(() => {
+  //   refreshItems();
+  // }, []);
 
-    setItems((prevItems) => [newItem, ...prevItems]);
-    console.log('Item added:', newItem);
+  const refreshItems = async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      const response = await lostItemService.getAllLostItems(0, 100);
+      const convertedItems = response.content.map(convertToLostFoundItem);
+      setItems(convertedItems);
+      console.log('✅ Loaded', convertedItems.length, 'items from backend');
+    } catch (err: any) {
+      console.error('❌ Failed to fetch lost items:', err);
+      setError(err.message || 'Failed to load items');
+      // Keep using mock data on error - don't crash the app
+      console.log('Using mock data as fallback');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const addItem = async (item: Omit<LostFoundItem, 'id' | 'createdAt' | 'userId'> & { userId: number; images?: File[] }) => {
+    try {
+      await lostItemService.createLostItem(item.userId, {
+        title: item.title,
+        description: item.description,
+        lastLocationDescription: item.location,
+        phone: item.phoneNumber,
+        lastLocation: item.locationCoordinates ? {
+          lat: item.locationCoordinates.latitude,
+          lng: item.locationCoordinates.longitude,
+        } : undefined,
+        lostItemImages: item.images || [],
+      });
+      
+      // Refresh items to get the newly created item
+      await refreshItems();
+      console.log('✅ Item created successfully');
+    } catch (err: any) {
+      console.error('❌ Failed to create item:', err);
+      throw err;
+    }
   };
 
   const removeItem = (id: string) => {
@@ -109,7 +165,7 @@ export function LostFoundProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <LostFoundContext.Provider value={{ items, addItem, removeItem, getUserItems }}>
+    <LostFoundContext.Provider value={{ items, isLoading, error, refreshItems, addItem, removeItem, getUserItems }}>
       {children}
     </LostFoundContext.Provider>
   );

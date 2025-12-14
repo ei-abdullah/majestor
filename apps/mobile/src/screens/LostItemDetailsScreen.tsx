@@ -5,7 +5,7 @@
  * 2. Founders - List of people who reported finding this item
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -14,57 +14,49 @@ import {
   ScrollView,
   Image,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import MapView, { Marker } from 'react-native-maps';
-
-interface Founder {
-  id: string;
-  name: string;
-  email: string;
-  reportedAt: Date;
-}
+import { lostItemService, founderService, LostItemDetailed, Founder } from '../services/lostfound.service';
+import { useAuthContext } from '../contexts/AuthContext';
 
 interface LostItemDetailsScreenProps {
-  item: {
-    id: string;
-    title: string;
-    description: string;
-    location: string;
-    locationCoordinates?: {
-      latitude: number;
-      longitude: number;
-    };
-    phoneNumber: string;
-    email: string;
-    status: 'LOST' | 'FOUND';
-    imageUri?: string;
-    createdAt: Date;
-  };
+  itemId: string | number;
   onBack?: () => void;
   onFounderPress?: (founder: Founder) => void;
 }
 
-export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: LostItemDetailsScreenProps) {
+export default function LostItemDetailsScreen({ itemId, onBack, onFounderPress }: LostItemDetailsScreenProps) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuthContext();
   const [activeTab, setActiveTab] = useState<'lostItem' | 'founders'>('lostItem');
+  const [item, setItem] = useState<LostItemDetailed | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isMarkingFound, setIsMarkingFound] = useState(false);
 
-  // Mock founders data - in real app, this would come from API
-  const founders: Founder[] = [
-    {
-      id: '1',
-      name: 'Ali Hassan',
-      email: 'k21-5671@nu.edu.pk',
-      reportedAt: new Date(Date.now() - 1 * 60 * 60 * 1000), // 1 hour ago
-    },
-    {
-      id: '2',
-      name: 'Sara Ahmed',
-      email: 'k21-9012@nu.edu.pk',
-      reportedAt: new Date(Date.now() - 3 * 60 * 60 * 1000), // 3 hours ago
-    },
-  ];
+  // Fetch item details on mount
+  useEffect(() => {
+    loadItemDetails();
+  }, [itemId]);
+
+  const loadItemDetails = async () => {
+    try {
+      setIsLoading(true);
+      const data = await lostItemService.getLostItemWithFounders(Number(itemId));
+      setItem(data);
+      console.log('✅ Loaded item details with', data.itemFounders.length, 'founders');
+    } catch (error: any) {
+      console.error('❌ Failed to load item details:', error);
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Failed to load item details'
+      );
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const getTimeAgo = (date: Date) => {
     const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
@@ -75,7 +67,15 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
     return `${Math.floor(seconds / 86400)} ${Math.floor(seconds / 86400) === 1 ? 'day' : 'days'} ago`;
   };
 
-  const handleMarkFound = () => {
+  const handleMarkFound = async () => {
+    if (!user || !item) return;
+    
+    // Only owner can mark as found
+    if (item.ownerId !== user.id) {
+      Alert.alert('Not Authorized', 'Only the item owner can mark it as found.');
+      return;
+    }
+
     Alert.alert(
       'Mark as Found',
       'Have you recovered this item?',
@@ -83,10 +83,22 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
         { text: 'Cancel', style: 'cancel' },
         {
           text: 'Yes, Mark Found',
-          onPress: () => {
-            // TODO: Call API to mark item as found
-            Alert.alert('Success', 'Item marked as found!');
-            console.log('Mark item as found:', item.id);
+          onPress: async () => {
+            try {
+              setIsMarkingFound(true);
+              await lostItemService.markItemAsFound(Number(itemId));
+              Alert.alert('Success', 'Item marked as found!');
+              // Reload details to get updated status
+              await loadItemDetails();
+            } catch (error: any) {
+              console.error('❌ Failed to mark item as found:', error);
+              Alert.alert(
+                'Error',
+                error.response?.data?.message || 'Failed to mark item as found'
+              );
+            } finally {
+              setIsMarkingFound(false);
+            }
           },
         },
       ]
@@ -111,6 +123,21 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
     );
   };
 
+  const handleOpenMap = () => {
+    if (item?.lastLocation) {
+      const { lat, lng } = item.lastLocation;
+      const url = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+      Alert.alert(
+        'Open in Maps',
+        'View this location in Google Maps?',
+        [
+          { text: 'Cancel', style: 'cancel' },
+          { text: 'Open', onPress: () => console.log('Open map:', url) },
+        ]
+      );
+    }
+  };
+
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       {/* Header */}
@@ -124,8 +151,23 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
         </TouchableOpacity>
       </View>
 
-      {/* Tab Switcher */}
-      <View style={styles.tabContainer}>
+      {isLoading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#4A90E2" />
+          <Text style={styles.loadingText}>Loading details...</Text>
+        </View>
+      ) : !item ? (
+        <View style={styles.errorContainer}>
+          <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
+          <Text style={styles.errorText}>Failed to load item details</Text>
+          <TouchableOpacity style={styles.retryButton} onPress={loadItemDetails}>
+            <Text style={styles.retryButtonText}>Retry</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <>
+          {/* Tab Switcher */}
+          <View style={styles.tabContainer}>
         <TouchableOpacity
           style={[styles.tab, activeTab === 'lostItem' && styles.activeTab]}
           onPress={() => setActiveTab('lostItem')}
@@ -155,88 +197,103 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
         {activeTab === 'lostItem' ? (
           // Lost Item Tab
           <View style={styles.lostItemContent}>
-            {/* Item Title and Status */}
-            <View style={styles.titleSection}>
-              <Text style={styles.itemTitle}>{item.title}</Text>
-              <View style={[styles.statusBadge, item.status === 'LOST' ? styles.lostBadge : styles.foundBadge]}>
-                <Text style={styles.statusText}>{item.status}</Text>
+            {/* First Card - Item Details */}
+            <View style={styles.detailsCard}>
+              {/* Item Title and Status */}
+              <View style={styles.titleSection}>
+                <Text style={styles.itemTitle}>{item.title}</Text>
+                <View style={[styles.statusBadge, item.status === 'LOST' ? styles.lostBadge : styles.foundBadge]}>
+                  <Text style={styles.statusText}>{item.status}</Text>
+                </View>
               </View>
-            </View>
 
-            {/* Posted Time */}
-            <View style={styles.timeRow}>
-              <Ionicons name="time-outline" size={16} color="#6B7280" />
-              <Text style={styles.timeText}>Posted {getTimeAgo(item.createdAt)}</Text>
-            </View>
+              {/* Posted Time */}
+              <View style={styles.timeRow}>
+                <Ionicons name="time-outline" size={16} color="#6B7280" />
+                <Text style={styles.timeText}>Posted {getTimeAgo(item.createdAt)}</Text>
+              </View>
 
-            {/* Item Image */}
-            {item.imageUri && (
+              {/* Description Section */}
               <View style={styles.section}>
-                <Image source={{ uri: item.imageUri }} style={styles.itemImage} />
+                <Text style={styles.sectionTitle}>Description</Text>
+                <Text style={styles.descriptionText}>{item.description}</Text>
               </View>
-            )}
 
-            {/* Description Section */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Description</Text>
-              <Text style={styles.descriptionText}>{item.description}</Text>
+              {/* Contact Information */}
+              <View style={styles.sectionLast}>
+                <Text style={styles.sectionTitle}>Contact Information</Text>
+                
+                <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
+                  <View style={styles.contactIconContainer}>
+                    <Ionicons name="call-outline" size={20} color="#3B82F6" />
+                  </View>
+                  <Text style={styles.contactText}>{item.phone}</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
+                  <View style={styles.contactIconContainer}>
+                    <Ionicons name="mail-outline" size={20} color="#3B82F6" />
+                  </View>
+                  <Text style={styles.contactText}>{item.ownerEmail}</Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
-            {/* Contact Information */}
-            <View style={styles.section}>
-              <Text style={styles.sectionTitle}>Contact Information</Text>
-              
-              <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
-                <View style={styles.contactIconContainer}>
-                  <Ionicons name="call-outline" size={20} color="#3B82F6" />
-                </View>
-                <Text style={styles.contactText}>{item.phoneNumber}</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity style={styles.contactItem} activeOpacity={0.7}>
-                <View style={styles.contactIconContainer}>
-                  <Ionicons name="mail-outline" size={20} color="#3B82F6" />
-                </View>
-                <Text style={styles.contactText}>{item.email}</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Last Known Location */}
-            <View style={styles.section}>
+            {/* Second Card - Location */}
+            <View style={styles.locationCard}>
               <Text style={styles.sectionTitle}>Last Known Location</Text>
               
               <View style={styles.locationTextContainer}>
-                <Ionicons name="location-outline" size={20} color="#3B82F6" />
+                <Ionicons name="location-outline" size={20} color="#10B981" />
                 <Text style={styles.locationText}>{item.location}</Text>
               </View>
 
               {/* Map */}
-              {item.locationCoordinates && (
-                <View style={styles.mapContainer}>
-                  <MapView
-                    style={styles.map}
-                    initialRegion={{
-                      latitude: item.locationCoordinates.latitude,
-                      longitude: item.locationCoordinates.longitude,
-                      latitudeDelta: 0.005,
-                      longitudeDelta: 0.005,
-                    }}
-                    scrollEnabled={false}
-                    zoomEnabled={false}
-                  >
-                    <Marker
-                      coordinate={{
-                        latitude: item.locationCoordinates.latitude,
-                        longitude: item.locationCoordinates.longitude,
+              <View style={styles.mapContainer}>
+                {item.lastLocation ? (
+                  <>
+                    <MapView
+                      style={styles.map}
+                      initialRegion={{
+                        latitude: item.lastLocation.lat,
+                        longitude: item.lastLocation.lng,
+                        latitudeDelta: 0.005,
+                        longitudeDelta: 0.005,
                       }}
-                      pinColor="#3B82F6"
-                    />
-                  </MapView>
-                  <View style={styles.mapOverlay}>
-                    <Text style={styles.mapOverlayText}>{item.location}</Text>
-                  </View>
-                </View>
-              )}
+                      scrollEnabled={false}
+                      zoomEnabled={false}
+                      pitchEnabled={false}
+                      rotateEnabled={false}
+                    >
+                      <Marker
+                        coordinate={{
+                          latitude: item.lastLocation.lat,
+                          longitude: item.lastLocation.lng,
+                        }}
+                        pinColor="#10B981"
+                      />
+                    </MapView>
+                    <TouchableOpacity 
+                      style={styles.mapTouchOverlay}
+                      activeOpacity={0.9}
+                      onPress={handleOpenMap}
+                    >
+                      <View style={styles.mapTextOverlay}>
+                        <Text style={styles.mapLocationText}>{item.lastLocationDescription}</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <TouchableOpacity 
+                    style={styles.mapPlaceholder}
+                    activeOpacity={0.9}
+                    onPress={handleOpenMap}
+                  >
+                    <Ionicons name="location" size={48} color="#10B981" />
+                    <Text style={styles.mapPlaceholderText}>{item.lastLocationDescription}</Text>
+                  </TouchableOpacity>
+                )}
+              </View>
             </View>
 
             {/* Action Buttons */}
@@ -245,15 +302,15 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
                 <Text style={styles.primaryButtonText}>Mark Found</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.secondaryButton} activeOpacity={0.8} onPress={handleReportIt}>
-                <Text style={styles.secondaryButtonText}>Report It</Text>
+                <Text style={styles.secondaryButtonText}>Found It</Text>
               </TouchableOpacity>
             </View>
           </View>
         ) : (
           // Founders Tab
           <View style={styles.foundersContent}>
-            {founders.length > 0 ? (
-              founders.map((founder) => (
+            {item.itemFounders.length > 0 ? (
+              item.itemFounders.map((founder) => (
                 <TouchableOpacity
                   key={founder.id}
                   style={styles.founderCard}
@@ -262,18 +319,22 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
                 >
                   <View style={styles.founderAvatar}>
                     <Text style={styles.founderAvatarText}>
-                      {founder.name.split(' ').map(n => n[0]).join('')}
+                      {founder.username.substring(0, 2).toUpperCase()}
                     </Text>
                   </View>
                   <View style={styles.founderInfo}>
-                    <Text style={styles.founderName}>{founder.name}</Text>
+                    <Text style={styles.founderName}>{founder.username}</Text>
                     <View style={styles.founderEmailRow}>
                       <Ionicons name="mail-outline" size={14} color="#6B7280" />
-                      <Text style={styles.founderEmail}>{founder.email}</Text>
+                      <Text style={styles.founderEmail}>{founder.founderEmail}</Text>
+                    </View>
+                    <View style={styles.founderTimeRow}>
+                      <Ionicons name="call-outline" size={14} color="#6B7280" />
+                      <Text style={styles.founderTime}>{founder.phone}</Text>
                     </View>
                     <View style={styles.founderTimeRow}>
                       <Ionicons name="time-outline" size={14} color="#6B7280" />
-                      <Text style={styles.founderTime}>Reported {getTimeAgo(founder.reportedAt)}</Text>
+                      <Text style={styles.founderTime}>Reported {getTimeAgo(new Date(founder.createdAt))}</Text>
                     </View>
                   </View>
                   <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
@@ -293,6 +354,8 @@ export default function LostItemDetailsScreen({ item, onBack, onFounderPress }: 
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
+      </>
+      )}
     </View>
   );
 }
@@ -365,6 +428,28 @@ const styles = StyleSheet.create({
   lostItemContent: {
     padding: 16,
   },
+  detailsCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
+  locationCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
+  },
   titleSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -407,6 +492,9 @@ const styles = StyleSheet.create({
   section: {
     marginBottom: 24,
   },
+  sectionLast: {
+    marginBottom: 0,
+  },
   itemImage: {
     width: '100%',
     height: 220,
@@ -448,17 +536,21 @@ const styles = StyleSheet.create({
   },
   locationTextContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
+    alignItems: 'flex-start',
+    marginBottom: 16,
+    backgroundColor: '#F0FDF4',
+    padding: 12,
+    borderRadius: 8,
   },
   locationText: {
     fontSize: 14,
-    color: '#4B5563',
+    color: '#166534',
     marginLeft: 8,
     flex: 1,
+    fontWeight: '500',
   },
   mapContainer: {
-    height: 200,
+    height: 180,
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: '#E5E7EB',
@@ -466,6 +558,41 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  mapTouchOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mapTextOverlay: {
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 8,
+    maxWidth: '80%',
+  },
+  mapLocationText: {
+    fontSize: 13,
+    color: '#1F2937',
+    fontWeight: '500',
+    textAlign: 'center',
+  },
+  mapPlaceholder: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F0FDF4',
+    height: 180,
+  },
+  mapPlaceholderText: {
+    fontSize: 14,
+    color: '#166534',
+    marginTop: 8,
+    fontWeight: '500',
   },
   mapOverlay: {
     position: 'absolute',
@@ -531,8 +658,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
     elevation: 1,
   },
   founderAvatar: {
@@ -594,6 +721,41 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     maxWidth: 280,
+  },
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#6B7280',
+  },
+  errorContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+  },
+  errorText: {
+    marginTop: 16,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#EF4444',
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: '#4A90E2',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '600',
   },
   bottomSpacer: {
     height: 24,

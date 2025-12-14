@@ -264,7 +264,7 @@ export default function LostAndFoundScreen({ onBack, onCreateNew, onItemPress }:
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F9FAFB',
   },
   header: {
     flexDirection: 'row',
@@ -329,10 +329,10 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 12,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.03,
+    shadowRadius: 4,
+    elevation: 1,
   },
   imageContainer: {
     marginRight: 12,

@@ -24,32 +24,75 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
   onSignUp,
   onLogin,
 }) => {
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
+  const [selectedUniversity, setSelectedUniversity] = useState<number | null>(null);
+  const [selectedFaculty, setSelectedFaculty] = useState<number | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showUniversityPicker, setShowUniversityPicker] = useState(false);
+  const [showFacultyPicker, setShowFacultyPicker] = useState(false);
+  
+  // Mock data - replace with actual API calls
+  const universities = [
+    { id: 1, name: 'FAST-NUCES' },
+    { id: 2, name: 'NUST' },
+    { id: 3, name: 'LUMS' },
+    { id: 4, name: 'IBA' },
+  ];
+
+  const faculties = [
+    { id: 1, name: 'Computer Science', universityId: 1 },
+    { id: 2, name: 'Software Engineering', universityId: 1 },
+    { id: 3, name: 'Electrical Engineering', universityId: 1 },
+    { id: 4, name: 'Business Administration', universityId: 1 },
+    { id: 5, name: 'Computer Science', universityId: 2 },
+    { id: 6, name: 'Mechanical Engineering', universityId: 2 },
+    { id: 7, name: 'Civil Engineering', universityId: 2 },
+    { id: 8, name: 'Business Administration', universityId: 2 },
+    { id: 9, name: 'Computer Science', universityId: 3 },
+    { id: 10, name: 'Economics', universityId: 3 },
+    { id: 11, name: 'Law', universityId: 3 },
+    { id: 12, name: 'Business Administration', universityId: 3 },
+    { id: 13, name: 'Business Administration', universityId: 4 },
+    { id: 14, name: 'Economics', universityId: 4 },
+    { id: 15, name: 'Accounting & Finance', universityId: 4 },
+  ];
+
+  const availableFaculties = selectedUniversity 
+    ? faculties.filter(f => f.universityId === selectedUniversity)
+    : [];
   
   const signupMutation = useSignup();
 
   const handleSignUp = () => {
-    if (fullName && email && password) {
+    if (username && email && password && phoneNumber && selectedUniversity && selectedFaculty) {
       signupMutation.mutate(
         {
           email,
           password,
-          username: fullName,
-          phone: '', // Will add phone field later
-          universityId: 1, // TODO: Add university selection
-          facultyId: 1, // TODO: Add faculty selection
+          username: username,
+          phone: phoneNumber,
+          universityId: selectedUniversity,
+          facultyId: selectedFaculty,
         },
         {
           onSuccess: (data) => {
             console.log('Signup successful:', data);
-            onSignUp(fullName, email, password);
+            onSignUp(username, email, password);
           },
           onError: (error: any) => {
             console.error('Signup failed:', error);
-            alert(error?.message || 'Signup failed. Please try again.');
+            const errorMessage = error?.response?.data?.message 
+              || error?.response?.data?.error
+              || error?.message 
+              || 'Signup failed. Please try again.';
+            // Handle array of error messages from backend validation
+            const displayMessage = Array.isArray(errorMessage) 
+              ? errorMessage.join('\n') 
+              : errorMessage;
+            alert(displayMessage);
           },
         }
       );
@@ -100,16 +143,16 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
             {/* Form Card */}
             <View style={styles.formCard}>
               <View style={styles.form}>
-                <Text style={styles.inputLabel}>Full Name</Text>
+                <Text style={styles.inputLabel}>Username</Text>
                 <View style={styles.inputContainer}>
                   <Ionicons name="person-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
                   <TextInput
                     style={styles.input}
-                    placeholder="Muhammad Ali"
+                    placeholder="johndoe"
                     placeholderTextColor="#9CA3AF"
-                    value={fullName}
-                    onChangeText={setFullName}
-                    autoCapitalize="words"
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="none"
                   />
                 </View>
 
@@ -127,6 +170,95 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
                     autoCorrect={false}
                   />
                 </View>
+
+                <Text style={styles.inputLabel}>Phone Number</Text>
+                <View style={styles.inputContainer}>
+                  <Ionicons name="call-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="+92 300 1234567"
+                    placeholderTextColor="#9CA3AF"
+                    value={phoneNumber}
+                    onChangeText={setPhoneNumber}
+                    keyboardType="phone-pad"
+                  />
+                </View>
+
+                <Text style={styles.inputLabel}>University</Text>
+                <TouchableOpacity
+                  style={styles.inputContainer}
+                  onPress={() => setShowUniversityPicker(!showUniversityPicker)}
+                >
+                  <Ionicons name="school-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <Text style={[styles.input, !selectedUniversity && styles.placeholderText]}>
+                    {selectedUniversity 
+                      ? universities.find(u => u.id === selectedUniversity)?.name 
+                      : 'Select your university'
+                    }
+                  </Text>
+                  <Ionicons name={showUniversityPicker ? "chevron-up" : "chevron-down"} size={20} color="#9CA3AF" />
+                </TouchableOpacity>
+
+                {showUniversityPicker && (
+                  <View style={styles.pickerContainer}>
+                    {universities.map((university) => (
+                      <TouchableOpacity
+                        key={university.id}
+                        style={styles.pickerItem}
+                        onPress={() => {
+                          setSelectedUniversity(university.id);
+                          setSelectedFaculty(null); // Reset faculty when university changes
+                          setShowUniversityPicker(false);
+                        }}
+                      >
+                        <Text style={[
+                          styles.pickerItemText,
+                          selectedUniversity === university.id && styles.pickerItemTextActive
+                        ]}>
+                          {university.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
+
+                <Text style={styles.inputLabel}>Faculty</Text>
+                <TouchableOpacity
+                  style={[styles.inputContainer, !selectedUniversity && styles.inputDisabled]}
+                  onPress={() => selectedUniversity && setShowFacultyPicker(!showFacultyPicker)}
+                  disabled={!selectedUniversity}
+                >
+                  <Ionicons name="book-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
+                  <Text style={[styles.input, !selectedFaculty && styles.placeholderText]}>
+                    {selectedFaculty 
+                      ? faculties.find(f => f.id === selectedFaculty)?.name 
+                      : selectedUniversity ? 'Select your faculty' : 'Select university first'
+                    }
+                  </Text>
+                  <Ionicons name={showFacultyPicker ? "chevron-up" : "chevron-down"} size={20} color="#9CA3AF" />
+                </TouchableOpacity>
+
+                {showFacultyPicker && selectedUniversity && (
+                  <View style={styles.pickerContainer}>
+                    {availableFaculties.map((faculty) => (
+                      <TouchableOpacity
+                        key={faculty.id}
+                        style={styles.pickerItem}
+                        onPress={() => {
+                          setSelectedFaculty(faculty.id);
+                          setShowFacultyPicker(false);
+                        }}
+                      >
+                        <Text style={[
+                          styles.pickerItemText,
+                          selectedFaculty === faculty.id && styles.pickerItemTextActive
+                        ]}>
+                          {faculty.name}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                )}
 
                 <Text style={styles.inputLabel}>Password</Text>
                 <View style={styles.inputContainer}>
@@ -157,7 +289,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({
                   style={styles.signupButton}
                   onPress={handleSignUp}
                   activeOpacity={0.8}
-                  disabled={signupMutation.isPending || !fullName || !email || !password}
+                  disabled={signupMutation.isPending || !username || !email || !password || !phoneNumber || !selectedUniversity || !selectedFaculty}
                 >
                   <LinearGradient
                     colors={signupMutation.isPending ? ['#9CA3AF', '#6B7280'] : ['#4A90E2', '#50C9C3']}
@@ -338,6 +470,40 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#1F2937',
     paddingVertical: 0,
+  },
+  placeholderText: {
+    color: '#9CA3AF',
+  },
+  inputDisabled: {
+    opacity: 0.5,
+  },
+  pickerContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginTop: -12,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    maxHeight: 200,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  pickerItem: {
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F3F4F6',
+  },
+  pickerItemText: {
+    fontSize: 15,
+    color: '#374151',
+  },
+  pickerItemTextActive: {
+    color: '#4A90E2',
+    fontWeight: '600',
   },
   eyeIcon: {
     padding: 8,
