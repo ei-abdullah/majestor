@@ -3,15 +3,22 @@ import {Pressable, Text} from "react-native";
 
 type Props = {
     title: string;
+    className?: string;
     onPress?: () => void;
 };
 
 
-export function OutlineButton({title, onPress}: Props) {
+export function OutlineButton(
+    {
+        title,
+        className = "",
+        onPress
+    }: Props
+) {
     return (
         <Pressable
             onPress={onPress}
-            className="bg-white rounded-xl w-[9.999rem] py-[1rem] border-gray-300 border-2"
+            className={`bg-white rounded-xl w-[10.999rem] py-[1rem] border-gray-300 border-2 ${className}`}
             style={({pressed}) => ({
                 opacity: pressed ? 0.85 : 1,
             })}

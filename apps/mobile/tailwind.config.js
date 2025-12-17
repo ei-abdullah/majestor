@@ -104,8 +104,9 @@ module.exports = {
             },
 
             boxShadow: {
-                blue: "0px 10px 20px rgba(58, 111, 248, 0.25)",
-                teal: "0px 10px 20px rgba(111, 208, 197, 0.25)",
+                blue: "0 10 20 0 rgba(58, 111, 248, 0.25)",
+                teal: "0 10 20 0 rgba(111, 208, 197, 0.25)",
+                authcard: "0 2 12 0 rgba(0,0,0,0.3)"
             }
         },
     },

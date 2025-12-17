@@ -19,11 +19,11 @@ export function PrimaryButton({title, onPress, disabled = false}: Props) {
             colors={["#3A6FF8", "#8DDDD3"]}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
-            className="rounded-xl overflow-hidden"
+            className="w-full rounded-xl overflow-hidden self-center"
         >
             <Pressable
                 onPress={onPress}
-                className="w-[11rem] py-[1.1rem]"
+                className="flex justify-center items-center py-[1.1rem]"
                 style={({pressed}) => ({
                     opacity: pressed ? 0.85 : 1,
                 })}
