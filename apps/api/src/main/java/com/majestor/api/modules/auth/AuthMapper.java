@@ -41,22 +41,21 @@ public class AuthMapper {
                 .build();
     }
 
-    public AuthResponseDTO toAuthResponseDTO(String token, AuthUserDTO authUserDTO) {
+    public AuthResponseDTO toAuthResponseDTO(String accessToken, String refreshToken, AuthUserDTO authUserDTO) {
         return AuthResponseDTO
                 .builder()
-                .token(token)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
                 .authUserDTO(authUserDTO)
                 .build();
     }
 
     public User toUser(SignupRequestDTO request, University university, Faculty faculty, List<Role> roles) {
-
         return User
                 .builder()
                 .email(request.getEmail())
                 .username(request.getUsername())
                 .passwordHash(bCryptPasswordEncoder.encode(request.getPassword()))
-                .phone(request.getPhone())
                 .university(university)
                 .faculty(faculty)
                 .roles(roles)

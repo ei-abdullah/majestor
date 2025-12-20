@@ -4,6 +4,7 @@ import {cssInterop} from "nativewind";
 
 type Props = {
     title: string;
+    className?: string;
     onPress?: () => void;
     disabled?: boolean;
 };
@@ -13,13 +14,13 @@ cssInterop(LinearGradient, {
     className: "style",
 });
 
-export function PrimaryButton({title, onPress, disabled = false}: Props) {
+function PrimaryButton({title, className = "",  onPress, disabled = false}: Props) {
     return (
         <LinearGradient
             colors={["#3A6FF8", "#8DDDD3"]}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
-            className="w-full rounded-xl overflow-hidden self-center"
+            className={`w-[11rem] rounded-xl overflow-hidden  ${className}`}
         >
             <Pressable
                 onPress={onPress}
@@ -36,3 +37,5 @@ export function PrimaryButton({title, onPress, disabled = false}: Props) {
         </LinearGradient>
     );
 }
+
+export default PrimaryButton;

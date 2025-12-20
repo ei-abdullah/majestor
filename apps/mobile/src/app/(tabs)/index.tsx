@@ -1,13 +1,19 @@
-import {PrimaryButton} from "@/src/components/PrimaryButton";
-import {OutlineButton} from "@/src/components/OutlineButton";
+import React, {useEffect} from "react";
+import {Text} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 
+import {useAuthStore} from "@/src/stores/authStore";
+import GradientView from "@/src/components/GradientView";
+
 export default function Index() {
+    const {user} = useAuthStore();
+
     return (
-        <SafeAreaView className={"flex-1 justify-center flex-row gap-4 items-end p-4"}>
-            <PrimaryButton title={"Primary"} />
-            <OutlineButton title={"Found it?"}/>
-        </SafeAreaView>
+        <GradientView>
+            <SafeAreaView className="flex-1 px-6 pt-8 justify-start">
+                <Text>{user?.username}</Text>
+            </SafeAreaView>
+        </GradientView>
     );
 }
 

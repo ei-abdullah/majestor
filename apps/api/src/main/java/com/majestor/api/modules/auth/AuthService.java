@@ -6,10 +6,7 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
-import com.majestor.api.modules.auth.dto.AuthResponseDTO;
-import com.majestor.api.modules.auth.dto.AuthUserDTO;
-import com.majestor.api.modules.auth.dto.LoginRequestDTO;
-import com.majestor.api.modules.auth.dto.SignupRequestDTO;
+import com.majestor.api.modules.auth.dto.*;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import com.sun.jdi.request.DuplicateRequestException;
@@ -19,10 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
 import java.util.UUID;
 
 @Service
@@ -85,6 +84,9 @@ public class AuthService {
     public AuthResponseDTO login(
             LoginRequestDTO request
     ) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + request.getEmail()));
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
@@ -93,26 +95,44 @@ public class AuthService {
         );
 
         if (!authentication.isAuthenticated()) {
-            throw new BadCredentialsException("Invalid credentials");
+            throw new BadCredentialsException("Invalid email or password");
         }
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + request.getEmail()));
 
         if (!Boolean.TRUE.equals(user.getIsVerified())) {
             throw new AccessDeniedException("Please verify your email before logging in!");
         }
 
-        String token = jwtService.generateToken(user);
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = jwtService.generateRefreshToken(user);
 
         AuthUserDTO authUserDTO = authMapper.toAuthUserDTO(user);
 
-        return authMapper.toAuthResponseDTO(token, authUserDTO);
+        return authMapper.toAuthResponseDTO(accessToken, refreshToken, authUserDTO);
     }
 
-    private String generateVerificationToken() {
-        return UUID.randomUUID().toString();
+    public AuthResponseDTO refreshAccessToken(
+            RefreshRequestDTO requestDTO
+    ) {
+        boolean isValid = jwtService.validateToken(requestDTO.getRefreshToken());
+
+        if (!isValid) {
+            throw new InsufficientAuthenticationException("Invalid refresh token");
+        }
+
+        String email = jwtService.extractEmail(requestDTO.getRefreshToken());
+
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+
+        String accessToken = jwtService.generateAccessToken(user);
+        String refreshToken = requestDTO.getRefreshToken();
+
+        AuthUserDTO authUserDTO = authMapper.toAuthUserDTO(user);
+
+        return authMapper.toAuthResponseDTO(accessToken, refreshToken, authUserDTO);
+
     }
+
 
     public void forgetPassword(String email) {
         /*
@@ -126,5 +146,9 @@ public class AuthService {
         7. Update user password
         8. Invalidate the token after use
         */
+    }
+
+    private String generateVerificationToken() {
+        return UUID.randomUUID().toString();
     }
 }

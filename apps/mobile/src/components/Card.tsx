@@ -7,8 +7,10 @@ type Props = {
 }
 
 
-export default function Card({className = "", children}: Props) {
-    return <View className={`px-4 py-12 bg-mj-bg-white rounded-xl shadow-authcard ${className}`}>
+function Card({className = "", children}: Props) {
+    return <View className={`px-4 py-12 bg-mj-bg-white rounded-xl shadow ${className}`}>
         {children}
     </View>
 }
+
+export default Card;
