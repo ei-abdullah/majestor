@@ -15,6 +15,7 @@ public class UniversityService {
     private final UniversityMapper universityMapper;
 
     public List<UniversitiesWithFacultiesDTO> getUniversitiesWithFaculties() {
+
         List<University> universities = universityRepository.findAllWithFaculties();
 
         return universities.stream()

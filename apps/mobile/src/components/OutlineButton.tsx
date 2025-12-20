@@ -8,7 +8,7 @@ type Props = {
 };
 
 
-export function OutlineButton(
+function OutlineButton(
     {
         title,
         className = "",
@@ -29,3 +29,5 @@ export function OutlineButton(
         </Pressable>
     );
 }
+
+export default OutlineButton;

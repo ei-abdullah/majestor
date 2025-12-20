@@ -4,13 +4,15 @@ import {memo} from "react"
 type Props = {
     label: string;
     active: boolean;
+    disabled?: boolean;
     onPress: () => void;
 }
 
-export const TabButton = memo(function TabButton({label, active, onPress}: Props) {
+const TabButton = memo(function TabButton({label, active, disabled, onPress}: Props) {
     return (
         <TouchableOpacity
             onPress={onPress}
+            disabled={disabled}
             className={active ? "flex-1 py-3 rounded-xl items-center bg-white" : "flex-1 py-3 rounded-xl items-center bg-transparent"}
         >
             <Text
@@ -21,3 +23,5 @@ export const TabButton = memo(function TabButton({label, active, onPress}: Props
         </TouchableOpacity>
     )
 })
+
+export default TabButton;

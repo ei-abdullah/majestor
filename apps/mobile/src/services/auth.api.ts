@@ -7,9 +7,11 @@ type LoginPayload = {
 }
 
 type SignupPayload = {
+    username: string;
     email: string;
     password: string;
-    username: string;
+    universityId: number;
+    facultyId: number;
 }
 
 type LoginResponse = {
@@ -25,9 +27,13 @@ type LoginResponse = {
     refreshToken: string;
 }
 
-export const login = (payload:LoginPayload): Promise<AxiosResponse<LoginResponse>> =>
+type SignupResponse = {
+    message: string;
+}
+
+export const login = async (payload:LoginPayload): Promise<AxiosResponse<LoginResponse>> =>
     api.post<LoginResponse>("/auth/login", payload)
 
-export const signup = (payload: SignupPayload) =>
-    api.post("/auth/signup", payload)
+export const signup = async (payload: SignupPayload): Promise<AxiosResponse<SignupResponse>> =>
+    api.post<SignupResponse>("/auth/signup", payload)
 

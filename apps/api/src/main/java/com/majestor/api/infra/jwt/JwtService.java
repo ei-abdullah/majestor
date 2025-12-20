@@ -22,7 +22,22 @@ public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String SECRET_KEY;
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
+        Map<String, Object> claims = new HashMap<>();
+
+        return Jwts
+                .builder()
+                .claims()
+                .add(claims)
+                .subject(user.getEmail())
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + 1000L * 60 * 30)) // 30 mins
+                .and()
+                .signWith(getKey())
+                .compact();
+    }
+
+    public String generateRefreshToken(User user) {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts

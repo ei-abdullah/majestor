@@ -9,20 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 public class SignupRequestDTO {
+    @NotBlank(message = "Username is required")
+    @Size(min = 2, max = 20, message = "Username must be greater than 2 and less than 20 characters")
+    private String username;
+
     @NotBlank(message = "Email is required")
     @Email(message = "Invalid email address")
     private String email;
 
     @NotBlank(message = "Password is required")
     private String password;
-
-    @NotBlank(message = "Username is required")
-    @Size(min = 2, max = 20, message = "Username must be greater than 2 and less than 20 characters")
-    private String username;
-
-    @NotBlank(message = "Phone is required")
-    @Pattern(regexp = "^03[0-9]{9}$", message = "Invalid phone number")
-    private String phone;
 
     @NotNull(message = "University ID is required")
     @Positive(message = "University ID must be a positive number")

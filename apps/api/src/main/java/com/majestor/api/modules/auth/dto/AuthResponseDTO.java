@@ -9,8 +9,11 @@ import lombok.Data;
 @Data
 @Builder
 public class AuthResponseDTO {
-    @NotBlank(message = "Token is required")
-    private String token;
+    @NotBlank(message = "Access token is required")
+    private String accessToken;
+
+    @NotBlank(message = "Refresh token is required")
+    private String refreshToken;
 
     @NotNull(message = "Auth user is required")
     @Valid
