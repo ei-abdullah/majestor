@@ -1,6 +1,8 @@
 import {Slot, Stack} from "expo-router";
 
 export default function AuthLayout() {
-    return <Stack />;
+    return <Stack>
+        <Stack.Screen name={"authScreen"} options={{headerShown: false}}/>
+    </Stack>;
 }
 
