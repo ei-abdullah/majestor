@@ -110,7 +110,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
                     <Text className={"font-semibold"}>Username</Text>
-                    {errors.email &&
+                    {errors.username &&
                         <Text className={"text-mj-error text-xs font-semibold"}>Username is required.</Text>
                     }
                 </View>

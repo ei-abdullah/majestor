@@ -30,7 +30,7 @@ export default function AuthScreen() {
     return (
         <GradientView>
 
-            <SafeAreaView className="flex-1 bg-mj-bg-light px-6 pt-8 justify-start">
+            <SafeAreaView className="flex-1  px-6 pt-8 justify-start">
                 <ScrollView
                     nestedScrollEnabled={true}
                     showsVerticalScrollIndicator={false}
