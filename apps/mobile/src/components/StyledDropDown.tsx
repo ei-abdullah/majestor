@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Pressable, View, Text, TouchableOpacity, ScrollView} from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons";
 
 type Option = {
     id: string | number;
@@ -12,7 +12,7 @@ type Props = {
     onChange: (value: string | number) => void;
     options: Option[];
     placeholder?: string;
-    icon?: keyof typeof Ionicons.glyphMap;
+    icon?: keyof typeof Feather.glyphMap;
     iconSize?: number;
 };
 
@@ -44,7 +44,7 @@ const StyledDropDown = (
             >
                 {/* Icon logic matches StyledTextInput */}
                 {icon && (
-                    <Ionicons
+                    <Feather
                         name={icon}
                         size={iconSize ? iconSize : 18}
                         color={open ? "#9ca3af" : "#4CB8AD"}
@@ -65,7 +65,7 @@ const StyledDropDown = (
                         {selected?.name ?? placeholder}
                     </Text>
 
-                    <Ionicons
+                    <Feather
                         name={open ? "chevron-up" : "chevron-down"}
                         size={18}
                         color="#9ca3af"

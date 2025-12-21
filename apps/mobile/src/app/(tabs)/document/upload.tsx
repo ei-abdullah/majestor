@@ -5,16 +5,11 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import {useAuthStore} from "@/src/stores/authStore";
 import GradientView from "@/src/components/GradientView";
 
-export default function HomeScreen() {
-    const {user, clearSession} = useAuthStore();
-
+export default function DocumentUploadScreen() {
     return (
         <GradientView>
-            <SafeAreaView className="flex-1 px-6 pt-8 justify-start">
-                <Text>{user?.username}</Text>
-                <Pressable onPress={clearSession}>
-                    <Text>Logout</Text>
-                </Pressable>
+            <SafeAreaView className="flex-1 px-6 justify-start">
+                <Text>Upload Screen and will be able to upload documents</Text>
             </SafeAreaView>
         </GradientView>
     );

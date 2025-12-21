@@ -9,7 +9,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
-import {Ionicons} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons";
 import StyledTextInput from "@/src/components/StyledTextInput";
 
 
@@ -23,7 +23,7 @@ type props = {
     onChange: (value: string | number) => void;
     options: option[];
     placeholder?: string;
-    icon?: keyof typeof Ionicons.glyphMap;
+    icon?: keyof typeof Feather.glyphMap;
     label?: string;
 }
 
@@ -66,7 +66,7 @@ const StyledModal = (
                 style={{ elevation: 1 }}
             >
                 {icon && (
-                    <Ionicons
+                    <Feather
                         name={icon}
                         size={18}
                         color={selected ? "#4CB8AD" : "#9ca3af"}
@@ -80,7 +80,7 @@ const StyledModal = (
                 >
                     {selected?.name ?? placeholder}
                 </Text>
-                <Ionicons name="chevron-down" size={18} color="#9ca3af" />
+                <Feather name="chevron-down" size={18} color="#9ca3af" />
             </Pressable>
 
             {/* Search Modal - Pop-up Style */}
@@ -100,7 +100,7 @@ const StyledModal = (
                             <View className="flex-row justify-between items-center mb-4">
                                 <Text className="text-xl font-bold text-gray-900">{label || placeholder}</Text>
                                 <TouchableOpacity onPress={() => setIsVisible(false)}>
-                                    <Ionicons name="close-circle" size={28} color="#9ca3af" />
+                                    <Feather name="x-circle" size={28} color="#9ca3af" />
                                 </TouchableOpacity>
                             </View>
 
@@ -132,7 +132,7 @@ const StyledModal = (
                                         {item.name}
                                     </Text>
                                     {item.id === value && (
-                                        <Ionicons name="checkmark-circle" size={20} color="#4CB8AD" />
+                                        <Feather name="check-circle" size={20} color="#4CB8AD" />
                                     )}
                                 </TouchableOpacity>
                             )}
