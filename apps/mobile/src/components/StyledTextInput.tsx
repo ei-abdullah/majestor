@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import {TextInput, View} from 'react-native';
-import {Ionicons} from "@expo/vector-icons";
+import {Feather} from "@expo/vector-icons";
 
 
 type props = {
     value: any;
     placeholder: string;
-    icon?: keyof typeof Ionicons.glyphMap;
+    icon?: keyof typeof Feather.glyphMap;
     onChangeText: (text: string) => void;
     iconSize?: number;
 }
@@ -25,7 +25,7 @@ const StyledTextInput = ({value, placeholder, icon, onChangeText, iconSize}: pro
             ].join(" ")}
             style={{elevation: focused ? 4 : 1}}
         >
-            <Ionicons name={icon} size={iconSize ? iconSize : 18} color={
+            <Feather name={icon} size={iconSize ? iconSize : 18} color={
                 focused ? " #9ca3af" : "#4CB8AD"
             }/>
 

@@ -15,7 +15,6 @@ type option = {
     message: string;
 }
 
-
 type props = {
     loading: boolean;
     setLoading: (loading: boolean) => void;
@@ -122,7 +121,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                         <StyledTextInput
                             value={value}
                             placeholder={"Murat"}
-                            icon="person"
+                            icon="user"
                             onChangeText={onChange}
                         />
                     )}
@@ -197,7 +196,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                                 options={universities}
                                 placeholder={"University"}
                                 label={"Universities"}
-                                icon={"school"}
+                                icon={"pen-tool"}
                             />
                         )}
                     />

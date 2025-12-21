@@ -9,7 +9,6 @@ type Props = {
     disabled?: boolean;
 };
 
-// Enable NativeWind classes on LinearGradient
 cssInterop(LinearGradient, {
     className: "style",
 });
