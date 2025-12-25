@@ -1,18 +1,8 @@
-import React, {useEffect} from "react";
-import {Pressable, Text} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
+import React from "react";
+import UserSettings from "@/src/components/screens/user/UserSettings";
 
-import {useAuthStore} from "@/src/stores/authStore";
-import GradientView from "@/src/components/GradientView";
-import {Link} from "expo-router";
 
 export default function UserSettingsScreen() {
-    return (
-        <GradientView>
-            <SafeAreaView className="flex-1 px-6 justify-start">
-                <Text>User settings</Text>
-            </SafeAreaView>
-        </GradientView>
-    );
+    return <UserSettings/>
 }
 
