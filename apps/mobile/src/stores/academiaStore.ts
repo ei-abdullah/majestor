@@ -1,4 +1,5 @@
 import {create} from "zustand/react";
+
 import {getUniversitiesWithFaculties, UniversityWithFaculties,} from "@/src/services/academia.api";
 
 type AcademiaState = {
