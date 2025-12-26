@@ -27,7 +27,7 @@ type props = {
     label?: string;
 }
 
-const StyledModal = (
+const StyledAuthModal = (
     {
         value,
         onChange,
@@ -144,4 +144,4 @@ const StyledModal = (
     );
 }
 
-export default StyledModal;
+export default StyledAuthModal;

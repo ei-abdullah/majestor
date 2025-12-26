@@ -16,7 +16,7 @@ type SignupPayload = {
 
 type LoginResponse = {
     authUserDTO: {
-        id: string;
+        id: number;
         email: string;
         username: string;
         universityId: number;
