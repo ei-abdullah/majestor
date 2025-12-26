@@ -51,7 +51,7 @@ public class SecurityConfig {
                                 )
                                 .permitAll()
                                 .requestMatchers(
-                                        "secured-apis"
+                                        "secured-apis/"
                                 )
                                 .authenticated()
                 )

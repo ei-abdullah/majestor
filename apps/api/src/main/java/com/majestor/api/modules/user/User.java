@@ -75,7 +75,7 @@ public class User {
     @JoinColumn(name = "faculty_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Faculty faculty;
+    private Faculty studentFaculty;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude

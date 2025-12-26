@@ -26,7 +26,7 @@ public class AuthMapper {
         if (user.getUniversity() == null) {
             throw new IllegalStateException("University is null for student: " + user.getId());
         }
-        if (user.getFaculty() == null) {
+        if (user.getStudentFaculty() == null) {
             throw new IllegalStateException("Faculty is null for student: " + user.getId());
         }
 
@@ -36,7 +36,7 @@ public class AuthMapper {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .universityId(user.getUniversity().getId())
-                .facultyId(user.getFaculty().getId())
+                .facultyId(user.getStudentFaculty().getId())
                 .roles(user.getRoles())
                 .build();
     }
@@ -57,7 +57,7 @@ public class AuthMapper {
                 .username(request.getUsername())
                 .passwordHash(bCryptPasswordEncoder.encode(request.getPassword()))
                 .university(university)
-                .faculty(faculty)
+                .studentFaculty(faculty)
                 .roles(roles)
                 .build();
     }
