@@ -5,6 +5,8 @@ import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.academia.course.CourseRepository;
+import com.majestor.api.modules.academia.faculty.Faculty;
+import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.document.documentimage.DocumentImage;
 import com.majestor.api.modules.document.documentimage.DocumentImageRepository;
 import com.majestor.api.modules.document.dto.DocumentImageAndExtensionDTO;
@@ -30,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -48,6 +51,7 @@ public class DocumentService {
     private final Utils utils;
     private final S3Buckets s3Buckets;
     private final DocumentMapper documentMapper;
+    private final FacultyRepository facultyRepository;
 
     @Transactional
     public void uploadDocument(
@@ -132,20 +136,45 @@ public class DocumentService {
             Long userId,
             GetAllDocumentsFiltersDTO filters
     ) {
-        //1. Filter by stream or
+        //1. Filter by stream ✅ or
         //2. Filter by SQL query
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
 
-        List<Document> documents = documentRepository.getDocumentsByUserIdAndFacultyId(
-                user.getId(),
-                user.getFaculty().getId()
+        Faculty faculty = facultyRepository.findById(user.getStudentFaculty().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty not found for user id " + userId + "!"));
+
+        List<Document> documents = documentRepository.getDocumentsByFacultyId(
+                faculty.getId()
         );
 
-        List<Object[]> likesCounts = documentRepository.getLikeCountByUserIdAndFacultyId(
-                user.getId(),
-                user.getFaculty().getId()
+        Stream<Document> documentsStream = documents.stream();
+
+        // Apply filters
+        if (filters.getCourseTitle() != null) {
+            documentsStream = documentsStream
+                    .filter(doc -> doc.getTitle().trim().toLowerCase().contains(filters.getCourseTitle().trim().toLowerCase()));
+        }
+
+        if (filters.getYear() != null && filters.getYear() > 0) {
+            documentsStream = documentsStream
+                    .filter(doc -> doc.getUploadedYear().equals(filters.getYear()));
+        }
+
+        if (filters.getDocType() != null && !filters.getDocType().toString().isEmpty()) {
+            documentsStream = documentsStream
+                    .filter(doc -> doc.getDocumentType().equals(filters.getDocType()));
+        }
+
+        if (filters.getSortByLikes() != null && filters.getSortByLikes()) {
+            documentsStream = documentsStream
+                    .sorted((doc1, doc2) -> doc2.getLikes().size() - doc1.getLikes().size());
+        }
+        documents = documentsStream.toList();
+
+        List<Object[]> likesCounts = documentRepository.getLikeCountByFacultyId(
+                faculty.getId()
         );
 
         Map<Long, Long> likeCountMap = likesCounts
@@ -193,15 +222,16 @@ public class DocumentService {
             Long documentId,
             HttpServletResponse response
     ) {
+        System.out.println("downloadDocument");
+
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Document with document id " + documentId + " not found!"));
 
         String title = document.getTitle();
         String type = String.valueOf(document.getDocumentType());
-        String course = document.getCourse().getName();
 
         response.setContentType("application/zip");
-        response.setHeader("Content-Disposition", "attachment; filename=\"majestor-" + title + "-" + course + "-" + type + "-images.zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"majestor-" + title + "-" + type.toLowerCase() + "-images.zip\"");
 
         try (ZipOutputStream zipOut = new ZipOutputStream(response.getOutputStream())) {
             List<DocumentImage> documentImages = document.getDocumentImages();

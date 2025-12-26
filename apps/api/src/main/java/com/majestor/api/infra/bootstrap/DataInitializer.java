@@ -6,6 +6,12 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
+import com.majestor.api.modules.document.DocType;
+import com.majestor.api.modules.document.Document;
+import com.majestor.api.modules.document.DocumentRepository;
+import com.majestor.api.modules.document.SemType;
+import com.majestor.api.modules.document.documentimage.DocumentImage;
+import com.majestor.api.modules.document.documentimage.DocumentImageRepository;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.founder.FounderRepository;
 import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImage;
@@ -22,6 +28,7 @@ import com.majestor.api.modules.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +51,8 @@ public class DataInitializer implements CommandLineRunner {
     private final FoundItemImageRepository foundItemImageRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
+    private final DocumentRepository documentRepository;
+    private final DocumentImageRepository documentImageRepository;
 
     @Override
     @Transactional
@@ -227,7 +236,7 @@ public class DataInitializer implements CommandLineRunner {
                 .phone("03000000000")
                 .avatar("")
                 .university(firstUniversity)
-                .faculty(firstFaculty)
+                .studentFaculty(firstFaculty)
                 .roles(List.of(Role.ADMIN))
                 .isVerified(true)
                 .verificationToken(null)
@@ -250,7 +259,7 @@ public class DataInitializer implements CommandLineRunner {
                         .passwordHash(passwordEncoder.encode("password123"))
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
-                        .faculty(faculties.get(random.nextInt(faculties.size())))
+                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
                         .roles(List.of(Role.STUDENT))
                         .isVerified(true)
                         .build(),
@@ -262,7 +271,7 @@ public class DataInitializer implements CommandLineRunner {
                         .phone("03091234568")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
-                        .faculty(faculties.get(random.nextInt(faculties.size())))
+                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
                         .roles(List.of(Role.STUDENT))
                         .isVerified(true)
                         .build(),
@@ -274,7 +283,7 @@ public class DataInitializer implements CommandLineRunner {
                         .phone("03091234569")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
-                        .faculty(faculties.get(random.nextInt(faculties.size())))
+                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
                         .roles(List.of(Role.STUDENT))
                         .isVerified(true)
                         .build(),
@@ -286,7 +295,7 @@ public class DataInitializer implements CommandLineRunner {
                         .phone("03091234570")
                         .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
-                        .faculty(faculties.get(random.nextInt(faculties.size())))
+                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
                         .roles(List.of(Role.STUDENT))
                         .isVerified(true)
                         .build()

@@ -18,8 +18,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "universities")
-@EqualsAndHashCode(exclude = {"faculties", "students"})
-@ToString(exclude = {"faculties", "students"})
 public class University {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

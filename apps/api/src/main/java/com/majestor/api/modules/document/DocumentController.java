@@ -29,7 +29,7 @@ public class DocumentController {
     )
     public ResponseEntity<?> uploadDocument(
             @Valid @ModelAttribute DocumentUploadRequestDTO documentUploadRequestDTO,
-            @PathVariable("userId") @NotNull @Positive Long userId
+            @PathVariable @NotNull @Positive Long userId
     ) {
         documentService.uploadDocument(documentUploadRequestDTO, userId);
 
@@ -42,7 +42,7 @@ public class DocumentController {
     @GetMapping("/getAllDocuments/{userId}")
     public ResponseEntity<List<GetAllDocumentsDTO>> getAllDocuments(
             @Valid @ModelAttribute GetAllDocumentsFiltersDTO getAllDocumentsFiltersDTO,
-            @PathVariable("userId") @NotNull @Positive Long userId
+            @PathVariable @NotNull @Positive Long userId
     ) {
         List<GetAllDocumentsDTO> response = documentService.getAllDocuments(userId, getAllDocumentsFiltersDTO);
 
@@ -53,8 +53,8 @@ public class DocumentController {
 
     @PatchMapping("/likeDocument/{userId}/{documentId}")
     public ResponseEntity<?> likeDocument(
-            @PathVariable("userId") @NotNull @Positive Long userId,
-            @PathVariable("documentId") @NotNull @Positive Long documentId
+            @PathVariable @NotNull @Positive Long userId,
+            @PathVariable @NotNull @Positive Long documentId
     ) {
         documentService.likeDocument(userId, documentId);
 
@@ -65,9 +65,10 @@ public class DocumentController {
 
     @GetMapping("/downloadDocument/{documentId}")
     public ResponseEntity<?> downloadDocument(
-            @PathVariable("documentId") @NotNull @Positive Long documentId,
+            @PathVariable @NotNull @Positive Long documentId,
             HttpServletResponse response
     ) {
+        System.out.println("downloadDocumentController");
         documentService.downloadDocument(documentId, response);
 
         return ResponseEntity

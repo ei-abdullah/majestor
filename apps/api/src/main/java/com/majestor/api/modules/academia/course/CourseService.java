@@ -12,19 +12,19 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CourseService {
-    private final FacultyRepository facultyRepository;
     private final UserRepository userRepository;
     private final CourseMapper courseMapper;
+    private final CourseRepository courseRepository;
 
-    public CoursesByUserDTO getCoursesByUser(
+    public CoursesByUserDTO getCoursesByFaculty(
             Long userId
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        Long facultyId = user.getFaculty().getId();
+        Long facultyId = user.getStudentFaculty().getId();
 
-        Faculty faculty = facultyRepository.findFacultyByIdWithCourses(facultyId);
+        Faculty faculty = courseRepository.findFacultyByIdWithCourses(facultyId);
 
         return courseMapper.toCoursesByUserDTO(faculty);
     }

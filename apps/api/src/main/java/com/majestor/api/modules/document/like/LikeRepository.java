@@ -16,8 +16,8 @@ public interface LikeRepository extends JpaRepository<Like, Long> {
             VALUES (:user, :document)
             """)
     void createNewLike(
-            @Param("userId") User user,
-            @Param("documentId") Document document
+            @Param("user") User user,
+            @Param("document") Document document
     );
 
     @Modifying

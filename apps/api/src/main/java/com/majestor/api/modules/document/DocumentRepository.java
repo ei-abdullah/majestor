@@ -12,13 +12,11 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             SELECT DISTINCT d
             FROM Document d
             LEFT JOIN FETCH d.documentImages di
-            LEFT JOIN FETCH d.course s
-            WHERE d.uploader.id = :userId
-            AND d.uploader.faculty.id = :facultyId
+            LEFT JOIN FETCH d.course c
+            WHERE d.uploader.studentFaculty.id = :facultyId
             AND di.serialNumber = 1
             """)
-    List<Document> getDocumentsByUserIdAndFacultyId(
-            @Param("userId") Long userId,
+    List<Document> getDocumentsByFacultyId(
             @Param("facultyId") Long facultyId
     );
 
@@ -26,12 +24,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 SELECT d.id, COUNT(l)
                 FROM Document d
                 LEFT JOIN d.likes l
-                WHERE d.uploader.id = :userId
-                AND d.uploader.faculty.id = :facultyId
+                WHERE d.uploader.studentFaculty.id = :facultyId
                 GROUP BY d.id
             """)
-    List<Object[]> getLikeCountByUserIdAndFacultyId(
-            @Param("userId") Long userId,
+    List<Object[]> getLikeCountByFacultyId(
             @Param("facultyId") Long facultyId
     );
 }

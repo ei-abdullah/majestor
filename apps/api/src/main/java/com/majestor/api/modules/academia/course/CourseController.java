@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
     private final CourseService courseService;
 
-    @GetMapping("/getCoursesByUser/{userId}")
-    public ResponseEntity<CoursesByUserDTO> getCoursesByUserId(
-            @PathVariable("userId") @NotNull @Positive Long userId
+    @GetMapping("/getCoursesByFaculty/{userId}")
+    public ResponseEntity<CoursesByUserDTO> getCoursesByFaculty(
+            @PathVariable @NotNull @Positive Long userId
     ) {
-        CoursesByUserDTO response = courseService.getCoursesByUser(userId);
+        CoursesByUserDTO response = courseService.getCoursesByFaculty(userId);
 
         return ResponseEntity
                 .ok()

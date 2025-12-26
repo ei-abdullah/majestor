@@ -16,7 +16,7 @@ public class UserMapper {
                 .phone(user.getPhone())
                 .personalEmail(user.getPersonalEmail())
                 .university(user.getUniversity().getName())
-                .faculty(user.getFaculty().getName())
+                .faculty(user.getStudentFaculty().getName())
                 .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .build();
