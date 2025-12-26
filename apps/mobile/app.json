@@ -19,10 +19,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "permissions": [
-        "android.permission.WRITE_EXTERNAL_STORAGE",
-        "android.permission.READ_EXTERNAL_STORAGE"
-      ]
+      "package": "com.anonymous.majestor"
     },
     "web": {
       "output": "static",
@@ -43,20 +40,7 @@
           }
         }
       ],
-      "expo-secure-store",
-      [
-        "expo-media-library",
-        {
-          "photosPermission": "Allow Majestor to access your photos.",
-          "savePhotosPermission": "Allow Majestor to save documents.",
-          "isAccessMediaLocationEnabled": true,
-          "granularPermissions": [
-            "audio",
-            "photo",
-            "video"
-          ]
-        }
-      ]
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

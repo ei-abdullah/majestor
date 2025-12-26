@@ -1,5 +1,5 @@
 import React from "react";
-import {FlatList, RefreshControl} from "react-native";
+import {FlatList, RefreshControl, View} from "react-native";
 import {useDocument} from "@/src/queries/document.queries";
 import LoadingIndicator from "@/src/components/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ErrorNotLoad";
@@ -16,7 +16,7 @@ function Document() {
 
     return (
         <GradientView>
-            <SafeAreaView className="flex-1 px-6 justify-start">
+            <View className="flex-1 pt-2 px-6 justify-start">
                 <FlatList
                     data={documentData}
                     keyExtractor={item => item.id.toString()}
@@ -33,7 +33,7 @@ function Document() {
                     showsVerticalScrollIndicator={false}
 
                 />
-            </SafeAreaView>
+            </View>
         </GradientView>
     );
 }

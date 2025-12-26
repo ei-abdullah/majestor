@@ -4,7 +4,7 @@ import {getAllDocumentsApi, likeDocumentApi, Filters, downloadDocument} from "@/
 
 export const useDocument = (userId: string, filters: Filters) => {
     return useQuery({
-        queryKey: ["document"],
+        queryKey: ["document", userId, filters],
         queryFn: () => getAllDocumentsApi(userId, filters),
         enabled: Boolean(userId),
     })
@@ -15,7 +15,10 @@ export const useLikeDocument = () => {
 
     return useMutation({
         mutationKey: ["document"],
-        mutationFn: ({userId, documentId} : {userId: number, documentId: number}) => likeDocumentApi(userId, documentId),
+        mutationFn: ({userId, documentId}: {
+            userId: number,
+            documentId: number
+        }) => likeDocumentApi(userId, documentId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ["document"]})
         }
