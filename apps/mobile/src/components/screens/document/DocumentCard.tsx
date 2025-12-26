@@ -12,16 +12,22 @@ import Card from "@/src/components/Card";
 function DocumentCard({document}: { document: any }) {
     const imageUri = document.imageUri;
     const {user} = useAuthStore();
-    const {mutate: likeDocument, isPending: isDownloading} = useLikeDocument();
+    const {
+        mutate: likeDocument,
+        isPending: isDownloading
+    } = useLikeDocument();
 
     const handleLike = async (userId: number, documentId: number) => {
         likeDocument({userId, documentId});
     }
 
     const handleDownload = async (document: any) => {
-        await useDownloadDocumentLegacy(document);
+        await useDownloadDocumentLegacy({document});
     }
 
+    if (document.id === null || document.id === undefined) {
+        return null;
+    }
 
     return (
         <Card className={"mb-4 py-6"}>

@@ -25,7 +25,7 @@ async function useDownloadDocumentLegacy({document}: { document: any }) {
 
     try {
         // Get download endpoint
-        const downloadUrl = getDownloadUrl(document.id);
+        const downloadUrl = getDownloadUrl(document!.id);
 
         // Create unique filename with timestamp to avoid conflicts
         const timestamp = Date.now();
