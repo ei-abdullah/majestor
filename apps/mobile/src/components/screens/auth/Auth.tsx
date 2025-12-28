@@ -6,8 +6,8 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import AuthTabs from "@/src/components/screens/auth/AuthTabs";
 import LoginForm from "@/src/components/screens/auth/LoginForm";
 import SignupForm from "@/src/components/screens/auth/SignupForm";
-import Card from "@/src/components/Card";
-import GradientView from "@/src/components/GradientView";
+import Card from "@/src/components/ui/Card";
+import GradientView from "@/src/components/ui/GradientView";
 
 type option = {
     name: "error" | "success";
@@ -29,7 +29,6 @@ function Auth() {
 
     return (
         <GradientView>
-
             <SafeAreaView className="flex-1 px-6 pt-8 justify-start">
                 <ScrollView
                     nestedScrollEnabled={true}

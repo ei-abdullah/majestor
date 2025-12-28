@@ -1,7 +1,7 @@
 import {View} from "react-native";
 import {useCallback} from "react";
 
-import TabButton from "@/src/components/TabButton";
+import TabButton from "@/src/components/ui/TabButton";
 
 type AuthTab = "Login" | "Signup";
 

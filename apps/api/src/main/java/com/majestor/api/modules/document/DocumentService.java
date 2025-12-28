@@ -162,9 +162,10 @@ public class DocumentService {
                     .filter(doc -> doc.getUploadedYear().equals(filters.getYear()));
         }
 
-        if (filters.getDocType() != null && !filters.getDocType().toString().isEmpty()) {
+        if (filters.getDocType() != null && !filters.getDocType().isEmpty()) {
+            DocType docTypeEnum = DocType.valueOf(filters.getDocType());
             documentsStream = documentsStream
-                    .filter(doc -> doc.getDocumentType().equals(filters.getDocType()));
+                    .filter(doc -> doc.getDocumentType().equals(docTypeEnum));
         }
 
         if (filters.getSortByLikes() != null && filters.getSortByLikes()) {

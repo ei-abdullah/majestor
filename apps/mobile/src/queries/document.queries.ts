@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 import {getAllDocumentsApi, likeDocumentApi, Filters, downloadDocument} from "@/src/services/document.api";
 
-export const useDocument = (userId: string, filters: Filters) => {
+export const useDocument = (userId: number, filters: Filters) => {
     return useQuery({
         queryKey: ["document", userId, filters],
         queryFn: () => getAllDocumentsApi(userId, filters),

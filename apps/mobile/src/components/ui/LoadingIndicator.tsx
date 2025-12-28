@@ -8,7 +8,7 @@ import Animated, {
     Easing
 } from 'react-native-reanimated';
 import {AntDesign} from "@expo/vector-icons";
-import GradientView from "@/src/components/GradientView";
+import GradientView from "@/src/components/ui/GradientView";
 
 const LoadingIndicator = () => {
     const rotation = useSharedValue(0);

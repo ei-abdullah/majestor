@@ -19,7 +19,7 @@ public class GetAllDocumentsFiltersDTO {
     @Positive(message = "Year must be a positive number")
     private Long year;
 
-    private DocType docType;
+    private String docType;
 
     private Boolean sortByLikes;
 }

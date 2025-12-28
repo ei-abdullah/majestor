@@ -6,8 +6,8 @@ import {isAxiosError} from "axios";
 import {useAcademiaStore} from "@/src/stores/academiaStore";
 import {signup} from "@/src/services/auth.api";
 
-import PrimaryButton from "@/src/components/PrimaryButton";
-import StyledTextInput from "@/src/components/StyledTextInput";
+import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledAuthModal from "@/src/components/screens/auth/StyledAuthModal";
 
 type option = {
@@ -168,6 +168,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                         <StyledTextInput
                             value={value}
                             placeholder={"********"}
+                            secureTextEntry={true}
                             icon="key"
                             onChangeText={onChange}
                         />

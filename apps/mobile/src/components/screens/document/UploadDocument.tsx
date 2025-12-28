@@ -1,6 +1,6 @@
 import {Text} from "react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
-import GradientView from "@/src/components/GradientView";
+import GradientView from "@/src/components/ui/GradientView";
 
 function UploadDocument() {
     return (

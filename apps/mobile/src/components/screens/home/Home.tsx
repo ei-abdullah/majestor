@@ -1,5 +1,5 @@
 import {useAuthStore} from "@/src/stores/authStore";
-import GradientView from "@/src/components/GradientView";
+import GradientView from "@/src/components/ui/GradientView";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {Pressable, Text} from "react-native";
 

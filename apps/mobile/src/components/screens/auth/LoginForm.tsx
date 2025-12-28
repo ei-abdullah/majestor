@@ -4,11 +4,12 @@ import {Text, TextInput, View} from "react-native";
 import {Controller, set, useForm} from "react-hook-form";
 import {isAxiosError} from "axios";
 
-import PrimaryButton from "@/src/components/PrimaryButton";
+import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import {saveRefreshToken} from "@/src/stores/secureStore";
 import {useAuthStore} from "@/src/stores/authStore";
 import {login} from "@/src/services/auth.api";
-import StyledTextInput from "@/src/components/StyledTextInput";
+import StyledTextInput from "@/src/components/ui/StyledTextInput";
+import OutlineButton from "@/src/components/ui/OutlineButton";
 
 type option = {
     name: "error" | "success";
@@ -113,6 +114,7 @@ function LoginForm({loading, setLoading, setMessage}: props) {
                         <StyledTextInput
                             value={value}
                             placeholder={"********"}
+                            secureTextEntry={true}
                             icon="key"
                             onChangeText={onChange}
                         />
