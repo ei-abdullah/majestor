@@ -61,9 +61,6 @@ async function useDownloadDocumentLegacy({document}: { document: any }) {
 
         // Save a file to a device or share
         await save(result.uri, fileName, result.headers["Content-Type"]);
-
-        Alert.alert("Download Complete", `Document downloaded successfully to documents folder.`);
-
     } catch (error: any) {
         Alert.alert("Download Error", error.message || "An error occurred while downloading the document.");
     }

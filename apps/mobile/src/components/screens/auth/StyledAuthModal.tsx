@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, {useState, useMemo} from "react";
 import {
     Pressable,
     View,
@@ -10,22 +10,21 @@ import {
     Platform,
 } from "react-native";
 import {Feather} from "@expo/vector-icons";
-import StyledTextInput from "@/src/components/StyledTextInput";
+import StyledTextInput from "@/src/components/ui/StyledTextInput";
 
-
-type option = {
+type Option = {
     id: string | number;
     name: string;
-}
+};
 
-type props = {
+type Props = {
     value?: string | number;
     onChange: (value: string | number) => void;
-    options: option[];
+    options: Option[];
     placeholder?: string;
     icon?: keyof typeof Feather.glyphMap;
     label?: string;
-}
+};
 
 const StyledAuthModal = (
     {
@@ -35,35 +34,35 @@ const StyledAuthModal = (
         placeholder = "Select",
         icon,
         label
-    }
-    : props) => {
-    const [isVisible, setIsVisible] = useState<boolean>(false);
-    const [searchQuery, setSearchQuery] = useState<string>("");
+    }: Props) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const [search, setSearch] = useState("");
 
-    const selected = options.find((option) => option.id === value)
+    const selected = options.find((option) => option.id === value);
 
-    const filteredOptions = useMemo(() => {
+    const filtered = useMemo(() => {
+        if (!search) return options;
         return options.filter(option =>
-            option.name.toLowerCase().includes(searchQuery.toLowerCase())
+            option.name.toLowerCase().includes(search.toLowerCase())
         );
-    }, [options, searchQuery]);
+    }, [options, search]);
 
-    const handleSelect = (option: option) => {
+    const handleSelect = (option: Option) => {
         onChange(option.id);
         setIsVisible(false);
-        setSearchQuery("");
+        setSearch("");
     };
 
     return (
         <View>
-            {/* The "Input" field appearance */}
+            {/* Trigger */}
             <Pressable
                 onPress={() => setIsVisible(true)}
                 className={[
-                    "flex-row items-center rounded-xl px-6 py-[1.4rem] bg-white border border-gray-50",
+                    "flex-row items-center rounded-xl px-6 h-16 py-2 bg-white border border-gray-50",
                     isVisible ? "border-mj-primary shadow-authCard" : ""
                 ].join(" ")}
-                style={{ elevation: 1 }}
+                style={{elevation: 1}}
             >
                 {icon && (
                     <Feather
@@ -72,18 +71,13 @@ const StyledAuthModal = (
                         color={selected ? "#4CB8AD" : "#9ca3af"}
                     />
                 )}
-                <Text
-                    className={[
-                        "ml-3 flex-1 text-base",
-                        selected ? "text-gray-900" : "text-gray-400",
-                    ].join(" ")}
-                >
+                <Text className={`ml-3 flex-1 text-base ${selected ? "text-gray-900" : "text-gray-400"}`}>
                     {selected?.name ?? placeholder}
                 </Text>
-                <Feather name="chevron-down" size={18} color="#9ca3af" />
+                <Feather name="chevron-down" size={18} color="#9ca3af"/>
             </Pressable>
 
-            {/* Search Modal - Pop-up Style */}
+            {/* Modal */}
             <Modal
                 animationType="fade"
                 transparent={true}
@@ -98,50 +92,56 @@ const StyledAuthModal = (
                         {/* Header */}
                         <View className="px-6 py-4 border-b border-gray-100 bg-white">
                             <View className="flex-row justify-between items-center mb-4">
-                                <Text className="text-xl font-bold text-gray-900">{label || placeholder}</Text>
+                                <Text className="text-xl font-bold text-gray-900">
+                                    {label || placeholder}
+                                </Text>
                                 <TouchableOpacity onPress={() => setIsVisible(false)}>
-                                    <Feather name="x-circle" size={28} color="#9ca3af" />
+                                    <Feather name="x-circle" size={28} color="#9ca3af"/>
                                 </TouchableOpacity>
                             </View>
 
                             <StyledTextInput
                                 placeholder="Search..."
-                                value={searchQuery}
+                                value={search}
                                 icon="search"
-                                onChangeText={(text) => setSearchQuery(text)}
+                                onChangeText={setSearch}
                             />
                         </View>
 
-                        {/* List of results */}
+                        {/* List */}
                         <FlatList
-                            data={filteredOptions}
+                            data={filtered}
                             keyExtractor={(item) => item.id.toString()}
-                            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 24 }}
+                            contentContainerStyle={{paddingHorizontal: 24, paddingBottom: 24}}
                             keyboardShouldPersistTaps="handled"
                             ListEmptyComponent={
                                 <View className="mt-10 items-center">
                                     <Text className="text-gray-400">No results found</Text>
                                 </View>
                             }
-                            renderItem={({ item }) => (
-                                <TouchableOpacity
-                                    onPress={() => handleSelect(item)}
-                                    className="py-4 border-b border-gray-50 flex-row justify-between items-center"
-                                >
-                                    <Text className={`text-base flex-1 ${item.id === value ? "text-mj-primary font-bold" : "text-gray-900"}`}>
-                                        {item.name}
-                                    </Text>
-                                    {item.id === value && (
-                                        <Feather name="check-circle" size={20} color="#4CB8AD" />
-                                    )}
-                                </TouchableOpacity>
-                            )}
+                            renderItem={({item}) => {
+                                const isSelected = item.id === value;
+                                return (
+                                    <TouchableOpacity
+                                        onPress={() => handleSelect(item)}
+                                        className="py-4 border-b border-gray-50 flex-row justify-between items-center"
+                                    >
+                                        <Text
+                                            className={`text-base flex-1 ${isSelected ? "text-mj-primary font-bold" : "text-gray-900"}`}>
+                                            {item.name}
+                                        </Text>
+                                        {isSelected && (
+                                            <Feather name="check-circle" size={20} color="#4CB8AD"/>
+                                        )}
+                                    </TouchableOpacity>
+                                );
+                            }}
                         />
                     </View>
                 </KeyboardAvoidingView>
             </Modal>
         </View>
     );
-}
+};
 
 export default StyledAuthModal;

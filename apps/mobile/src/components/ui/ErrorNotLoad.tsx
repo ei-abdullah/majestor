@@ -1,9 +1,9 @@
 import React from "react";
 import {Image} from "expo-image";
 
-import GradientView from "@/src/components/GradientView";
+import GradientView from "@/src/components/ui/GradientView";
 import {Pressable} from "react-native";
-import Card from "@/src/components/Card";
+import Card from "@/src/components/ui/Card";
 
 
 const ErrorNotLoad = () => {

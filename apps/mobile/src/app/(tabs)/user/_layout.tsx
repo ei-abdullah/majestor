@@ -1,5 +1,5 @@
 import {Stack} from "expo-router";
-import CustomHeader from "@/src/components/CustomHeader";
+import CustomHeader from "@/src/components/ui/CustomHeader";
 
 export default function Layout() {
     return (

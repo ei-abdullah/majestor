@@ -5,7 +5,7 @@ export type Filters = {
     courseTitle?: string;
     year?: string;
     docType?: string;
-    sortByLikes?: boolean;
+    sortByLikes?: string;
 }
 
 export type GetDocumentResponse = {
@@ -20,7 +20,7 @@ export type GetDocumentResponse = {
 }
 
 export const getAllDocumentsApi = async (
-    userId: string,
+    userId: number,
     filters: Filters
 ): Promise<GetDocumentResponse[]> => {
     const res: AxiosResponse<GetDocumentResponse[]> = await api.get(`/document/getAllDocuments/${userId}`, {
