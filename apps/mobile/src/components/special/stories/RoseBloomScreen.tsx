@@ -1,0 +1,229 @@
+import React, {useEffect} from "react";
+import {Dimensions, StyleSheet, View, Text} from "react-native";
+import Svg, {Path, G} from "react-native-svg";
+import Animated, {
+    useSharedValue,
+    useAnimatedProps,
+    useAnimatedStyle,
+    withTiming,
+    withDelay,
+    withSequence,
+    withRepeat,
+    Easing,
+    interpolate,
+} from "react-native-reanimated";
+
+const {width, height} = Dimensions.get("window");
+
+const AnimatedPath = Animated.createAnimatedComponent(Path);
+
+// The exact rose path from the HTML
+const ROSE_PATH = `M141.699,28.536c-2.719-3.544-7.022-6.085-11.414-6.835
+	c-2.105-0.359-6.033-0.747-8.056,0.778c-0.305-7.745-10.111-13.968-17.049-14.642c-9.049-0.88-14.428,6.888-15.406,15.065
+	c-0.365,0.047-0.732,0.107-1.099,0.184c-0.459-0.702-1.325-1.094-2.158-0.487c-8.092,5.89-7.658,17.458-7.172,26.443
+	c0.281,5.203,1.126,11.636,4.52,15.655c-7.374-2.16-15.321-2.492-22.495,0.406c-1.172,0.473-1.625,2.113-0.37,2.834
+	c4.502,2.587,9.244,4.39,14.419,5.047c2.825,0.358,6.831,0.662,10.224,0.028c-9.534,14.678-16.16,32.074-21.013,48.585
+	c-5.567,18.938-9.501,39.34-8.952,59.159c0.045,1.608,2.265,1.527,2.442,0c2.293-19.73,4.852-38.943,10.878-57.955
+	c5.417-17.091,13.362-32.521,21.249-48.39c1.132,6.821,5.351,12.99,10.382,17.646c0.838,0.775,2.139,0.429,2.485-0.656
+	c1.311-4.11-0.961-9.879-2.424-13.72c-0.241-0.633-0.504-1.263-0.78-1.888c15.485,5.976,38.861-15.468,38.496-30.219
+	c-0.01-0.394-0.185-0.698-0.432-0.916c-0.037-0.078-0.086-0.151-0.158-0.209c-0.191-0.152-0.396-0.284-0.596-0.421
+	c2.162-0.547,4.081-1.58,5.662-3.782C145.555,36.521,144.309,31.938,141.699,28.536z M126.792,41.734
+	c-0.637,0.026-1.272,0.064-1.902,0.121c0.296-0.453,0.558-0.959,0.774-1.536c0.16-0.429,0.139-0.814,0.004-1.143
+	c0.013-2.447-1.123-4.464-2.695-6.436c-0.11-0.138-0.228-0.243-0.35-0.333c-3.322-3.75-8.549-7.839-13.864-6.396
+	c-1.836,0.499-3.259,1.802-4.134,3.428c-0.904-1.031-1.893-1.979-2.951-2.818c1.83-8.477,15.842-1.895,19.466,1.137
+	C125.271,31.216,128.332,36.339,126.792,41.734z M120.173,35.1c0.054,0.088,0.108,0.176,0.18,0.261
+	c0.989,1.163,1.783,2.367,1.818,3.864c-0.012,0.042-0.031,0.076-0.04,0.121c-1.285,5.899-10.488-0.44-13.304-3.163
+	c-0.446-1.078-0.983-2.135-1.594-3.155c0.515-1.915,1.342-3.568,3.948-3.47C114.756,29.692,117.898,32.576,120.173,35.1z
+	 M110.152,40.907c1.265,1.231,2.765,2.195,4.534,2.858c-1.598,0.53-3.069,1.251-4.284,2.288
+	C110.516,44.342,110.431,42.62,110.152,40.907z M107.21,11.796c5.873,1.796,7.985,5.749,10.921,10.061
+	c-4.416-2.037-10.03-3.273-14.575-1.124c-2.082,0.984-3.604,2.509-4.109,4.354c-2.269-1.345-4.766-2.178-7.369-2.284
+	C94.487,15.793,98.46,9.12,107.21,11.796z M88.444,25.669c9.186,2.26,16.509,6.969,17.466,17.631
+	c0.895,9.973-4.787,17.096-11.859,23.318c-0.676,0.595-0.501,1.453,0.021,1.973c-0.306-0.17-0.607-0.344-0.939-0.484
+	c0.012-1.224-1.216-2.034-2.345-1.713C80.485,55.956,82.317,37.905,88.444,25.669z M66.488,67.061
+	c6.94-1.102,13.554,0.53,20.513,1.668C80.496,70.733,72.891,69.604,66.488,67.061z M93.256,72.142
+	c1.517,1.972,3.045,3.886,4.121,6.221c1.078,2.342,2.813,5.926,3.159,9.049C96.99,82.842,94.953,77.633,93.256,72.142z
+	 M122.443,65.218c-7.65,6.111-14.893,8.174-24.461,7.038c-0.877-1.276-1.93-2.396-3.222-3.256c0.321,0.086,0.676,0.057,1.017-0.143
+	c7.253-4.246,12.989-12.077,14.367-20.523c6.441-6.023,17.5-1.759,25.475-2.351C133.379,54.034,128.984,59.993,122.443,65.218z
+	 M138.718,39.658c-1.44,1.334-3.587,1.811-5.461,2.633c-1.01-0.256-2.06-0.422-3.136-0.508c3.812-4.894-2.072-12.57-7.317-16.901
+	c2.024-1.319,5.996-0.047,7.94,0.606c2.786,0.936,5.28,2.496,7.235,4.706C140.43,32.967,141.876,36.732,138.718,39.658z`;
+
+const PATH_LENGTH = 600;
+
+function RoseBloomScreen() {
+    const drawProgress = useSharedValue(0);
+    const riseProgress = useSharedValue(0);
+    const textOpacity = useSharedValue(0);
+    const glowOpacity = useSharedValue(0);
+
+    useEffect(() => {
+        // Rose rises from bottom
+        riseProgress.value = withTiming(1, {
+            duration: 3000,
+            easing: Easing.out(Easing.cubic),
+        });
+
+        // Draw the rose outline (10 seconds like the original CSS)
+        drawProgress.value = withDelay(
+            500,
+            withTiming(PATH_LENGTH, {
+                duration: 10000,
+                easing: Easing.linear,
+            })
+        );
+
+        // Text fades in
+        textOpacity.value = withDelay(
+            2000,
+            withTiming(1, {duration: 1500})
+        );
+
+        // Glow pulses
+        glowOpacity.value = withDelay(
+            3000,
+            withRepeat(
+                withSequence(
+                    withTiming(0.6, {duration: 1500, easing: Easing.inOut(Easing.sin)}),
+                    withTiming(0.2, {duration: 1500, easing: Easing.inOut(Easing.sin)})
+                ),
+                -1,
+                true
+            )
+        );
+    }, []);
+
+    const animatedPathProps = useAnimatedProps(() => {
+        return {
+            strokeDashoffset: PATH_LENGTH - drawProgress.value,
+        };
+    });
+
+    const roseContainerStyle = useAnimatedStyle(() => {
+        return {
+            transform: [
+                {translateY: interpolate(riseProgress.value, [0, 1], [height * 0.5, 0])},
+                {scale: interpolate(riseProgress.value, [0, 1], [0.3, 1])},
+            ],
+            opacity: interpolate(riseProgress.value, [0, 0.3, 1], [0, 1, 1]),
+        };
+    });
+
+    const leftTextStyle = useAnimatedStyle(() => {
+        return {
+            opacity: textOpacity.value,
+            transform: [
+                {translateY: interpolate(textOpacity.value, [0, 1], [20, 0])},
+                {translateX: interpolate(textOpacity.value, [0, 1], [-15, 0])},
+            ],
+        };
+    });
+
+    const rightTextStyle = useAnimatedStyle(() => {
+        return {
+            opacity: textOpacity.value,
+            transform: [
+                {translateY: interpolate(textOpacity.value, [0, 1], [20, 0])},
+                {translateX: interpolate(textOpacity.value, [0, 1], [15, 0])},
+            ],
+        };
+    });
+
+    const glowStyle = useAnimatedStyle(() => {
+        return {
+            opacity: glowOpacity.value,
+        };
+    });
+
+    return (
+        <View style={styles.screen}>
+            {/* Left text */}
+            <Animated.View style={[styles.sideTextContainer, styles.leftText, leftTextStyle]}>
+                <Text style={styles.sideText}>
+                    "I picked{"\n"}this rose{"\n"}just for{"\n"}you..."
+                </Text>
+            </Animated.View>
+
+            {/* Rose container */}
+            <Animated.View style={[styles.roseContainer, roseContainerStyle]}>
+                {/* Glow behind rose */}
+                <Animated.View style={[styles.glow, glowStyle]} />
+
+                {/* SVG Rose drawing animation */}
+                <Svg
+                    width={width * 0.55}
+                    height={height * 0.55}
+                    viewBox="0 0 200 200"
+                >
+                    <G>
+                        <AnimatedPath
+                            d={ROSE_PATH}
+                            fill="none"
+                            stroke="#880e4f"
+                            strokeWidth={2}
+                            strokeLinejoin="miter"
+                            strokeLinecap="butt"
+                            strokeMiterlimit={5}
+                            strokeDasharray={PATH_LENGTH}
+                            animatedProps={animatedPathProps}
+                        />
+                    </G>
+                </Svg>
+            </Animated.View>
+
+            {/* Right text */}
+            <Animated.View style={[styles.sideTextContainer, styles.rightText, rightTextStyle]}>
+                <Text style={styles.sideText}>
+                    "...because{"\n"}you make{"\n"}my heart{"\n"}bloom."
+                </Text>
+            </Animated.View>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    screen: {
+        width,
+        height,
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "row",
+        backgroundColor: "transparent",
+    },
+    sideTextContainer: {
+        position: "absolute",
+        top: height * 0.2,
+        width: width * 0.25,
+        paddingHorizontal: 8,
+    },
+    leftText: {
+        left: 8,
+    },
+    rightText: {
+        right: 8,
+    },
+    sideText: {
+        color: "rgba(255, 255, 255, 0.9)",
+        fontSize: 14,
+        fontStyle: "italic",
+        lineHeight: 22,
+        textAlign: "center",
+        textShadowColor: "rgba(0, 0, 0, 0.5)",
+        textShadowOffset: {width: 0, height: 2},
+        textShadowRadius: 4,
+    },
+    roseContainer: {
+        width: width * 0.55,
+        height: height * 0.55,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    glow: {
+        position: "absolute",
+        width: width * 0.5,
+        height: width * 0.5,
+        borderRadius: width * 0.25,
+        backgroundColor: "#ff4081",
+    },
+});
+
+export default RoseBloomScreen;
+

@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {View, Text, ScrollView, Pressable, Modal} from "react-native";
+import {View, Text, ScrollView, Pressable} from "react-native";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useUserDetails} from "@/src/queries/user.queries";
 import GradientView from "@/src/components/ui/GradientView";
@@ -10,6 +10,8 @@ import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 import {cssInterop} from "nativewind";
 import {router} from "expo-router";
+import LoveStoryModal from "@/src/components/special/stories/LoveStoryModal";
+import HeartRippleButton from "@/src/components/special/HeartRippleButton";
 
 cssInterop(LinearGradient, {
     className: "style",
@@ -51,7 +53,7 @@ function Home() {
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 24}}
             >
-                <View className="mx-4">
+                <View className="mx-6">
                     {/* Minimal Header */}
                     <View className="mt-10 mb-8">
                         <View className="flex-row items-center justify-between">
@@ -76,7 +78,7 @@ function Home() {
 
                     {/* Special Heart Button */}
                     <View className="items-center mb-8">
-                        <Text>Create a animated heart button </Text>
+                        <HeartRippleButton onPress={() => setShowStory(true)} size={50} />
                     </View>
 
                     {/* University Card */}
@@ -195,18 +197,10 @@ function Home() {
                 </View>
             </ScrollView>
 
-            {/* Story Modal */}
-            <Modal
+            <LoveStoryModal
                 visible={showStory}
-                animationType="fade"
-                onRequestClose={() => setShowStory(false)}
-            >
-                <Pressable
-                    style={{flex: 1}}
-                    onPress={() => setShowStory(false)}
-                >
-                </Pressable>
-            </Modal>
+                onClose={() => setShowStory(false)}
+            />
         </GradientView>
     );
 }
