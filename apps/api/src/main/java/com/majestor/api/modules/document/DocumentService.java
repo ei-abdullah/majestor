@@ -152,9 +152,12 @@ public class DocumentService {
         Stream<Document> documentsStream = documents.stream();
 
         // Apply filters
-        if (filters.getCourseTitle() != null) {
+        if (filters.getSearchQuery() != null) {
             documentsStream = documentsStream
-                    .filter(doc -> doc.getTitle().trim().toLowerCase().contains(filters.getCourseTitle().trim().toLowerCase()));
+                    .filter(doc ->
+                            doc.getTitle().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase()) ||
+                            doc.getCourse().getName().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase())
+                    );
         }
 
         if (filters.getYear() != null && filters.getYear() > 0) {
@@ -223,7 +226,6 @@ public class DocumentService {
             Long documentId,
             HttpServletResponse response
     ) {
-        System.out.println("downloadDocument");
 
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Document with document id " + documentId + " not found!"));

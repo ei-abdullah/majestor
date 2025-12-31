@@ -12,7 +12,6 @@ const save = async (uri: string, filename: string, mimetype: string) => {
                 .then(async (uri) => {
                     await FileSystem.writeAsStringAsync(uri, base64, {encoding: FileSystem.EncodingType.Base64});
                 })
-                .catch(e => console.log(e));
         } else {
             await shareAsync(uri);
         }

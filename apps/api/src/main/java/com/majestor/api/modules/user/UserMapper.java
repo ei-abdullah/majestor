@@ -10,7 +10,7 @@ public class UserMapper {
         return GetUserDetailsResponseDTO
                 .builder()
                 .id(user.getId())
-                .name(user.getUsername())
+                .username(user.getUsername())
                 .avatar(avatar)
                 .email(user.getEmail())
                 .phone(user.getPhone())

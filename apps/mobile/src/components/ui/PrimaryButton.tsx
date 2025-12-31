@@ -10,6 +10,7 @@ type Props = {
     iconSize?: number;
     onPress?: () => void;
     disabled?: boolean;
+    size?: 'default' | 'compact';
 };
 
 cssInterop(LinearGradient, {
@@ -23,14 +24,17 @@ function PrimaryButton(
         icon = null,
         iconSize = 18,
         onPress,
-        disabled = false
+        disabled = false,
+        size = 'default'
     }: Props) {
+    const heightClass = size === 'compact' ? 'h-16' : 'h-[70px]';
+
     return (
         <LinearGradient
             colors={disabled ? ["#9ca3af", "#d1d5db"] : ["#3A6FF8", "#8DDDD3"]}
             start={{x: 0, y: 0}}
             end={{x: 1, y: 1}}
-            className={`flex items-center justify-center h-16 py-2 rounded-xl overflow-hidden ${className}`}
+            className={`flex items-center justify-center ${heightClass} py-2 rounded-xl overflow-hidden ${className}`}
         >
             <Pressable
                 onPress={onPress}

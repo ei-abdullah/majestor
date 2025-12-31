@@ -6,12 +6,6 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
-import com.majestor.api.modules.document.DocType;
-import com.majestor.api.modules.document.Document;
-import com.majestor.api.modules.document.DocumentRepository;
-import com.majestor.api.modules.document.SemType;
-import com.majestor.api.modules.document.documentimage.DocumentImage;
-import com.majestor.api.modules.document.documentimage.DocumentImageRepository;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.founder.FounderRepository;
 import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImage;
@@ -28,7 +22,6 @@ import com.majestor.api.modules.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,12 +44,10 @@ public class DataInitializer implements CommandLineRunner {
     private final FoundItemImageRepository foundItemImageRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
-    private final DocumentRepository documentRepository;
-    private final DocumentImageRepository documentImageRepository;
 
     @Override
     @Transactional
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
         log.info("Starting data initialization...");
 
         if (universityRepository.count() == 0) {
@@ -100,16 +91,162 @@ public class DataInitializer implements CommandLineRunner {
         List<Course> courses = new ArrayList<>();
 
         for (Faculty faculty : faculties) {
-            // Add some sample courses for each faculty
-            courses.add(Course.builder()
-                    .name("Introduction to " + faculty.getName())
-                    .facultyCourses(faculty)
-                    .build());
+            switch (faculty.getName()) {
+                case "Faculty of Computing" -> {
+                    // Computing courses
+                    courses.add(Course.builder().name("Introduction to Programming").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Programming Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Ideology and Constitution of Pakistan").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Functional English").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Calculus and Analytic Geometry").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Application of Information & Communication Technologies").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Application of Information & Communication Technologies Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Object Oriented Programming").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Object Oriented Programming Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Applied Physics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Applied Physics Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Expository Writing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Sociology").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Discrete Structures").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Islamic Studies / Ethics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Fehm-ul-Quran I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Data Structures").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Data Structures Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Database Systems").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Database Systems Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Linear Algebra").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Personal Grooming").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Digital Logic Design").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Digital Logic Design Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Fehm-ul-Quran II").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Organization and Assembly Language").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Organization and Assembly Language Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Entrepreneurship").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Database Management Systems").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Database Management Systems Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pakistan Studies").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Probability & Statistics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Civics and Professional Ethics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Multi-Variate Calculus").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Design and Analysis of Algorithms").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Operating Systems").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Operating Systems Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Software Engineering").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Networks").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Networks Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Graph Algorithm").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Architecture").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Architecture Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Parallel and Distributing Computing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Parallel and Distributing Computing Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Artificial Intelligence").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Artificial Intelligence Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Technical and Business Writing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Web Application Development").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Web Application Development Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Information Security and Forensics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Information Security and Forensics Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Numerical Computing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Numerical Computing Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Mobile Application Development").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Mobile Application Development Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Machine Learning").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Human Computer Interaction").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Human Computer Interaction Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Design Project 1").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Theory of Automata and Formal Languages").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Design Project 2").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Introduction to Data Warehousing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Compiler Construction").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Compiler Construction Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Financial Accounting").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Blockchain Technology").facultyCourses(faculty).build());
+                }
+                case "Faculty of Pharmacy" -> {
+                    // Pharmacy courses
+                    courses.add(Course.builder().name("Pharmaceutical Chemistry I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Chemistry I Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Human Anatomy and Physiology I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Human Anatomy and Physiology I Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutics I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutics I Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Biochemistry").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Biochemistry Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Microbiology").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Microbiology Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacology I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacology I Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Medicinal Chemistry I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Medicinal Chemistry I Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Analysis").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Analysis Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pathophysiology").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacology II").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacology II Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Technology").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Technology Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacognosy").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacognosy Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Biotechnology").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Clinical Pharmacy I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacotherapeutics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Jurisprudence").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmaceutical Marketing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Hospital and Community Pharmacy").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Clinical Pharmacy II").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Drug Regulatory Affairs").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Pharmacy Practice").facultyCourses(faculty).build());
+                }
+                case "Faculty of Engineering" -> {
+                    // Engineering courses
+                    courses.add(Course.builder().name("Engineering Drawing").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Engineering Drawing Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Engineering Mechanics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Thermodynamics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Electrical Circuits and Machines").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Electrical Circuits and Machines Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Workshop Practice").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Strength of Materials").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Fluid Mechanics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Fluid Mechanics Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Material Science and Engineering").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Material Science and Engineering Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Electronics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Electronics Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Engineering Economics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Machine Design I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Manufacturing Processes").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Manufacturing Processes Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Heat Transfer").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Heat Transfer Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Control Systems").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Control Systems Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Numerical Methods").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Aided Design").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Computer Aided Design Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Machine Design II").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Industrial Engineering").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Mechatronics").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Mechatronics Lab").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Renewable Energy Systems").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Engineering Project Management").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Final Year Project I").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Final Year Project II").facultyCourses(faculty).build());
+                    courses.add(Course.builder().name("Professional Practice and Ethics").facultyCourses(faculty).build());
+                }
+                default -> {
+                    // Default courses for other faculties
+                    courses.add(Course.builder()
+                            .name("Introduction to " + faculty.getName())
+                            .facultyCourses(faculty)
+                            .build());
 
-            courses.add(Course.builder()
-                    .name(faculty.getName() + " Advanced Studies")
-                    .facultyCourses(faculty)
-                    .build());
+                    courses.add(Course.builder()
+                            .name(faculty.getName() + " Advanced Studies")
+                            .facultyCourses(faculty)
+                            .build());
+                }
+            }
         }
 
         courseRepository.saveAll(courses);
@@ -117,108 +254,35 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void initializeUniversitiesAndFaculties() {
-        // Initialize Uzbek Universities
-        initializeUzbekUniversities();
-
-        // You can add more countries/regions here
-        // initializeInternationalUniversities();
+        // Initialize Pakistani Universities
+        initializePakistaniUniversities();
     }
 
-    private void initializeUzbekUniversities() {
-        // Tashkent State University of Economics
-        University tsue = createUniversity(
-                "Tashkent State University of Economics",
-                "49 Islam Karimov Street, Tashkent, Uzbekistan"
+    private void initializePakistaniUniversities() {
+        // Capital University of Science & Technology
+        University cust = createUniversity(
+                "Capital University of Science & Technology",
+                "Expressway, Kahuta Road, Zone-V, Islamabad, Pakistan"
         );
 
-        createFaculties(tsue, List.of(
-                "Faculty of Economics",
-                "Faculty of Finance",
-                "Faculty of Management",
-                "Faculty of Marketing",
-                "Faculty of Accounting",
-                "Faculty of International Economic Relations",
-                "Faculty of Business Administration",
-                "Faculty of Information Technologies in Economics"
-        ));
-
-        // National University of Uzbekistan
-        University nuu = createUniversity(
-                "National University of Uzbekistan",
-                "4 University Street, Tashkent, Uzbekistan"
-        );
-
-        createFaculties(nuu, List.of(
-                "Faculty of Mathematics",
-                "Faculty of Physics",
-                "Faculty of Chemistry",
-                "Faculty of Biology",
-                "Faculty of Geography",
-                "Faculty of History",
-                "Faculty of Philology",
-                "Faculty of Foreign Languages",
-                "Faculty of Journalism",
-                "Faculty of Psychology"
-        ));
-
-        // Tashkent University of Information Technologies
-        University tuit = createUniversity(
-                "Tashkent University of Information Technologies",
-                "108 Amir Temur Avenue, Tashkent, Uzbekistan"
-        );
-
-        createFaculties(tuit, List.of(
-                "Faculty of Computer Engineering",
-                "Faculty of Software Engineering",
-                "Faculty of Information Security",
-                "Faculty of Telecommunications",
-                "Faculty of Television Technologies",
-                "Faculty of Radio Engineering and Mobile Communications",
-                "Faculty of Information Systems and Technologies"
-        ));
-
-        // Tashkent Medical Academy
-        University tma = createUniversity(
-                "Tashkent Medical Academy",
-                "2 Farabi Street, Tashkent, Uzbekistan"
-        );
-
-        createFaculties(tma, List.of(
-                "Faculty of General Medicine",
-                "Faculty of Pediatrics",
-                "Faculty of Medical Prevention",
-                "Faculty of Dentistry",
+        createFaculties(cust, List.of(
+                "Faculty of Computing",
                 "Faculty of Pharmacy",
-                "Faculty of Medical Biology"
+                "Faculty of Engineering"
         ));
 
-        // Westminster International University in Tashkent
-        University wiut = createUniversity(
-                "Westminster International University in Tashkent",
-                "12 Istiqbol Street, Tashkent, Uzbekistan"
+        // Bahria University
+        University bahria = createUniversity(
+                "Bahria University",
+                "Shangrila Road, Sector E-8, Islamabad, Pakistan"
         );
 
-        createFaculties(wiut, List.of(
-                "Faculty of Engineering and Digital Technologies",
-                "Faculty of Business and Finance",
-                "Faculty of Media, Arts and Social Sciences"
+        createFaculties(bahria, List.of(
+                "Faculty of Computing",
+                "Faculty of Pharmacy",
+                "Faculty of Engineering"
         ));
 
-        // Samarkand State University
-        University ssu = createUniversity(
-                "Samarkand State University",
-                "15 University Boulevard, Samarkand, Uzbekistan"
-        );
-
-        createFaculties(ssu, List.of(
-                "Faculty of Mathematics and Computer Science",
-                "Faculty of Physics",
-                "Faculty of Chemistry and Biology",
-                "Faculty of History",
-                "Faculty of Uzbek Philology",
-                "Faculty of Foreign Languages",
-                "Faculty of Geography and Ecology"
-        ));
 
         log.info("Initialized {} universities with their faculties",
                 universityRepository.count());
@@ -580,36 +644,5 @@ public class DataInitializer implements CommandLineRunner {
                 .toList();
 
         facultyRepository.saveAll(faculties);
-    }
-
-    // Optional: Add international universities
-    private void initializeInternationalUniversities() {
-        // Harvard University
-        University harvard = createUniversity(
-                "Harvard University",
-                "Cambridge, MA, United States"
-        );
-
-        createFaculties(harvard, List.of(
-                "Harvard College",
-                "Harvard Medical School",
-                "Harvard Business School",
-                "Harvard Law School",
-                "School of Engineering and Applied Sciences"
-        ));
-
-        // Oxford University
-        University oxford = createUniversity(
-                "University of Oxford",
-                "Oxford, United Kingdom"
-        );
-
-        createFaculties(oxford, List.of(
-                "Faculty of Arts",
-                "Faculty of Science",
-                "Faculty of Medicine",
-                "Faculty of Law",
-                "Faculty of Business"
-        ));
     }
 }

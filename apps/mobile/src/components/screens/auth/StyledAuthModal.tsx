@@ -24,6 +24,7 @@ type Props = {
     placeholder?: string;
     icon?: keyof typeof Feather.glyphMap;
     label?: string;
+    size?: 'default' | 'compact';
 };
 
 const StyledAuthModal = (
@@ -33,12 +34,14 @@ const StyledAuthModal = (
         options,
         placeholder = "Select",
         icon,
-        label
+        label,
+        size = 'default'
     }: Props) => {
     const [isVisible, setIsVisible] = useState(false);
     const [search, setSearch] = useState("");
 
     const selected = options.find((option) => option.id === value);
+    const heightClass = size === 'compact' ? 'h-16' : 'h-[70px]';
 
     const filtered = useMemo(() => {
         if (!search) return options;
@@ -59,7 +62,7 @@ const StyledAuthModal = (
             <Pressable
                 onPress={() => setIsVisible(true)}
                 className={[
-                    "flex-row items-center rounded-xl px-6 h-16 py-2 bg-white border border-gray-50",
+                    `flex-row items-center rounded-xl px-6 ${heightClass} py-2 bg-white border border-gray-50`,
                     isVisible ? "border-mj-primary shadow-authCard" : ""
                 ].join(" ")}
                 style={{elevation: 1}}
@@ -71,7 +74,7 @@ const StyledAuthModal = (
                         color={selected ? "#4CB8AD" : "#9ca3af"}
                     />
                 )}
-                <Text className={`ml-3 flex-1 text-base ${selected ? "text-gray-900" : "text-gray-400"}`}>
+                <Text className={`ml-3 flex-1 text-sm ${selected ? "text-gray-900" : "text-gray-400"}`}>
                     {selected?.name ?? placeholder}
                 </Text>
                 <Feather name="chevron-down" size={18} color="#9ca3af"/>
