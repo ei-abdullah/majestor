@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/getUserDetails/{userId}")
     public ResponseEntity<GetUserDetailsResponseDTO> getUserDetails(
-            @PathVariable("userId") @NotNull @Positive Long userId
+            @PathVariable @NotNull @Positive Long userId
     ) {
         GetUserDetailsResponseDTO response = userService.getUserDetails(userId);
 
@@ -36,8 +36,8 @@ public class UserController {
             consumes = "multipart/form-data"
     )
     public ResponseEntity<?> updateProfileImage(
-            @RequestParam("avatar") @NotNull MultipartFile profileImage,
-            @PathVariable("userId") @NotNull @Positive Long userId
+            @RequestParam("profileImage") @NotNull MultipartFile profileImage,
+            @PathVariable @NotNull @Positive Long userId
     ) {
         userService.updateProfileImage(profileImage, userId);
 
@@ -48,7 +48,7 @@ public class UserController {
 
     @PatchMapping("/updateUserDetails/{userId}")
     public ResponseEntity<?> updateUserDetails(
-            @PathVariable("userId") @NotNull @Positive Long userId,
+            @PathVariable @NotNull @Positive Long userId,
             @Valid @ModelAttribute UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
     ) {
         userService.updateUserDetails(userId, updateUserDetailsRequestDTO);

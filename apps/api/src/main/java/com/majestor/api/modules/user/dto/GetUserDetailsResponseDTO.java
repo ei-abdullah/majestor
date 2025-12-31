@@ -19,8 +19,8 @@ public class GetUserDetailsResponseDTO {
     @Positive(message = "ID must be a positive number")
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    private String name;
+    @NotBlank(message = "Username is required")
+    private String username;
 
     @NotNull(message = "Avatar is required")
     private String avatar;

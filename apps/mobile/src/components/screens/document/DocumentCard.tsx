@@ -80,9 +80,12 @@ function DocumentCard({document}: { document: any }) {
                             </View>
 
                             {/* Bottom row - Year, Course, SemType */}
-                            <View className={"flex-row"}>
+                            <View className={"flex-column"}>
                                 <Text className={"text-white text-sm font-medium"}>
                                     {document.year} • {document.semesterType}
+                                </Text >
+                                <Text className={"text-white text-sm font-medium"}>
+                                    {document.course}
                                 </Text>
                             </View>
                         </View>

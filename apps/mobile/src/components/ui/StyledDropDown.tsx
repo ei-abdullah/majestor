@@ -10,31 +10,40 @@ import {
 } from "react-native";
 import {Feather} from "@expo/vector-icons";
 
-export type Option = {
-    id: string | number;
-    name: string;
+// Generic type for dropdown options
+type DropdownOption<T = any> = T & {
+    [key: string]: any;
 };
 
-type Props = {
+type Props<T = any> = {
     value?: string | number;
-    onChange: (value: string | number) => void;
-    options: Option[];
+    onChange: (value: string | number, item?: T) => void;
+    options: T[];
     className?: string;
     placeholder?: string;
     icon?: keyof typeof Feather.glyphMap;
     iconSize?: number;
+    // Field configuration for custom data structures
+    labelField?: string; // Field to display as label (default: 'name')
+    valueField?: string; // Field to use as value (default: 'id')
+    disabled?: boolean;
+    size?: 'default' | 'compact';
 };
 
-const StyledDropDown = (
+const StyledDropDown = <T extends Record<string, any>>(
     {
         value,
         onChange,
         options,
         className = "",
-        placeholder = "",
+        placeholder = "Select...",
         icon,
-        iconSize = 16
-    }: Props
+        iconSize = 16,
+        labelField = 'name',
+        valueField = 'id',
+        disabled = false,
+        size = 'default'
+    }: Props<T>
 ) => {
     const [open, setOpen] = useState(false);
     const [dropdownLayout, setDropdownLayout] = useState({
@@ -44,12 +53,14 @@ const StyledDropDown = (
     });
     const buttonRef = useRef<View>(null);
 
-    // Derive selectedOption from value prop
+    // Derive selectedOption from value prop using configurable fields
     const selectedOption = value
-        ? options.find(opt => opt.id === value) || null
+        ? options.find((opt) => opt[valueField] === value) || null
         : null;
 
     const toggleOpen = useCallback(() => {
+        if (disabled) return;
+
         if (!open && buttonRef.current) {
             buttonRef.current.measureInWindow((x, y, width, height) => {
                 setDropdownLayout({
@@ -62,12 +73,14 @@ const StyledDropDown = (
         } else {
             setOpen(false);
         }
-    }, [open]);
+    }, [open, disabled]);
 
-    const onSelect = useCallback((option: Option) => {
-        onChange(option.id);
+    const onSelect = useCallback((option: T) => {
+        onChange(option[valueField], option);
         setOpen(false);
-    }, [onChange]);
+    }, [onChange, valueField]);
+
+    const heightClass = size === 'compact' ? 'h-16' : 'h-[70px]';
 
     return (
         <View
@@ -77,18 +90,20 @@ const StyledDropDown = (
             {/* Styled container - Identical to StyledTextInput */}
             <Pressable
                 onPress={toggleOpen}
+                disabled={disabled}
             >
                 <View
                     className={[
-                        "flex-row items-center justify-center rounded-xl px-4 h-16 bg-white",
+                        `flex-row items-center justify-center rounded-xl px-4 ${heightClass} bg-white`,
                         open
                             ? "border border-gray-400 shadow-authCard"
                             : "border border-gray-50",
+                        disabled ? "opacity-50" : "",
                     ].join(" ")}
                     style={{elevation: open ? 4 : 1}}
                 >
                     {/* Show icon only when no option is selected */}
-                    {icon && !selectedOption && (
+                    {icon && size === "default" && (
                         <Feather
                             name={icon}
                             size={iconSize}
@@ -99,11 +114,11 @@ const StyledDropDown = (
                     <Text
                         className={[
                             selectedOption ? "text-sm" : "ml-3 text-sm",
-                            "flex-1",
+                            "flex-1 ml-3",
                             selectedOption ? "text-gray-900" : "text-gray-400",
                         ].join(" ")}
                     >
-                        {selectedOption?.name ?? placeholder}
+                        {selectedOption ? selectedOption[labelField] : placeholder}
                     </Text>
 
                     <Feather
@@ -132,11 +147,11 @@ const StyledDropDown = (
                             >
                                 <FlatList
                                     data={options}
-                                    keyExtractor={(item) => item.id.toString()}
+                                    keyExtractor={(item) => item[valueField]?.toString() || Math.random().toString()}
                                     showsVerticalScrollIndicator={false}
                                     nestedScrollEnabled={true}
                                     renderItem={({item: option}) => {
-                                        const active = option.id === selectedOption?.id;
+                                        const active = option[valueField] === selectedOption?.[valueField];
 
                                         return (
                                             <TouchableOpacity
@@ -150,7 +165,7 @@ const StyledDropDown = (
                                                         active ? "text-gray-900 font-semibold" : "text-gray-900",
                                                     ].join(" ")}
                                                 >
-                                                    {option.name}
+                                                    {option[labelField]}
                                                 </Text>
                                             </TouchableOpacity>
                                         );
@@ -169,4 +184,3 @@ const StyledDropDown = (
 };
 
 export default StyledDropDown;
-

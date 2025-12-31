@@ -26,3 +26,9 @@ export const filterByLike = [
     {id: 'true', name: 'Most'},
     {id: 'false', name: 'Least'}
 ]
+
+export const semesterType = [
+    {id: 'FALL', name: 'Fall'} ,
+    {id: 'SPRING', name: 'Spring'} ,
+    {id: 'SUMMER', name: 'Summer'} ,
+]

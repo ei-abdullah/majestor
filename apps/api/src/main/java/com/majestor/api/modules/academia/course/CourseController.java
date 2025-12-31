@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class CourseController {
     private final CourseService courseService;
 
-    @GetMapping("/getCoursesByFaculty/{userId}")
+    @GetMapping("/getCoursesByUser/{userId}")
     public ResponseEntity<CoursesByUserDTO> getCoursesByFaculty(
             @PathVariable @NotNull @Positive Long userId
     ) {

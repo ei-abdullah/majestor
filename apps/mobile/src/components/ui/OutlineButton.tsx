@@ -8,6 +8,7 @@ type Props = {
     className?: string;
     onPress?: () => void;
     disabled?: boolean;
+    size?: 'default' | 'compact';
 };
 
 const variantStyles: Record<ButtonVariant, { container: string; text: string }> = {
@@ -31,14 +32,16 @@ function OutlineButton(
         variant = "outline",
         className = "",
         onPress,
-        disabled = false
+        disabled = false,
+        size = 'default'
     }: Props) {
     const styles = variantStyles[variant];
+    const heightClass = size === 'compact' ? 'h-16' : 'h-[70px]';
 
     return (
         <Pressable
             onPress={onPress}
-            className={`rounded-xl py-5 ${styles.container} ${disabled ? "opacity-50" : ""} ${className}`}
+            className={`rounded-xl ${heightClass} justify-center ${styles.container} ${disabled ? "opacity-50" : ""} ${className}`}
             style={({pressed}) => ({
                 opacity: pressed && !disabled ? 0.85 : 1,
             })}

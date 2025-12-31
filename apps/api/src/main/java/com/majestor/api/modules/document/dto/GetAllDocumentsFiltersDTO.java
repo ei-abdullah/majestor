@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetAllDocumentsFiltersDTO {
-    private String courseTitle;
+    private String searchQuery;
 
     @Positive(message = "Year must be a positive number")
     private Long year;

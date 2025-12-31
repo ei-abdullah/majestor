@@ -1,6 +1,5 @@
 import React from "react";
 import {View} from "react-native";
-import {SafeAreaView} from "react-native-safe-area-context";
 
 import {Filters} from "@/src/services/document.api";
 import {useAuthStore} from "@/src/stores/authStore";
@@ -20,7 +19,7 @@ function Document() {
     const {user} = useAuthStore();
 
     const [filters, setFilters] = React.useState<Filters>({
-        courseTitle: '',
+        searchQuery: '',
         year: '',
         docType: '',
         sortByLikes: '',
@@ -33,7 +32,7 @@ function Document() {
     function handleSearchQuery(query: string) {
         setFilters({
             ...filters,
-            courseTitle: query
+            searchQuery: query
         });
     }
 
@@ -76,20 +75,22 @@ function Document() {
 
     return (
         <GradientView>
-            <View className="flex-1 pt-8 gap-4 px-6 justify-start mx-2">
+            <View className="flex-1 pt-8 gap-4 justify-start mx-6">
                 <View className={"flex-col gap-4"}>
                     {/*  Search bar and filters  */}
                     <View className={"flex-row items-stretch justify-between gap-2 h-16"}>
                         <SearchBar
-                            value={filters!.courseTitle}
+                            value={filters!.searchQuery}
                             onChange={handleSearchQuery}
                             className={"w-3/4 flex-[2]"}
+                            size={"compact"}
                         />
                         <PrimaryButton
                             icon={"search"}
                             onPress={handleRefetchData}
                             className={"w-1/5 flex-[1]"}
                             disabled={isPending}
+                            size={"compact"}
                         />
                     </View>
                     <View className={"flex-row items-center justify-center gap-2 h-32"}>
@@ -99,14 +100,16 @@ function Document() {
                                 value={filters.docType}
                                 onChange={handleTypeChange}
                                 icon={"book"}
-                                className={""}
+                                className={"h-16"}
+                                size={"compact"}
                             />
                             <StyledDropDown
                                 options={years}
                                 value={filters.year}
                                 onChange={handleYearChange}
                                 icon={"calendar"}
-                                className={""}
+                                className={"h-16"}
+                                size={"compact"}
                             />
                         </View>
                         <View className={"flex-1 gap-2"}>
@@ -115,13 +118,15 @@ function Document() {
                                 value={filters.sortByLikes}
                                 onChange={handleLikeFilterChange}
                                 icon={"heart"}
-                                className={""}
+                                className={"h-16"}
+                                size={"compact"}
                             />
                             <OutlineButton
                                 title={"Reset filters"}
                                 onPress={handleReset}
                                 variant={"destructive"}
                                 className={""}
+                                size={"compact"}
                             />
                         </View>
                     </View>

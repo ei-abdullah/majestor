@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect} from "react";
 import {Text, View} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {isAxiosError} from "axios";
@@ -183,7 +183,6 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                     {errors.university &&
                         <Text className={"text-mj-error text-xs font-semibold"}>University is required.</Text>
                     }
-
                 </View>
                 {
                     <Controller
@@ -237,7 +236,6 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                 title={loading ? "Loading..." : "Create Account"} className={"w-full"} disabled={loading}
                 onPress={handleSubmit(onSubmit)}/>
         </View>
-
     );
 }
 

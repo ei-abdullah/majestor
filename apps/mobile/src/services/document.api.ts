@@ -1,8 +1,8 @@
 import api from "@/src/services/index";
-import axios, {AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 
 export type Filters = {
-    courseTitle?: string;
+    searchQuery?: string;
     year?: string;
     docType?: string;
     sortByLikes?: string;
@@ -17,6 +17,17 @@ export type GetDocumentResponse = {
     course: string;
     likesCount: number;
     imageUri: string;
+}
+
+export const uploadDocumentApi = async (
+    userId: number,
+    formData: FormData
+): Promise<void> => {
+    await api.post(`/document/uploadDocument/${userId}`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
 }
 
 export const getAllDocumentsApi = async (

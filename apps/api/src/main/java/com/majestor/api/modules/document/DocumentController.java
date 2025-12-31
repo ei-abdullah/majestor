@@ -68,7 +68,6 @@ public class DocumentController {
             @PathVariable @NotNull @Positive Long documentId,
             HttpServletResponse response
     ) {
-        System.out.println("downloadDocumentController");
         documentService.downloadDocument(documentId, response);
 
         return ResponseEntity

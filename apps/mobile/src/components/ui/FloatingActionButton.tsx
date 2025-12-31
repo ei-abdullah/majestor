@@ -25,7 +25,7 @@ function FloatingActionButton(
     return (
         <Link href={href} asChild>
             <Pressable
-                className={`absolute bottom-8 right-8 rounded-full shadow-lg ${className}`}
+                className={`absolute bottom-8 rounded-full shadow-lg ${className}`}
                 style={({pressed}) => ({
                     opacity: pressed ? 0.85 : 1,
                 })}
