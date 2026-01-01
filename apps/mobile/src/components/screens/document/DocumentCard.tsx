@@ -15,8 +15,9 @@ function DocumentCard({document}: { document: any }) {
     const {user} = useAuthStore();
     const {
         mutate: likeDocument,
-        isPending: isDownloading
     } = useLikeDocument();
+
+    const {download, isDownloading} = useDownloadDocumentLegacy();
 
     const [showImageModal, setShowImageModal] = React.useState(false);
 
@@ -24,8 +25,8 @@ function DocumentCard({document}: { document: any }) {
         likeDocument({userId, documentId});
     }
 
-    const handleDownload = async (document: any) => {
-        await useDownloadDocumentLegacy({document});
+    const handleDownload = async () => {
+        await download(document);
     }
 
     if (document.id === null || document.id === undefined) {
@@ -72,8 +73,8 @@ function DocumentCard({document}: { document: any }) {
                                     <View className={"bg-white bg-opacity-20 px-5 py-1 rounded-full mr-2"}>
                                         <TouchableOpacity
                                             disabled={isDownloading}
-                                            onPress={() => handleDownload(document)}>
-                                            <Feather name={"download"} size={16} color={'rgba(58,111,248,0.59)'}/>
+                                            onPress={handleDownload}>
+                                            <Feather name={isDownloading ? "loader" : "download"} size={16} color={'rgba(58,111,248,0.59)'}/>
                                         </TouchableOpacity>
                                     </View>
                                 </View>

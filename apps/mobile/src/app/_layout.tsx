@@ -6,17 +6,17 @@ import "./global.css"
 import {useAuthStore} from "@/src/stores/authStore";
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 
-export default function RootLayout() {
-
-    const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
-    const client = new QueryClient({
-        defaultOptions: {
-            queries: {
-                retry: 2,
-                staleTime: 1000 * 60,
-            }
+const client = new QueryClient({
+    defaultOptions: {
+        queries: {
+            retry: 2,
+            staleTime: 1000 * 60,
         }
-    });
+    }
+});
+
+export default function RootLayout() {
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
 
     return (
         <React.Fragment>

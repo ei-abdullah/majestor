@@ -1,7 +1,20 @@
+import {useState, useCallback} from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
 import {getDownloadUrl} from "@/src/services/document.api";
 import {Alert, Platform} from "react-native";
 import {shareAsync} from "expo-sharing";
+
+type Document = {
+    id: number;
+    title: string;
+    documentType: string;
+};
+
+type DownloadState = {
+    isDownloading: boolean;
+    error: string | null;
+    progress: number;
+};
 
 const save = async (uri: string, filename: string, mimetype: string) => {
     if (Platform.OS === "android") {
@@ -20,49 +33,78 @@ const save = async (uri: string, filename: string, mimetype: string) => {
     }
 };
 
-async function useDownloadDocumentLegacy({document}: { document: any }) {
+function useDownloadDocumentLegacy() {
+    const [state, setState] = useState<DownloadState>({
+        isDownloading: false,
+        error: null,
+        progress: 0,
+    });
 
-    try {
-        // Get download endpoint
-        const downloadUrl = getDownloadUrl(document!.id);
+    const download = useCallback(async (document: Document) => {
+        setState({isDownloading: true, error: null, progress: 0});
 
-        // Create unique filename with timestamp to avoid conflicts
-        const timestamp = Date.now();
-        const sanitizedTitle = document.title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
-        const fileName = `${sanitizedTitle}-${document.documentType}-${timestamp}.zip`;
+        try {
+            // Get download endpoint
+            const downloadUrl = getDownloadUrl(document.id);
 
-        // Majestor named folder
-        const folderName = "majestor";
-        const folderUri = FileSystem.documentDirectory + folderName + "/";
+            // Create unique filename with timestamp to avoid conflicts
+            const timestamp = Date.now();
+            const sanitizedTitle = document.title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
+            const fileName = `${sanitizedTitle}-${document.documentType}-${timestamp}.zip`;
 
-        // Ensure the folder exists
-        const folderInfo = await FileSystem.getInfoAsync(folderUri);
-        if (!folderInfo.exists) {
-            await FileSystem.makeDirectoryAsync(folderUri, {intermediates: true});
-        }
+            // Majestor named folder
+            const folderName = "majestor";
+            const folderUri = FileSystem.documentDirectory + folderName + "/";
 
-        // Update the file path
-        const filePath = folderUri + fileName;
-
-        // Unique localhosts for Android and iOS
-        // const localhost = Platform.OS === "android" ? "10.0.2.2" : "127.0.0.1";
-
-        // Download the file
-        const result = await FileSystem.downloadAsync(
-            downloadUrl,
-            filePath,
-            {
-                headers: {
-                    // Add any required headers here
-                }
+            // Ensure the folder exists
+            const folderInfo = await FileSystem.getInfoAsync(folderUri);
+            if (!folderInfo.exists) {
+                await FileSystem.makeDirectoryAsync(folderUri, {intermediates: true});
             }
-        )
 
-        // Save a file to a device or share
-        await save(result.uri, fileName, result.headers["Content-Type"]);
-    } catch (error: any) {
-        Alert.alert("Download Error", error.message || "An error occurred while downloading the document.");
-    }
+            // Update the file path
+            const filePath = folderUri + fileName;
+
+            // Download the file with progress callback
+            const downloadResumable = FileSystem.createDownloadResumable(
+                downloadUrl,
+                filePath,
+                {},
+                (downloadProgress) => {
+                    const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
+                    setState(prev => ({...prev, progress}));
+                }
+            );
+
+            const result = await downloadResumable.downloadAsync();
+
+            if (result) {
+                // Save a file to a device or share
+                await save(result.uri, fileName, result.headers["Content-Type"]);
+                setState({isDownloading: false, error: null, progress: 1});
+            } else {
+                const errorMessage = "Download failed - no result returned";
+                setState({isDownloading: false, error: errorMessage, progress: 0});
+                Alert.alert("Download Error", errorMessage);
+            }
+        } catch (error: any) {
+            const errorMessage = error.message || "An error occurred while downloading the document.";
+            setState({isDownloading: false, error: errorMessage, progress: 0});
+            Alert.alert("Download Error", errorMessage);
+        }
+    }, []);
+
+    const reset = useCallback(() => {
+        setState({isDownloading: false, error: null, progress: 0});
+    }, []);
+
+    return {
+        download,
+        reset,
+        isDownloading: state.isDownloading,
+        error: state.error,
+        progress: state.progress,
+    };
 }
 
 export default useDownloadDocumentLegacy;

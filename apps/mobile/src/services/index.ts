@@ -1,7 +1,6 @@
 import axios from "axios";
 import {useAuthStore} from "@/src/stores/authStore";
 import {getRefreshToken} from "@/src/stores/secureStore";
-import {data} from "browserslist";
 
 
 const api = axios.create({
