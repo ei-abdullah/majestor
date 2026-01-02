@@ -5,6 +5,7 @@ import {getRefreshToken} from "@/src/stores/secureStore";
 
 const api = axios.create({
     baseURL: process.env.EXPO_PUBLIC_API_URL,
+    timeout: 3000
 })
 
 type RefreshTokenResponse = {
