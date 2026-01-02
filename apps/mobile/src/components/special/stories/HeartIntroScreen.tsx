@@ -161,7 +161,7 @@ function HeartIntroScreen() {
             {/* Message */}
             <Animated.View style={[styles.textBlock, textStyle]}>
                 <Text style={styles.messageText}>
-                    "Every heartbeat{"\n"}is a little story{"\n"}of how you{"\n"}make me feel."
+                    ♡⊹✩˚₊‧Every heartbeat{"\n"}is a little story{"\n"}of how you{"\n"}make me feel‧₊˚✩⊹♡
                 </Text>
             </Animated.View>
         </View>
