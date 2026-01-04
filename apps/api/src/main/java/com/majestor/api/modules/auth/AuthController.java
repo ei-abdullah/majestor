@@ -1,5 +1,6 @@
 package com.majestor.api.modules.auth;
 
+import com.majestor.api.infra.emailservice.HtmlPageService;
 import com.majestor.api.modules.auth.dto.AuthResponseDTO;
 import com.majestor.api.modules.auth.dto.LoginRequestDTO;
 import com.majestor.api.modules.auth.dto.RefreshRequestDTO;
@@ -7,7 +8,6 @@ import com.majestor.api.modules.auth.dto.SignupRequestDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -22,6 +22,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AuthService authService;
+    private final HtmlPageService htmlPageService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponseDTO> login(
@@ -42,18 +43,25 @@ public class AuthController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(Map.of("message", "Please verify your email before logging in!\n Check your inbox for verification link."));
+                .body(Map.of("message", "Please verify your email before logging in! Check your inbox for verification link."));
     }
 
     @GetMapping("/signup/verify")
-    public ResponseEntity<?> verifyEmail(
+    public ResponseEntity<String> verifyEmail(
             @RequestParam("token") @NotBlank String token
     ) {
-        authService.verifyEmail(token);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(Map.of("message", "Email verified successfully!"));
+        try {
+            authService.verifyEmail(token);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header("Content-Type", "text/html")
+                    .body(htmlPageService.getVerificationSuccessPage());
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .header("Content-Type", "text/html")
+                    .body(htmlPageService.getVerificationErrorPage(e.getMessage()));
+        }
     }
 
     @PostMapping("/forgetPassword")

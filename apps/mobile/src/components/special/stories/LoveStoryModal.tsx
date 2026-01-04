@@ -7,10 +7,12 @@ import RoseBloomScreen from "./RoseBloomScreen";
 import RainbowScreen from "./RainbowScreen";
 import SunshineScreen from "./SunshineScreen";
 import CloseConfirmModal from "./CloseConfirmModal";
+import {markOnboarded} from "@/src/services/user.api";
+import {useAuthStore} from "@/src/stores/authStore";
 
 const {width, height} = Dimensions.get("window");
 
-const STORY_DURATION = 20000; // 20 seconds total
+const STORY_DURATION = 25000; // 20 seconds total
 
 const storyPages = [
     {key: "intro", component: HeartIntroScreen},
@@ -22,17 +24,30 @@ const storyPages = [
 type LoveStoryModalProps = {
     visible: boolean;
     onClose: () => void;
+    userId: number;
 };
 
-function LoveStoryModal({visible, onClose}: LoveStoryModalProps) {
+function LoveStoryModal({visible, onClose, userId}: LoveStoryModalProps) {
     const scrollX = useRef(new Animated.Value(0)).current;
     const [currentIndex, setCurrentIndex] = useState(0);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [progress, setProgress] = useState(0);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const startTimeRef = useRef<number>(0);
+    const markOnboardedInStore = useAuthStore((state) => state.markOnboarded);
 
-    // Start timer when modal becomes visible
+    // Handle marking a user as onboarded and closing the story
+    const handleStoryComplete = useCallback(async () => {
+        try {
+            await markOnboarded(userId);
+            markOnboardedInStore(); // Update frontend state
+        } catch (error) {
+            console.error("Failed to mark user as onboarded:", error);
+        }
+        onClose();
+    }, [userId, onClose, markOnboardedInStore]);
+
+    // Start the timer when modal becomes visible
     useEffect(() => {
         if (visible) {
             startTimeRef.current = Date.now();
@@ -47,7 +62,7 @@ function LoveStoryModal({visible, onClose}: LoveStoryModalProps) {
 
                 if (newProgress >= 1) {
                     clearInterval(progressInterval);
-                    onClose();
+                    handleStoryComplete();
                 }
             }, 50);
 
@@ -59,7 +74,7 @@ function LoveStoryModal({visible, onClose}: LoveStoryModalProps) {
                 }
             };
         }
-    }, [visible, onClose]);
+    }, [visible, handleStoryComplete]);
 
     // Handle close button press - show confirmation
     const handleClosePress = useCallback(() => {
@@ -73,8 +88,8 @@ function LoveStoryModal({visible, onClose}: LoveStoryModalProps) {
     // Confirm close
     const handleConfirmClose = useCallback(() => {
         setShowConfirmModal(false);
-        onClose();
-    }, [onClose]);
+        handleStoryComplete();
+    }, [handleStoryComplete]);
 
     // Cancel close - resume timer
     const handleCancelClose = useCallback(() => {
@@ -91,12 +106,12 @@ function LoveStoryModal({visible, onClose}: LoveStoryModalProps) {
 
             if (newProgress >= 1) {
                 clearInterval(progressInterval);
-                onClose();
+                handleStoryComplete();
             }
         }, 50);
 
         timerRef.current = progressInterval;
-    }, [progress, onClose]);
+    }, [progress, handleStoryComplete]);
 
     const handleScroll = Animated.event(
         [{nativeEvent: {contentOffset: {x: scrollX}}}],

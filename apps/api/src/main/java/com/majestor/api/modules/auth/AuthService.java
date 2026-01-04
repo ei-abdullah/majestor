@@ -20,6 +20,7 @@ import org.springframework.security.authentication.InsufficientAuthenticationExc
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.sql.Time;
 import java.util.UUID;
@@ -60,7 +61,13 @@ public class AuthService {
 
         userRepository.save(user);
 
-        emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+        // Build URL in the request context before async execution
+        String verificationUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/v1/auth/signup/verify")
+                .queryParam("token", verificationToken)
+                .toUriString();
+
+        emailService.sendVerificationEmail(user.getEmail(), verificationUrl);
     }
 
     public void verifyEmail(
@@ -84,12 +91,14 @@ public class AuthService {
     public AuthResponseDTO login(
             LoginRequestDTO request
     ) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + request.getEmail()));
+        String lowerCasedEmail = request.getEmail().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(lowerCasedEmail)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + lowerCasedEmail));
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
+                        lowerCasedEmail,
                         request.getPassword()
                 )
         );
@@ -132,7 +141,6 @@ public class AuthService {
         return authMapper.toAuthResponseDTO(accessToken, refreshToken, authUserDTO);
 
     }
-
 
     public void forgetPassword(String email) {
         /*

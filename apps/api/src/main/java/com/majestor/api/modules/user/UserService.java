@@ -6,6 +6,7 @@ import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
 import com.majestor.api.modules.utils.Utils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -118,5 +119,14 @@ public class UserService {
                 throw new RuntimeException("Invalid avatar file: " + e.getMessage(), e);
             }
         }
+    }
+
+    @Transactional
+    public void markOnboarded(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+
+        user.setHasOnboarded(Boolean.TRUE);
+        userRepository.save(user);
     }
 }

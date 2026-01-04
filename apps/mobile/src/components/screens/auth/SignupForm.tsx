@@ -8,7 +8,7 @@ import {signup} from "@/src/services/auth.api";
 
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
-import StyledAuthModal from "@/src/components/screens/auth/StyledAuthModal";
+import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
 
 type option = {
     name: "error" | "success";
@@ -190,7 +190,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                         name="university"
                         rules={{required: true}}
                         render={({field: {onChange, value}}) => (
-                            <StyledAuthModal
+                            <StyledModalWithSearch
                                 value={value}
                                 onChange={onChange}
                                 options={universities}
@@ -218,7 +218,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                             name="faculty"
                             rules={{required: true}}
                             render={({field: {onChange, value}}) => (
-                                <StyledAuthModal
+                                <StyledModalWithSearch
                                     value={value}
                                     onChange={onChange}
                                     options={faculties}

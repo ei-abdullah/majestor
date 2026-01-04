@@ -293,12 +293,13 @@ public class DataInitializer implements CommandLineRunner {
         University firstUniversity = universityRepository.findAll().get(0);
         Faculty firstFaculty = facultyRepository.findAll().get(0);
 
-        User adminUser = User.builder()
+        User adminUser1 = User.builder()
                 .email("abdullah@gmail.com")
                 .username("abdullah_admin")
                 .passwordHash(passwordEncoder.encode("admin"))
                 .phone("03000000000")
                 .avatar("")
+                .hasOnboarded(Boolean.FALSE)
                 .university(firstUniversity)
                 .studentFaculty(firstFaculty)
                 .roles(List.of(Role.ADMIN))
@@ -306,7 +307,22 @@ public class DataInitializer implements CommandLineRunner {
                 .verificationToken(null)
                 .build();
 
-        userRepository.save(adminUser);
+        User adminUser2 = User.builder()
+                .email("bcs233188@cust.pk")
+                .username("Abdullah")
+                .passwordHash(passwordEncoder.encode("admin"))
+                .phone("03000000000")
+                .avatar("")
+                .hasOnboarded(Boolean.FALSE)
+                .university(firstUniversity)
+                .studentFaculty(firstFaculty)
+                .roles(List.of(Role.ADMIN))
+                .isVerified(true)
+                .verificationToken(null)
+                .build();
+
+        userRepository.save(adminUser1);
+        userRepository.save(adminUser2);
         log.info("Created admin user with email: abdullah@gmail.com");
     }
 
@@ -333,7 +349,6 @@ public class DataInitializer implements CommandLineRunner {
                         .username("jane_smith")
                         .passwordHash(passwordEncoder.encode("password123"))
                         .phone("03091234568")
-                        .avatar("")
                         .university(universities.get(random.nextInt(universities.size())))
                         .studentFaculty(faculties.get(random.nextInt(faculties.size())))
                         .roles(List.of(Role.STUDENT))

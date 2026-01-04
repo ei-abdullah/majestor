@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, useCallback} from "react";
 import {
     Pressable,
     View,
@@ -27,7 +27,31 @@ type Props = {
     size?: 'default' | 'compact';
 };
 
-const StyledAuthModal = (
+// Memoized list item component for better performance
+const ListItem = React.memo(({
+    item,
+    isSelected,
+    onPress
+}: {
+    item: Option;
+    isSelected: boolean;
+    onPress: () => void;
+}) => (
+    <TouchableOpacity
+        onPress={onPress}
+        className="py-4 border-b border-gray-50 flex-row justify-between items-center"
+    >
+        <Text
+            className={`text-base flex-1 ${isSelected ? "text-mj-primary font-bold" : "text-gray-900"}`}>
+            {item.name}
+        </Text>
+        {isSelected && (
+            <Feather name="check-circle" size={20} color="#4CB8AD"/>
+        )}
+    </TouchableOpacity>
+));
+
+const StyledModalWithSearch = (
     {
         value,
         onChange,
@@ -50,11 +74,30 @@ const StyledAuthModal = (
         );
     }, [options, search]);
 
-    const handleSelect = (option: Option) => {
+    const handleSelect = useCallback((option: Option) => {
         onChange(option.id);
         setIsVisible(false);
         setSearch("");
-    };
+    }, [onChange]);
+
+    const renderItem = useCallback(({item}: {item: Option}) => {
+        const isSelected = item.id === value;
+        return (
+            <ListItem
+                item={item}
+                isSelected={isSelected}
+                onPress={() => handleSelect(item)}
+            />
+        );
+    }, [value, handleSelect]);
+
+    const keyExtractor = useCallback((item: Option) => item.id.toString(), []);
+
+    const getItemLayout = useCallback((_data: ArrayLike<Option> | null | undefined, index: number) => ({
+        length: 57, // Approximate height of each item (py-4 + border)
+        offset: 57 * index,
+        index,
+    }), []);
 
     return (
         <View>
@@ -114,31 +157,21 @@ const StyledAuthModal = (
                         {/* List */}
                         <FlatList
                             data={filtered}
-                            keyExtractor={(item) => item.id.toString()}
+                            keyExtractor={keyExtractor}
+                            renderItem={renderItem}
                             contentContainerStyle={{paddingHorizontal: 24, paddingBottom: 24}}
                             keyboardShouldPersistTaps="handled"
+                            removeClippedSubviews={true}
+                            maxToRenderPerBatch={10}
+                            updateCellsBatchingPeriod={50}
+                            initialNumToRender={10}
+                            windowSize={10}
+                            getItemLayout={getItemLayout}
                             ListEmptyComponent={
                                 <View className="mt-10 items-center">
                                     <Text className="text-gray-400">No results found</Text>
                                 </View>
                             }
-                            renderItem={({item}) => {
-                                const isSelected = item.id === value;
-                                return (
-                                    <TouchableOpacity
-                                        onPress={() => handleSelect(item)}
-                                        className="py-4 border-b border-gray-50 flex-row justify-between items-center"
-                                    >
-                                        <Text
-                                            className={`text-base flex-1 ${isSelected ? "text-mj-primary font-bold" : "text-gray-900"}`}>
-                                            {item.name}
-                                        </Text>
-                                        {isSelected && (
-                                            <Feather name="check-circle" size={20} color="#4CB8AD"/>
-                                        )}
-                                    </TouchableOpacity>
-                                );
-                            }}
                         />
                     </View>
                 </KeyboardAvoidingView>
@@ -147,4 +180,4 @@ const StyledAuthModal = (
     );
 };
 
-export default StyledAuthModal;
+export default StyledModalWithSearch;

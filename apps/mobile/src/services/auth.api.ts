@@ -1,5 +1,6 @@
 import api from "@/src/services/index";
 import {AxiosResponse} from "axios";
+import {AuthUser} from "@/src/stores/authStore";
 
 type LoginPayload = {
     email: string;
@@ -15,14 +16,7 @@ type SignupPayload = {
 }
 
 type LoginResponse = {
-    authUserDTO: {
-        id: number;
-        email: string;
-        username: string;
-        universityId: number;
-        facultyId: number;
-        roles: string[];
-    },
+    authUserDTO: AuthUser,
     accessToken: string;
     refreshToken: string;
 }

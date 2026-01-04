@@ -19,6 +19,7 @@ import GradientView from "@/src/components/ui/GradientView";
 import ImageUpload from "@/src/components/ui/ImageUpload";
 import ImageCarousel from "@/src/components/ui/ImageCarousel";
 import OutlineButton from "@/src/components/ui/OutlineButton";
+import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
 
 
 function UploadDocument() {
@@ -153,12 +154,13 @@ function UploadDocument() {
                                 name="courseId"
                                 rules={{required: true}}
                                 render={({field: {onChange, value}}) => (
-                                    <StyledDropDown
+                                    <StyledModalWithSearch
                                         value={value}
                                         onChange={onChange}
                                         options={courses?.data.courses || []}
                                         placeholder={"Select course"}
                                         icon={"book"}
+                                        label={"Courses"}
                                     />
                                 )}
                             />

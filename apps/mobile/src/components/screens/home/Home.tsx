@@ -10,8 +10,6 @@ import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 import {cssInterop} from "nativewind";
 import {router} from "expo-router";
-import LoveStoryModal from "@/src/components/special/stories/LoveStoryModal";
-import HeartRippleButton from "@/src/components/special/HeartRippleButton";
 
 cssInterop(LinearGradient, {
     className: "style",
@@ -23,7 +21,7 @@ function Home() {
     const [showStory, setShowStory] = useState(false);
 
     if (isPending) {
-        return <LoadingIndicator />;
+        return <LoadingIndicator/>;
     }
 
     const quickActions = [
@@ -67,18 +65,14 @@ function Home() {
                                 <UserAvatar
                                     avatarUrl={userDetails?.avatar || null}
                                     username={userDetails?.username || "User"}
-                                    onAvatarUpdate={() => {}}
+                                    onAvatarUpdate={() => {
+                                    }}
                                     size={56}
                                     showCamera={false}
                                     editable={false}
                                 />
                             </Pressable>
                         </View>
-                    </View>
-
-                    {/* Special Heart Button */}
-                    <View className="items-center mb-8">
-                        <HeartRippleButton onPress={() => setShowStory(true)} size={50} />
                     </View>
 
                     {/* University Card */}
@@ -90,7 +84,7 @@ function Home() {
                             className="px-5 py-6"
                         >
                             <View className="flex-row items-center mb-2">
-                                <Feather name="award" size={18} color="white" />
+                                <Feather name="award" size={18} color="white"/>
                                 <Text className="text-white/80 text-xs ml-2 uppercase tracking-wide">
                                     Your Faculty
                                 </Text>
@@ -116,7 +110,7 @@ function Home() {
                                 >
                                     <Card className="items-center py-6">
                                         <View className="bg-blue-50 rounded-full p-4 mb-3">
-                                            <Feather name={action.icon} size={24} color="#3A6FF8" />
+                                            <Feather name={action.icon} size={24} color="#3A6FF8"/>
                                         </View>
                                         <Text className="text-sm font-medium text-gray-700">
                                             {action.title}
@@ -141,7 +135,7 @@ function Home() {
                             <Card className="p-4">
                                 <View className="flex-row items-center">
                                     <View className="bg-blue-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="file-text" size={20} color="#3A6FF8" />
+                                        <Feather name="file-text" size={20} color="#3A6FF8"/>
                                     </View>
                                     <View className="flex-1">
                                         <Text className="text-sm font-semibold text-gray-900 mb-1">
@@ -156,7 +150,7 @@ function Home() {
                             <Card className="p-4 mt-3">
                                 <View className="flex-row items-center">
                                     <View className="bg-green-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="upload" size={20} color="#10B981" />
+                                        <Feather name="upload" size={20} color="#10B981"/>
                                     </View>
                                     <View className="flex-1">
                                         <Text className="text-sm font-semibold text-gray-900 mb-1">
@@ -171,7 +165,7 @@ function Home() {
                             <Card className="p-4 mt-3">
                                 <View className="flex-row items-center">
                                     <View className="bg-purple-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="bookmark" size={20} color="#8B5CF6" />
+                                        <Feather name="bookmark" size={20} color="#8B5CF6"/>
                                     </View>
                                     <View className="flex-1">
                                         <Text className="text-sm font-semibold text-gray-900 mb-1">
@@ -189,18 +183,13 @@ function Home() {
                         onPress={clearSession}
                         className="bg-white rounded-2xl p-4 flex-row items-center justify-center border border-gray-100"
                     >
-                        <Feather name="log-out" size={18} color="#6B7280" />
+                        <Feather name="log-out" size={18} color="#6B7280"/>
                         <Text className="text-gray-700 font-medium ml-2">
                             Logout
                         </Text>
                     </Pressable>
                 </View>
             </ScrollView>
-
-            <LoveStoryModal
-                visible={showStory}
-                onClose={() => setShowStory(false)}
-            />
         </GradientView>
     );
 }

@@ -12,6 +12,8 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Map;
+
 @Validated
 @RestController
 @RequestMapping("/api/v1/user")
@@ -56,5 +58,16 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    @PatchMapping("/markOnboarded/{userId}")
+    public ResponseEntity<?> markOnboarded(
+            @PathVariable @NotNull @Positive Long userId
+    ) {
+        userService.markOnboarded(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("message", "User marked as onboarded successfully!"));
     }
 }
