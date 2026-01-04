@@ -1,16 +1,16 @@
-import {useAuthStore} from "@/src/stores/authStore";
-import React from "react";
-import {Filters} from "@/src/services/document.api";
-import {useDocument} from "@/src/queries/document.queries";
+const generateYearList = () => {
+    const startYear = new Date().getFullYear();
+    const endYear = 2007;
+    const years = [];
 
-export const years = [
-    {id: '2019', name: '2019'},
-    {id: '2020', name: '2020'},
-    {id: '2021', name: '2021'},
-    {id: '2022', name: '2022'},
-    {id: '2023', name: '2023'},
-    {id: '2024', name: '2024'},
-]
+    for (let year = startYear; year >= endYear; year--) {
+        years.push({id: year.toString(), name: year.toString()});
+    }
+
+    return years;
+}
+
+export const years = generateYearList();
 
 export const type = [
     {id: 'PAST_PAPER', name: 'Past Paper'},
@@ -28,7 +28,7 @@ export const filterByLike = [
 ]
 
 export const semesterType = [
-    {id: 'FALL', name: 'Fall'} ,
-    {id: 'SPRING', name: 'Spring'} ,
-    {id: 'SUMMER', name: 'Summer'} ,
+    {id: 'FALL', name: 'Fall'},
+    {id: 'SPRING', name: 'Spring'},
+    {id: 'SUMMER', name: 'Summer'},
 ]
