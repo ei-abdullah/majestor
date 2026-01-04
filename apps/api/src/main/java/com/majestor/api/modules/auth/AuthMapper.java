@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Component
@@ -35,6 +36,7 @@ public class AuthMapper {
                 .id(user.getId())
                 .email(user.getEmail())
                 .username(user.getUsername())
+                .hasOnboarded(user.getHasOnboarded())
                 .universityId(user.getUniversity().getId())
                 .facultyId(user.getStudentFaculty().getId())
                 .roles(user.getRoles())
@@ -53,12 +55,15 @@ public class AuthMapper {
     public User toUser(SignupRequestDTO request, University university, Faculty faculty, List<Role> roles) {
         return User
                 .builder()
-                .email(request.getEmail())
+                .email(request.getEmail().trim().toLowerCase())
                 .username(request.getUsername())
                 .passwordHash(bCryptPasswordEncoder.encode(request.getPassword()))
+                .hasOnboarded(Boolean.FALSE)
                 .university(university)
                 .studentFaculty(faculty)
                 .roles(roles)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

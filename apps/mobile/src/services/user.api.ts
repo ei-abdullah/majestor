@@ -46,3 +46,6 @@ export const updateUserDetailsApi = async (userId: number, details: {
         }
     });
 }
+
+export const markOnboarded = async (userId: number): Promise<void> =>
+    api.patch(`/user/markOnboarded/${userId}`)

@@ -57,8 +57,9 @@ spring:
   profiles:
     active: DEV
 
-#logging:
-#  level:
-#    root: ERROR
-#    org.springframework.web: DEBUG
-#    org.hibernate: DEBUG
+logging:
+  level:
+    root: INFO
+    com.majestor.api.infra.emailservice: DEBUG
+    org.springframework.mail: DEBUG
+    org.springframework.scheduling: DEBUG
