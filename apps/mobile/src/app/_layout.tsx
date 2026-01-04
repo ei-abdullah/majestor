@@ -1,10 +1,11 @@
-import {Stack} from "expo-router";
 import React from "react";
+import {Stack} from "expo-router";
+import Toast from "react-native-toast-message";
+import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 
 import "./global.css"
 
 import {useAuthStore} from "@/src/stores/authStore";
-import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 
 const client = new QueryClient({
     defaultOptions: {
@@ -32,6 +33,9 @@ export default function RootLayout() {
 
                 </Stack>
             </QueryClientProvider>
+            <Toast
+                position={'top'}
+            />
         </React.Fragment>
     )
 }

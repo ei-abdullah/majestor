@@ -19,9 +19,17 @@ function DocumentList(
         onRefetch,
     }: DocumentListProps) {
 
-    if (isPending) return <LoadingIndicator/>
+    const [isRefreshing, setIsRefreshing] = React.useState(false);
 
-    if (isError) return <ErrorNotLoad/>
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        onRefetch();
+        setIsRefreshing(false);
+    };
+
+    if (isPending && !isRefreshing) return <LoadingIndicator/>
+
+    if (isError) return <ErrorNotLoad onRefetch={handleRefresh} isRefreshing={isRefreshing}/>
 
     return (
         <FlatList
