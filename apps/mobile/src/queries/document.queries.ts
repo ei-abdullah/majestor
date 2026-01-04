@@ -1,3 +1,4 @@
+import React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 
@@ -9,11 +10,24 @@ import {
 } from "@/src/services/document.api";
 
 export const useDocument = (userId: number, filters: Filters) => {
-    return useQuery({
+    const query = useQuery({
         queryKey: ["document", userId, filters],
         queryFn: () => getAllDocumentsApi(userId, filters),
         enabled: Boolean(userId),
-    })
+        retry: 2,
+    });
+
+    // Show toast on error
+    React.useEffect(() => {
+        if (query.error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Failed to Load Documents'
+            });
+        }
+    }, [query.error]);
+
+    return query;
 }
 
 export const useUploadDocument = (onSuccessCallback?: () => void) => {
@@ -38,6 +52,8 @@ export const useUploadDocument = (onSuccessCallback?: () => void) => {
                 type: 'error',
                 text1: 'Upload Failed',
                 text2: error?.response?.data?.message || error?.message || 'There was an error uploading your document',
+                position: 'top',
+                visibilityTime: 4000,
             });
         }
     })

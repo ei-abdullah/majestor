@@ -8,7 +8,6 @@ import Animated, {
     Easing
 } from 'react-native-reanimated';
 import {AntDesign} from "@expo/vector-icons";
-import GradientView from "@/src/components/ui/GradientView";
 
 const LoadingIndicator = () => {
     const rotation = useSharedValue(0);
@@ -29,11 +28,11 @@ const LoadingIndicator = () => {
     }));
 
     return (
-        <GradientView className="flex-1 justify-center items-center bg-transparent">
+        <View className="flex-1 justify-center items-center bg-transparent">
             <Animated.View style={animatedStyle}>
                 <AntDesign name={"loading"} size={60} color={"#3A6FF8"} />
             </Animated.View>
-        </GradientView>
+        </View>
     );
 };
 
