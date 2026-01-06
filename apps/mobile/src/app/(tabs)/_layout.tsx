@@ -3,6 +3,7 @@ import {Tabs} from "expo-router";
 import {StatusBar} from "expo-status-bar";
 import {Feather} from "@expo/vector-icons";
 import {Platform} from "react-native";
+import {LinearGradient} from "expo-linear-gradient";
 
 export default function TabsLayout() {
     return (
@@ -15,12 +16,12 @@ export default function TabsLayout() {
                     popToTopOnBlur: true,
                     headerShown: false,
                     tabBarStyle: {
-                        height: 80,
+                        height: 90,
                         backgroundColor: "white",
                         borderTopWidth: 1,
                         borderTopColor: "#E6EBF5",
-                        paddingBottom: Platform.OS === "android" ? 20 : 0,
-                        paddingTop: Platform.OS === "android" ? 20 : 0
+                        paddingBottom: Platform.OS === "android" ? 20 : 10,
+                        paddingTop: Platform.OS === "android" ? 20 : 10
                     }
                 }}
             >
@@ -30,11 +31,32 @@ export default function TabsLayout() {
                         title: "Home",
                         headerShown: false,
                         tabBarIcon: ({focused, color, size}) => (
-                            <Feather
-                                name={"home"}
-                                size={size}
-                                color={color}
-                            />
+                            focused ? (
+                                <LinearGradient
+                                    colors={["#3A6FF8", "#8DDDD3"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: 12,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <Feather
+                                        name={"home"}
+                                        size={size}
+                                        color={"white"}
+                                    />
+                                </LinearGradient>
+                            ) : (
+                                <Feather
+                                    name={"home"}
+                                    size={size}
+                                    color={color}
+                                />
+                            )
                         )
                     }}
                 />
@@ -43,11 +65,32 @@ export default function TabsLayout() {
                     options={{
                         title: "Document",
                         tabBarIcon: ({focused, color, size}) => (
-                            <Feather
-                                name={"file"}
-                                size={size}
-                                color={color}
-                            />
+                            focused ? (
+                                <LinearGradient
+                                    colors={["#3A6FF8", "#8DDDD3"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: 12,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <Feather
+                                        name={"file"}
+                                        size={size}
+                                        color={"white"}
+                                    />
+                                </LinearGradient>
+                            ) : (
+                                <Feather
+                                    name={"file"}
+                                    size={size}
+                                    color={color}
+                                />
+                            )
                         )
                     }}
                 />
@@ -57,11 +100,32 @@ export default function TabsLayout() {
                     options={{
                         title: "Settings",
                         tabBarIcon: ({focused, color, size}) => (
-                            <Feather
-                                name={"user"}
-                                size={size}
-                                color={color}
-                            />
+                            focused ? (
+                                <LinearGradient
+                                    colors={["#3A6FF8", "#8DDDD3"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: 12,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <Feather
+                                        name={"user"}
+                                        size={size}
+                                        color={"white"}
+                                    />
+                                </LinearGradient>
+                            ) : (
+                                <Feather
+                                    name={"user"}
+                                    size={size}
+                                    color={color}
+                                />
+                            )
                         )
                     }}
                 />
