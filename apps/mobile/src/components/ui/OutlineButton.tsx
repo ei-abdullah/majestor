@@ -21,8 +21,8 @@ const variantStyles: Record<ButtonVariant, { container: string; text: string }> 
         text: "text-red-600",
     },
     secondary: {
-        container: "bg-gray-100 border-gray-300 border-2",
-        text: "text-gray-700",
+        container: "bg-white",
+        text: "text-mj-blue",
     },
 };
 

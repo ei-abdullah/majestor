@@ -10,6 +10,7 @@ import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 import {cssInterop} from "nativewind";
 import {router} from "expo-router";
+import OutlineButton from "@/src/components/ui/OutlineButton";
 
 cssInterop(LinearGradient, {
     className: "style",
@@ -121,73 +122,12 @@ function Home() {
                         </View>
                     </View>
 
-                    {/* Recent Activity */}
-                    <View className="mb-8">
-                        <View className="flex-row items-center justify-between mb-4">
-                            <Text className="text-xl font-bold text-gray-900">Recent</Text>
-                            <Pressable>
-                                <Text className="text-sm text-blue-600 font-medium">View All</Text>
-                            </Pressable>
-                        </View>
-
-                        <View className="space-y-3">
-                            {/* Activity Item 1 */}
-                            <Card className="p-4">
-                                <View className="flex-row items-center">
-                                    <View className="bg-blue-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="file-text" size={20} color="#3A6FF8"/>
-                                    </View>
-                                    <View className="flex-1">
-                                        <Text className="text-sm font-semibold text-gray-900 mb-1">
-                                            Data Structures Notes
-                                        </Text>
-                                        <Text className="text-xs text-gray-500">2 hours ago</Text>
-                                    </View>
-                                </View>
-                            </Card>
-
-                            {/* Activity Item 2 */}
-                            <Card className="p-4 mt-3">
-                                <View className="flex-row items-center">
-                                    <View className="bg-green-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="upload" size={20} color="#10B981"/>
-                                    </View>
-                                    <View className="flex-1">
-                                        <Text className="text-sm font-semibold text-gray-900 mb-1">
-                                            OS Lab Report
-                                        </Text>
-                                        <Text className="text-xs text-gray-500">Yesterday</Text>
-                                    </View>
-                                </View>
-                            </Card>
-
-                            {/* Activity Item 3 */}
-                            <Card className="p-4 mt-3">
-                                <View className="flex-row items-center">
-                                    <View className="bg-purple-50 rounded-2xl p-3 mr-4">
-                                        <Feather name="bookmark" size={20} color="#8B5CF6"/>
-                                    </View>
-                                    <View className="flex-1">
-                                        <Text className="text-sm font-semibold text-gray-900 mb-1">
-                                            Database Design
-                                        </Text>
-                                        <Text className="text-xs text-gray-500">2 days ago</Text>
-                                    </View>
-                                </View>
-                            </Card>
-                        </View>
-                    </View>
-
                     {/* Logout Button */}
-                    <Pressable
+                    <OutlineButton
+                        title={"Logout"}
                         onPress={clearSession}
-                        className="bg-white rounded-2xl p-4 flex-row items-center justify-center border border-gray-100"
-                    >
-                        <Feather name="log-out" size={18} color="#6B7280"/>
-                        <Text className="text-gray-700 font-medium ml-2">
-                            Logout
-                        </Text>
-                    </Pressable>
+                        variant={'secondary'}
+                    />
                 </View>
             </ScrollView>
         </GradientView>
