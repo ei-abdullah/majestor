@@ -26,7 +26,10 @@ public class GetUserDetailsResponseDTO {
     private String avatar;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email format")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@cust\\.pk$",
+            message = "Invalid email address"
+    )
     private String email;
 
     @NotBlank(message = "Phone is required")

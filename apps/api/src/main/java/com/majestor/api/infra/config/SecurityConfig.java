@@ -2,13 +2,12 @@ package com.majestor.api.infra.config;
 
 import com.majestor.api.infra.jwt.JwtFilter;
 import com.majestor.api.modules.auth.CustomUserDetailsService;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -27,44 +26,56 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
-@AllArgsConstructor
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
     private final JwtFilter jwtFilter;
 
+    @Value("${spring.profiles.active:}")
+    private String activeProfile;
+
+    public SecurityConfig(
+            CustomUserDetailsService userDetailsService,
+            JwtFilter jwtFilter
+    ) {
+        this.userDetailsService = userDetailsService;
+        this.jwtFilter = jwtFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-//                .cors(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(request ->
-                        request
-                                .requestMatchers(
-                                        "/api/v1/auth/**",
-                                        "/api/**"
-                                )
-                                .permitAll()
+                .authorizeHttpRequests(request -> {
+                    var config = request
+                            .requestMatchers(
+                                    "/api/v1/auth/login",
+                                    "/api/v1/auth/signup",
+                                    "/api/v1/auth/forgetPassword",
+                                    "/api/v1/auth/signup/verify",
+                                    "/api/v1/auth/refresh",
+                                    "/api/v1/university/getWithFaculties"
+                            )
+                            .permitAll();
+
+                    if (isDevProfile()) {
+                        config = config
                                 .requestMatchers(
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**"
-                                )
-                                .permitAll()
-                                .requestMatchers(
-                                        "secured-apis/"
-                                )
-                                .authenticated()
-                )
+                                ).permitAll();
+                    }
+
+                    config.anyRequest().authenticated();
+                })
                 .sessionManagement(session ->
-                        session
-                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
-    //    @PreAuthorize("hasAnyRole('FACULTY', 'STUDENT_CREATORS')")
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
@@ -95,5 +106,12 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
+    }
+
+    public boolean isDevProfile() {
+        return activeProfile != null && (
+                activeProfile.toUpperCase().contains("DEV") ||
+                        activeProfile.toLowerCase().contains("dev")
+        );
     }
 }

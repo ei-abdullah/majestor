@@ -9,6 +9,8 @@ import {saveRefreshToken} from "@/src/stores/secureStore";
 import {useAuthStore} from "@/src/stores/authStore";
 import {login} from "@/src/services/auth.api";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
+import {validateCustEmail} from "@/src/utils/validation";
+import ErrorText from "@/src/components/ui/ErrorText";
 
 
 type option = {
@@ -79,20 +81,25 @@ function LoginForm({loading, setLoading, setMessage}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
                     <Text className={"font-semibold"}>University Email</Text>
-                    {errors.email &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>Email is required.</Text>
+                    {
+                        errors.email &&
+                        <ErrorText message={errors.email.message as string}/>
                     }
                 </View>
                 <Controller
                     control={control}
                     name="email"
-                    rules={{required: true}}
+                    rules={{
+                        required: "Email is required",
+                        validate: validateCustEmail
+                    }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
-                            placeholder={"you@cust.pk"}
+                            placeholder={"BCS233000@cust.pk"}
                             icon="mail"
                             onChangeText={onChange}
+                            keyboardType="email-address"
                         />
                     )}
                 />
@@ -101,15 +108,18 @@ function LoginForm({loading, setLoading, setMessage}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
                     <Text className={"font-semibold"}>Password</Text>
-                    {errors.password &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>Password is required.</Text>
+                    {
+                        errors.password &&
+                        <ErrorText message={errors.password.message as string}/>
                     }
 
                 </View>
                 <Controller
                     control={control}
                     name="password"
-                    rules={{required: true}}
+                    rules={{
+                        required: {value: true, message: "Password is required"}
+                    }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}

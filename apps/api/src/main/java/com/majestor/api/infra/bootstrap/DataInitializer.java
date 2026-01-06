@@ -6,16 +6,6 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
-import com.majestor.api.modules.lostfound.founder.Founder;
-import com.majestor.api.modules.lostfound.founder.FounderRepository;
-import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImage;
-import com.majestor.api.modules.lostfound.founder.founditemimage.FoundItemImageRepository;
-import com.majestor.api.modules.lostfound.lostitem.LostItem;
-import com.majestor.api.modules.lostfound.lostitem.LostItemRepository;
-import com.majestor.api.modules.lostfound.lostitem.Status;
-import com.majestor.api.modules.lostfound.lostitem.lostitemimage.LostItemImage;
-import com.majestor.api.modules.lostfound.lostitem.lostitemimage.LostItemImageRepository;
-import com.majestor.api.modules.lostfound.shared.LastLocation;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -28,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 @Slf4j
 @Component
@@ -38,50 +27,23 @@ public class DataInitializer implements CommandLineRunner {
     private final UniversityRepository universityRepository;
     private final FacultyRepository facultyRepository;
     private final UserRepository userRepository;
-    private final LostItemRepository lostItemRepository;
-    private final LostItemImageRepository lostItemImageRepository;
-    private final FounderRepository founderRepository;
-    private final FoundItemImageRepository foundItemImageRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
 
     @Override
     @Transactional
     public void run(String... args) {
-        log.info("Starting data initialization...");
 
         if (universityRepository.count() == 0) {
             initializeUniversitiesAndFaculties();
-            log.info("Universities and faculties initialized successfully!");
-        } else {
-            log.info("Universities already exist, skipping initialization");
         }
 
-        if (userRepository.findByEmail("abdullah@gmail.com").isEmpty()) {
+        if (userRepository.findByEmail("bcs233188@cust.pk").isEmpty()) {
             initializeAdminUser();
-            log.info("Admin user initialized successfully!");
-        } else {
-            log.info("Admin user already exists, skipping initialization");
-        }
-
-        if (userRepository.count() < 5) { // Only if we have less than 5 users
-            initializeSampleUsers();
-            log.info("Sample users initialized successfully!");
-        } else {
-            log.info("Sample users already exist, skipping initialization");
-        }
-
-        if (lostItemRepository.count() == 0) {
-            initializeLostItemsAndFounders();
-            log.info("Lost items and founders initialized successfully!");
-        } else {
-            log.info("Lost items already exist, skipping initialization");
         }
 
         if (courseRepository.count() == 0) {
             initializeCourses();
-        } else {
-            log.info("Courses already exist, skipping initialization");
         }
     }
 
@@ -91,170 +53,81 @@ public class DataInitializer implements CommandLineRunner {
         List<Course> courses = new ArrayList<>();
 
         for (Faculty faculty : faculties) {
-            switch (faculty.getName()) {
-                case "Faculty of Computing" -> {
-                    // Computing courses
-                    courses.add(Course.builder().name("Introduction to Programming").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Programming Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Ideology and Constitution of Pakistan").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Functional English").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Calculus and Analytic Geometry").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Application of Information & Communication Technologies").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Application of Information & Communication Technologies Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Object Oriented Programming").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Object Oriented Programming Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Applied Physics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Applied Physics Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Expository Writing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Sociology").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Discrete Structures").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Islamic Studies / Ethics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Fehm-ul-Quran I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Data Structures").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Data Structures Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Database Systems").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Database Systems Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Linear Algebra").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Personal Grooming").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Digital Logic Design").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Digital Logic Design Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Fehm-ul-Quran II").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Organization and Assembly Language").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Organization and Assembly Language Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Entrepreneurship").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Database Management Systems").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Database Management Systems Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pakistan Studies").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Probability & Statistics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Civics and Professional Ethics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Multi-Variate Calculus").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Design and Analysis of Algorithms").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Operating Systems").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Operating Systems Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Software Engineering").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Networks").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Networks Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Graph Algorithm").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Architecture").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Architecture Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Parallel and Distributing Computing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Parallel and Distributing Computing Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Artificial Intelligence").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Artificial Intelligence Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Technical and Business Writing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Web Application Development").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Web Application Development Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Information Security and Forensics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Information Security and Forensics Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Numerical Computing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Numerical Computing Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Mobile Application Development").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Mobile Application Development Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Machine Learning").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Human Computer Interaction").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Human Computer Interaction Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Design Project 1").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Theory of Automata and Formal Languages").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Design Project 2").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Introduction to Data Warehousing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Compiler Construction").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Compiler Construction Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Financial Accounting").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Blockchain Technology").facultyCourses(faculty).build());
-                }
-                case "Faculty of Pharmacy" -> {
-                    // Pharmacy courses
-                    courses.add(Course.builder().name("Pharmaceutical Chemistry I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Chemistry I Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Human Anatomy and Physiology I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Human Anatomy and Physiology I Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutics I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutics I Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Biochemistry").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Biochemistry Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Microbiology").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Microbiology Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacology I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacology I Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Medicinal Chemistry I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Medicinal Chemistry I Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Analysis").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Analysis Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pathophysiology").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacology II").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacology II Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Technology").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Technology Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacognosy").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacognosy Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Biotechnology").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Clinical Pharmacy I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacotherapeutics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Jurisprudence").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmaceutical Marketing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Hospital and Community Pharmacy").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Clinical Pharmacy II").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Drug Regulatory Affairs").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Pharmacy Practice").facultyCourses(faculty).build());
-                }
-                case "Faculty of Engineering" -> {
-                    // Engineering courses
-                    courses.add(Course.builder().name("Engineering Drawing").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Engineering Drawing Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Engineering Mechanics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Thermodynamics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Electrical Circuits and Machines").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Electrical Circuits and Machines Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Workshop Practice").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Strength of Materials").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Fluid Mechanics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Fluid Mechanics Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Material Science and Engineering").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Material Science and Engineering Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Electronics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Electronics Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Engineering Economics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Machine Design I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Manufacturing Processes").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Manufacturing Processes Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Heat Transfer").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Heat Transfer Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Control Systems").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Control Systems Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Numerical Methods").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Aided Design").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Computer Aided Design Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Machine Design II").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Industrial Engineering").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Mechatronics").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Mechatronics Lab").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Renewable Energy Systems").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Engineering Project Management").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Final Year Project I").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Final Year Project II").facultyCourses(faculty).build());
-                    courses.add(Course.builder().name("Professional Practice and Ethics").facultyCourses(faculty).build());
-                }
-                default -> {
-                    // Default courses for other faculties
-                    courses.add(Course.builder()
-                            .name("Introduction to " + faculty.getName())
-                            .facultyCourses(faculty)
-                            .build());
-
-                    courses.add(Course.builder()
-                            .name(faculty.getName() + " Advanced Studies")
-                            .facultyCourses(faculty)
-                            .build());
-                }
+            if (faculty.getName().equals("Faculty of Computing")) {
+                courses.add(Course.builder().name("Introduction to Programming").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Programming Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Ideology and Constitution of Pakistan").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Functional English").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Calculus and Analytic Geometry").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Application of Information & Communication Technologies").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Application of Information & Communication Technologies Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Object Oriented Programming").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Object Oriented Programming Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Applied Physics").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Applied Physics Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Expository Writing").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Sociology").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Discrete Structures").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Islamic Studies / Ethics").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Fehm-ul-Quran I").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Data Structures").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Data Structures Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Database Systems").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Database Systems Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Linear Algebra").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Personal Grooming").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Digital Logic Design").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Digital Logic Design Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Fehm-ul-Quran II").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Organization and Assembly Language").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Organization and Assembly Language Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Entrepreneurship").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Database Management Systems").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Database Management Systems Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Pakistan Studies").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Probability & Statistics").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Civics and Professional Ethics").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Multi-Variate Calculus").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Design and Analysis of Algorithms").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Operating Systems").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Operating Systems Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Software Engineering").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Networks").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Networks Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Graph Algorithm").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Architecture").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Computer Architecture Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Parallel and Distributing Computing").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Parallel and Distributing Computing Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Artificial Intelligence").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Artificial Intelligence Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Technical and Business Writing").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Web Application Development").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Web Application Development Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Information Security and Forensics").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Information Security and Forensics Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Numerical Computing").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Numerical Computing Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Mobile Application Development").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Mobile Application Development Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Machine Learning").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Human Computer Interaction").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Human Computer Interaction Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Design Project 1").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Theory of Automata and Formal Languages").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Design Project 2").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Introduction to Data Warehousing").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Compiler Construction").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Compiler Construction Lab").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Financial Accounting").facultyCourses(faculty).build());
+                courses.add(Course.builder().name("Blockchain Technology").facultyCourses(faculty).build());
             }
         }
 
         courseRepository.saveAll(courses);
-        log.info("Initialized {} courses across faculties", courses.size());
     }
 
     private void initializeUniversitiesAndFaculties() {
-        // Initialize Pakistani Universities
         initializePakistaniUniversities();
     }
 
@@ -266,379 +139,29 @@ public class DataInitializer implements CommandLineRunner {
         );
 
         createFaculties(cust, List.of(
-                "Faculty of Computing",
-                "Faculty of Pharmacy",
-                "Faculty of Engineering"
+                "Faculty of Computing"
         ));
-
-        // Bahria University
-        University bahria = createUniversity(
-                "Bahria University",
-                "Shangrila Road, Sector E-8, Islamabad, Pakistan"
-        );
-
-        createFaculties(bahria, List.of(
-                "Faculty of Computing",
-                "Faculty of Pharmacy",
-                "Faculty of Engineering"
-        ));
-
-
-        log.info("Initialized {} universities with their faculties",
-                universityRepository.count());
     }
 
     private void initializeAdminUser() {
-        // Get the first university and faculty for the admin user
-        University firstUniversity = universityRepository.findAll().get(0);
-        Faculty firstFaculty = facultyRepository.findAll().get(0);
+        University firstUniversity = universityRepository.findAll().getFirst();
+        Faculty firstFaculty = facultyRepository.findAll().getFirst();
 
         User adminUser1 = User.builder()
-                .email("abdullah@gmail.com")
-                .username("abdullah_admin")
-                .passwordHash(passwordEncoder.encode("admin"))
-                .phone("03000000000")
-                .avatar("")
-                .hasOnboarded(Boolean.FALSE)
-                .university(firstUniversity)
-                .studentFaculty(firstFaculty)
-                .roles(List.of(Role.ADMIN))
-                .isVerified(true)
-                .verificationToken(null)
-                .build();
-
-        User adminUser2 = User.builder()
                 .email("bcs233188@cust.pk")
-                .username("Abdullah")
-                .passwordHash(passwordEncoder.encode("admin"))
-                .phone("03000000000")
+                .username("AZ")
+                .passwordHash(passwordEncoder.encode("Cust@23"))
+                .phone("03155180641")
                 .avatar("")
                 .hasOnboarded(Boolean.FALSE)
                 .university(firstUniversity)
                 .studentFaculty(firstFaculty)
-                .roles(List.of(Role.ADMIN))
+                .roles(List.of(Role.ADMIN, Role.STUDENT))
                 .isVerified(true)
                 .verificationToken(null)
                 .build();
 
         userRepository.save(adminUser1);
-        userRepository.save(adminUser2);
-        log.info("Created admin user with email: abdullah@gmail.com");
-    }
-
-    private void initializeSampleUsers() {
-        List<University> universities = universityRepository.findAll();
-        List<Faculty> faculties = facultyRepository.findAll();
-        Random random = new Random();
-
-        // Create sample students
-        List<User> sampleUsers = List.of(
-                User.builder()
-                        .email("john.doe@student.com")
-                        .username("john_doe")
-                        .passwordHash(passwordEncoder.encode("password123"))
-                        .avatar("")
-                        .university(universities.get(random.nextInt(universities.size())))
-                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
-                        .roles(List.of(Role.STUDENT))
-                        .isVerified(true)
-                        .build(),
-
-                User.builder()
-                        .email("jane.smith@student.com")
-                        .username("jane_smith")
-                        .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("03091234568")
-                        .university(universities.get(random.nextInt(universities.size())))
-                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
-                        .roles(List.of(Role.STUDENT))
-                        .isVerified(true)
-                        .build(),
-
-                User.builder()
-                        .email("alex.johnson@student.com")
-                        .username("alex_johnson")
-                        .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("03091234569")
-                        .avatar("")
-                        .university(universities.get(random.nextInt(universities.size())))
-                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
-                        .roles(List.of(Role.STUDENT))
-                        .isVerified(true)
-                        .build(),
-
-                User.builder()
-                        .email("sara.wilson@student.com")
-                        .username("sara_wilson")
-                        .passwordHash(passwordEncoder.encode("password123"))
-                        .phone("03091234570")
-                        .avatar("")
-                        .university(universities.get(random.nextInt(universities.size())))
-                        .studentFaculty(faculties.get(random.nextInt(faculties.size())))
-                        .roles(List.of(Role.STUDENT))
-                        .isVerified(true)
-                        .build()
-        );
-
-        userRepository.saveAll(sampleUsers);
-        log.info("Created {} sample users", sampleUsers.size());
-    }
-
-    private void initializeLostItemsAndFounders() {
-        List<User> users = userRepository.findAll();
-        if (users.size() < 2) {
-            log.warn("Not enough users to create lost items and founders");
-            return;
-        }
-
-        // Create lost items with proper images
-        List<LostItem> lostItems = createLostItemsWithImages(users);
-        log.info("Created {} lost items with images", lostItems.size());
-
-        // Create founders for some lost items with their images
-        createFoundersWithImagesForLostItems(lostItems, users);
-    }
-
-    private List<LostItem> createLostItemsWithImages(List<User> users) {
-        // Create lost items first (without images)
-        List<LostItem> lostItems = List.of(
-                LostItem.builder()
-                        .title("Black iPhone 14 Pro")
-                        .description("Black iPhone 14 Pro with cracked screen protector. Has a blue silicone case. Contains important photos and contacts.")
-                        .phone("03089999999")
-                        .lastLocationDescription("Lost near the main library entrance at TSUE")
-                        .lastLocation(LastLocation.builder().lat("41.311081").lng("69.240562").build())
-                        .status(Status.LOST)
-                        .owner(users.get(1))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                LostItem.builder()
-                        .title("Red Nike Backpack")
-                        .description("Red Nike backpack with laptop compartment. Contains MacBook Air, textbooks, and personal items. Very important!")
-                        .phone("03089999999")
-                        .lastLocationDescription("Left in the cafeteria at NUU during lunch break")
-                        .lastLocation(LastLocation.builder().lat("41.298600").lng("69.267700").build())
-                        .status(Status.LOST)
-                        .owner(users.get(2))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                LostItem.builder()
-                        .title("Silver Car Keys")
-                        .description("Silver Toyota car keys with black remote. Has a small Uzbekistan flag keychain attached.")
-                        .phone("03089999999")
-                        .lastLocationDescription("Dropped somewhere in TUIT parking lot")
-                        .lastLocation(LastLocation.builder().lat("41.327094").lng("69.228436").build())
-                        .status(Status.LOST)
-                        .owner(users.get(3))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                LostItem.builder()
-                        .title("Gold Watch")
-                        .description("Gold Casio wristwatch, family heirloom. Has inscription 'To my beloved son' on the back.")
-                        .phone("03089999999")
-                        .lastLocationDescription("Lost in the sports complex at Westminster University")
-                        .lastLocation(LastLocation.builder().lat("41.295800").lng("69.249200").build())
-                        .status(Status.LOST)
-                        .owner(users.get(0))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                LostItem.builder()
-                        .title("Blue Wallet")
-                        .description("Blue leather wallet containing student ID, driver's license, and some cash. Very important documents inside.")
-                        .phone("03089555555")
-                        .lastLocationDescription("Dropped near the bus stop outside Samarkand State University")
-                        .lastLocation(LastLocation.builder().lat("39.627012").lng("66.969604").build())
-                        .status(Status.LOST)
-                        .owner(users.size() > 4 ? users.get(4) : users.get(1))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                LostItem.builder()
-                        .title("Black Headphones")
-                        .description("Sony WH-1000XM4 wireless headphones in black. Expensive noise-canceling headphones, birthday gift from parents.")
-                        .phone("03089444444")
-                        .lastLocationDescription("Left in study room 203 at TMA library")
-                        .lastLocation(LastLocation.builder().lat("41.285350").lng("69.203760").build())
-                        .status(Status.LOST)
-                        .owner(users.get(2))
-                        .lostItemImages(new ArrayList<>()) // Initialize empty list
-                        .build()
-        );
-
-        // Save lost items first
-        List<LostItem> savedLostItems = lostItemRepository.saveAll(lostItems);
-
-        // Now create and save images for each lost item
-        for (int i = 0; i < savedLostItems.size(); i++) {
-            LostItem lostItem = savedLostItems.get(i);
-            List<LostItemImage> images = createImagesForLostItem(lostItem, i);
-            lostItemImageRepository.saveAll(images);
-
-            // Update the lost item with the images
-            lostItem.setLostItemImages(images);
-        }
-
-        return savedLostItems;
-    }
-
-    private List<LostItemImage> createImagesForLostItem(LostItem lostItem, int itemIndex) {
-        List<String> imageUrls = getLostItemImageUrls(itemIndex);
-        List<LostItemImage> images = new ArrayList<>();
-
-        for (int i = 0; i < imageUrls.size(); i++) {
-            LostItemImage image = LostItemImage.builder()
-                    .imageUri(imageUrls.get(i))
-                    .serialNo((long) (i + 1))
-                    .lostItem(lostItem)
-                    .build();
-            images.add(image);
-        }
-
-        return images;
-    }
-
-    private List<String> getLostItemImageUrls(int itemIndex) {
-        // Sample image URLs for different lost items
-        return switch (itemIndex) {
-            case 0 -> List.of( // iPhone
-                    "https://example.com/images/lost/iphone-front.jpg",
-                    "https://example.com/images/lost/iphone-back.jpg",
-                    "https://example.com/images/lost/iphone-case.jpg"
-            );
-            case 1 -> List.of( // Backpack
-                    "https://example.com/images/lost/nike-backpack-front.jpg",
-                    "https://example.com/images/lost/nike-backpack-open.jpg"
-            );
-            case 2 -> List.of( // Car Keys
-                    "https://example.com/images/lost/toyota-keys.jpg",
-                    "https://example.com/images/lost/keychain.jpg"
-            );
-            case 3 -> List.of( // Gold Watch
-                    "https://example.com/images/lost/casio-watch-front.jpg",
-                    "https://example.com/images/lost/casio-watch-back.jpg"
-            );
-            case 4 -> List.of( // Blue Wallet
-                    "https://example.com/images/lost/blue-wallet-closed.jpg",
-                    "https://example.com/images/lost/blue-wallet-open.jpg",
-                    "https://example.com/images/lost/wallet-contents.jpg"
-            );
-            case 5 -> List.of( // Headphones
-                    "https://example.com/images/lost/sony-headphones.jpg",
-                    "https://example.com/images/lost/headphones-case.jpg"
-            );
-            default -> List.of("https://example.com/images/lost/default-item.jpg");
-        };
-    }
-
-    private void createFoundersWithImagesForLostItems(List<LostItem> lostItems, List<User> users) {
-        Random random = new Random();
-
-        // Create founders for the first 5 lost items (without images initially)
-        List<Founder> founders = List.of(
-                Founder.builder()
-                        .foundLocationDescription("Found the iPhone near the library stairs, exactly where described")
-                        .foundLocation(LastLocation.builder().lat("41.311000").lng("69.240500").build())
-                        .foundLostItem(lostItems.get(0))
-                        .founder(users.get(random.nextInt(users.size())))
-                        .foundItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                Founder.builder()
-                        .foundLocationDescription("Saw the red backpack under table 5 in the cafeteria")
-                        .foundLocation(LastLocation.builder().lat("41.298650").lng("69.267750").build())
-                        .foundLostItem(lostItems.get(1))
-                        .founder(users.get(random.nextInt(users.size())))
-                        .foundItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                Founder.builder()
-                        .foundLocationDescription("Found car keys near the security booth in TUIT parking")
-                        .foundLocation(LastLocation.builder().lat("41.327050").lng("69.228400").build())
-                        .foundLostItem(lostItems.get(2))
-                        .founder(users.get(random.nextInt(users.size())))
-                        .foundItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                Founder.builder()
-                        .foundLocationDescription("Spotted the gold watch in the locker room after basketball practice")
-                        .foundLocation(LastLocation.builder().lat("41.295820").lng("69.249180").build())
-                        .foundLostItem(lostItems.get(3))
-                        .founder(users.get(random.nextInt(users.size())))
-                        .foundItemImages(new ArrayList<>()) // Initialize empty list
-                        .build(),
-
-                Founder.builder()
-                        .foundLocationDescription("Found the blue wallet near the bus stop, contains ID and cash")
-                        .foundLocation(LastLocation.builder().lat("39.627050").lng("66.969650").build())
-                        .foundLostItem(lostItems.get(4))
-                        .founder(users.get(random.nextInt(users.size())))
-                        .foundItemImages(new ArrayList<>()) // Initialize empty list
-                        .build()
-        );
-
-        // Save founders first
-        List<Founder> savedFounders = founderRepository.saveAll(founders);
-
-        // Now create and save images for each founder
-        for (int i = 0; i < savedFounders.size(); i++) {
-            Founder founder = savedFounders.get(i);
-            List<FoundItemImage> foundImages = createImagesForFounder(founder, i);
-            foundItemImageRepository.saveAll(foundImages);
-
-            // Update the founder with the images
-            founder.setFoundItemImages(foundImages);
-        }
-
-        log.info("Created {} founders with images for lost items", savedFounders.size());
-    }
-
-    private List<FoundItemImage> createImagesForFounder(Founder founder, int founderIndex) {
-        List<String> imageUrls = getFoundItemImageUrls(founderIndex);
-        List<FoundItemImage> images = new ArrayList<>();
-
-        for (int i = 0; i < imageUrls.size(); i++) {
-            FoundItemImage image = FoundItemImage.builder()
-                    .imageUri(imageUrls.get(i))
-                    .serialNo((long) (i + 1))
-                    .foundItem(founder)
-                    .build();
-            images.add(image);
-        }
-
-        return images;
-    }
-
-    private List<String> getFoundItemImageUrls(int founderIndex) {
-        // Sample image URLs for different found items (showing the actual found condition)
-        return switch (founderIndex) {
-            case 0 -> List.of( // iPhone found
-                    "https://example.com/images/found/iphone-found-library.jpg",
-                    "https://example.com/images/found/iphone-condition.jpg"
-            );
-            case 1 -> List.of( // Backpack found
-                    "https://example.com/images/found/nike-backpack-found-cafeteria.jpg",
-                    "https://example.com/images/found/backpack-under-table.jpg",
-                    "https://example.com/images/found/backpack-contents-visible.jpg"
-            );
-            case 2 -> List.of( // Car Keys found
-                    "https://example.com/images/found/toyota-keys-found-parking.jpg",
-                    "https://example.com/images/found/keys-near-security.jpg"
-            );
-            case 3 -> List.of( // Gold Watch found
-                    "https://example.com/images/found/casio-watch-found-locker.jpg",
-                    "https://example.com/images/found/watch-inscription-visible.jpg"
-            );
-            case 4 -> List.of( // Blue Wallet found
-                    "https://example.com/images/found/blue-wallet-found-busstop.jpg",
-                    "https://example.com/images/found/wallet-id-visible.jpg",
-                    "https://example.com/images/found/wallet-cash-contents.jpg"
-            );
-            default -> List.of("https://example.com/images/found/default-found-item.jpg");
-        };
     }
 
     private University createUniversity(String name, String address) {

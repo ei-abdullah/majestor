@@ -25,9 +25,13 @@ type SignupResponse = {
     message: string;
 }
 
-export const login = async (payload:LoginPayload): Promise<AxiosResponse<LoginResponse>> =>
-    api.post<LoginResponse>("/auth/login", payload)
+export const login = async (payload: LoginPayload): Promise<AxiosResponse<LoginResponse>> =>
+    api.post<LoginResponse>("/auth/login", payload, {
+        headers: { skipAuth: true }
+    });
 
 export const signup = async (payload: SignupPayload): Promise<AxiosResponse<SignupResponse>> =>
-    api.post<SignupResponse>("/auth/signup", payload)
+    api.post<SignupResponse>("/auth/signup", payload, {
+        headers: { skipAuth: true }
+    });
 

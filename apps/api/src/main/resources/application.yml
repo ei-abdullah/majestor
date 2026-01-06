@@ -6,7 +6,6 @@ aws:
   s3:
     buckets:
       bucket: ${S3_BUCKET_NAME}
-
   region: ${S3_BUCKET_REGION}
 
 spring:
@@ -21,13 +20,16 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: ${DDL_AUTO:validate}
 
     show-sql: false
     properties:
       hibernate:
-        format_sql: true
-
+        format_sql: false
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
@@ -51,15 +53,7 @@ spring:
             enable: true
             required: true
 
-  config:
-    import: optional:file:.env[.properties]
-
   profiles:
-    active: DEV
+    active: ${SPRING_PROFILES_ACTIVE:PROD}
 
-logging:
-  level:
-    root: INFO
-    com.majestor.api.infra.emailservice: DEBUG
-    org.springframework.mail: DEBUG
-    org.springframework.scheduling: DEBUG
+
