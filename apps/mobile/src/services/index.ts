@@ -15,15 +15,15 @@ type RefreshTokenResponse = {
 }
 
 api.interceptors.request.use(config => {
-    if (config.headers?.requiresAuth) {
+    if(config.headers?.skipAuth !== true) {
         const accessToken = useAuthStore.getState().accessToken;
 
-        if (accessToken) {
+        if(accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`;
         }
-
-        delete config.headers.requiresAuth;
     }
+
+    delete config.headers?.skipAuth;
 
     return config;
 });
@@ -41,7 +41,9 @@ api.interceptors.response.use(
             originalRequest._retry ||
             originalRequest.url?.includes("/auth/refresh") ||
             originalRequest.url?.includes("/auth/signup") ||
-            originalRequest.url?.includes("/auth/login")
+            originalRequest.url?.includes("/auth/login") ||
+            originalRequest.url?.includes("/auth/forgetPassword") ||
+            originalRequest.url?.includes("/auth/signup/verify")
         ) {
             return Promise.reject(error);
         }

@@ -13,4 +13,6 @@ export type UniversityWithFaculties = {
 }
 
 export const getUniversitiesWithFaculties = async (): Promise<AxiosResponse<UniversityWithFaculties[]>> =>
-    api.get<UniversityWithFaculties[]>("/university/getWithFaculties");
+    api.get<UniversityWithFaculties[]>("/university/getWithFaculties", {
+        headers: {skipAuth: true}
+    });

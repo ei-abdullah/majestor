@@ -7,6 +7,7 @@ import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
@@ -16,6 +17,9 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class Utils {
+    @Value("${spring.profiles.active}")
+    private String activeProfile;
+
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
 
@@ -107,5 +111,7 @@ public class Utils {
         }
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
+
+
 
 }

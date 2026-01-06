@@ -14,7 +14,10 @@ public class SignupRequestDTO {
     private String username;
 
     @NotBlank(message = "Email is required")
-    @Email(message = "Invalid email address")
+    @Pattern(
+            regexp = "^[a-zA-Z0-9._%+-]+@cust\\.pk$",
+            message = "Invalid email address"
+    )
     private String email;
 
     @NotBlank(message = "Password is required")

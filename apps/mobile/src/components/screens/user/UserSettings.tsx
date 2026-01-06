@@ -1,7 +1,9 @@
-import React, {useState} from "react";
+import React from "react";
 import {Text, View, ScrollView, Alert} from "react-native";
+import {Controller, useForm} from "react-hook-form";
 
 import {useAuthStore} from "@/src/stores/authStore";
+import {validateEmail, validatePhone} from "@/src/utils/validation";
 
 import GradientView from "@/src/components/ui/GradientView";
 import Card from "@/src/components/ui/Card";
@@ -11,6 +13,8 @@ import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import UserAvatar from "@/src/components/ui/UserAvatar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import ErrorText from "@/src/components/ui/ErrorText";
+import styledTextInput from "@/src/components/ui/StyledTextInput";
 
 function UserSettings() {
     const {user} = useAuthStore();
@@ -21,24 +25,25 @@ function UserSettings() {
         error
     } = useUserDetails(user!.id);
 
-    const [personalEmail, setPersonalEmail] = useState<string>('');
-    const [phone, setPhone] = useState<string>('');
+    const {control, handleSubmit, formState: {errors, isDirty}, reset} = useForm({
+        defaultValues: {
+            personalEmail: '',
+            phone: ''
+        }
+    });
 
     const {mutate: uploadProfileImage} = useUpdateProfileImage();
     const {mutate: updateUserDetails} = useUpdateUserDetails();
 
-    // Initialize state when userDetails loads
+    // Initialize form when userDetails loads
     React.useEffect(() => {
         if (userDetails) {
-            setPersonalEmail(userDetails.personalEmail || '');
-            setPhone(userDetails.phone || '');
+            reset({
+                personalEmail: userDetails.personalEmail || '',
+                phone: userDetails.phone || ''
+            });
         }
-    }, [userDetails]);
-
-    // Check if any field has changed
-    const hasChanges =
-        personalEmail !== (userDetails?.personalEmail || '') ||
-        phone !== (userDetails?.phone || '');
+    }, [userDetails, reset]);
 
     const handleAvatarUpdate = (formData: FormData) => {
         const userId = user!.id;
@@ -53,11 +58,12 @@ function UserSettings() {
         });
     };
 
-    const handleUpdatePersonalInfo = () => {
+    const onSubmit = (data: any) => {
         const userId = user!.id;
-        updateUserDetails({userId, details: {personalEmail, phone}}, {
+        updateUserDetails({userId, details: data}, {
             onSuccess: () => {
                 Alert.alert('Success', 'Personal information updated successfully');
+                reset(data);
             },
             onError: (error: any) => {
                 console.error('Update error:', error);
@@ -67,11 +73,11 @@ function UserSettings() {
     };
 
     if (loadingUserDetails) {
-        return <LoadingIndicator />
+        return <LoadingIndicator/>
     }
 
     if (error) {
-        return <ErrorNotLoad />
+        return <ErrorNotLoad/>
     }
 
     return (
@@ -103,7 +109,8 @@ function UserSettings() {
                                 value={userDetails.username || 'N/A'}
                                 placeholder="Full Name"
                                 icon="user"
-                                onChangeText={() => {}}
+                                onChangeText={() => {
+                                }}
                                 disabled={true}
                                 size="compact"
                             />
@@ -116,7 +123,8 @@ function UserSettings() {
                                 value={userDetails.university || 'N/A'}
                                 placeholder="University Name"
                                 icon="home"
-                                onChangeText={() => {}}
+                                onChangeText={() => {
+                                }}
                                 disabled={true}
                                 size="compact"
                             />
@@ -129,7 +137,8 @@ function UserSettings() {
                                 value={userDetails.faculty || 'N/A'}
                                 placeholder="Faculty Name"
                                 icon="book"
-                                onChangeText={() => {}}
+                                onChangeText={() => {
+                                }}
                                 disabled={true}
                                 size="compact"
                             />
@@ -142,7 +151,8 @@ function UserSettings() {
                                 value={userDetails.email || 'N/A'}
                                 placeholder="University Email"
                                 icon="mail"
-                                onChangeText={() => {}}
+                                onChangeText={() => {
+                                }}
                                 disabled={true}
                                 size="compact"
                             />
@@ -155,36 +165,64 @@ function UserSettings() {
                         {/* Personal Email */}
                         <View className="mb-4">
                             <Text className="text-sm text-gray-500 mb-2">Personal Email</Text>
-                            <StyledTextInput
-                                value={personalEmail}
-                                placeholder="Enter personal email"
-                                icon="mail"
-                                onChangeText={setPersonalEmail}
-                                keyboardType="email-address"
-                                size="compact"
+                            <Controller
+                                control={control}
+                                name="personalEmail"
+                                rules={{
+                                    required: "Personal email is required",
+                                    validate: validateEmail
+                                }}
+                                render={({field: {onChange, value}}) => (
+                                    <StyledTextInput
+                                        value={value}
+                                        placeholder="Enter personal email"
+                                        icon="mail"
+                                        onChangeText={onChange}
+                                        keyboardType="email-address"
+                                        size="compact"
+                                    />
+                                )}
                             />
+                            {
+                                errors.personalEmail &&
+                                <ErrorText message={errors.personalEmail.message as string}/>
+                            }
                         </View>
 
                         {/* Phone Number */}
-                        <View className={hasChanges ? "mb-4" : ""}>
+                        <View className={isDirty ? "mb-4" : ""}>
                             <Text className="text-sm text-gray-500 mb-2">Phone Number</Text>
-                            <StyledTextInput
-                                value={phone}
-                                placeholder="Enter phone number"
-                                icon="phone"
-                                onChangeText={setPhone}
-                                keyboardType="phone-pad"
-                                size="compact"
+                            <Controller
+                                control={control}
+                                name="phone"
+                                rules={{
+                                    required: "Phone number is required",
+                                    validate: validatePhone
+                                }}
+                                render={({field: {onChange, value}}) => (
+                                    <StyledTextInput
+                                        value={value}
+                                        placeholder="03xxxxxxxxx"
+                                        icon="phone"
+                                        onChangeText={onChange}
+                                        keyboardType="phone-pad"
+                                        size="compact"
+                                    />
+                                )}
                             />
+                            {
+                                errors.phone &&
+                                <ErrorText message={errors.phone.message as string}/>
+                            }
                         </View>
 
                         {/* Update Button - Only show when there are changes */}
-                        {hasChanges && (
+                        {isDirty && (
                             <View className="mt-2">
                                 <PrimaryButton
                                     title=""
                                     icon="check"
-                                    onPress={handleUpdatePersonalInfo}
+                                    onPress={handleSubmit(onSubmit)}
                                     size="compact"
                                 />
                             </View>
@@ -197,7 +235,8 @@ function UserSettings() {
                         <View className="flex-row flex-wrap gap-2">
                             {userDetails.roles && userDetails.roles.length > 0 ? (
                                 userDetails.roles.map((role, index) => (
-                                    <View key={index} className="bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
+                                    <View key={index}
+                                          className="bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
                                         <Text className="text-blue-600 font-medium text-sm">
                                             {role}
                                         </Text>

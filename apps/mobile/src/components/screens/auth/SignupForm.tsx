@@ -9,6 +9,8 @@ import {signup} from "@/src/services/auth.api";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
+import {validateCustEmail} from "@/src/utils/validation";
+import ErrorText from "@/src/components/ui/ErrorText";
 
 type option = {
     name: "error" | "success";
@@ -109,14 +111,17 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
                     <Text className={"font-semibold"}>Username</Text>
-                    {errors.username &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>Username is required.</Text>
+                    {
+                        errors.username &&
+                        <ErrorText message={errors.username.message as string}/>
                     }
                 </View>
                 <Controller
                     control={control}
                     name="username"
-                    rules={{required: true}}
+                    rules={{
+                        required: {value: true, message: "Username is required"}
+                    }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
@@ -132,20 +137,25 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
                     <Text className={"font-semibold"}>University Email</Text>
-                    {errors.email &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>Email is required.</Text>
+                    {
+                        errors.email &&
+                        <ErrorText message={errors.email.message as string}/>
                     }
                 </View>
                 <Controller
                     control={control}
                     name="email"
-                    rules={{required: true}}
+                    rules={{
+                        required: {value: true, message: "Email is required"},
+                        validate: validateCustEmail
+                    }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
-                            placeholder={"you@cust.pk"}
+                            placeholder={"BCS233000@cust.pk"}
                             icon="mail"
                             onChangeText={onChange}
+                            keyboardType="email-address"
                         />
                     )}
                 />
@@ -155,15 +165,18 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
                     <Text className={"font-semibold"}>Password</Text>
-                    {errors.password &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>Password is required.</Text>
+                    {
+                        errors.password &&
+                        <ErrorText message={errors.password.message as string}/>
                     }
 
                 </View>
                 <Controller
                     control={control}
                     name="password"
-                    rules={{required: true}}
+                    rules={{
+                        required: {value: true, message: "Password is required"}
+                    }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
@@ -180,15 +193,18 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
                     <Text className={"font-semibold"}>University</Text>
-                    {errors.university &&
-                        <Text className={"text-mj-error text-xs font-semibold"}>University is required.</Text>
+                    {
+                        errors.university &&
+                        <ErrorText message={errors.university.message as string}/>
                     }
                 </View>
                 {
                     <Controller
                         control={control}
                         name="university"
-                        rules={{required: true}}
+                        rules={{
+                            required: {value: true, message: "University is required"}
+                        }}
                         render={({field: {onChange, value}}) => (
                             <StyledModalWithSearch
                                 value={value}
@@ -209,14 +225,17 @@ function SignupForm({loading, setLoading, setMessage, setTab}: props) {
                     <View className={"flex flex-col gap-2"}>
                         <View className={"flex flex-row justify-between items-end"}>
                             <Text className={"font-semibold"}>Faculty</Text>
-                            {errors.faculty &&
-                                <Text className={"text-mj-error text-xs font-semibold"}>Faculty is required.</Text>
+                            {
+                                errors.faculty &&
+                                <ErrorText message={errors.faculty.message as string}/>
                             }
                         </View>
                         <Controller
                             control={control}
                             name="faculty"
-                            rules={{required: true}}
+                            rules={{
+                                required: {value: true, message: "Faculty is required"}
+                            }}
                             render={({field: {onChange, value}}) => (
                                 <StyledModalWithSearch
                                     value={value}
