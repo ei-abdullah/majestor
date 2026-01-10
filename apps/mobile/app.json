@@ -19,8 +19,18 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyB6cTR0U2osucK5OPX3DsOCNhsyIKx2aTs"
+        }
+      },
       "edgeToEdgeEnabled": true,
-      "package": "com.majestor.app"
+      "package": "com.majestor.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "output": "static",
@@ -47,11 +57,25 @@
         {
           "photosPermission": "Allow Majestor to access gallery."
         }
+      ],
+      [
+        "expo-maps",
+        {
+          "requestLocationPermission": true,
+          "locationPermission": "Allow Majestor to use your location"
+        }
       ]
     ],
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "owner": "ei_abdullah",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8fa870d9-3fb8-4c04-94a9-4f1eec3471fb"
+      }
     }
   }
 }
