@@ -39,5 +39,6 @@ yarn-error.*
 app-example
 
 # generated native folders
-/ios
-/android
+# /ios
+# /android
+# Note: We need to commit android folder for custom native builds

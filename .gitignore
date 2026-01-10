@@ -47,6 +47,10 @@ target/
 *.tar.gz
 *.rar
 
+# Exception: Allow Gradle wrapper jar (needed for builds)
+!gradle-wrapper.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+
 # Spring Boot
 HELP.md
 .apt_generated
