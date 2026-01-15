@@ -1,43 +1,95 @@
 import React, {useEffect, useState} from "react";
-import {Platform, Text} from "react-native";
-import {GoogleMaps, AppleMaps} from "expo-maps";
+import {View} from "react-native";
 
 import * as Location from 'expo-location';
+import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import {useDriverStore, useLocationStore} from "@/src/stores/locationStore";
 
 export default function CarpoolHome() {
-    const [location, setLocation] = useState<Location.LocationObject | null>(null);
-    const [errorMsg, setErrorMsg] = useState<string | null>(null);
+    const {
+        userLatitude,
+        userLongitude,
+        destinationLatitude,
+        destinationLongitude,
+        setUserLocation,
+        setDestinationLocation
+    } = useLocationStore();
+
+    const {selectedDriver, setSelectedDriver, clearSelectedDriver} = useDriverStore();
+
+    const [hasPermission, setHasPermission] = useState(false);
+    const [markers, setMarkers] = useState<any[]>([]);
 
     useEffect(() => {
-        async function getCurrentLocation() {
-
-            let {status} = await Location.requestForegroundPermissionsAsync();
-            if(status !== 'granted') {
-                setErrorMsg('Permission to access location was denied');
+        const requestLocation = async () => {
+            const {status} = await Location.requestForegroundPermissionsAsync();
+            if (status !== 'granted') {
+                setHasPermission(false);
                 return;
             }
 
-            let location = await Location.getCurrentPositionAsync({});
-            setLocation(location);
+            setHasPermission(true);
+            const location = await Location.getCurrentPositionAsync();
+
+            const address = await Location.reverseGeocodeAsync({
+                latitude: location.coords?.latitude!,
+                longitude: location.coords?.longitude!,
+            });
+
+            setUserLocation({
+                latitude: location.coords?.latitude!,
+                longitude: location.coords?.longitude!,
+                address: `${address[0].name}, ${address[0].region}`
+            })
+
         }
 
-        getCurrentLocation();
+        requestLocation();
     }, []);
 
-    if (Platform.OS === 'ios') {
-        return <AppleMaps.View style={{flex: 1}}/>;
-    } else if (Platform.OS === 'android') {
-        return <GoogleMaps.View
-            style={{flex: 1}}
-            cameraPosition={{
-                coordinates: {
-                    latitude: location?.coords.latitude ?? 37.78825,
-                    longitude: location?.coords.longitude ?? -122.4324,
-                },
-                zoom: 15,
-            }}
-        />;
-    } else {
-        return <Text>Maps are only available on Android and iOS</Text>;
-    }
+    // useEffect(() => {
+    //     if (Array.isArray(drivers)) {
+    //         if (!userLatitude || !userLongitude) return;
+    //
+    //         const newMarkers = generateMarkersFromData({
+    //             data: drivers,
+    //             userLatitude,
+    //             userLongitude
+    //         })
+    //
+    //         setMarkers(newMarkers);
+    //     }
+    // }, []);
+
+    // const region = calculateRegion({
+    //     userLatitude,
+    //     userLongitude,
+    //     destinationLatitude,
+    //     destinationLongitude
+    // })
+
+    const initialRegion = {
+        latitude: userLatitude || 37.78825,
+        longitude: userLongitude || -122.4324,
+        latitudeDelta: 0.0922,
+        longitudeDelta: 0.0421,
+    };
+
+    return (
+        <View className={"flex-1"}>
+            <MapView
+                provider={PROVIDER_GOOGLE}
+                mapType={"standard"}
+                showsPointsOfInterest={false}
+                initialRegion={initialRegion}
+                showsUserLocation={true}
+                showsBuildings={false}
+
+                showsCompass={true}
+                userInterfaceStyle={"light"}
+                style={{flex: 1}}
+                mapPadding={{top: 30, right: 10, bottom: 0, left: 10}}
+            />
+        </View>
+    )
 }
