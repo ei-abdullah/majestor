@@ -1,7 +1,7 @@
 import React from "react";
 import {Tabs} from "expo-router";
 import {StatusBar} from "expo-status-bar";
-import {Feather} from "@expo/vector-icons";
+import {Feather, AntDesign} from "@expo/vector-icons";
 import {Platform} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
 
@@ -60,6 +60,42 @@ export default function TabsLayout() {
                         )
                     }}
                 />
+
+                <Tabs.Screen
+                    name={"carpool"}
+                    options={{
+                        title: "Carpool",
+                        tabBarIcon: ({focused, color, size}) => (
+                            focused ? (
+                                <LinearGradient
+                                    colors={["#3A6FF8", "#8DDDD3"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{
+                                        width: 56,
+                                        height: 56,
+                                        borderRadius: 12,
+                                        justifyContent: "center",
+                                        alignItems: "center"
+                                    }}
+                                >
+                                    <AntDesign
+                                        name={"car"}
+                                        size={size}
+                                        color={"white"}
+                                    />
+                                </LinearGradient>
+                            ) : (
+                                <AntDesign
+                                    name={"car"}
+                                    size={size}
+                                    color={color}
+                                />
+                            )
+                        )
+                    }}
+                />
+
                 <Tabs.Screen
                     name={"document"}
                     options={{
