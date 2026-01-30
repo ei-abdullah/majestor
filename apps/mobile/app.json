@@ -59,13 +59,6 @@
         }
       ],
       [
-        "expo-maps",
-        {
-          "requestLocationPermission": true,
-          "locationPermission": "Allow Majestor to use your location"
-        }
-      ],
-      [
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Majestor to use your location."
