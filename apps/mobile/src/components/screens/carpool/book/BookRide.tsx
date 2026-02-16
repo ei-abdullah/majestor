@@ -22,18 +22,16 @@ import {GOOGLE_API_KEY} from "@/src/constants";
 import {DEFAULT_LOCATION} from "@/src/utils/location.utils";
 
 type FormData = {
-    startLocation: {
+    pickupLocation: {
         latitude: number;
         longitude: number;
         address: string;
     } | null;
-    destination: {
+    dropOffLocation: {
         latitude: number;
         longitude: number;
         address: string;
     } | null;
-    vehicleModel: string;
-    LicensePlate: string;
     phone: string;
 };
 
@@ -48,23 +46,20 @@ export default function BookRide() {
 
     const {control, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            startLocation: null,
-            destination: null,
-            vehicleModel: '',
-            LicensePlate: '',
+            pickupLocation: null,
+            dropOffLocation: null,
             phone: ''
         }
     });
 
     const [numberOfPassengers, setNumberOfPassengers] = React.useState(1);
-    const [vehicleType, setVehicleType] = React.useState<'car' | 'bike'>('car');
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const snapPoints = ["5%", "60%", "90%"]
+    const snapPoints = ["5%", "70%"]
 
     // Get current form values safely
-    let startLocation = getValues('startLocation');
-    let destination = getValues('destination');
+    let pickupLocation = getValues('pickupLocation');
+    let dropOffLocation = getValues('dropOffLocation');
 
     const {userLatitude, userLongitude} = useLocationStore();
 
@@ -78,17 +73,17 @@ export default function BookRide() {
         : DEFAULT_LOCATION;
 
     /**
-     * Fetches current location and sets it as startLocation
+     * Fetches current location and sets it as pickupLocation
      */
     const handleUseMyLocation = async () => {
         const location = await getCurrentLocation();
         if (location) {
-            setValue('startLocation', location);
+            setValue('pickupLocation', location);
             animateToLocation(location.latitude, location.longitude);
             Toast.show({
                 type: 'success',
                 text1: '📍 Location Set',
-                text2: 'Start location set to your current location',
+                text2: 'Pickup location set to your current location',
                 position: 'top',
                 visibilityTime: 2000,
             });
@@ -98,20 +93,17 @@ export default function BookRide() {
 
     const onSubmit = (data: FormData) => {
         console.log(JSON.stringify({
-            startLocation: data.startLocation,
-            destination: data.destination,
-            vehicleModel: data.vehicleModel,
-            LicensePlate: data.LicensePlate,
+            pickupLocation: data.pickupLocation,
+            dropOffLocation: data.dropOffLocation,
             phone: data.phone,
-            vehicleType,
             numberOfPassengers
         }, null, 2));
-        // You can now use data.startLocation.latitude, data.startLocation.longitude, etc.
+        // You can now use data.pickupLocation.latitude, data.pickupLocation.longitude, etc.
     };
 
     useEffect(() => {
-        startLocation = getValues('startLocation');
-        destination = getValues('destination');
+        pickupLocation = getValues('pickupLocation');
+        dropOffLocation = getValues('dropOffLocation');
     }, [getValues]);
 
     return (
@@ -132,42 +124,43 @@ export default function BookRide() {
                     mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
                 >
                     {/* Show markers only when locations are selected */}
-                    {startLocation && (
+                    {pickupLocation && (
                         <Marker
                             coordinate={{
-                                latitude: startLocation.latitude,
-                                longitude: startLocation.longitude
+                                latitude: pickupLocation.latitude,
+                                longitude: pickupLocation.longitude
                             }}
                         >
                             <CustomMarker color={"red"} icon={"home"}/>
                         </Marker>
                     )}
 
-                    {destination && (
+                    {dropOffLocation && (
                         <Marker
                             coordinate={{
-                                latitude: destination.latitude,
-                                longitude: destination.longitude
+                                latitude: dropOffLocation.latitude,
+                                longitude: dropOffLocation.longitude
                             }}
-
                         >
                             <CustomMarker color={"red"} icon={"flag"}/>
                         </Marker>
                     )}
 
-                    {startLocation && destination && (
+                    {pickupLocation && dropOffLocation && (
                         <>
                             <MapViewDirections
                                 origin={{
-                                    latitude: startLocation.latitude,
-                                    longitude: startLocation.longitude
+                                    latitude: pickupLocation.latitude,
+                                    longitude: pickupLocation.longitude
                                 }}
                                 destination={{
-                                    latitude: destination.latitude,
-                                    longitude: destination.longitude
+                                    latitude: dropOffLocation.latitude,
+                                    longitude: dropOffLocation.longitude
                                 }}
-                                strokeWidth={4}
+                                strokeWidth={2}
                                 strokeColor="red"
+                                mode={"DRIVING"}
+                                precision={"high"}
                                 apikey={GOOGLE_API_KEY}
                                 onReady={(result) => {
                                     console.log(`Distance: ${result.distance} km, Duration: ${result.duration} min`);
@@ -245,7 +238,7 @@ export default function BookRide() {
                         </View>
                         <Controller
                             control={control}
-                            name="startLocation"
+                            name="pickupLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
                                     icon="map-pin"
@@ -258,7 +251,7 @@ export default function BookRide() {
                         <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
                         <Controller
                             control={control}
-                            name="destination"
+                            name="dropOffLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
                                     icon="flag"
@@ -284,76 +277,15 @@ export default function BookRide() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>
-                        {/* Vehicle Type Toggle */}
-                        <ToggleButton
-                            label="Vehicle Type"
-                            options={[
-                                {value: 'car', label: 'Car', icon: 'car-sport'},
-                                {value: 'bike', label: 'Bike', icon: 'bicycle'}
-                            ]}
-                            selectedValue={vehicleType}
-                            onSelect={setVehicleType}
-                        />
-
-                        {/* Vehicle Details Card */}
-                        <View className="z-0">
-                            <Card className={"px-4"}>
-                                <View>
-                                    <Text className="text-base font-semibold mb-2">Vehicle Model</Text>
-                                    <Controller
-                                        control={control}
-                                        name="vehicleModel"
-                                        rules={{required: 'Vehicle model is required'}}
-                                        render={({field: {onChange, value}}) => (
-                                            <StyledTextInput
-                                                value={value}
-                                                placeholder={"e.g, Black Honda Fit"}
-                                                icon={"key"}
-                                                onChangeText={onChange}
-                                            />
-                                        )}
-                                    />
-                                    {errors.vehicleModel && (
-                                        <Text className="text-red-500 text-xs mt-1">
-                                            {errors.vehicleModel.message}
-                                        </Text>
-                                    )}
-                                </View>
-                                <View className={"mt-6"}>
-                                    <Text className="text-base font-semibold mb-2">License Plate Number</Text>
-                                    <Controller
-                                        control={control}
-                                        name="LicensePlate"
-                                        rules={{required: 'License plate is required'}}
-                                        render={({field: {onChange, value}}) => (
-                                            <StyledTextInput
-                                                value={value}
-                                                placeholder={"e.g, MG-841"}
-                                                icon={"info"}
-                                                onChangeText={onChange}
-                                            />
-                                        )}
-                                    />
-                                    {errors.LicensePlate && (
-                                        <Text className="text-red-500 text-xs mt-1">
-                                            {errors.LicensePlate.message}
-                                        </Text>
-                                    )}
-                                </View>
-                            </Card>
-                        </View>
-
                         {/* Number of Passengers */}
                         {
-                            vehicleType === 'car' && (
-                                <NumberStepper
-                                    label="Available Seats"
-                                    value={numberOfPassengers}
-                                    onValueChange={setNumberOfPassengers}
-                                    minValue={1}
-                                    maxValue={vehicleType === 'car' ? 4 : 1}
-                                />
-                            )
+                            <NumberStepper
+                                label="Number of Passengers"
+                                value={numberOfPassengers}
+                                onValueChange={setNumberOfPassengers}
+                                minValue={1}
+                                maxValue={6}
+                            />
                         }
 
                         {/* Phone number */}
@@ -366,7 +298,7 @@ export default function BookRide() {
                                     rules={{
                                         required: 'Phone number is required',
                                         pattern: {
-                                            value: /^[0-9]{4}-[0-9]{7}$/,
+                                            value: /^[0-9]{11}$/,
                                             message: 'Invalid format'
                                         }
                                     }}
@@ -390,7 +322,7 @@ export default function BookRide() {
                         {/* Submit */}
                         <View className="z-0">
                             <PrimaryButton
-                                title={"Book Ride"}
+                                title={"Find Rides"}
                                 onPress={handleSubmit(onSubmit)}
                             />
                         </View>
