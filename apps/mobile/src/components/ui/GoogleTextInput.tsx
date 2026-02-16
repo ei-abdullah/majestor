@@ -24,7 +24,7 @@ function GoogleTextInput(
     console.log('GoogleTextInput API Key:', googlePlacesApiKey ? 'Loaded' : 'Not loaded');
 
     return <View
-        className={`relative z-50 ${containerStyle}`}>
+        className={`relative ${containerStyle}`}>
         <GooglePlacesAutocomplete
             fetchDetails={true}
             placeholder={"Search"}
@@ -45,7 +45,7 @@ function GoogleTextInput(
             }}
             onFail={(error) => console.error('Google Places API Error:', error)}
             query={{
-                key: googlePlacesApiKey || "AIzaSyDgNZCuFWf0fGA2r6L8MEnMyMOvjtlB7L4",
+                key: googlePlacesApiKey,
                 language: 'en',
                 components: 'country:pk',
             }}

@@ -23,30 +23,6 @@ export default function Layout() {
                 name={"index"}
                 options={{headerShown: false}}
             />
-
-            {/* Book a Ride Screen */}
-            <Stack.Screen
-                name={"bookRide"}
-                options={{title: "Book Ride"}}
-            />
-
-            {/*  Post a Ride Screen */}
-            <Stack.Screen
-                name={"postRide"}
-                options={{title: "Post Ride"}}
-            />
-
-            {/* Ride Details Screen */}
-            <Stack.Screen
-            name={"rideDetails"}
-            options={{title: "Ride Details"}}
-            />
-
-            {/* Rides List Screen */}
-            <Stack.Screen
-            name={"ridesList"}
-            options={{title: "Rides List"}}
-            />
         </Stack>
     );
 }

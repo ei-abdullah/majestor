@@ -10,8 +10,6 @@ const generateYearList = () => {
     return years;
 }
 
-export const years = generateYearList();
-
 export const type = [
     {id: 'PAST_PAPER', name: 'Past Paper'},
     {id: 'QUIZ', name: 'Quiz'},
@@ -32,3 +30,10 @@ export const semesterType = [
     {id: 'SPRING', name: 'Spring'},
     {id: 'SUMMER', name: 'Summer'},
 ]
+
+// Google Maps API Key
+export const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY || "";
+
+// Years list
+export const years = generateYearList();
+
