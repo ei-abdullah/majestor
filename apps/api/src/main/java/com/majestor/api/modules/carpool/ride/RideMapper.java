@@ -64,7 +64,7 @@ public class RideMapper {
     ) {
         if (rides == null || rides.isEmpty()) return List.of();
 
-        List<GetRecentRidesDTO> recentRidesDTOS = rides
+        return rides
                 .stream()
                 .map(ride -> GetRecentRidesDTO
                         .builder()
@@ -88,7 +88,5 @@ public class RideMapper {
                         .build()
                 )
                 .toList();
-
-        return null;
     }
 }

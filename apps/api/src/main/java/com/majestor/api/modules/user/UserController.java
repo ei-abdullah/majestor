@@ -60,6 +60,7 @@ public class UserController {
                 .build();
     }
 
+    @Deprecated
     @PatchMapping("/markOnboarded/{userId}")
     public ResponseEntity<?> markOnboarded(
             @PathVariable @NotNull @Positive Long userId

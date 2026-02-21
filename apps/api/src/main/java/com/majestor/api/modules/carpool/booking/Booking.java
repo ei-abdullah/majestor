@@ -4,7 +4,7 @@ import com.majestor.api.modules.carpool.ride.Ride;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +13,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Entity
@@ -26,7 +25,7 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ride_id", nullable = false)
     private Ride ride;
 
@@ -36,7 +35,7 @@ public class Booking {
 
     @Column(nullable = false)
     @NotNull(message = "Deviation must be provided")
-    @Positive(message = "Deviation must be positive")
+    @PositiveOrZero(message = "Deviation must be positive")
     private Long deviationKm;
 
     @Column(nullable = false)
