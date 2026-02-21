@@ -2,6 +2,8 @@ package com.majestor.api.modules.user;
 
 import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.university.University;
+import com.majestor.api.modules.carpool.ride.Ride;
+import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.document.Document;
 import com.majestor.api.modules.document.like.Like;
 import com.majestor.api.modules.lostfound.founder.Founder;
@@ -96,6 +98,12 @@ public class User {
 
     @OneToMany(mappedBy = "likedBy", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes;
+
+    @OneToMany(mappedBy = "ridePoster", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Ride> postedRides;
+
+    @OneToMany(mappedBy = "rideRequester", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<RideRequest> rideRequests;
 
     // For email-based verification
     private String verificationToken;
