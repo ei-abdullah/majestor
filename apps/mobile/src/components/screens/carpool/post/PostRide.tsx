@@ -370,7 +370,7 @@ export default function PostRide() {
                                     rules={{
                                         required: 'Phone number is required',
                                         pattern: {
-                                            value: /^[0-9]{11}$/,
+                                            value: /^03[0-9]{9}$/,
                                             message: 'Invalid format'
                                         }
                                     }}
