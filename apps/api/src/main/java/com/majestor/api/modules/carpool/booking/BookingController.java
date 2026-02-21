@@ -75,7 +75,7 @@ public class BookingController {
     }
 
     /**
-     * Accept the booking and set the status of booking to BOOKED and
+     * Accept the booking and set the status of booking to ACCEPTED and
      * ride to ACCEPTED. So it won't be listing in Available Rides
      */
     @PatchMapping("/acceptBooking/{bookingId}")

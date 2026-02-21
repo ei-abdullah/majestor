@@ -39,7 +39,7 @@ public class RideController {
 
     /**
      * Get a list of recent posted rides with uploaded time < 10 mins
-     * and only have a staus of BOOKED.
+     * and only have a status of BOOKED.
      */
     @GetMapping("/recentRides")
     public ResponseEntity<List<GetRecentRidesDTO>> getRecentRides() {

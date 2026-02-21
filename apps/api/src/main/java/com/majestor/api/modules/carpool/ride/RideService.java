@@ -34,7 +34,7 @@ public class RideService {
         Ride ride = rideMapper.toRide(uploadRideDTO, user);
 
         try {
-           ride = rideRepository.save(ride);
+            ride = rideRepository.save(ride);
         } catch (Exception e) {
             log.error("Error while saving ride: {}", e.getMessage());
             throw new RuntimeException("Failed to save ride: " + e.getMessage(), e);
@@ -49,7 +49,11 @@ public class RideService {
         List<Ride> recentRidesList;
 
         try {
-            recentRidesList = rideRepository.findByCreatedAtAfter(cutoffTime);
+            recentRidesList = rideRepository
+                    .findByCreatedAtAfter(cutoffTime)
+                    .stream()
+                    .filter(ride -> ride.getRideStatus().equals(RideStatus.ACTIVE))
+                    .toList();
         } catch (Exception e) {
             log.error("Error while getting recent rides: {}", e.getMessage());
             throw new RuntimeException("Failed to get recent rides: " + e.getMessage(), e);

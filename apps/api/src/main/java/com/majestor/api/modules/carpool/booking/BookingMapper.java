@@ -1,6 +1,8 @@
 package com.majestor.api.modules.carpool.booking;
 
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
+import com.majestor.api.modules.carpool.rideRequest.RideRequest;
+import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -8,22 +10,24 @@ public class BookingMapper {
 
     // Maps a RideRequest to its detail DTO
     public GetBookingDTO toGetBookingDTO(Booking booking) {
+        RideRequest bookedRide = booking.getBookedRide();
+        User rideRequester = bookedRide.getRideRequester();
         return GetBookingDTO
                 .builder()
                 .bookingId(booking.getId())
-                .rideRequestId(booking.getBookedRide().getId())
-                .rideRequesterUsername(booking.getBookedRide().getRideRequester().getUsername())
-                .rideRequesterAvatar((booking.getBookedRide().getRideRequester().getAvatar()))
-                .rideRequesterEmail(booking.getBookedRide().getRideRequester().getEmail())
-                .rideRequesterPhone(booking.getBookedRide().getPhone())
-                .pickupLocationLat(booking.getBookedRide().getPickupLocationLat())
-                .pickupLocationLng(booking.getBookedRide().getPickupLocationLng())
-                .pickupLocationAddress(booking.getBookedRide().getPickupLocationAddress())
-                .dropoffLocationLat(booking.getBookedRide().getDropoffLocationLat())
-                .dropoffLocationLng(booking.getBookedRide().getDropoffLocationLng())
-                .dropoffLocationAddress(booking.getBookedRide().getDropoffLocationAddress())
-                .numberOfPassengers(booking.getBookedRide().getNumberOfPassengers())
-                .routeDistanceKm(booking.getBookedRide().getRouteDistanceKm())
+                .rideRequestId(bookedRide.getId())
+                .rideRequesterUsername(rideRequester.getUsername())
+                .rideRequesterAvatar((rideRequester.getAvatar()))
+                .rideRequesterEmail(rideRequester.getEmail())
+                .rideRequesterPhone(bookedRide.getPhone())
+                .pickupLocationLat(bookedRide.getPickupLocationLat())
+                .pickupLocationLng(bookedRide.getPickupLocationLng())
+                .pickupLocationAddress(bookedRide.getPickupLocationAddress())
+                .dropoffLocationLat(bookedRide.getDropoffLocationLat())
+                .dropoffLocationLng(bookedRide.getDropoffLocationLng())
+                .dropoffLocationAddress(bookedRide.getDropoffLocationAddress())
+                .numberOfPassengers(bookedRide.getNumberOfPassengers())
+                .routeDistanceKm(bookedRide.getRouteDistanceKm())
                 .build();
     }
 }
