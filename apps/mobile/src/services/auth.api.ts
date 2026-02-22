@@ -1,29 +1,7 @@
 import api from "@/src/services/index";
 import {AxiosResponse} from "axios";
-import {AuthUser} from "@/src/stores/authStore";
+import {LoginPayload, LoginResponse, SignupPayload, SignupResponse} from "@/src/types/auth";
 
-type LoginPayload = {
-    email: string;
-    password: string;
-}
-
-type SignupPayload = {
-    username: string;
-    email: string;
-    password: string;
-    universityId: number;
-    facultyId: number;
-}
-
-type LoginResponse = {
-    authUserDTO: AuthUser,
-    accessToken: string;
-    refreshToken: string;
-}
-
-type SignupResponse = {
-    message: string;
-}
 
 export const login = async (payload: LoginPayload): Promise<AxiosResponse<LoginResponse>> =>
     api.post<LoginResponse>("/auth/login", payload, {

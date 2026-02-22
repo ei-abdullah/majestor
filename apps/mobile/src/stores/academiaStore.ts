@@ -1,14 +1,7 @@
 import {create} from "zustand/react";
 
-import {getUniversitiesWithFaculties, UniversityWithFaculties,} from "@/src/services/academia.api";
-
-type AcademiaState = {
-    universities: UniversityWithFaculties[];
-    isLoading: boolean;
-    hasLoaded: boolean;
-    error: string | null;
-    fetchUniversities: () => Promise<void>;
-}
+import {getUniversitiesWithFaculties} from "@/src/services/academia.api";
+import {AcademiaState} from "@/src/types/academia";
 
 export const useAcademiaStore = create<AcademiaState>((set, get) => ({
     universities: [],

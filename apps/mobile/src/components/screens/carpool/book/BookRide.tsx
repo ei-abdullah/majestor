@@ -21,19 +21,19 @@ import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {GOOGLE_API_KEY} from "@/src/constants";
 import {DEFAULT_LOCATION} from "@/src/utils/location.utils";
 
-type FormData = {
+interface FormData {
     pickupLocation: {
-        latitude: number;
-        longitude: number;
-        address: string;
-    } | null;
+        latitude: number,
+        longitude: number,
+        address: string,
+    } | null,
     dropOffLocation: {
-        latitude: number;
-        longitude: number;
-        address: string;
-    } | null;
-    phone: string;
-};
+        latitude: number,
+        longitude: number,
+        address: string,
+    } | null,
+    phone: string,
+}
 
 export default function BookRide() {
     const mapRef = useRef<MapView>(null);

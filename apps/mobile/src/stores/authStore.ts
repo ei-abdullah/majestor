@@ -1,27 +1,7 @@
 import {create} from "zustand/react";
 import {createJSONStorage, persist} from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {state} from "sucrase/dist/types/parser/traverser/base";
-
-
-export type AuthUser = {
-    id: number;
-    email: string;
-    username: string;
-    universityId: number;
-    facultyId: number;
-    hasOnboarded: boolean;
-    role?: string;
-}
-
-type AuthState = {
-    user: AuthUser | null;
-    accessToken: string | null;
-    isLoggedIn: boolean;
-    markOnboarded: () => void;
-    setSession: (user: AuthUser, accessToken: string) => void;
-    clearSession: () => void;
-}
+import {AuthState} from "@/src/types/auth";
 
 export const useAuthStore = create<AuthState>()(
     persist(
