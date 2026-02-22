@@ -30,7 +30,7 @@ export const useDocument = (userId: number, filters: Filters) => {
     return query;
 }
 
-export const useUploadDocument = (onSuccessCallback?: () => void) => {
+export const useUploadDocument = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -45,7 +45,7 @@ export const useUploadDocument = (onSuccessCallback?: () => void) => {
                 type: 'success',
                 text1: 'Upload Successful',
             });
-            onSuccessCallback?.();
+            onCallback?.();
         },
         onError: (error: any) => {
             Toast.show({

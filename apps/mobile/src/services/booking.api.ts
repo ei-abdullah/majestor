@@ -4,9 +4,9 @@ import api from "@/src/services/index";
 import {CreateBookingDetails, GetBookingsResponse, GetBookingStatusResponse} from "@/src/types/booking";
 
 export const createBookingApi = async (
+    createBookingDetails: CreateBookingDetails,
     rideRequestId: number,
     rideId: number,
-    createBookingDetails: CreateBookingDetails
 ): Promise<void> => {
     await api.post(`/booking/createBooking/${rideRequestId}/${rideId}`, createBookingDetails);
 }
