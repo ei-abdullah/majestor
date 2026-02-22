@@ -1,4 +1,3 @@
-
 import React, {useEffect, useRef, useState} from "react";
 import {View, Text, TouchableOpacity, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
@@ -22,21 +21,21 @@ import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import NumberStepper from "@/src/components/ui/NumberStepper";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 
-type FormData = {
+interface FormData {
     startLocation: {
-        latitude: number;
-        longitude: number;
-        address: string;
-    } | null;
+        latitude: number,
+        longitude: number,
+        address: string,
+    } | null,
     destination: {
-        latitude: number;
-        longitude: number;
-        address: string;
-    } | null;
-    vehicleModel: string;
-    LicensePlate: string;
-    phone: string;
-};
+        latitude: number,
+        longitude: number,
+        address: string,
+    } | null,
+    vehicleModel: string,
+    LicensePlate: string,
+    phone: string,
+}
 
 export default function PostRide() {
 

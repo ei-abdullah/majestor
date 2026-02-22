@@ -48,7 +48,7 @@ public class BookingController {
      * and confirm or reject the ride
      */
     @GetMapping("/getBookings/{rideId}")
-    public ResponseEntity<?> getBookings(
+    public ResponseEntity<List<GetBookingDTO>> getBookings(
             @PathVariable @NotNull @Positive Long rideId
     ) {
         List<GetBookingDTO> bookings = bookingService.getBookings(rideId);

@@ -4,12 +4,12 @@ import DocumentCard from "@/src/components/screens/document/DocumentCard";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 
-type DocumentListProps = {
-    documents: any[];
-    isPending: boolean;
-    isError: Error | null;
-    onRefetch: () => void;
-};
+interface DocumentListProps {
+    documents: any[],
+    isPending: boolean,
+    isError: Error | null,
+    onRefetch: () => void
+}
 
 function DocumentList(
     {

@@ -3,18 +3,13 @@ import * as FileSystem from 'expo-file-system/legacy';
 import {getDownloadUrl} from "@/src/services/document.api";
 import {Alert, Platform} from "react-native";
 import {shareAsync} from "expo-sharing";
+import {Document} from "@/src/types/document";
 
-type Document = {
-    id: number;
-    title: string;
-    documentType: string;
-};
-
-type DownloadState = {
-    isDownloading: boolean;
-    error: string | null;
-    progress: number;
-};
+interface DownloadState {
+    isDownloading: boolean,
+    error: string | null,
+    progress: number
+}
 
 const save = async (uri: string, filename: string, mimetype: string) => {
     if (Platform.OS === "android") {
@@ -47,7 +42,7 @@ function useDownloadDocumentLegacy() {
             // Get download endpoint
             const downloadUrl = getDownloadUrl(document.id);
 
-            // Create unique filename with timestamp to avoid conflicts
+            // Create a unique filename with a timestamp to avoid conflicts
             const timestamp = Date.now();
             const sanitizedTitle = document.title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
             const fileName = `${sanitizedTitle}-${document.documentType}-${timestamp}.zip`;

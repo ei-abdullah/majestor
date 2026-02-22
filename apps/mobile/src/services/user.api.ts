@@ -1,21 +1,5 @@
 import api from "@/src/services/index";
-
-export type UserDetails = {
-    id: number;
-    username: string;
-    avatar: string;
-    email: string;
-    phone?: string;
-    personalEmail?: string;
-    university: string
-    faculty: string;
-    roles: [string];
-}
-
-type PersonalDetailsBody = {
-    personalEmail?: string;
-    phone?: string;
-}
+import {UserDetails} from "@/src/types/user";
 
 export const getUserDetailsApi = async (userId: number): Promise<UserDetails> => {
     const res = await api.get<UserDetails>(`/user/getUserDetails/${userId}`);

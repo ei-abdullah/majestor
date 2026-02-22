@@ -9,14 +9,14 @@ import SignupForm from "@/src/components/screens/auth/SignupForm";
 import Card from "@/src/components/ui/Card";
 import GradientView from "@/src/components/ui/GradientView";
 
-type option = {
-    name: "error" | "success";
-    message: string;
+interface Option {
+    name: "error" | "success",
+    message: string,
 }
 
 function Auth() {
     const [tab, setTab] = useState<"Login" | "Signup">("Login");
-    const [message, setMessage] = useState<option | null>({
+    const [message, setMessage] = useState<Option | null>({
         name: "error",
         message: "We're currently implementing forgot password feature. Please remember yours for time being."
     });

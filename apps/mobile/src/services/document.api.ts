@@ -1,23 +1,6 @@
 import api from "@/src/services/index";
 import {AxiosResponse} from "axios";
-
-export type Filters = {
-    searchQuery?: string;
-    year?: string;
-    docType?: string;
-    sortByLikes?: string;
-}
-
-export type GetDocumentResponse = {
-    id: number;
-    title: string;
-    year: number;
-    documentType: string;
-    semesterType: string;
-    course: string;
-    likesCount: number;
-    imageUri: string;
-}
+import {Filters, GetDocumentResponse} from "@/src/types/document";
 
 export const uploadDocumentApi = async (
     userId: number,

@@ -1,15 +1,6 @@
 import {AxiosResponse} from "axios";
 import api from "@/src/services/index";
-
-type Course = {
-    id: number;
-    name: string;
-}
-
-export type FetchCoursesByUserResponse = {
-    facultyName: string,
-    courses: Course[]
-}
+import {FetchCoursesByUserResponse} from "@/src/types/course";
 
 
 export const fetchCoursesByUser = async (userId: number): Promise<AxiosResponse<FetchCoursesByUserResponse>> =>

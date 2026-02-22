@@ -5,9 +5,9 @@ import Toast from "react-native-toast-message";
 import {
     getAllDocumentsApi,
     likeDocumentApi,
-    Filters,
     uploadDocumentApi
 } from "@/src/services/document.api";
+import {Filters} from "@/src/types/document";
 
 export const useDocument = (userId: number, filters: Filters) => {
     const query = useQuery({

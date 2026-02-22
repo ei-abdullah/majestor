@@ -13,18 +13,18 @@ import {validateCustEmail} from "@/src/utils/validation";
 import ErrorText from "@/src/components/ui/ErrorText";
 
 
-type option = {
-    name: "error" | "success";
-    message: string;
+interface Option {
+    name: "error" | "success",
+    message: string
 }
 
-type props = {
-    loading: boolean;
-    setLoading: (loading: boolean) => void;
-    setMessage: (message: option | null) => void;
+interface Props {
+    loading: boolean,
+    setLoading: (loading: boolean) => void,
+    setMessage: (message: Option | null) => void
 }
 
-function LoginForm({loading, setLoading, setMessage}: props) {
+function LoginForm({loading, setLoading, setMessage}: Props) {
     const router = useRouter();
     const {control, handleSubmit, formState: {errors}} = useForm();
 

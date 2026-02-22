@@ -12,19 +12,19 @@ import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
 import {validateCustEmail} from "@/src/utils/validation";
 import ErrorText from "@/src/components/ui/ErrorText";
 
-type option = {
-    name: "error" | "success";
-    message: string;
+interface Option {
+    name: "error" | "success",
+    message: string
 }
 
-type props = {
-    loading: boolean;
-    setLoading: (loading: boolean) => void;
-    setMessage: (option: option | null) => void;
-    setTab: (tab: "Login") => void;
+interface Props {
+    loading: boolean,
+    setLoading: (loading: boolean) => void,
+    setMessage: (option: Option | null) => void,
+    setTab: (tab: "Login") => void
 }
 
-function SignupForm({loading, setLoading, setMessage, setTab}: props) {
+function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
     const {control, watch, handleSubmit, formState: {errors}} = useForm();
     const {universities, fetchUniversities, isLoading: universitiesLoading, error} = useAcademiaStore();
 

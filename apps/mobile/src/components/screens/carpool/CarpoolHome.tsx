@@ -10,7 +10,6 @@ import {Ionicons} from "@expo/vector-icons";
 import Toast from 'react-native-toast-message';
 import Card from "@/src/components/ui/Card";
 import {useRouter} from "expo-router";
-import CustomMarker from "@/src/components/ui/CustomMarker";
 import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
 import { GOOGLE_API_KEY } from "@/src/constants";

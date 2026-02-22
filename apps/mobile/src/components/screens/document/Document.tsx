@@ -1,7 +1,6 @@
 import React from "react";
 import {View} from "react-native";
 
-import {Filters} from "@/src/services/document.api";
 import {useAuthStore} from "@/src/stores/authStore";
 
 import {useDocument} from "@/src/queries/document.queries";
@@ -14,6 +13,7 @@ import OutlineButton from "@/src/components/ui/OutlineButton";
 import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
 
 import {filterByLike, type, years} from "@/src/constants";
+import {Filters} from "@/src/types/document";
 
 function Document() {
     const {user} = useAuthStore();
