@@ -21,20 +21,20 @@ public class UploadRideResponseDTO {
     @NotBlank(message = "Rider's phone is required")
     private String phone;
 
-    @NotBlank(message = "Start location lat is required")
-    private String startLocationLat;
+    @NotNull(message = "Start location lat is required")
+    private BigDecimal startLocationLat;
 
-    @NotBlank(message = "Start location lng is required")
-    private String startLocationLng;
+    @NotNull(message = "Start location lng is required")
+    private BigDecimal startLocationLng;
 
     @NotBlank(message = "Start location address is required")
     private String startLocationAddress;
 
-    @NotBlank(message = "End location lat is required")
-    private String endLocationLat;
+    @NotNull(message = "End location lat is required")
+    private BigDecimal endLocationLat;
 
-    @NotBlank(message = "End location lng is required")
-    private String endLocationLng;
+    @NotNull(message = "End location lng is required")
+    private BigDecimal endLocationLng;
 
     @NotBlank(message = "End location address is required")
     private String endLocationAddress;
@@ -47,8 +47,6 @@ public class UploadRideResponseDTO {
 
     @NotBlank(message = "Vehicle license plate is required")
     private String licensePlate;
-
-    private String routePolyline;
 
     @NotNull(message = "Available seats are required")
     private Integer availableSeats;

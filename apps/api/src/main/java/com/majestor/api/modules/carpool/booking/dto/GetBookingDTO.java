@@ -19,11 +19,11 @@ public class GetBookingDTO {
         private String rideRequesterAvatar;
         private String rideRequesterEmail;
         private String rideRequesterPhone;
-        private String pickupLocationLat;
-        private String pickupLocationLng;
+        private BigDecimal pickupLocationLat;
+        private BigDecimal pickupLocationLng;
         private String pickupLocationAddress;
-        private String dropoffLocationLat;
-        private String dropoffLocationLng;
+        private BigDecimal dropoffLocationLat;
+        private BigDecimal dropoffLocationLng;
         private String dropoffLocationAddress;
         private Integer numberOfPassengers;
         private BigDecimal routeDistanceKm;

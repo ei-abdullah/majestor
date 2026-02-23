@@ -26,25 +26,33 @@ public class Ride {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Start location lat is required")
-    private String startLocationLat;
+    @Column(nullable = false, precision = 10, scale = 7)
+    @NotNull(message = "Start location lat is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal startLocationLat;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Start location lng is required")
-    private String startLocationLng;
+    @Column(nullable = false, precision = 10, scale = 7)
+    @NotNull(message = "Start location lng is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
+    private BigDecimal startLocationLng;
 
     @Column(nullable = false)
     @NotBlank(message = "Start location address is required")
     private String startLocationAddress;
 
-    @Column(nullable = false)
-    @NotBlank(message = "End location lat is required")
-    private String endLocationLat;
+    @Column(nullable = false, precision = 10, scale = 7)
+    @NotNull(message = "End location lat is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal endLocationLat;
 
-    @Column(nullable = false)
-    @NotBlank(message = "End location lng is required")
-    private String endLocationLng;
+    @Column(nullable = false, precision = 10, scale = 7)
+    @NotNull(message = "End location lng is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
+    private BigDecimal endLocationLng;
 
     @Column(nullable = false)
     @NotBlank(message = "End location address is required")
@@ -57,10 +65,6 @@ public class Ride {
     @Column(nullable = false)
     @NotBlank(message = "License plate is required")
     private String licensePlate;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Route polyline is required")
-    private String routePolyline;
 
     @Column(nullable = false)
     @NotNull(message = "Available seats are required")

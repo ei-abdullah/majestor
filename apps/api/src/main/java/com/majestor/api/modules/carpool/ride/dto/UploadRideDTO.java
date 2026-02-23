@@ -1,9 +1,7 @@
 package com.majestor.api.modules.carpool.ride.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,20 +14,28 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UploadRideDTO {
-    @NotBlank(message = "Start location lat is required")
-    private String startLocationLat;
+    @NotNull(message = "Start location lat is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal startLocationLat;
 
-    @NotBlank(message = "Start location lng is required")
-    private String startLocationLng;
+    @NotNull(message = "Start location lng is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
+    private BigDecimal startLocationLng;
 
     @NotBlank(message = "Start location address is required")
     private String startLocationAddress;
 
-    @NotBlank(message = "End location lat is required")
-    private String endLocationLat;
+    @NotNull(message = "End location lat is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal endLocationLat;
 
-    @NotBlank(message = "End location lng is required")
-    private String endLocationLng;
+    @NotNull(message = "End location lng is required")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
+    private BigDecimal endLocationLng;
 
     @NotBlank(message = "End location address is required")
     private String endLocationAddress;
@@ -42,9 +48,6 @@ public class UploadRideDTO {
 
     @NotBlank(message = "License plate number is required")
     private String licensePlate;
-
-    @NotBlank(message = "Route polyline is required")
-    private String routePolyline;
 
     @NotNull(message = "Available seats is required")
     private Integer availableSeats;

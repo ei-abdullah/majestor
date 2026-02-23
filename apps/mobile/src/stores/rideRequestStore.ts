@@ -6,13 +6,12 @@ import {RideRequestData, RideRequestState} from "@/src/types/rideRequest";
 
 const defaultState: RideRequestData = {
     id: 0,
-    pickupLocationLat: "",
-    pickupLocationLng: "",
+    pickupLocationLat: 0,
+    pickupLocationLng: 0,
     pickupLocationAddress: "",
-    dropoffLocationLat: "",
-    dropoffLocationLng: "",
+    dropoffLocationLat: 0,
+    dropoffLocationLng: 0,
     dropoffLocationAddress: "",
-    routePolyline: "",
     numberOfPassengers: 0,
     phone: "",
     routeDistanceKm: 0,

@@ -2,25 +2,24 @@ import {create} from "zustand/react"
 import {createJSONStorage, persist} from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {RideData, RideState} from "@/src/types/ride";
+import {RideState, UploadRideResponse} from "@/src/types/ride";
 
 
-const defaultState: RideData = {
+const defaultState: UploadRideResponse = {
     id: 0,
-    startLocationLat: "",
-    startLocationLng: "",
-    startLocationAddress: "",
-    endLocationLat: "",
-    endLocationLng: "",
-    endLocationAddress: "",
-    routePolyline: "",
-    availableSeats: 0,
-    vehicleModal: "",
-    vehicleType: "",
-    licensePlate: "",
-    rideStatus: "",
     phone: "",
+    startLocationLat: 0,
+    startLocationLng: 0,
+    startLocationAddress: "",
+    endLocationLat: 0,
+    endLocationLng: 0,
+    endLocationAddress: "",
+    vehicleType: "",
+    vehicleModal: "",
+    licensePlate: "",
+    availableSeats: 0,
     routeDistanceKm: 0,
+    createdAt: ""
 };
 
 export const useRideStore = create<RideState>()(
@@ -28,10 +27,8 @@ export const useRideStore = create<RideState>()(
         (set, get) => ({
             ...defaultState,
 
-            setRideDetails: (rideDetails: Partial<RideData>) => {
-                set(() => ({
-                    ...rideDetails
-                }))
+            setRideDetails: (rideDetails: UploadRideResponse) => {
+                set(() => ({...rideDetails}))
             },
 
             clearRideDetails: () => set(() => ({...defaultState})),
