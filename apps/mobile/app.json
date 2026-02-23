@@ -21,7 +21,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY"
+          "apiKey": "AIzaSyAxjf4A57PY2Yto_P_nb98-n1R9H4_XWMs"
         }
       },
       "edgeToEdgeEnabled": true,
@@ -49,6 +49,12 @@
           "dark": {
             "backgroundColor": "#000000"
           }
+        }
+      ],
+      [
+        "react-native-maps",
+        {
+          "androidGoogleMapsApiKey": "AIzaSyAxjf4A57PY2Yto_P_nb98-n1R9H4_XWMs"
         }
       ],
       "expo-secure-store",
