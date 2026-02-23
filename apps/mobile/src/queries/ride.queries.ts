@@ -1,11 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 
-import {UploadRideDetails} from "@/src/types/ride";
+import {UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
 import {recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
 
 
-export const useUploadRide = (onCallback?: () => void) => {
+export const useUploadRide = (onCallback?: (data:UploadRideResponse) => void) => {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -13,14 +13,14 @@ export const useUploadRide = (onCallback?: () => void) => {
         mutationFn: ({uploadRideDetails, userId,}: {
             uploadRideDetails: UploadRideDetails, userId: number
         }) => uploadRideApi(uploadRideDetails, userId),
-        onSuccess: async () => {
+        onSuccess: async (data: UploadRideResponse) => {
             await queryClient.invalidateQueries({queryKey: ["ride"]})
             Toast.show({
                 type: "success",
                 text1: "Ride Request Submitted Successfully",
                 position: "top"
             })
-            onCallback?.();
+            onCallback?.(data);
         },
         onError: (error: any) => {
             Toast.show({

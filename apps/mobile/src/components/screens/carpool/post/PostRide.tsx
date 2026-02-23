@@ -6,7 +6,6 @@ import {useLocationPermissions} from "@/src/hooks/useLocationPermissions";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {Controller, useForm} from "react-hook-form";
-import {useLocationStore} from "@/src/stores/locationStore";
 import {DEFAULT_LOCATION} from "@/src/utils/location.utils";
 import Toast from "react-native-toast-message";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -20,6 +19,11 @@ import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import NumberStepper from "@/src/components/ui/NumberStepper";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import {useRideStore} from "@/src/stores/rideStore";
+import {UploadRideResponse} from "@/src/types/ride";
+import {useRouter} from "expo-router";
+import {useUploadRide} from "@/src/queries/ride.queries";
+import {useAuthStore} from "@/src/stores/authStore";
 
 interface FormData {
     startLocation: {
@@ -27,7 +31,7 @@ interface FormData {
         longitude: number,
         address: string,
     } | null,
-    destination: {
+    endLocation: {
         latitude: number,
         longitude: number,
         address: string,
@@ -38,19 +42,28 @@ interface FormData {
 }
 
 export default function PostRide() {
-
+    const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const bottomSheetRef = useRef<BottomSheet>(null);
 
-// Use custom hooks
+    // Use custom hooks
     const {hasLocationPermission} = useLocationPermissions();
     const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
 
-    const {control, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
+    const {user} = useAuthStore();
+    const rideState = useRideStore();
+    const {mutate: uploadRide, isPending} = useUploadRide((data: UploadRideResponse) => {
+        rideState.setRideDetails({
+            ...data
+        });
+        router.push('/(tabs)/carpool/book/availableRides')
+    })
+
+    const {control, watch, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             startLocation: null,
-            destination: null,
+            endLocation: null,
             vehicleModel: '',
             LicensePlate: '',
             phone: ''
@@ -58,21 +71,21 @@ export default function PostRide() {
     });
 
     const [numberOfPassengers, setNumberOfPassengers] = React.useState(1);
-    const [vehicleType, setVehicleType] = React.useState<'car' | 'bike'>('car');
+    const [vehicleType, setVehicleType] = React.useState<'CAR' | 'BIKE'>('CAR');
     const [isExpanded, setIsExpanded] = useState(false);
+    const [routeDistanceKm, setRouteDistanceKm] = useState(0);
+
 
     const snapPoints = ["5%", "60%", "90%"]
 
-// Get current form values safely
-    let startLocation = getValues('startLocation');
-    let destination = getValues('destination');
+    // Get current form values safely
+    let startLocation = watch('startLocation');
+    let endLocation = watch('endLocation');
 
-    const {userLatitude, userLongitude} = useLocationStore();
-
-    const initialRegion = userLatitude && userLongitude
+    const initialRegion = rideState.startLocationLat && rideState.startLocationLng
         ? {
-            latitude: userLatitude,
-            longitude: userLongitude,
+            latitude: rideState.startLocationLat,
+            longitude: rideState.startLocationLng,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
         }
@@ -96,24 +109,37 @@ export default function PostRide() {
         }
     };
 
-
     const onSubmit = (data: FormData) => {
-        console.log(JSON.stringify({
-            startLocation: data.startLocation,
-            destination: data.destination,
-            vehicleModel: data.vehicleModel,
-            LicensePlate: data.LicensePlate,
-            phone: data.phone,
-            vehicleType,
-            numberOfPassengers
-        }, null, 2));
-        // You can now use data.startLocation.latitude, data.startLocation.longitude, etc.
+        if (!data.startLocation || !data.endLocation || !user) return;
+
+        uploadRide({
+            userId: user.id,
+            uploadRideDetails: {
+                startLocationLat: data.startLocation.latitude,
+                startLocationLng: data.startLocation.longitude,
+                startLocationAddress: data.startLocation.address,
+                endLocationLat: data.endLocation.latitude,
+                endLocationLng: data.endLocation.longitude,
+                endLocationAddress: data.endLocation.address,
+                vehicleType,
+                vehicleModal: data.vehicleModel,
+                licensePlate: data.LicensePlate,
+                phone: data.phone,
+                availableSeats: numberOfPassengers,
+                routeDistanceKm,
+            }
+        });
     };
 
     useEffect(() => {
-        startLocation = getValues('startLocation');
-        destination = getValues('destination');
-    }, [getValues]);
+        const animateToUser = async () => {
+            const location = await getCurrentLocation();
+            if (location) {
+                animateToLocation(location.latitude, location.longitude);
+            }
+        };
+        animateToUser();
+    }, []);
 
     return (
         <GestureHandlerRootView className={"flex-1"}>
@@ -144,11 +170,11 @@ export default function PostRide() {
                         </Marker>
                     )}
 
-                    {destination && (
+                    {endLocation && (
                         <Marker
                             coordinate={{
-                                latitude: destination.latitude,
-                                longitude: destination.longitude
+                                latitude: endLocation.latitude,
+                                longitude: endLocation.longitude
                             }}
 
                         >
@@ -156,7 +182,7 @@ export default function PostRide() {
                         </Marker>
                     )}
 
-                    {startLocation && destination && (
+                    {startLocation && endLocation && (
                         <>
                             <MapViewDirections
                                 origin={{
@@ -164,8 +190,8 @@ export default function PostRide() {
                                     longitude: startLocation.longitude
                                 }}
                                 destination={{
-                                    latitude: destination.latitude,
-                                    longitude: destination.longitude
+                                    latitude: endLocation.latitude,
+                                    longitude: endLocation.longitude
                                 }}
                                 strokeWidth={2}
                                 strokeColor="red"
@@ -173,14 +199,13 @@ export default function PostRide() {
                                 mode={"DRIVING"}
                                 precision={"high"}
                                 onReady={(result) => {
-                                    console.log(`Distance: ${result.distance} km, Duration: ${result.duration} min`);
+                                    setRouteDistanceKm(result.distance);
                                 }}
-                                onError={(errorMessage) => {
-                                    console.error('MapViewDirections Error A->B:', errorMessage);
+                                onError={(errorMessage: any) => {
                                     Toast.show({
                                         type: 'error',
                                         text1: '🗺️ Directions Error',
-                                        text2: 'Unable to load route.',
+                                        text2: `Unable to load route. Error: ${errorMessage}`,
                                         position: 'top',
                                         visibilityTime: 3000,
                                     });
@@ -261,7 +286,7 @@ export default function PostRide() {
                         <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
                         <Controller
                             control={control}
-                            name="destination"
+                            name="endLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
                                     icon="flag"
@@ -291,8 +316,8 @@ export default function PostRide() {
                         <ToggleButton
                             label="Vehicle Type"
                             options={[
-                                {value: 'car', label: 'Car', icon: 'car-sport'},
-                                {value: 'bike', label: 'Bike', icon: 'bicycle'}
+                                {value: 'CAR', label: 'Car', icon: 'car-sport'},
+                                {value: 'BIKE', label: 'Bike', icon: 'bicycle'}
                             ]}
                             selectedValue={vehicleType}
                             onSelect={setVehicleType}
@@ -348,13 +373,13 @@ export default function PostRide() {
 
                         {/* Number of Passengers */}
                         {
-                            vehicleType === 'car' && (
+                            vehicleType === 'CAR' && (
                                 <NumberStepper
                                     label="Available Seats"
                                     value={numberOfPassengers}
                                     onValueChange={setNumberOfPassengers}
                                     minValue={1}
-                                    maxValue={vehicleType === 'car' ? 4 : 1}
+                                    maxValue={vehicleType === 'CAR' ? 4 : 1}
                                 />
                             )
                         }
@@ -393,8 +418,9 @@ export default function PostRide() {
                         {/* Submit */}
                         <View className="z-0">
                             <PrimaryButton
-                                title={"Upload Ride"}
+                                title={isPending ? "Uploading" : "Upload Ride"}
                                 onPress={handleSubmit(onSubmit)}
+                                disabled={isPending}
                             />
                         </View>
                     </View>

@@ -4,10 +4,7 @@ import com.majestor.api.modules.carpool.booking.Booking;
 import com.majestor.api.modules.carpool.ride.Ride;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,13 +27,17 @@ public class RideRequest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false)
-    @NotBlank(message = "Pickup location lat is required")
-    private String pickupLocationLat;
+    @Column(nullable = false, precision = 10, scale = 7)
+    @NotNull(message = "Pickup location lat is required")
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal pickupLocationLat;
 
     @Column(nullable = false)
     @NotBlank(message = "Pickup location lng is required")
-    private String pickupLocationLng;
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal pickupLocationLng;
 
     @Column(nullable = false)
     @NotBlank(message = "Pickup location address is required")
@@ -44,19 +45,19 @@ public class RideRequest {
 
     @Column(nullable = false)
     @NotBlank(message = "DropOff location lat is required")
-    private String dropoffLocationLat;
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal dropoffLocationLat;
 
     @Column(nullable = false)
     @NotBlank(message = "DropOff location lng is required")
-    private String dropoffLocationLng;
+    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
+    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    private BigDecimal dropoffLocationLng;
 
     @Column(nullable = false)
     @NotBlank(message = "Dropoff location address is required")
     private String dropoffLocationAddress;
-
-    @Column(nullable = false)
-    @NotBlank(message = "Route polyline is required")
-    private String routePolyline;
 
     @Column(nullable = false)
     @NotNull(message = "Number of passengers are required")

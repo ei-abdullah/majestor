@@ -1,9 +1,6 @@
 package com.majestor.api.modules.carpool.rideRequest.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,26 +17,23 @@ public class UploadRideRequestResponseDTO {
     @NotNull(message = "Ride request id is required")
     private Long id;
 
-    @NotBlank(message = "Pickup location lat is required")
-    private String pickupLocationLat;
+    @NotNull(message = "Pickup location lat is required")
+    private BigDecimal pickupLocationLat;
 
     @NotBlank(message = "Pickup location lng is required")
-    private String pickupLocationLng;
+    private BigDecimal pickupLocationLng;
 
     @NotBlank(message = "Pickup location address is required")
     private String pickupLocationAddress;
 
-    @NotBlank(message = "Dropoff location lat is required")
-    private String dropoffLocationLat;
+    @NotBlank(message = "DropOff location lat is required")
+    private BigDecimal dropoffLocationLat;
 
-    @NotBlank(message = "Dropoff location lng is required")
-    private String dropoffLocationLng;
+    @NotBlank(message = "DropOff location lng is required")
+    private BigDecimal dropoffLocationLng;
 
     @NotBlank(message = "Dropoff location address is required")
     private String dropoffLocationAddress;
-
-    @NotBlank(message = "Route polyline is required")
-    private String routePolyline;
 
     @NotNull(message = "Number of passengers are required")
     private Integer numberOfPassengers;

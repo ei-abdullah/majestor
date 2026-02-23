@@ -2,9 +2,7 @@ package com.majestor.api.modules.carpool.ride.dto;
 
 import com.majestor.api.modules.carpool.ride.VehicleType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,20 +18,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class GetRecentRidesDTO {
 
-    @NotBlank(message = "Start location lat is required")
-    private String startLocationLat;
+    @NotNull(message = "Start location lat is required")
+    private BigDecimal startLocationLat;
 
-    @NotBlank(message = "Start location lng is required")
-    private String startLocationLng;
+    @NotNull(message = "Start location lng is required")
+    private BigDecimal startLocationLng;
 
     @NotBlank(message = "Start location address is required")
     private String startLocationAddress;
 
-    @NotBlank(message = "End location lat is required")
-    private String endLocationLat;
+    @NotNull(message = "End location lat is required")
+    private BigDecimal endLocationLat;
 
-    @NotBlank(message = "End location lng is required")
-    private String endLocationLng;
+    @NotNull(message = "End location lng is required")
+    private BigDecimal endLocationLng;
 
     @NotBlank(message = "End location address is required")
     private String endLocationAddress;
@@ -43,9 +41,6 @@ public class GetRecentRidesDTO {
 
     @NotBlank(message = "License plate is required")
     private String licensePlate;
-
-    @NotBlank(message = "Route polyline is required")
-    private String routePolyline;
 
     @NotNull(message = "Available seats are required")
     private Integer availableSeats;

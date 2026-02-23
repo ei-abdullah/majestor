@@ -1,7 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {View, TouchableOpacity, Text} from "react-native";
-import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import MapViewDirections from "react-native-maps-directions"
+import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
@@ -14,7 +13,6 @@ import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
 import { GOOGLE_API_KEY } from "@/src/constants";
 import { DEFAULT_LOCATION } from "@/src/utils/location.utils";
-import {useLocationStore} from "@/src/stores/locationStore";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 
 export default function CarpoolHome() {
@@ -25,23 +23,13 @@ export default function CarpoolHome() {
     // Use custom hooks
     const { hasLocationPermission } = useLocationPermissions();
     const { centerOnUserLocation, animateToLocation } = useMapLocation(mapRef);
-    const { userLatitude, userLongitude } = useLocationStore();
     const { getCurrentLocation } = useCurrentLocation();
 
     const [showDirections, setShowDirections] = useState(true);
+    const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; address: string } | null>(null);
 
     // Bottom sheet snap points
     const snapPoints = ["5%", "25%", "40%"]
-
-    // Set the initial region based on the user location
-    const initialRegion = userLatitude && userLongitude
-        ? {
-            latitude: userLatitude,
-            longitude: userLongitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421
-        }
-        : DEFAULT_LOCATION;
 
     // Check API key on mount
     useEffect(() => {
@@ -58,16 +46,27 @@ export default function CarpoolHome() {
         }
     }, []);
 
-    // Animate map to user location on mount
+    // Animate a map to the user location on the mount
     useEffect(() => {
         const checkLocationAndAnimate = async () => {
             const location = await getCurrentLocation();
             if (location) {
                 animateToLocation(location.latitude, location.longitude);
+                setCurrentLocation(location);
             }
         }
         checkLocationAndAnimate();
     }, []);
+
+    // Set the initial region based on the user location
+    const initialRegion = currentLocation?.latitude && currentLocation?.longitude
+        ? {
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421
+        }
+        : DEFAULT_LOCATION;
 
     return (
         <GestureHandlerRootView className="flex-1">

@@ -1,6 +1,5 @@
+import AvailableRides from "@/src/components/screens/carpool/book/AvailableRides";
 
-export default function AvailableRides() {
-    return (
-        <h1>Available Rides</h1>
-    )
+export default function AvailableRidesScreen() {
+    return <AvailableRides />
 }
