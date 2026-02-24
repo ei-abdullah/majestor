@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetRecentRidesDTO {
+    @NotNull(message = "Ride id is required")
+    private Long id;
 
     @NotNull(message = "Start location lat is required")
     private BigDecimal startLocationLat;

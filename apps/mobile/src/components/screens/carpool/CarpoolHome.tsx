@@ -123,13 +123,13 @@ export default function CarpoolHome() {
                                     <View className="w-2/3">
                                         <PrimaryButton
                                             title={"Book a Ride"}
-                                            onPress={() => router.push("/(tabs)/carpool/book/bookRide")}
+                                            onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide")}
                                         />
                                     </View>
                                     <View className="w-2/3 self-end mt-3">
                                         <OutlineButton
                                             title={"Post a Ride"}
-                                            onPress={() => router.push("/(tabs)/carpool/post/postRide")}
+                                            onPress={() => router.push("/(tabs)/carpool/ride/postRide")}
                                         />
                                     </View>
                                 </>

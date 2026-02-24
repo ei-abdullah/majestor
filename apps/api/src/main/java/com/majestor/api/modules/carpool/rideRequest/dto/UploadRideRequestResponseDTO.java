@@ -20,16 +20,16 @@ public class UploadRideRequestResponseDTO {
     @NotNull(message = "Pickup location lat is required")
     private BigDecimal pickupLocationLat;
 
-    @NotBlank(message = "Pickup location lng is required")
+    @NotNull(message = "Pickup location lng is required")
     private BigDecimal pickupLocationLng;
 
     @NotBlank(message = "Pickup location address is required")
     private String pickupLocationAddress;
 
-    @NotBlank(message = "DropOff location lat is required")
+    @NotNull(message = "DropOff location lat is required")
     private BigDecimal dropoffLocationLat;
 
-    @NotBlank(message = "DropOff location lng is required")
+    @NotNull(message = "DropOff location lng is required")
     private BigDecimal dropoffLocationLng;
 
     @NotBlank(message = "Dropoff location address is required")

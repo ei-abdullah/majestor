@@ -31,15 +31,16 @@ export interface UploadRideResponse {
 }
 
 export interface RecentRideResponse {
-    startLocationLat: string,
-    startLocationLng: string,
+    id: number,
+    startLocationLat: number,
+    startLocationLng: number,
     startLocationAddress: string,
-    endLocationLat: string,
-    endLocationLng: string,
+    endLocationLat: number,
+    endLocationLng: number,
     endLocationAddress: string,
     vehicleModal: string,
     licensePlate: string,
-    availableSeats: 0,
+    availableSeats: number,
     vehicleType: "CAR" | "BIKE",
     phone: string,
     routeDistanceKm: number,

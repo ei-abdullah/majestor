@@ -65,6 +65,8 @@ export default function TabsLayout() {
                     name={"carpool"}
                     options={{
                         title: "Carpool",
+                        popToTopOnBlur: false,
+                        freezeOnBlur: true,
                         tabBarIcon: ({focused, color, size}) => (
                             focused ? (
                                 <LinearGradient

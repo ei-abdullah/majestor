@@ -66,6 +66,7 @@ public class RideMapper {
                 .stream()
                 .map(ride -> GetRecentRidesDTO
                         .builder()
+                        .id(ride.getId())
                         .startLocationLat(ride.getStartLocationLat())
                         .startLocationLng(ride.getStartLocationLng())
                         .startLocationAddress(ride.getStartLocationAddress())

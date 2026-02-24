@@ -57,7 +57,7 @@ export default function PostRide() {
         rideState.setRideDetails({
             ...data
         });
-        router.push('/(tabs)/carpool/book/availableRides')
+        router.push('/(tabs)/carpool/ride/bookingRequests')
     })
 
     const {control, watch, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
@@ -113,7 +113,6 @@ export default function PostRide() {
         if (!data.startLocation || !data.endLocation || !user) return;
 
         uploadRide({
-            userId: user.id,
             uploadRideDetails: {
                 startLocationLat: data.startLocation.latitude,
                 startLocationLng: data.startLocation.longitude,
@@ -127,7 +126,8 @@ export default function PostRide() {
                 phone: data.phone,
                 availableSeats: numberOfPassengers,
                 routeDistanceKm,
-            }
+            },
+            userId: user.id,
         });
     };
 
