@@ -1,11 +1,9 @@
 import React, {useEffect, useRef, useState} from "react";
 import {Text, View, Pressable, TouchableOpacity} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
-import {useLocationStore} from "@/src/stores/locationStore";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import NumberStepper from "@/src/components/ui/NumberStepper";
-import ToggleButton from "@/src/components/ui/ToggleButton";
 import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import {Controller, useForm} from "react-hook-form";
@@ -20,6 +18,11 @@ import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {GOOGLE_API_KEY} from "@/src/constants";
 import {DEFAULT_LOCATION} from "@/src/utils/location.utils";
+import {useAuthStore} from "@/src/stores/authStore";
+import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {useUploadRideRequest} from "@/src/queries/rideRequest.queries";
+import {UploadRideRequestResponse} from "@/src/types/rideRequest";
+import {router} from "expo-router";
 
 interface FormData {
     pickupLocation: {
@@ -44,7 +47,17 @@ export default function BookRide() {
     const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
 
-    const {control, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
+    const {user} = useAuthStore();
+    const rideRequestState = useRideRequestStore();
+    const {mutate: uploadRideRequest, isPending} = useUploadRideRequest((data: UploadRideRequestResponse) => {
+        rideRequestState.setRideRequestDetails({
+            ...data
+        });
+        router.push("/(tabs)/carpool/rideRequest/availableRides")
+    });
+
+
+    const {control, watch, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             pickupLocation: null,
             dropOffLocation: null,
@@ -52,21 +65,20 @@ export default function BookRide() {
         }
     });
 
-    const [numberOfPassengers, setNumberOfPassengers] = React.useState(1);
+    const [numberOfPassengers, setNumberOfPassengers] = useState(1);
+    const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
 
     const snapPoints = ["5%", "70%"]
 
     // Get current form values safely
-    let pickupLocation = getValues('pickupLocation');
-    let dropOffLocation = getValues('dropOffLocation');
+    let pickupLocation = watch('pickupLocation');
+    let dropOffLocation = watch('dropOffLocation');
 
-    const {userLatitude, userLongitude} = useLocationStore();
-
-    const initialRegion = userLatitude && userLongitude
+    const initialRegion = rideRequestState?.pickupLocationLat && rideRequestState?.pickupLocationLng
         ? {
-            latitude: userLatitude,
-            longitude: userLongitude,
+            latitude: rideRequestState.pickupLocationLat,
+            longitude: rideRequestState.pickupLocationLng,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421
         }
@@ -92,19 +104,33 @@ export default function BookRide() {
 
 
     const onSubmit = (data: FormData) => {
-        console.log(JSON.stringify({
-            pickupLocation: data.pickupLocation,
-            dropOffLocation: data.dropOffLocation,
-            phone: data.phone,
-            numberOfPassengers
-        }, null, 2));
-        // You can now use data.pickupLocation.latitude, data.pickupLocation.longitude, etc.
+        if (!data.pickupLocation || !data.dropOffLocation || !user) return;
+
+        uploadRideRequest({
+            uploadRideRequestDetails: {
+                pickupLocationLat: data.pickupLocation!.latitude,
+                pickupLocationLng: data.pickupLocation!.longitude,
+                pickupLocationAddress: data.pickupLocation!.address,
+                dropoffLocationLat: data.dropOffLocation!.latitude,
+                dropoffLocationLng: data.dropOffLocation!.longitude,
+                dropoffLocationAddress: data.dropOffLocation!.address,
+                numberOfPassengers: numberOfPassengers,
+                phone: data.phone,
+                routeDistanceKm: routeDistanceKm
+            },
+            userId: user!.id
+        });
     };
 
     useEffect(() => {
-        pickupLocation = getValues('pickupLocation');
-        dropOffLocation = getValues('dropOffLocation');
-    }, [getValues]);
+        const animateToUser = async () => {
+            const location = await getCurrentLocation();
+            if (location) {
+                animateToLocation(location.latitude, location.longitude);
+            }
+        };
+        animateToUser();
+    }, []);
 
     return (
         <GestureHandlerRootView className={"flex-1"}>
@@ -163,14 +189,13 @@ export default function BookRide() {
                                 precision={"high"}
                                 apikey={GOOGLE_API_KEY}
                                 onReady={(result) => {
-                                    console.log(`Distance: ${result.distance} km, Duration: ${result.duration} min`);
+                                    setRouteDistanceKm(result.distance);
                                 }}
                                 onError={(errorMessage) => {
-                                    console.error('MapViewDirections Error A->B:', errorMessage);
                                     Toast.show({
                                         type: 'error',
                                         text1: '🗺️ Directions Error',
-                                        text2: 'Unable to load route.',
+                                        text2: `Unable to load route. Error ${errorMessage}`,
                                         position: 'top',
                                         visibilityTime: 3000,
                                     });
@@ -322,8 +347,9 @@ export default function BookRide() {
                         {/* Submit */}
                         <View className="z-0">
                             <PrimaryButton
-                                title={"Find Rides"}
+                                title={isPending ? "Finding Rides" : "Find Rides"}
                                 onPress={handleSubmit(onSubmit)}
+                                disabled={isPending}
                             />
                         </View>
                     </View>

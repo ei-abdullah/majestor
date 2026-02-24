@@ -6,9 +6,10 @@ import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -60,5 +61,17 @@ public class RideService {
         }
 
         return rideMapper.getRecentRidesDTOS(recentRidesList);
+    }
+
+    @Scheduled(fixedDelay = 2 * 60 * 60 * 1000) // runs after every 2 hours
+    @Transactional
+    public void expireOldRides() {
+        LocalDateTime cutoffTime = LocalDateTime.now().minusHours(2);
+        try {
+            rideRepository.updateExpiredRides(cutoffTime, RideStatus.ACTIVE, RideStatus.EXPIRED);
+            log.info("Expired rides older than 2 hours at {}", LocalDateTime.now());
+        } catch (Exception e) {
+            log.error("Error while expiring old rides: {}", e.getMessage());
+        }
     }
 }

@@ -1,7 +1,7 @@
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 
-import {UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
+import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
 import {recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
 
 
@@ -34,10 +34,11 @@ export const useUploadRide = (onCallback?: (data:UploadRideResponse) => void) =>
     })
 }
 
-export const useRecentRides = () => {
+export const useRecentRides = (options?: Partial<UseQueryOptions<RecentRideResponse[]>>) => {
     return useQuery({
         queryKey: ["ride"],
         queryFn: () => recentRidesApi(),
         enabled: true,
+        ...options
     })
 }
