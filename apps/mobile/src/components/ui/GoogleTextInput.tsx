@@ -21,7 +21,6 @@ function GoogleTextInput(
     }: GoogleInputProps) {
     const [focused, setFocused] = useState(false);
 
-    console.log('GoogleTextInput API Key:', googlePlacesApiKey ? 'Loaded' : 'Not loaded');
 
     return <View
         className={`relative ${containerStyle}`}>
@@ -31,8 +30,6 @@ function GoogleTextInput(
             debounce={200}
             enablePoweredByContainer={false}
             onPress={(data, details = null) => {
-                console.log('Place selected:', data.description);
-                console.log('Details:', details);
                 if (details?.geometry?.location) {
                     handlePress({
                         latitude: details.geometry.location.lat,
@@ -62,11 +59,9 @@ function GoogleTextInput(
                 placeholderTextColor: '#9CA3AF',
                 placeholder: initialLocation ?? "Where do you want to go?",
                 onFocus: () => {
-                    console.log('Input focused');
                     setFocused(true);
                 },
                 onBlur: () => {
-                    console.log('Input blurred');
                     setFocused(false);
                 },
             }}

@@ -2,6 +2,7 @@ package com.majestor.api.modules.carpool.booking;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
 import com.majestor.api.modules.carpool.booking.dto.CreateBookingDTO;
+import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingStatusResponseDTO;
 import com.majestor.api.modules.carpool.ride.Ride;
@@ -28,7 +29,7 @@ public class BookingService {
     private final BookingMapper bookingMapper;
 
 
-    public void createBooking(
+    public CreateBookingResponseDTO createBooking(
             Long rideRequestId,
             Long rideId,
             CreateBookingDTO createBookingDTO
@@ -54,6 +55,8 @@ public class BookingService {
             log.error("Error while creating booking: {}", e.getMessage());
             throw new RuntimeException("Failed to create booking: " + e.getMessage(), e);
         }
+
+        return bookingMapper.toCreateBookingResponseDTO(booking);
     }
 
     public List<GetBookingDTO> getBookings(

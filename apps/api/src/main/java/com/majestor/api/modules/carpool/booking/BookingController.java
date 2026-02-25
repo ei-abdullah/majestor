@@ -1,6 +1,7 @@
 package com.majestor.api.modules.carpool.booking;
 
 import com.majestor.api.modules.carpool.booking.dto.CreateBookingDTO;
+import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingStatusResponseDTO;
 import jakarta.validation.Valid;
@@ -27,12 +28,12 @@ public class BookingController {
      * Create a new booking for poster to see all booking for his ride
      */
     @PostMapping("/createBooking/{rideRequestId}/{rideId}")
-    public ResponseEntity<?> createBooking(
+    public ResponseEntity<CreateBookingResponseDTO> createBooking(
             @PathVariable @NotNull @Positive Long rideRequestId,
             @PathVariable @NotNull @Positive Long rideId,
             @RequestBody @Valid CreateBookingDTO createBookingDTO
     ) {
-        bookingService.createBooking(
+        CreateBookingResponseDTO booking = bookingService.createBooking(
                 rideRequestId,
                 rideId,
                 createBookingDTO
@@ -40,7 +41,7 @@ public class BookingController {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .build();
+                .body(booking);
     }
 
     /**

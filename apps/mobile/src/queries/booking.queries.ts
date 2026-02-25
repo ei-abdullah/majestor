@@ -1,3 +1,5 @@
+import Toast from "react-native-toast-message";
+import {useIsFocused} from "@react-navigation/core";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {
     acceptBookingApi,
@@ -6,27 +8,26 @@ import {
     getBookingStatusApi,
     rejectBookingApi
 } from "@/src/services/booking.api";
-import {CreateBookingDetails} from "@/src/types/booking";
-import Toast from "react-native-toast-message";
+import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
 
-export const useCreateBooking = (onCallback?: () => void) => {
+export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => void) => {
     const queryClient = useQueryClient();
 
-    useMutation({
+    return useMutation({
         mutationKey: ["booking"],
         mutationFn: ({createBookingDetails, rideRequestId, rideId}: {
             createBookingDetails: CreateBookingDetails,
             rideRequestId: number,
             rideId: number
         }) => createBookingApi(createBookingDetails, rideRequestId, rideId),
-        onSuccess: async () => {
+        onSuccess: async (data: CreateBookingResponse) => {
             await queryClient.invalidateQueries({queryKey: ["booking"]})
             Toast.show({
                 type: "success",
                 text1: "Booking Submitted Successfully",
                 position: "top"
             })
-            onCallback?.();
+            onCallback?.(data);
         },
         onError: (error: any) => {
             Toast.show({
@@ -48,18 +49,27 @@ export const useGetBookings = (rideId: number) => {
     })
 }
 
-export const useGetBookingStatus = (bookingId: number, onCallback?: () => void) => {
+export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: () => void) => {
+    const isFocused = useIsFocused();
+
     return useQuery({
         queryKey: ["bookingStatus", bookingId],
-        queryFn: () => getBookingStatusApi(bookingId),
-        enabled: Boolean(bookingId),
+        queryFn: () => getBookingStatusApi(bookingId!),
+        enabled: Boolean(bookingId) && isFocused,
+        refetchInterval: (query) => {
+            if (!isFocused) return false;            // stop polling when screen is not focused
+            const status = query.state.data?.status;
+            if (status === "ACCEPTED" || status === "REJECTED") return false; // stop on terminal status
+            return 10000;
+        },
+        refetchIntervalInBackground: false,
     })
 }
 
 export const acceptBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
-    useMutation({
+    return useMutation({
         mutationKey: ["booking"],
         mutationFn: (bookingId: number) => acceptBookingApi(bookingId),
         onSuccess: async () => {

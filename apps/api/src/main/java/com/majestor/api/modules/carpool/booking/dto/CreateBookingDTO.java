@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -15,6 +17,6 @@ import lombok.NoArgsConstructor;
 public class CreateBookingDTO {
     @NotNull(message = "Deviation KM is required")
     @PositiveOrZero(message = "Deviation KM must be zero or positive")
-    private Long deviationKm;
+    private BigDecimal deviationKm;
 }
 

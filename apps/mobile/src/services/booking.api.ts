@@ -1,14 +1,20 @@
 import {AxiosResponse} from "axios";
 
 import api from "@/src/services/index";
-import {CreateBookingDetails, GetBookingsResponse, GetBookingStatusResponse} from "@/src/types/booking";
+import {
+    CreateBookingDetails,
+    CreateBookingResponse,
+    GetBookingsResponse,
+    GetBookingStatusResponse
+} from "@/src/types/booking";
 
 export const createBookingApi = async (
     createBookingDetails: CreateBookingDetails,
     rideRequestId: number,
     rideId: number,
-): Promise<void> => {
-    await api.post(`/booking/createBooking/${rideRequestId}/${rideId}`, createBookingDetails);
+): Promise<CreateBookingResponse> => {
+    const response: AxiosResponse<CreateBookingResponse> = await api.post(`/booking/createBooking/${rideRequestId}/${rideId}`, createBookingDetails);
+    return response.data;
 }
 
 export const getBookingsApi = async (
