@@ -1,7 +1,7 @@
+import React, {useEffect, useMemo, useRef} from "react";
 import {View, Text, Image} from "react-native";
 import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
-import React, {useEffect, useMemo, useRef} from "react";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -12,25 +12,81 @@ import Card from "@/src/components/ui/Card";
 import {Ionicons} from "@expo/vector-icons";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
+import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
+import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
+import {useRouter} from "expo-router";
+import Toast from "react-native-toast-message";
 
 export default function RideDetails() {
+    const router = useRouter();
     const mapRef = useRef<MapView>(null);
-    const bottomSheetRef = useRef<BottomSheet>(null);
-
     const {animateToLocation} = useMapLocation(mapRef);
 
+    const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = useMemo(() => ["30%", "50%"], []);
+
+    // Skip useEffect on first mount to avoid routing on stale persisted status
+    const hasMounted = useRef(false);
 
     const {ride: selectedRide} = useSelectedRideStore();
     const rideRequest = useRideRequestStore();
 
+    const bookingId = useRideRequestStore((state) => state.bookingId);
+
+    // Fix #1: derive hasBooked from store instead of local state
+    const hasBooked = Boolean(bookingId);
+
+    const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
+        rideRequest.setBookingDetails(response.id, response.status);
+    });
+
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId);
+
+    useEffect(() => {
+        // skip on first mount: prevents routing on stale persisted status
+        if (!hasMounted.current) {
+            hasMounted.current = true;
+            return;
+        }
+
+        if (!bookingStatusData) return;
+
+        rideRequest.setBookingDetails(bookingId!, bookingStatusData.status);
+
+        if (bookingStatusData.status === "ACCEPTED") {
+            //TODO: Push to another screen where the phone is displayed
+        } else if (bookingStatusData.status === "REJECTED") {
+            Toast.show({
+                text1: "Booking rejected",
+                text2: "Kindly explore other available rides",
+                type: "error",
+                visibilityTime: 3000,
+                autoHide: true,
+                position: "top"
+            })
+            router.push("/(tabs)/carpool/rideRequest/availableRides")
+        }
+    }, [bookingStatusData?.status]);
+
     useEffect(() => {
         const animateToUser = async () => {
+            console.log(selectedRide?.ridePosterImageUrl)
             if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
                 animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
         };
         animateToUser();
     }, []);
+
+    function onSubmit() {
+        const createBookingDetails: CreateBookingDetails = {
+            deviationKm: parseFloat(Math.abs(rideRequest.routeDistanceKm - selectedRide!.routeDistanceKm).toFixed(2))
+        }
+        createBooking({
+            createBookingDetails,
+            rideRequestId: rideRequest.id,
+            rideId: selectedRide!.id
+        });
+    }
 
     return (
         <GestureHandlerRootView className={"flex-1"}>
@@ -211,7 +267,18 @@ export default function RideDetails() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
-                        {/* Card 1 — Driver info */}
+                        {/* Card 1 - Driver's response card */}
+                        {hasBooked && (
+                            <Card className={"bg-red-50 border border-red-200 p-2"}>
+                                <Text
+                                    className={"text-center font-medium text-green-600"}
+                                >
+                                    Waiting for Driver's Response...
+                                </Text>
+                            </Card>
+                        )}
+
+                        {/* Card 2 — Driver info */}
                         <Card className="px-5 py-6">
                             {/* Profile — centered */}
                             <View className="items-center mb-4">
@@ -219,7 +286,7 @@ export default function RideDetails() {
                                     <View className="w-16 h-16 rounded-full overflow-hidden mb-2">
                                         <Image
                                             source={{uri: selectedRide.ridePosterImageUrl}}
-                                            style={{width: "100%", height: "100%"}}
+                                            style={{width: "100%", height: "100%", zIndex: 100}}
                                             resizeMode="cover"
                                         />
                                     </View>
@@ -248,7 +315,7 @@ export default function RideDetails() {
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center gap-2 mb-4">
-                                    <Ionicons name="flag-outline" size={16} color="#6FD0C5"/>
+                                    <Ionicons name="flag-outline" size={16} color="#3A6FF8"/>
                                     <Text className="text-sm text-mj-text-main flex-1" numberOfLines={1}>
                                         {selectedRide?.endLocationAddress ?? "—"}
                                     </Text>
@@ -289,7 +356,45 @@ export default function RideDetails() {
                             </View>
                         </Card>
 
-                        {/* Card 2 — Route analysis */}
+                        {/* Card 3 - Booker's request */}
+                        {hasBooked && (
+                            <Card className="px-5 py-6">
+                                {/* Header */}
+                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your
+                                    Request</Text>
+
+                                <View className="h-px bg-gray-100 mb-4"/>
+
+                                {/* Route */}
+                                <View className="my-4 gap-8">
+                                    <View className="flex-row items-center gap-2">
+                                        <Ionicons name="radio-button-on-outline" size={16} color="#3A6FF8"/>
+                                        <Text className="text-sm text-mj-text-main flex-1" numberOfLines={1}>
+                                            {rideRequest.pickupLocationAddress ?? "—"}
+                                        </Text>
+                                    </View>
+                                    <View className="flex-row items-center gap-2">
+                                        <Ionicons name="flag-outline" size={16} color="#3A6FF8"/>
+                                        <Text className="text-sm text-mj-text-main flex-1" numberOfLines={1}>
+                                            {rideRequest.dropoffLocationAddress ?? "—"}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                <View className="h-px bg-gray-100 mb-4"/>
+
+                                {/* Passengers */}
+                                <View className="flex-row items-center gap-2">
+                                    <Ionicons name="people-outline" size={18} color="#6FD0C5"/>
+                                    <Text className="text-sm font-semibold text-mj-text-main">
+                                        {rideRequest.numberOfPassengers ?? "—"}
+                                    </Text>
+                                    <Text className="text-sm text-mj-text-secondary">Passengers</Text>
+                                </View>
+                            </Card>
+                        )}
+
+                        {/* Card 4 — Route analysis */}
                         <Card className="px-5 py-5">
                             <Text className="text-sm font-bold text-mj-text-main mb-3">Route Analysis</Text>
 
@@ -326,12 +431,13 @@ export default function RideDetails() {
                         </Card>
 
                         {/* Book button */}
-                        <PrimaryButton
-                            title="Book this ride"
-                            onPress={() => {
-                                console.log("Book this ride");
-                            }}
-                        />
+                        {!hasBooked && (
+                            <PrimaryButton
+                                title={isPending ? "Booking..." : "Book Ride"}
+                                onPress={onSubmit}
+                                disabled={isPending}
+                            />
+                        )}
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>

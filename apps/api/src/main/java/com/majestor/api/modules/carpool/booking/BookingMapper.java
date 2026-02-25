@@ -1,5 +1,6 @@
 package com.majestor.api.modules.carpool.booking;
 
+import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.user.User;
@@ -28,6 +29,15 @@ public class BookingMapper {
                 .dropoffLocationAddress(bookedRide.getDropoffLocationAddress())
                 .numberOfPassengers(bookedRide.getNumberOfPassengers())
                 .routeDistanceKm(bookedRide.getRouteDistanceKm())
+                .build();
+    }
+
+    public CreateBookingResponseDTO toCreateBookingResponseDTO(Booking booking) {
+        return CreateBookingResponseDTO
+                .builder()
+                .id(booking.getId())
+                .status(booking.getStatus().name())
+                .createdAt(booking.getCreatedAt())
                 .build();
     }
 }

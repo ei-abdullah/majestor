@@ -2,6 +2,12 @@ export interface CreateBookingDetails {
     deviationKm: number
 }
 
+export interface CreateBookingResponse {
+    id: number,
+    status: string,
+    createdAt: string,
+}
+
 export interface GetBookingsResponse {
     rideRequestId: number,
     bookingId: number,

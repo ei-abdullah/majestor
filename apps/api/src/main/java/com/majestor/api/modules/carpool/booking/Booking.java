@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -36,7 +37,7 @@ public class Booking {
     @Column(nullable = false)
     @NotNull(message = "Deviation must be provided")
     @PositiveOrZero(message = "Deviation must be positive")
-    private Long deviationKm;
+    private BigDecimal deviationKm;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
