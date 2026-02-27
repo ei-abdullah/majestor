@@ -1,6 +1,6 @@
 import Toast from "react-native-toast-message";
 import {useIsFocused} from "@react-navigation/core";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/react-query";
 import {
     acceptBookingApi,
     createBookingApi,
@@ -8,7 +8,8 @@ import {
     getBookingStatusApi,
     rejectBookingApi
 } from "@/src/services/booking.api";
-import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
+import {CreateBookingDetails, CreateBookingResponse, GetBookingsResponse} from "@/src/types/booking";
+import {RecentRideResponse} from "@/src/types/ride";
 
 export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => void) => {
     const queryClient = useQueryClient();
@@ -41,7 +42,7 @@ export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => v
     })
 }
 
-export const useGetBookings = (rideId: number) => {
+export const useGetBookings = (rideId: number, options?: Partial<UseQueryOptions<GetBookingsResponse[]>>) => {
     return useQuery({
         queryKey: ["booking"],
         queryFn: () => getBookingsApi(rideId),
@@ -94,7 +95,7 @@ export const acceptBooking = (onCallback?: () => void) => {
 export const useRejectBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
-    useMutation({
+    return useMutation({
         mutationKey: ["booking"],
         mutationFn: (bookingId: number) => rejectBookingApi(bookingId),
         onSuccess: async () => {

@@ -14,7 +14,6 @@ function EmptyState({
 }: Props) {
     return (
         <View className={`flex-1 items-center justify-center py-12 px-6 ${className}`}>
-            <Text className="text-4xl mb-4">⏳</Text>
             <Text className="text-base font-semibold text-mj-text-main text-center mb-2">
                 {message}
             </Text>
