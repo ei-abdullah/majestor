@@ -34,14 +34,7 @@ export default function CarpoolHome() {
     // Check API key on mount
     useEffect(() => {
         if (!GOOGLE_API_KEY) {
-            console.warn('Google API Key is missing!');
-            Toast.show({
-                type: 'error',
-                text1: '⚠️ API Key Missing',
-                text2: 'Set EXPO_PUBLIC_GOOGLE_PLACES_API_KEY in .env',
-                position: 'top',
-                visibilityTime: 5000,
-            });
+
             setShowDirections(false);
         }
     }, []);

@@ -6,6 +6,12 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
+import com.majestor.api.modules.carpool.ride.Ride;
+import com.majestor.api.modules.carpool.ride.RideRepository;
+import com.majestor.api.modules.carpool.ride.RideStatus;
+import com.majestor.api.modules.carpool.ride.VehicleType;
+import com.majestor.api.modules.carpool.rideRequest.RideRequest;
+import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -16,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +37,8 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
+    private final RideRepository rideRepository;
+    private final RideRequestRepository rideRequestRepository;
 
     @Override
     @Transactional
@@ -45,6 +55,64 @@ public class DataInitializer implements CommandLineRunner {
         if (courseRepository.count() == 0) {
             initializeCourses();
         }
+
+        if(rideRepository.count() == 0) {
+            initializeRides();
+        }
+
+        if(rideRequestRepository.count() == 0) {
+            initializeRideRequests();
+        }
+    }
+
+    private void initializeRideRequests() {
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("User not found with id: 1"));
+
+        RideRequest rideRequest = RideRequest
+                .builder()
+                .pickupLocationLat(BigDecimal.valueOf(33.5519984))
+                .pickupLocationLng(BigDecimal.valueOf(73.17))
+                .pickupLocationAddress("River Gardens, Islamabad, Pakistan")
+                .dropoffLocationLat(BigDecimal.valueOf(33.55))
+                .dropoffLocationLng(BigDecimal.valueOf(73.18))
+                .dropoffLocationAddress("Capital University of Science & Technology (CUST), Road Zone-V Sihala, Islamabad, Pakistan")
+                .numberOfPassengers(2)
+                .phone("03155180641")
+                .routeDistanceKm(BigDecimal.valueOf(4.17))
+                .rideRequester(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        rideRequestRepository.save(rideRequest);
+    }
+
+    private void initializeRides() {
+        User user = userRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("User not found with id: 1"));
+
+        Ride ride = Ride
+                .builder()
+                .startLocationLat(BigDecimal.valueOf(33.5559875))
+                .startLocationLng(BigDecimal.valueOf(73.1526099))
+                .startLocationAddress("21, Islamabad Capital Territory")
+                .endLocationLat(BigDecimal.valueOf(33.5194046))
+                .endLocationLng(BigDecimal.valueOf(73.1775410))
+                .endLocationAddress("Institute of Space Technology (IST), Islamabad Expressway, Sector H DHA Phase II, Islamabad, Pakistan")
+                .vehicleModal("Honda Fit")
+                .licensePlate("MG-841")
+                .availableSeats(3)
+                .vehicleType(VehicleType.CAR)
+                .rideStatus(RideStatus.ACTIVE)
+                .phone("03155180641")
+                .routeDistanceKm(BigDecimal.valueOf(7.93))
+                .ridePoster(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        rideRepository.save(ride);
     }
 
     private void initializeCourses() {
@@ -161,7 +229,22 @@ public class DataInitializer implements CommandLineRunner {
                 .verificationToken(null)
                 .build();
 
+        User adminUser2 = User.builder()
+                .email("bcs233189@cust.pk")
+                .username("ZA")
+                .passwordHash(passwordEncoder.encode("Cust@23"))
+                .phone("03155180641")
+                .avatar("")
+                .hasOnboarded(Boolean.FALSE)
+                .university(firstUniversity)
+                .studentFaculty(firstFaculty)
+                .roles(List.of(Role.ADMIN, Role.STUDENT))
+                .isVerified(true)
+                .verificationToken(null)
+                .build();
+
         userRepository.save(adminUser1);
+        userRepository.save(adminUser2);
     }
 
     private University createUniversity(String name, String address) {
@@ -183,4 +266,6 @@ public class DataInitializer implements CommandLineRunner {
 
         facultyRepository.saveAll(faculties);
     }
+
+
 }

@@ -1,4 +1,4 @@
-import {View, Text, FlatList, ActivityIndicator} from "react-native";
+import {View, Text, FlatList, ActivityIndicator, RefreshControl} from "react-native";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {useRecentRides} from "@/src/queries/ride.queries";
 import React from "react";
@@ -39,7 +39,7 @@ function AvailableRides() {
     const router = useRouter();
 
     const {pickupLocationAddress, dropoffLocationAddress, numberOfPassengers, routeDistanceKm} = useRideRequestStore();
-    const {data: recentRides, isLoading, isError} = useRecentRides({
+    const {data: recentRides, isLoading, isPending, isError, error, refetch} = useRecentRides({
         refetchInterval: 1000 * 60, // 1 min, for > 2: 1000 * 60 * 2
     });
     const {setRide} = useSelectedRideStore();
@@ -92,6 +92,14 @@ function AvailableRides() {
                 data={rides}
                 keyExtractor={(item) => String(item.id)}
                 ListHeaderComponent={SearchHeader}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={isPending}
+                        onRefresh={refetch}
+                        tintColor="#3A6FF8"
+                        colors={["#3A6FF8"]}
+                        progressBackgroundColor="#fff"/>
+                }
                 ListEmptyComponent={<ListEmpty isLoading={isLoading} isError={isError}/>}
                 renderItem={({item}) => (
                     <AvailableRidesCard
