@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {View, Text, TouchableOpacity, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -60,7 +60,7 @@ export default function PostRide() {
         router.push('/(tabs)/carpool/ride/bookingRequests')
     })
 
-    const {control, watch, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
+    const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             startLocation: null,
             endLocation: null,
@@ -76,11 +76,11 @@ export default function PostRide() {
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
 
 
-    const snapPoints = ["5%", "60%", "90%"]
+    const snapPoints = useMemo(() => ["5%", "60%", "90%"], []);
 
     // Get current form values safely
-    let startLocation = watch('startLocation');
-    let endLocation = watch('endLocation');
+    const startLocation = watch('startLocation');
+    const endLocation = watch('endLocation');
 
     const initialRegion = rideState.startLocationLat && rideState.startLocationLng
         ? {
@@ -112,6 +112,17 @@ export default function PostRide() {
     const onSubmit = (data: FormData) => {
         if (!data.startLocation || !data.endLocation || !user) return;
 
+        if (routeDistanceKm === 0) {
+            Toast.show({
+                type: 'error',
+                text1: 'Route not ready',
+                text2: 'Wait for the route to finish loading on the map',
+                position: 'top',
+                visibilityTime: 3000,
+            });
+            return;
+        }
+
         uploadRide({
             uploadRideDetails: {
                 startLocationLat: data.startLocation.latitude,
@@ -131,7 +142,15 @@ export default function PostRide() {
         });
     };
 
+    const handleVehicleTypeChange = (type: 'CAR' | 'BIKE') => {
+        setVehicleType(type);
+        if (type === 'BIKE') setNumberOfPassengers(1);
+    };
+
     useEffect(() => {
+        // Clear any stale persisted ride from a previous session
+        rideState.clearRideDetails();
+
         const animateToUser = async () => {
             const location = await getCurrentLocation();
             if (location) {
@@ -320,7 +339,7 @@ export default function PostRide() {
                                 {value: 'BIKE', label: 'Bike', icon: 'bicycle'}
                             ]}
                             selectedValue={vehicleType}
-                            onSelect={setVehicleType}
+                            onSelect={handleVehicleTypeChange}
                         />
 
                         {/* Vehicle Details Card */}

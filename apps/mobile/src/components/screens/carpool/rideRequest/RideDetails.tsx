@@ -1,6 +1,5 @@
 import React, {useEffect, useMemo, useRef} from "react";
 import {View, Text, Image} from "react-native";
-import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -16,31 +15,36 @@ import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queri
 import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
 import {useRouter} from "expo-router";
 import Toast from "react-native-toast-message";
+import {RecentRideResponse} from "@/src/types/ride";
 
-export default function RideDetails() {
+interface Props {
+    ride: RecentRideResponse;
+}
+
+export default function RideDetails({ride}: Props) {
     const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ["30%", "50%"], []);
+    const snapPoints = useMemo(() => ["30%", "55%", "85%"], []);
 
     // Skip useEffect on first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
 
-    const {ride: selectedRide} = useSelectedRideStore();
     const rideRequest = useRideRequestStore();
 
     const bookingId = useRideRequestStore((state) => state.bookingId);
+    const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
 
-    // Fix #1: derive hasBooked from store instead of local state
     const hasBooked = Boolean(bookingId);
+    const isAccepted = bookingStatus === "ACCEPTED";
 
     const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
         rideRequest.setBookingDetails(response.id, response.status);
     });
 
-    const {data: bookingStatusData} = useGetBookingStatus(bookingId);
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
 
     useEffect(() => {
         // skip on first mount: prevents routing on stale persisted status
@@ -54,7 +58,7 @@ export default function RideDetails() {
         rideRequest.setBookingDetails(bookingId!, bookingStatusData.status);
 
         if (bookingStatusData.status === "ACCEPTED") {
-            //TODO: Push to another screen where the phone is displayed
+            rideRequest.setBookingDetails(bookingId!, "ACCEPTED");
         } else if (bookingStatusData.status === "REJECTED") {
             Toast.show({
                 text1: "Booking rejected",
@@ -69,22 +73,19 @@ export default function RideDetails() {
     }, [bookingStatusData?.status]);
 
     useEffect(() => {
-        const animateToUser = async () => {
-            console.log(selectedRide?.ridePosterImageUrl)
-            if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
-                animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
-        };
-        animateToUser();
+        if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
+            animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
     }, []);
 
     function onSubmit() {
+
         const createBookingDetails: CreateBookingDetails = {
-            deviationKm: parseFloat(Math.abs(rideRequest.routeDistanceKm - selectedRide!.routeDistanceKm).toFixed(2))
+            deviationKm: parseFloat(Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm).toFixed(2))
         }
         createBooking({
             createBookingDetails,
             rideRequestId: rideRequest.id,
-            rideId: selectedRide!.id
+            rideId: ride.id
         });
     }
 
@@ -109,22 +110,22 @@ export default function RideDetails() {
                     }}
                 >
                     {/* Rider/Driver's location markers */}
-                    {selectedRide?.startLocationLat && selectedRide?.startLocationLng && (
+                    {ride.startLocationLat && ride.startLocationLng && (
                         <Marker
                             coordinate={{
-                                latitude: selectedRide.startLocationLat,
-                                longitude: selectedRide.startLocationLng
+                                latitude: ride.startLocationLat,
+                                longitude: ride.startLocationLng
                             }}
                         >
                             <CustomMarker color={"#3A6FF8"} icon={"home"} label={"Origin"}/>
                         </Marker>
                     )}
 
-                    {selectedRide?.endLocationLat && selectedRide?.endLocationLng && (
+                    {ride.endLocationLat && ride.endLocationLng && (
                         <Marker
                             coordinate={{
-                                latitude: selectedRide.endLocationLat,
-                                longitude: selectedRide.endLocationLng
+                                latitude: ride.endLocationLat,
+                                longitude: ride.endLocationLng
                             }}
                         >
                             <CustomMarker color={"#EF4444"} icon={"location"} label={"Destination"}/>
@@ -154,21 +155,12 @@ export default function RideDetails() {
                         </Marker>
                     )}
 
-                    {/* Driver's original route — solid blue */}
-                    {
-                        selectedRide?.startLocationLat &&
-                        selectedRide?.startLocationLng &&
-                        selectedRide?.endLocationLat &&
-                        selectedRide?.endLocationLng && (
+                    {/* Driver's original route — dashed teal */}
+                    {ride.startLocationLat && ride.startLocationLng &&
+                        ride.endLocationLat && ride.endLocationLng && (
                             <MapViewDirections
-                                origin={{
-                                    latitude: selectedRide.startLocationLat,
-                                    longitude: selectedRide.startLocationLng
-                                }}
-                                destination={{
-                                    latitude: selectedRide.endLocationLat,
-                                    longitude: selectedRide.endLocationLng
-                                }}
+                                origin={{latitude: ride.startLocationLat, longitude: ride.startLocationLng}}
+                                destination={{latitude: ride.endLocationLat, longitude: ride.endLocationLng}}
                                 strokeWidth={2}
                                 strokeColor={"#6FD0C5"}
                                 lineDashPattern={[6, 6]}
@@ -179,21 +171,12 @@ export default function RideDetails() {
                         )
                     }
 
-                    {/* Deviation: driver start → booker pickup — dashed teal */}
-                    {
-                        rideRequest.pickupLocationLat &&
-                        rideRequest.pickupLocationLng &&
-                        selectedRide?.startLocationLat &&
-                        selectedRide?.startLocationLng && (
+                    {/* Deviation: driver start → booker pickup */}
+                    {rideRequest.pickupLocationLat && rideRequest.pickupLocationLng &&
+                        ride.startLocationLat && ride.startLocationLng && (
                             <MapViewDirections
-                                origin={{
-                                    latitude: selectedRide.startLocationLat,
-                                    longitude: selectedRide.startLocationLng
-                                }}
-                                destination={{
-                                    latitude: rideRequest.pickupLocationLat,
-                                    longitude: rideRequest.pickupLocationLng
-                                }}
+                                origin={{latitude: ride.startLocationLat, longitude: ride.startLocationLng}}
+                                destination={{latitude: rideRequest.pickupLocationLat, longitude: rideRequest.pickupLocationLng}}
                                 strokeWidth={2}
                                 strokeColor={"#3A6FF8"}
                                 mode={"DRIVING"}
@@ -203,21 +186,12 @@ export default function RideDetails() {
                         )
                     }
 
-                    {/* Ride Requestor's pickup location -> dropoff location */}
-                    {
-                        rideRequest.pickupLocationLat &&
-                        rideRequest.pickupLocationLng &&
-                        rideRequest.dropoffLocationLat &&
-                        rideRequest.dropoffLocationLng && (
+                    {/* Ride Requestor's pickup → dropoff */}
+                    {rideRequest.pickupLocationLat && rideRequest.pickupLocationLng &&
+                        rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng && (
                             <MapViewDirections
-                                origin={{
-                                    latitude: rideRequest.pickupLocationLat,
-                                    longitude: rideRequest.pickupLocationLng
-                                }}
-                                destination={{
-                                    latitude: rideRequest.dropoffLocationLat,
-                                    longitude: rideRequest.dropoffLocationLng
-                                }}
+                                origin={{latitude: rideRequest.pickupLocationLat, longitude: rideRequest.pickupLocationLng}}
+                                destination={{latitude: rideRequest.dropoffLocationLat, longitude: rideRequest.dropoffLocationLng}}
                                 strokeWidth={2}
                                 strokeColor={"#3A6FF8"}
                                 mode={"DRIVING"}
@@ -227,21 +201,12 @@ export default function RideDetails() {
                         )
                     }
 
-                    {/* Deviation: booker dropoff → driver end — dashed teal */}
-                    {
-                        rideRequest.dropoffLocationLat &&
-                        rideRequest.dropoffLocationLng &&
-                        selectedRide?.endLocationLat &&
-                        selectedRide?.endLocationLng && (
+                    {/* Deviation: booker dropoff → driver end */}
+                    {rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng &&
+                        ride.endLocationLat && ride.endLocationLng && (
                             <MapViewDirections
-                                origin={{
-                                    latitude: rideRequest.dropoffLocationLat,
-                                    longitude: rideRequest.dropoffLocationLng
-                                }}
-                                destination={{
-                                    latitude: selectedRide.endLocationLat,
-                                    longitude: selectedRide.endLocationLng
-                                }}
+                                origin={{latitude: rideRequest.dropoffLocationLat, longitude: rideRequest.dropoffLocationLng}}
+                                destination={{latitude: ride.endLocationLat, longitude: ride.endLocationLng}}
                                 strokeWidth={3}
                                 strokeColor={"#3A6FF8"}
                                 lineDashPattern={[6, 6]}
@@ -267,14 +232,26 @@ export default function RideDetails() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
-                        {/* Card 1 - Driver's response card */}
-                        {hasBooked && (
-                            <Card className={"bg-red-50 border border-red-200 p-2"}>
-                                <Text
-                                    className={"text-center font-medium text-green-600"}
-                                >
-                                    Waiting for Driver's Response...
-                                </Text>
+                        {/* Status banner */}
+                        {isAccepted && (
+                            <Card className="bg-green-50 border border-green-200 px-5 py-4">
+                                <View className="flex-row items-center justify-center gap-2">
+                                    <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
+                                    <Text className="text-sm font-semibold text-green-700">
+                                        Ride Confirmed
+                                    </Text>
+                                </View>
+                            </Card>
+                        )}
+
+                        {hasBooked && !isAccepted && (
+                            <Card className="bg-amber-50 border border-amber-200 px-5 py-4">
+                                <View className="flex-row items-center justify-center gap-2">
+                                    <Ionicons name="time-outline" size={20} color="#d97706"/>
+                                    <Text className="text-sm font-semibold text-amber-700">
+                                        Waiting for Driver's Response...
+                                    </Text>
+                                </View>
                             </Card>
                         )}
 
@@ -282,27 +259,38 @@ export default function RideDetails() {
                         <Card className="px-5 py-6">
                             {/* Profile — centered */}
                             <View className="items-center mb-4">
-                                {selectedRide?.ridePosterImageUrl ? (
+                                {ride.ridePosterImageUrl ? (
                                     <View className="w-16 h-16 rounded-full overflow-hidden mb-2">
                                         <Image
-                                            source={{uri: selectedRide.ridePosterImageUrl}}
+                                            source={{uri: ride.ridePosterImageUrl}}
                                             style={{width: "100%", height: "100%", zIndex: 100}}
                                             resizeMode="cover"
                                         />
                                     </View>
                                 ) : (
-                                    <View
-                                        className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
+                                    <View className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
                                         <Ionicons name="person-outline" size={28} color="#3A6FF8"/>
                                     </View>
                                 )}
                                 <Text className="text-base font-bold text-mj-text-main" numberOfLines={1}>
-                                    {selectedRide?.ridePosterUsername ?? "—"}
+                                    {ride.ridePosterUsername ?? "—"}
                                 </Text>
                                 <Text className="text-xs text-mj-text-secondary mt-0.5" numberOfLines={1}>
-                                    {selectedRide?.ridePosterEmail ?? "—"}
+                                    {ride.ridePosterEmail ?? "—"}
                                 </Text>
                             </View>
+
+                            {isAccepted && (
+                                <>
+                                    <View className="h-px bg-gray-100 mb-4"/>
+                                    <View className="flex-row items-center justify-center gap-2 mb-4">
+                                        <Ionicons name="call-outline" size={18} color="#3A6FF8"/>
+                                        <Text className="text-base font-semibold text-mj-blue">
+                                            {ride.phone ?? "—"}
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
 
                             <View className="h-px bg-gray-100 mb-4"/>
 
@@ -311,13 +299,13 @@ export default function RideDetails() {
                                 <View className="flex-row items-center gap-2">
                                     <Ionicons name="radio-button-on-outline" size={16} color="#3A6FF8"/>
                                     <Text className="text-sm text-mj-text-main flex-1" numberOfLines={1}>
-                                        {selectedRide?.startLocationAddress ?? "—"}
+                                        {ride.startLocationAddress ?? "—"}
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center gap-2 mb-4">
                                     <Ionicons name="flag-outline" size={16} color="#3A6FF8"/>
                                     <Text className="text-sm text-mj-text-main flex-1" numberOfLines={1}>
-                                        {selectedRide?.endLocationAddress ?? "—"}
+                                        {ride.endLocationAddress ?? "—"}
                                     </Text>
                                 </View>
                             </View>
@@ -326,30 +314,26 @@ export default function RideDetails() {
 
                             {/* Vehicle + Seats — two columns */}
                             <View className="flex-row">
-                                {/* Left — vehicle */}
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons
-                                        name={selectedRide?.vehicleType === "BIKE" ? "bicycle-outline" : "car-sport-outline"}
+                                        name={ride.vehicleType === "BIKE" ? "bicycle-outline" : "car-sport-outline"}
                                         size={22}
                                         color="#6FD0C5"
                                     />
-                                    <Text className="text-sm font-semibold text-mj-text-main text-center"
-                                          numberOfLines={1}>
-                                        {selectedRide?.vehicleModal ?? "—"}
+                                    <Text className="text-sm font-semibold text-mj-text-main text-center" numberOfLines={1}>
+                                        {ride.vehicleModal ?? "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary text-center">
-                                        {selectedRide?.licensePlate ?? "—"}
+                                        {ride.licensePlate ?? "—"}
                                     </Text>
                                 </View>
 
-                                {/* Vertical divider */}
                                 <View className="w-px bg-gray-100 mx-4"/>
 
-                                {/* Right — seats */}
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="people-outline" size={22} color="#6FD0C5"/>
                                     <Text className="text-sm font-semibold text-mj-text-main">
-                                        {selectedRide?.availableSeats ?? "—"}
+                                        {ride.availableSeats ?? "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Available seats</Text>
                                 </View>
@@ -359,13 +343,10 @@ export default function RideDetails() {
                         {/* Card 3 - Booker's request */}
                         {hasBooked && (
                             <Card className="px-5 py-6">
-                                {/* Header */}
-                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your
-                                    Request</Text>
+                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your Request</Text>
 
                                 <View className="h-px bg-gray-100 mb-4"/>
 
-                                {/* Route */}
                                 <View className="my-4 gap-8">
                                     <View className="flex-row items-center gap-2">
                                         <Ionicons name="radio-button-on-outline" size={16} color="#3A6FF8"/>
@@ -383,7 +364,6 @@ export default function RideDetails() {
 
                                 <View className="h-px bg-gray-100 mb-4"/>
 
-                                {/* Passengers */}
                                 <View className="flex-row items-center gap-2">
                                     <Ionicons name="people-outline" size={18} color="#6FD0C5"/>
                                     <Text className="text-sm font-semibold text-mj-text-main">
@@ -403,9 +383,7 @@ export default function RideDetails() {
                             <View className="flex-row justify-between mb-2">
                                 <Text className="text-sm text-mj-text-secondary">Driver's route</Text>
                                 <Text className="text-sm font-medium text-mj-text-main">
-                                    {selectedRide?.routeDistanceKm != null
-                                        ? `${selectedRide.routeDistanceKm.toFixed(2)} km`
-                                        : "—"}
+                                    {ride.routeDistanceKm != null ? `${ride.routeDistanceKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>
 
@@ -423,19 +401,30 @@ export default function RideDetails() {
                             <View className="flex-row justify-between">
                                 <Text className="text-sm text-mj-text-secondary">Driver's detour</Text>
                                 <Text className="text-sm font-semibold text-mj-blue">
-                                    {selectedRide?.routeDistanceKm != null && rideRequest.routeDistanceKm != null
-                                        ? `+${Math.abs(rideRequest.routeDistanceKm - selectedRide.routeDistanceKm).toFixed(2)} km`
+                                    {ride.routeDistanceKm != null && rideRequest.routeDistanceKm != null
+                                        ? `+${Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm).toFixed(2)} km`
                                         : "—"}
                                 </Text>
                             </View>
                         </Card>
 
-                        {/* Book button */}
+                        {/* Book button — hidden once booked */}
                         {!hasBooked && (
                             <PrimaryButton
                                 title={isPending ? "Booking..." : "Book Ride"}
                                 onPress={onSubmit}
                                 disabled={isPending}
+                            />
+                        )}
+
+                        {/* Done button — only shown when accepted */}
+                        {isAccepted && (
+                            <PrimaryButton
+                                title="Done"
+                                onPress={() => {
+                                    rideRequest.clearRideRequestDetails();
+                                    router.replace("/(tabs)/carpool");
+                                }}
                             />
                         )}
                     </View>

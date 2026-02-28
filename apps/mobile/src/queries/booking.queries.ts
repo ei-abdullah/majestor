@@ -1,6 +1,6 @@
 import Toast from "react-native-toast-message";
 import {useIsFocused} from "@react-navigation/core";
-import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
+import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/react-query";
 import {
     acceptBookingApi,
     createBookingApi,
@@ -8,7 +8,7 @@ import {
     getBookingStatusApi,
     rejectBookingApi
 } from "@/src/services/booking.api";
-import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
+import {CreateBookingDetails, CreateBookingResponse, GetBookingsResponse} from "@/src/types/booking";
 
 export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => void) => {
     const queryClient = useQueryClient();
@@ -41,15 +41,16 @@ export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => v
     })
 }
 
-export const useGetBookings = (rideId: number) => {
+export const useGetBookings = (rideId: number, options?: Partial<UseQueryOptions<GetBookingsResponse[]>>) => {
     return useQuery({
         queryKey: ["booking"],
         queryFn: () => getBookingsApi(rideId),
         enabled: Boolean(rideId),
+        ...options,
     })
 }
 
-export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: () => void) => {
+export const useGetBookingStatus = (bookingId: number) => {
     const isFocused = useIsFocused();
 
     return useQuery({
@@ -66,7 +67,7 @@ export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: 
     })
 }
 
-export const acceptBooking = (onCallback?: () => void) => {
+export const useAcceptBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
     return useMutation({
@@ -94,7 +95,7 @@ export const acceptBooking = (onCallback?: () => void) => {
 export const useRejectBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
-    useMutation({
+    return useMutation({
         mutationKey: ["booking"],
         mutationFn: (bookingId: number) => rejectBookingApi(bookingId),
         onSuccess: async () => {

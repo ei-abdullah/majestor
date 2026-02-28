@@ -1,11 +1,11 @@
-import {View, Text} from "react-native";
+import React from "react";
+import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
+import BookingDetails from "@/src/components/screens/carpool/ride/BookingDetails";
 
-export default function BookingDetails() {
-    return (
-        <View>
-            <Text>
-                Booking Details
-            </Text>
-        </View>
-    )
+export default function BookingDetailsScreen() {
+    const {booking} = useSelectedBookingStore();
+
+    if (!booking) return null;
+
+    return <BookingDetails booking={booking}/>;
 }

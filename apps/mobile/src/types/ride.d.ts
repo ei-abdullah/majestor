@@ -1,3 +1,4 @@
+
 export interface UploadRideDetails {
     startLocationLat: number,
     startLocationLng: number,
@@ -52,7 +53,10 @@ export interface RecentRideResponse {
 
 
 export interface RideState extends UploadRideResponse {
+    bookingId?: number,
+    bookingStatus?: string,
     setRideDetails: (rideDetails: UploadRideResponse) => void;
+    setAcceptedBooking: (bookingId: number, bookingStatus: string) => void;
     clearRideDetails: () => void;
     isEmpty: () => boolean;
 }

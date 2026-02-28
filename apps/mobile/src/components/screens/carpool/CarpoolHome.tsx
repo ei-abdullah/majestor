@@ -6,12 +6,10 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {Ionicons} from "@expo/vector-icons";
-import Toast from 'react-native-toast-message';
 import Card from "@/src/components/ui/Card";
 import {useRouter} from "expo-router";
 import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
-import { GOOGLE_API_KEY } from "@/src/constants";
 import { DEFAULT_LOCATION } from "@/src/utils/location.utils";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 
@@ -25,28 +23,12 @@ export default function CarpoolHome() {
     const { centerOnUserLocation, animateToLocation } = useMapLocation(mapRef);
     const { getCurrentLocation } = useCurrentLocation();
 
-    const [showDirections, setShowDirections] = useState(true);
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; address: string } | null>(null);
 
     // Bottom sheet snap points
     const snapPoints = ["5%", "25%", "40%"]
 
-    // Check API key on mount
-    useEffect(() => {
-        if (!GOOGLE_API_KEY) {
-            console.warn('Google API Key is missing!');
-            Toast.show({
-                type: 'error',
-                text1: '⚠️ API Key Missing',
-                text2: 'Set EXPO_PUBLIC_GOOGLE_PLACES_API_KEY in .env',
-                position: 'top',
-                visibilityTime: 5000,
-            });
-            setShowDirections(false);
-        }
-    }, []);
 
-    // Animate a map to the user location on the mount
     useEffect(() => {
         const checkLocationAndAnimate = async () => {
             const location = await getCurrentLocation();

@@ -5,7 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import {RideState, UploadRideResponse} from "@/src/types/ride";
 
 
-const defaultState: UploadRideResponse = {
+const defaultState = {
     id: 0,
     phone: "",
     startLocationLat: 0,
@@ -19,7 +19,9 @@ const defaultState: UploadRideResponse = {
     licensePlate: "",
     availableSeats: 0,
     routeDistanceKm: 0,
-    createdAt: ""
+    createdAt: "",
+    bookingId: undefined,
+    bookingStatus: undefined,
 };
 
 export const useRideStore = create<RideState>()(
@@ -32,6 +34,10 @@ export const useRideStore = create<RideState>()(
             },
 
             clearRideDetails: () => set(() => ({...defaultState})),
+
+            setAcceptedBooking: (bookingId: number, bookingStatus: string) => {
+                set(() => ({bookingId, bookingStatus}))
+            },
 
             isEmpty: () => {
                 const {id, startLocationAddress, endLocationAddress} = get();

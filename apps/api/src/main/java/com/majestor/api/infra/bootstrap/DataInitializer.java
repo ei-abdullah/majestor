@@ -6,6 +6,12 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
+import com.majestor.api.modules.carpool.ride.Ride;
+import com.majestor.api.modules.carpool.ride.RideRepository;
+import com.majestor.api.modules.carpool.ride.RideStatus;
+import com.majestor.api.modules.carpool.ride.VehicleType;
+import com.majestor.api.modules.carpool.rideRequest.RideRequest;
+import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -16,6 +22,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -161,7 +169,22 @@ public class DataInitializer implements CommandLineRunner {
                 .verificationToken(null)
                 .build();
 
+        User adminUser2 = User.builder()
+                .email("bcs233189@cust.pk")
+                .username("ZA")
+                .passwordHash(passwordEncoder.encode("Cust@23"))
+                .phone("03155180641")
+                .avatar("")
+                .hasOnboarded(Boolean.FALSE)
+                .university(firstUniversity)
+                .studentFaculty(firstFaculty)
+                .roles(List.of(Role.ADMIN, Role.STUDENT))
+                .isVerified(true)
+                .verificationToken(null)
+                .build();
+
         userRepository.save(adminUser1);
+        userRepository.save(adminUser2);
     }
 
     private University createUniversity(String name, String address) {
@@ -183,4 +206,6 @@ public class DataInitializer implements CommandLineRunner {
 
         facultyRepository.saveAll(faculties);
     }
+
+
 }

@@ -32,7 +32,7 @@ export const semesterType = [
 ]
 
 // Google Maps API Key
-export const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY || "";
+export const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY || "";
 
 // Years list
 export const years = generateYearList();
