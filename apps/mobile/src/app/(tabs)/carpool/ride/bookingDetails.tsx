@@ -9,4 +9,3 @@ export default function BookingDetailsScreen() {
 
     return <BookingDetails booking={booking}/>;
 }
-

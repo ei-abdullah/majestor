@@ -58,7 +58,7 @@ export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: 
         queryFn: () => getBookingStatusApi(bookingId!),
         enabled: Boolean(bookingId) && isFocused,
         refetchInterval: (query) => {
-            if (!isFocused) return false;            // stop polling when screen is not focused
+            if (!isFocused) return false;            // stop polling when the screen is not focused
             const status = query.state.data?.status;
             if (status === "ACCEPTED" || status === "REJECTED") return false; // stop on terminal status
             return 10000;
@@ -67,7 +67,7 @@ export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: 
     })
 }
 
-export const acceptBooking = (onCallback?: () => void) => {
+export const useAcceptBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
 
     return useMutation({

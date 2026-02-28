@@ -56,8 +56,7 @@ export default function BookRide() {
         router.push("/(tabs)/carpool/rideRequest/availableRides")
     });
 
-
-    const {control, watch, handleSubmit, getValues, setValue, formState: {errors}} = useForm<FormData>({
+    const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
             pickupLocation: null,
             dropOffLocation: null,

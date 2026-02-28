@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import {View, Text, Image} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -8,7 +8,7 @@ import {useRouter} from "expo-router";
 
 import {GetBookingsResponse} from "@/src/types/booking";
 import {useRideStore} from "@/src/stores/rideStore";
-import {acceptBooking, useRejectBooking} from "@/src/queries/booking.queries";
+import {useAcceptBooking, useRejectBooking} from "@/src/queries/booking.queries";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {GOOGLE_API_KEY} from "@/src/constants";
 import CustomMarker from "@/src/components/ui/CustomMarker";
@@ -25,9 +25,11 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
+    const {setAcceptedBooking, bookingId, clearRideDetails} = useRideStore();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ["35%", "55%"], []);
+    const snapPoints = ["35%", "55%", "85%"];
+    const hasAccepted = Boolean(bookingId);
 
     const {
         startLocationLat,
@@ -47,12 +49,12 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     // Rough fare estimate: base 50 + 20/km
     const estimatedFare = Math.round(50 + booking.routeDistanceKm * 20);
 
-    const {mutate: accept, isPending: isAccepting} = acceptBooking(() => {
-        router.back();
+    const {mutate: accept, isPending: isAccepting} = useAcceptBooking(() => {
+        setAcceptedBooking(booking.bookingId, "ACCEPTED", booking);
     });
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
-        router.back();
+        router.push("/(tabs)/carpool/ride/bookingRequests")
     });
 
     useEffect(() => {
@@ -98,14 +100,16 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                     {/* Booker pickup marker */}
                     {booking.pickupLocationLat && booking.pickupLocationLng && (
-                        <Marker coordinate={{latitude: booking.pickupLocationLat, longitude: booking.pickupLocationLng}}>
+                        <Marker
+                            coordinate={{latitude: booking.pickupLocationLat, longitude: booking.pickupLocationLng}}>
                             <CustomMarker color="#F59E0B" icon="walk-outline" label="Pickup"/>
                         </Marker>
                     )}
 
                     {/* Booker dropoff marker */}
                     {booking.dropoffLocationLat && booking.dropoffLocationLng && (
-                        <Marker coordinate={{latitude: booking.dropoffLocationLat, longitude: booking.dropoffLocationLng}}>
+                        <Marker
+                            coordinate={{latitude: booking.dropoffLocationLat, longitude: booking.dropoffLocationLng}}>
                             <CustomMarker color="#F59E0B" icon="pin" label="Dropoff"/>
                         </Marker>
                     )}
@@ -180,6 +184,18 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                 >
                     <View className="flex gap-4">
 
+                        {/* Confirmed banner — only shown after accept */}
+                        {hasAccepted && (
+                            <Card className="bg-green-50 border border-green-200 px-5 py-4">
+                                <View className="flex-row items-center justify-center gap-2">
+                                    <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
+                                    <Text className="text-sm font-semibold text-green-700">
+                                        Booking Accepted
+                                    </Text>
+                                </View>
+                            </Card>
+                        )}
+
                         {/* Card 1 — Booker info */}
                         <Card className="px-5 py-6">
                             {/* Profile — centered */}
@@ -193,7 +209,8 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                         />
                                     </View>
                                 ) : (
-                                    <View className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
+                                    <View
+                                        className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
                                         <Ionicons name="person-outline" size={28} color="#3A6FF8"/>
                                     </View>
                                 )}
@@ -204,6 +221,18 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     {booking.rideRequesterEmail}
                                 </Text>
                             </View>
+
+                            {hasAccepted && (
+                                <>
+                                    <View className="h-px bg-gray-100 mb-4"/>
+                                    <View className="flex-row items-center justify-center gap-2 mb-4">
+                                        <Ionicons name="call-outline" size={18} color="#3A6FF8"/>
+                                        <Text className="text-base font-semibold text-mj-blue">
+                                            {booking.rideRequesterPhone}
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
 
                             <View className="h-px bg-gray-100 mb-4"/>
 
@@ -323,21 +352,43 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                         </Card>
 
                         {/* Reject & Accept buttons */}
-                        <View className="flex-row gap-3">
-                            <OutlineButton
-                                title={isRejecting ? "Rejecting..." : "Reject"}
-                                variant="destructive"
-                                className="flex-1"
-                                disabled={isAccepting || isRejecting}
-                                onPress={() => reject(booking.bookingId)}
-                            />
-                            <PrimaryButton
-                                title={isAccepting ? "Accepting..." : "Accept"}
-                                className="flex-1"
-                                disabled={isAccepting || isRejecting}
-                                onPress={() => accept(booking.bookingId)}
-                            />
-                        </View>
+                        {hasAccepted ? (
+                            <View className="flex-row gap-3">
+                                <OutlineButton
+                                    title={"Cancel Ride"}
+                                    variant="destructive"
+                                    className="flex-1"
+                                    onPress={() => {
+                                        clearRideDetails();
+                                        router.replace("/(tabs)/carpool");
+                                    }}
+                                />
+                                <PrimaryButton
+                                    title={"Complete Ride"}
+                                    className="flex-1"
+                                    onPress={() => {
+                                        clearRideDetails();
+                                        router.replace("/(tabs)/carpool");
+                                    }}
+                                />
+                            </View>
+                        ) : (
+                            <View className="flex-row gap-3">
+                                <OutlineButton
+                                    title={isRejecting ? "Rejecting..." : "Reject"}
+                                    variant="destructive"
+                                    className="flex-1"
+                                    disabled={isAccepting || isRejecting}
+                                    onPress={() => reject(booking.bookingId)}
+                                />
+                                <PrimaryButton
+                                    title={isAccepting ? "Accepting..." : "Accept"}
+                                    className="flex-1"
+                                    disabled={isAccepting || isRejecting}
+                                    onPress={() => accept(booking.bookingId)}
+                                />
+                            </View>
+                        )}
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>

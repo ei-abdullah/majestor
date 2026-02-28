@@ -28,7 +28,7 @@ export default function RideDetails({ride}: Props) {
     const {animateToLocation} = useMapLocation(mapRef);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ["30%", "50%"], []);
+    const snapPoints = useMemo(() => ["30%", "55%", "85%"], []);
 
     // Skip useEffect on first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
@@ -37,9 +37,10 @@ export default function RideDetails({ride}: Props) {
     const rideRequest = useRideRequestStore();
 
     const bookingId = useRideRequestStore((state) => state.bookingId);
+    const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
 
-    // derive hasBooked from store instead of local state
     const hasBooked = Boolean(bookingId);
+    const isAccepted = bookingStatus === "ACCEPTED";
 
     const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
         rideRequest.setBookingDetails(response.id, response.status);
@@ -59,7 +60,7 @@ export default function RideDetails({ride}: Props) {
         rideRequest.setBookingDetails(bookingId!, bookingStatusData.status);
 
         if (bookingStatusData.status === "ACCEPTED") {
-            //TODO: Push to another screen where the phone is displayed
+            rideRequest.setBookingDetails(bookingId!, "ACCEPTED");
         } else if (bookingStatusData.status === "REJECTED") {
             Toast.show({
                 text1: "Booking rejected",
@@ -235,12 +236,26 @@ export default function RideDetails({ride}: Props) {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
-                        {/* Card 1 - Driver's response card */}
-                        {hasBooked && (
-                            <Card className={"bg-red-50 border border-red-200 p-2"}>
-                                <Text className={"text-center font-medium text-green-600"}>
-                                    Waiting for Driver's Response...
-                                </Text>
+                        {/* Status banner */}
+                        {isAccepted && (
+                            <Card className="bg-green-50 border border-green-200 px-5 py-4">
+                                <View className="flex-row items-center justify-center gap-2">
+                                    <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
+                                    <Text className="text-sm font-semibold text-green-700">
+                                        Ride Confirmed!
+                                    </Text>
+                                </View>
+                            </Card>
+                        )}
+
+                        {hasBooked && !isAccepted && (
+                            <Card className="bg-amber-50 border border-amber-200 px-5 py-4">
+                                <View className="flex-row items-center justify-center gap-2">
+                                    <Ionicons name="time-outline" size={20} color="#d97706"/>
+                                    <Text className="text-sm font-semibold text-amber-700">
+                                        Waiting for Driver's Response...
+                                    </Text>
+                                </View>
                             </Card>
                         )}
 
@@ -268,6 +283,18 @@ export default function RideDetails({ride}: Props) {
                                     {ride.ridePosterEmail ?? "—"}
                                 </Text>
                             </View>
+
+                            {isAccepted && (
+                                <>
+                                    <View className="h-px bg-gray-100 mb-4"/>
+                                    <View className="flex-row items-center justify-center gap-2 mb-4">
+                                        <Ionicons name="call-outline" size={18} color="#3A6FF8"/>
+                                        <Text className="text-base font-semibold text-mj-blue">
+                                            {ride.phone ?? "—"}
+                                        </Text>
+                                    </View>
+                                </>
+                            )}
 
                             <View className="h-px bg-gray-100 mb-4"/>
 
@@ -385,12 +412,23 @@ export default function RideDetails({ride}: Props) {
                             </View>
                         </Card>
 
-                        {/* Book button */}
+                        {/* Book button — hidden once booked */}
                         {!hasBooked && (
                             <PrimaryButton
                                 title={isPending ? "Booking..." : "Book Ride"}
                                 onPress={onSubmit}
                                 disabled={isPending}
+                            />
+                        )}
+
+                        {/* Done button — only shown when accepted */}
+                        {isAccepted && (
+                            <PrimaryButton
+                                title="Done"
+                                onPress={() => {
+                                    rideRequest.clearRideRequestDetails();
+                                    router.replace("/(tabs)/carpool");
+                                }}
                             />
                         )}
                     </View>

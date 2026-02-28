@@ -1,3 +1,4 @@
+
 export interface UploadRideDetails {
     startLocationLat: number,
     startLocationLng: number,
@@ -52,7 +53,18 @@ export interface RecentRideResponse {
 
 
 export interface RideState extends UploadRideResponse {
+    bookingId?: number,
+    bookingStatus?: string,
+    bookerUsername?: string,
+    bookerEmail?: string,
+    bookerPhone?: string,
+    bookerAvatar?: string,
+    bookerPickupAddress?: string,
+    bookerDropoffAddress?: string,
+    bookerNumberOfPassengers?: number,
+    bookerDeviationKm?: number,
     setRideDetails: (rideDetails: UploadRideResponse) => void;
+    setAcceptedBooking: (bookingId: number, bookingStatus: string, booking: import("./booking").GetBookingsResponse) => void;
     clearRideDetails: () => void;
     isEmpty: () => boolean;
 }

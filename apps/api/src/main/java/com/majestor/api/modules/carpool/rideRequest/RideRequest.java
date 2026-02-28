@@ -27,7 +27,7 @@ public class RideRequest {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(nullable = false, precision = 10, scale = 7)
+    @Column(nullable = false)
     @NotNull(message = "Pickup location lat is required")
     @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
     @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
