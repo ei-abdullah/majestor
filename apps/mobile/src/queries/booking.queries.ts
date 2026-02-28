@@ -9,7 +9,6 @@ import {
     rejectBookingApi
 } from "@/src/services/booking.api";
 import {CreateBookingDetails, CreateBookingResponse, GetBookingsResponse} from "@/src/types/booking";
-import {RecentRideResponse} from "@/src/types/ride";
 
 export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => void) => {
     const queryClient = useQueryClient();
@@ -47,10 +46,11 @@ export const useGetBookings = (rideId: number, options?: Partial<UseQueryOptions
         queryKey: ["booking"],
         queryFn: () => getBookingsApi(rideId),
         enabled: Boolean(rideId),
+        ...options,
     })
 }
 
-export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: () => void) => {
+export const useGetBookingStatus = (bookingId: number) => {
     const isFocused = useIsFocused();
 
     return useQuery({
@@ -58,7 +58,7 @@ export const useGetBookingStatus = (bookingId: number | undefined, onCallback?: 
         queryFn: () => getBookingStatusApi(bookingId!),
         enabled: Boolean(bookingId) && isFocused,
         refetchInterval: (query) => {
-            if (!isFocused) return false;            // stop polling when the screen is not focused
+            if (!isFocused) return false;            // stop polling when screen is not focused
             const status = query.state.data?.status;
             if (status === "ACCEPTED" || status === "REJECTED") return false; // stop on terminal status
             return 10000;

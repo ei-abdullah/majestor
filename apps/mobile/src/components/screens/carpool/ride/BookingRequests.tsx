@@ -26,7 +26,9 @@ export default function BookingRequests() {
     } = useRideStore();
 
     const {setBooking} = useSelectedBookingStore();
-    const {data: bookings, isPending, isError, refetch} = useGetBookings(id);
+    const {data: bookings, isPending, isError, refetch} = useGetBookings(id, {
+        refetchInterval: 1000 * 60,
+    });
 
     function handleBookingPress(booking: GetBookingsResponse) {
         setBooking(booking);

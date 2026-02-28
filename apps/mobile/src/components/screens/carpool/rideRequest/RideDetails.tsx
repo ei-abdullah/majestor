@@ -44,7 +44,7 @@ export default function RideDetails({ride}: Props) {
         rideRequest.setBookingDetails(response.id, response.status);
     });
 
-    const {data: bookingStatusData} = useGetBookingStatus(bookingId);
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
 
     useEffect(() => {
         // skip on first mount: prevents routing on stale persisted status
@@ -238,7 +238,7 @@ export default function RideDetails({ride}: Props) {
                                 <View className="flex-row items-center justify-center gap-2">
                                     <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
                                     <Text className="text-sm font-semibold text-green-700">
-                                        Ride Confirmed!
+                                        Ride Confirmed
                                     </Text>
                                 </View>
                             </Card>
