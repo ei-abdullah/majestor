@@ -1,6 +1,5 @@
 import React, {useEffect, useMemo, useRef} from "react";
 import {View, Text, Image} from "react-native";
-import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -33,7 +32,6 @@ export default function RideDetails({ride}: Props) {
     // Skip useEffect on first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
 
-    const {setRide} = useSelectedRideStore();
     const rideRequest = useRideRequestStore();
 
     const bookingId = useRideRequestStore((state) => state.bookingId);
@@ -80,8 +78,6 @@ export default function RideDetails({ride}: Props) {
     }, []);
 
     function onSubmit() {
-        // Only persist to store when user actually books
-        setRide(ride);
 
         const createBookingDetails: CreateBookingDetails = {
             deviationKm: parseFloat(Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm).toFixed(2))

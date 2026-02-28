@@ -22,14 +22,6 @@ const defaultState = {
     createdAt: "",
     bookingId: undefined,
     bookingStatus: undefined,
-    bookerUsername: undefined,
-    bookerEmail: undefined,
-    bookerPhone: undefined,
-    bookerAvatar: undefined,
-    bookerPickupAddress: undefined,
-    bookerDropoffAddress: undefined,
-    bookerNumberOfPassengers: undefined,
-    bookerDeviationKm: undefined,
 };
 
 export const useRideStore = create<RideState>()(
@@ -43,19 +35,8 @@ export const useRideStore = create<RideState>()(
 
             clearRideDetails: () => set(() => ({...defaultState})),
 
-            setAcceptedBooking: (bookingId: number, bookingStatus: string, booking) => {
-                set(() => ({
-                    bookingId,
-                    bookingStatus,
-                    bookerUsername: booking.rideRequesterUsername,
-                    bookerEmail: booking.rideRequesterEmail,
-                    bookerPhone: booking.rideRequesterPhone,
-                    bookerAvatar: booking.rideRequesterAvatar,
-                    bookerPickupAddress: booking.pickupLocationAddress,
-                    bookerDropoffAddress: booking.dropoffLocationAddress,
-                    bookerNumberOfPassengers: booking.numberOfPassengers,
-                    bookerDeviationKm: Math.abs(booking.routeDistanceKm - get().routeDistanceKm),
-                }))
+            setAcceptedBooking: (bookingId: number, bookingStatus: string) => {
+                set(() => ({bookingId, bookingStatus}))
             },
 
             isEmpty: () => {

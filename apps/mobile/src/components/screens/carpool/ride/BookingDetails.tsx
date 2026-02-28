@@ -50,7 +50,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const estimatedFare = Math.round(50 + booking.routeDistanceKm * 20);
 
     const {mutate: accept, isPending: isAccepting} = useAcceptBooking(() => {
-        setAcceptedBooking(booking.bookingId, "ACCEPTED", booking);
+        setAcceptedBooking(booking.bookingId, "ACCEPTED");
     });
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
