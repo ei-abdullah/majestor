@@ -16,6 +16,8 @@ import MapViewDirections from "react-native-maps-directions";
 import Card from "@/src/components/ui/Card";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
+import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
+import {useCancelRide, useCompleteRide} from "@/src/queries/ride.queries";
 
 interface BookingDetailsProps {
     booking: GetBookingsResponse;
@@ -25,13 +27,16 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
+
     const {setAcceptedBooking, bookingId, clearRideDetails} = useRideStore();
+    const {clearBooking} = useSelectedBookingStore();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = ["35%", "55%", "85%"];
     const hasAccepted = Boolean(bookingId);
 
     const {
+        id: rideId,
         startLocationLat,
         startLocationLng,
         startLocationAddress,
@@ -54,14 +59,32 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     });
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
-        router.push("/(tabs)/carpool/ride/bookingRequests")
+        clearBooking();
+        router.replace("/(tabs)/carpool/ride/bookingRequests");
     });
+
+    const {mutate: completeRide, isPending: isCompleting} = useCompleteRide(() => {
+        clearBooking();
+        router.replace("/(tabs)/carpool");
+    })
+
+    const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
+        clearRideDetails();
+        router.replace("/(tabs)/carpool");
+    })
 
     useEffect(() => {
         if (booking.pickupLocationLat && booking.pickupLocationLng) {
             animateToLocation(booking.pickupLocationLat, booking.pickupLocationLng);
         }
     }, []);
+
+    const isPending = [
+        isAccepting,
+        isRejecting,
+        isCompleting,
+        isCancelling
+    ].some(Boolean);
 
     const vehicleIcon = vehicleType === "CAR" ? "car-sport-outline" : "bicycle-outline";
 
@@ -355,21 +378,17 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                         {hasAccepted ? (
                             <View className="flex-row gap-3">
                                 <OutlineButton
-                                    title={"Cancel Ride"}
+                                    title={isCancelling ? "Cancelling Ride" : "Cancel Ride"}
                                     variant="destructive"
                                     className="flex-1"
-                                    onPress={() => {
-                                        clearRideDetails();
-                                        router.replace("/(tabs)/carpool");
-                                    }}
+                                    disabled={isPending}
+                                    onPress={() => cancelRide(rideId)}
                                 />
                                 <PrimaryButton
-                                    title={"Complete Ride"}
+                                    title={isCompleting ? "Completing Ride" : "Complete Ride"}
                                     className="flex-1"
-                                    onPress={() => {
-                                        clearRideDetails();
-                                        router.replace("/(tabs)/carpool");
-                                    }}
+                                    disabled={isPending}
+                                    onPress={() => completeRide(rideId)}
                                 />
                             </View>
                         ) : (
@@ -378,13 +397,13 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     title={isRejecting ? "Rejecting..." : "Reject"}
                                     variant="destructive"
                                     className="flex-1"
-                                    disabled={isAccepting || isRejecting}
+                                    disabled={isPending}
                                     onPress={() => reject(booking.bookingId)}
                                 />
                                 <PrimaryButton
                                     title={isAccepting ? "Accepting..." : "Accept"}
                                     className="flex-1"
-                                    disabled={isAccepting || isRejecting}
+                                    disabled={isPending}
                                     onPress={() => accept(booking.bookingId)}
                                 />
                             </View>

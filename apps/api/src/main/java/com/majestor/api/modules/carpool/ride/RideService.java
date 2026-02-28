@@ -6,6 +6,8 @@ import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +74,36 @@ public class RideService {
             log.info("Expired rides older than 2 hours at {}", LocalDateTime.now());
         } catch (Exception e) {
             log.error("Error while expiring old rides: {}", e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void completeRide(Long rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        ride.setRideStatus(RideStatus.COMPLETED);
+
+        try {
+            rideRepository.save(ride);
+        } catch (Exception e) {
+            log.error("Error while rejecting booking: {}", e.getMessage());
+            throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void cancelRide(Long rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        ride.setRideStatus(RideStatus.CANCELLED);
+
+        try {
+            rideRepository.save(ride);
+        } catch (Exception e) {
+            log.error("Error while rejecting booking: {}", e.getMessage());
+            throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);
         }
     }
 }

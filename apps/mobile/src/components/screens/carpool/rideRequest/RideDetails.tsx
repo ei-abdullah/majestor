@@ -16,6 +16,7 @@ import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
 import {useRouter} from "expo-router";
 import Toast from "react-native-toast-message";
 import {RecentRideResponse} from "@/src/types/ride";
+import OutlineButton from "@/src/components/ui/OutlineButton";
 
 interface Props {
     ride: RecentRideResponse;
@@ -40,6 +41,14 @@ export default function RideDetails({ride}: Props) {
     const hasBooked = Boolean(bookingId);
     const isAccepted = bookingStatus === "ACCEPTED";
 
+    // On mount: if a previous booking for this ride was rejected,
+    // clear it so the user sees the Book button instead of "Waiting..."
+    useEffect(() => {
+        if (bookingStatus === "REJECTED") {
+            rideRequest.clearBookingDetails();
+        }
+    }, []);
+
     const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
         rideRequest.setBookingDetails(response.id, response.status);
     });
@@ -60,6 +69,7 @@ export default function RideDetails({ride}: Props) {
         if (bookingStatusData.status === "ACCEPTED") {
             rideRequest.setBookingDetails(bookingId!, "ACCEPTED");
         } else if (bookingStatusData.status === "REJECTED") {
+            rideRequest.clearBookingDetails();
             Toast.show({
                 text1: "Booking rejected",
                 text2: "Kindly explore other available rides",
@@ -68,7 +78,18 @@ export default function RideDetails({ride}: Props) {
                 autoHide: true,
                 position: "top"
             })
-            router.push("/(tabs)/carpool/rideRequest/availableRides")
+            router.replace("/(tabs)/carpool/rideRequest/availableRides")
+        } else if(bookingStatusData.status === "COMPLETED") {
+            rideRequest.clearRideRequestDetails();
+            Toast.show({
+                text1: "Booking completed",
+                text2: "Thank you for using Majestor for ride",
+                type: "success",
+                visibilityTime: 3000,
+                autoHide: true,
+                position: "top"
+            })
+            router.replace("/(tabs)/carpool/rideRequest/availableRides")
         }
     }, [bookingStatusData?.status]);
 
@@ -419,12 +440,11 @@ export default function RideDetails({ride}: Props) {
 
                         {/* Done button — only shown when accepted */}
                         {isAccepted && (
-                            <PrimaryButton
-                                title="Done"
-                                onPress={() => {
-                                    rideRequest.clearRideRequestDetails();
-                                    router.replace("/(tabs)/carpool");
-                                }}
+                            <OutlineButton
+                                title={"Cancel Rile"}
+                                variant="destructive"
+                                className="flex-1"
+                                onPress={() => {}}
                             />
                         )}
                     </View>

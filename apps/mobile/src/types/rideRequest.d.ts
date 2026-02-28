@@ -29,6 +29,7 @@ export interface RideRequestState extends UploadRideRequestResponse {
     bookingStatus?: string,
     setRideRequestDetails: (rideRequestDetails: UploadRideRequestResponse) => void;
     setBookingDetails: (bookingId: number, bookingStatus: string) => void;
+    clearBookingDetails: () => void;
     clearRideRequestDetails: () => void;
     isEmpty: () => boolean;
 }

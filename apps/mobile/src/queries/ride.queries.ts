@@ -2,7 +2,7 @@ import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/
 import Toast from "react-native-toast-message";
 
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
-import {recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
+import {cancelRideApi, completeRideApi, recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
 
 
 export const useUploadRide = (onCallback?: (data:UploadRideResponse) => void) => {
@@ -40,5 +40,58 @@ export const useRecentRides = (options?: Partial<UseQueryOptions<RecentRideRespo
         queryFn: () => recentRidesApi(),
         enabled: true,
         ...options
+    })
+}
+
+export const useCompleteRide = (onCallback?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["ride"],
+        mutationFn: (rideId: number) => completeRideApi(rideId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            Toast.show({
+                type: "success",
+                text1: "Ride Completed Successfully",
+                position: "top"
+            })
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Toast.show({
+                type: "error",
+                text1: "Failed to Complete Ride",
+                text2: error?.response?.data?.message || error?.message || "There was an error completing your ride",
+                position: "top",
+                visibilityTime: 4000,
+            })
+        }
+    })
+}
+
+export const useCancelRide = (onCallback?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["ride"],
+        mutationFn: (rideId: number) => cancelRideApi(rideId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            Toast.show({
+                type: "success",
+                text1: "Ride Cancelled Successfully",
+            })
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Toast.show({
+                type: "error",
+                text1: "Failed to Cancel Ride",
+                text2: error?.response?.data?.message || error?.message || "There was an error cancelling your ride",
+                position: "top",
+                visibilityTime: 4000,
+            })
+        }
     })
 }

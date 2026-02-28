@@ -16,3 +16,11 @@ export const recentRidesApi = async (): Promise<RecentRideResponse[]> => {
     const res: AxiosResponse<RecentRideResponse[]> = await api.get(`/ride/recentRides`);
     return res.data;
 }
+
+export const completeRideApi = async (rideId: number): Promise<void> => {
+    await api.patch(`/ride/completeRide/${rideId}`);
+}
+
+export const cancelRideApi = async (rideId: number): Promise<void> => {
+    await api.patch(`/ride/cancelRide/${rideId}`);
+}
