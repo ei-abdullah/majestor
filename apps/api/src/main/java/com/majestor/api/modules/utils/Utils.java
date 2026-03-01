@@ -5,6 +5,7 @@ import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.document.Document;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
+import com.majestor.api.modules.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,6 +69,23 @@ public class Utils {
         }
     }
 
+    public String DownloadUserAvatar(User user) {
+        if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
+            try {
+                String key = GetUploadUserAvatarKey(user.getId(), user.getAvatar());
+                return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
+            } catch (SdkClientException e) {
+                log.warn("Failed to download avatar from S3: {}", e.getMessage(), e);
+                return "";
+            } catch (Exception e) {
+                log.warn("Failed to read avatar from S3: {}", e.getMessage(), e);
+                return "";
+            }
+        } else {
+            return "";
+        }
+    }
+
     public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
         return "user/%s/lostItems/%s/%s"
                 .formatted(userId, lostItemId, lostItemImageId);
@@ -111,7 +129,6 @@ public class Utils {
         }
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
-
 
 
 }

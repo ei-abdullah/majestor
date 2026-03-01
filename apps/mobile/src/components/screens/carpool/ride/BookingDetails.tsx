@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {View, Text, Image} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -16,6 +16,9 @@ import MapViewDirections from "react-native-maps-directions";
 import Card from "@/src/components/ui/Card";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
+import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
+import {useCancelRide, useCompleteRide} from "@/src/queries/ride.queries";
+import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
 
 interface BookingDetailsProps {
     booking: GetBookingsResponse;
@@ -25,13 +28,21 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
+
     const {setAcceptedBooking, bookingId, clearRideDetails} = useRideStore();
+    const {clearBooking} = useSelectedBookingStore();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = ["35%", "55%", "85%"];
     const hasAccepted = Boolean(bookingId);
 
+    const isNavigating = useRef(false);
+
+    // Modal state — shown on completion or cancellation before navigating away
+    const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
+
     const {
+        id: rideId,
         startLocationLat,
         startLocationLng,
         startLocationAddress,
@@ -54,8 +65,29 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     });
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
-        router.push("/(tabs)/carpool/ride/bookingRequests")
+        clearBooking();
+        router.replace("/(tabs)/carpool/ride/bookingRequests");
     });
+
+    const {mutate: completeRide, isPending: isCompleting} = useCompleteRide(() => {
+        setOutcomeModal("completed");
+    });
+
+    const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
+        setOutcomeModal("cancelled");
+    });
+
+    function handleOutcomeDismiss() {
+        const current = outcomeModal;
+        isNavigating.current = true;
+        setOutcomeModal(null);
+        clearBooking();
+        if (current === "completed" || current === "cancelled") {
+            clearRideDetails();
+        }
+        router.replace("/(tabs)/carpool");
+    }
+
 
     useEffect(() => {
         if (booking.pickupLocationLat && booking.pickupLocationLng) {
@@ -63,7 +95,16 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         }
     }, []);
 
+    const isPending = [
+        isAccepting,
+        isRejecting,
+        isCompleting,
+        isCancelling
+    ].some(Boolean);
+
     const vehicleIcon = vehicleType === "CAR" ? "car-sport-outline" : "bicycle-outline";
+
+    if (isNavigating.current) return null;
 
     return (
         <GestureHandlerRootView className="flex-1">
@@ -355,21 +396,17 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                         {hasAccepted ? (
                             <View className="flex-row gap-3">
                                 <OutlineButton
-                                    title={"Cancel Ride"}
+                                    title={isCancelling ? "Cancelling Ride" : "Cancel Ride"}
                                     variant="destructive"
                                     className="flex-1"
-                                    onPress={() => {
-                                        clearRideDetails();
-                                        router.replace("/(tabs)/carpool");
-                                    }}
+                                    disabled={isPending}
+                                    onPress={() => cancelRide({rideId, bookingId: booking.bookingId})}
                                 />
                                 <PrimaryButton
-                                    title={"Complete Ride"}
+                                    title={isCompleting ? "Completing Ride" : "Complete Ride"}
                                     className="flex-1"
-                                    onPress={() => {
-                                        clearRideDetails();
-                                        router.replace("/(tabs)/carpool");
-                                    }}
+                                    disabled={isPending}
+                                    onPress={() => completeRide({rideId, bookingId: booking.bookingId})}
                                 />
                             </View>
                         ) : (
@@ -378,13 +415,13 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     title={isRejecting ? "Rejecting..." : "Reject"}
                                     variant="destructive"
                                     className="flex-1"
-                                    disabled={isAccepting || isRejecting}
+                                    disabled={isPending}
                                     onPress={() => reject(booking.bookingId)}
                                 />
                                 <PrimaryButton
                                     title={isAccepting ? "Accepting..." : "Accept"}
                                     className="flex-1"
-                                    disabled={isAccepting || isRejecting}
+                                    disabled={isPending}
                                     onPress={() => accept(booking.bookingId)}
                                 />
                             </View>
@@ -392,6 +429,14 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>
+
+            {outcomeModal && (
+                <RideOutcomeModal
+                    visible={true}
+                    outcome={outcomeModal}
+                    onDismiss={handleOutcomeDismiss}
+                />
+            )}
         </GestureHandlerRootView>
     );
 }

@@ -49,4 +49,36 @@ public class RideController {
                 .ok()
                 .body(ridesList);
     }
+
+    /**
+     * Mark a ride as completed. Only the ride poster can complete the ride.
+     * Convert the ride status from ACCEPTED to COMPLETED
+     */
+    @PatchMapping("/completeRide/{rideId}/{bookingId}")
+    public ResponseEntity<?> completeRide(
+            @PathVariable @NotNull @Positive Long rideId,
+            @PathVariable @NotNull @Positive Long bookingId
+    ) {
+        rideService.completeRide(rideId, bookingId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    /**
+     * Cancel a ride. Only the ride poster can cancel the ride.
+     * Convert the ride status from ACCEPTED to CANCELLED
+     */
+    @PatchMapping("/cancelRide/{rideId}/{bookingId}")
+    public ResponseEntity<?> cancelRide(
+            @PathVariable @NotNull @Positive Long rideId,
+            @PathVariable @NotNull @Positive Long bookingId
+    ) {
+        rideService.cancelRide(rideId, bookingId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
 }

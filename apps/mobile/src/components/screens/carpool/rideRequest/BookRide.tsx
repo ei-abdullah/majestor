@@ -91,13 +91,6 @@ export default function BookRide() {
         if (location) {
             setValue('pickupLocation', location);
             animateToLocation(location.latitude, location.longitude);
-            Toast.show({
-                type: 'success',
-                text1: '📍 Location Set',
-                text2: 'Pickup location set to your current location',
-                position: 'top',
-                visibilityTime: 2000,
-            });
         }
     };
 

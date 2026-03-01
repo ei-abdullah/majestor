@@ -3,12 +3,17 @@ package com.majestor.api.modules.carpool.rideRequest;
 import com.majestor.api.modules.carpool.rideRequest.dto.UploadRideRequestDTO;
 import com.majestor.api.modules.carpool.rideRequest.dto.UploadRideRequestResponseDTO;
 import com.majestor.api.modules.user.User;
+import com.majestor.api.modules.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@RequiredArgsConstructor
 public class RideRequestMapper {
+
+    private final Utils utils;
 
     public RideRequest toRideRequest(
             UploadRideRequestDTO uploadRideRequestDTO,

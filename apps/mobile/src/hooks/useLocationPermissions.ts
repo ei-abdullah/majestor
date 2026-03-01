@@ -58,14 +58,6 @@ export const useLocationPermissions = () => {
             longitude: location.coords.longitude,
             address: formatShortAddress(address[0])
         });
-
-        Toast.show({
-            type: 'success',
-            text1: '📍 Location Found',
-            text2: formatAddress(address[0]),
-            position: 'top',
-            visibilityTime: 3000,
-        });
     };
 
     const handleLocationDisabled = () => {

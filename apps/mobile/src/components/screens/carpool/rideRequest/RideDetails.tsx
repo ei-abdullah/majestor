@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {View, Text, Image} from "react-native";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
@@ -16,6 +16,10 @@ import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
 import {useRouter} from "expo-router";
 import Toast from "react-native-toast-message";
 import {RecentRideResponse} from "@/src/types/ride";
+import OutlineButton from "@/src/components/ui/OutlineButton";
+import {useCancelRide} from "@/src/queries/ride.queries";
+import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+
 
 interface Props {
     ride: RecentRideResponse;
@@ -23,11 +27,12 @@ interface Props {
 
 export default function RideDetails({ride}: Props) {
     const router = useRouter();
+
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = useMemo(() => ["30%", "55%", "85%"], []);
+    const snapPoints = ["30%", "55%", "85%"];
 
     // Skip useEffect on first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
@@ -40,14 +45,36 @@ export default function RideDetails({ride}: Props) {
     const hasBooked = Boolean(bookingId);
     const isAccepted = bookingStatus === "ACCEPTED";
 
+    // Modal state — shown on completion or cancellation before navigating away
+    const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
+
+    // On mount: if a previous booking for this ride was rejected,
+    // clear it so the user sees the Book button instead of "Waiting..."
+    useEffect(() => {
+        if (bookingStatus === "REJECTED") {
+            rideRequest.clearBookingDetails();
+        }
+    }, []);
+
     const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
         rideRequest.setBookingDetails(response.id, response.status);
     });
 
-    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
+    // Passenger-initiated cancel — show modal, then clean up on dismiss
+    const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
+        setOutcomeModal("cancelled");
+    });
+
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId!, {
+        refetchInterval: (query) => {
+            const status = query.state.data?.status;
+            if (status === "REJECTED" || status === "COMPLETED" || status === "CANCELLED") return false;
+            return 60 * 1000;
+        },
+        refetchIntervalInBackground: false,
+    });
 
     useEffect(() => {
-        // skip on first mount: prevents routing on stale persisted status
         if (!hasMounted.current) {
             hasMounted.current = true;
             return;
@@ -57,9 +84,8 @@ export default function RideDetails({ride}: Props) {
 
         rideRequest.setBookingDetails(bookingId!, bookingStatusData.status);
 
-        if (bookingStatusData.status === "ACCEPTED") {
-            rideRequest.setBookingDetails(bookingId!, "ACCEPTED");
-        } else if (bookingStatusData.status === "REJECTED") {
+        if (bookingStatusData.status === "REJECTED") {
+            rideRequest.clearBookingDetails();
             Toast.show({
                 text1: "Booking rejected",
                 text2: "Kindly explore other available rides",
@@ -67,10 +93,31 @@ export default function RideDetails({ride}: Props) {
                 visibilityTime: 3000,
                 autoHide: true,
                 position: "top"
-            })
-            router.push("/(tabs)/carpool/rideRequest/availableRides")
+            });
+            router.replace("/(tabs)/carpool");
+        } else if (bookingStatusData.status === "COMPLETED") {
+            // Show modal first — store is cleared only when user dismisses
+            setOutcomeModal("completed");
+        } else if (bookingStatusData.status === "CANCELLED") {
+            // Driver cancelled the ride — show modal then clean up
+            setOutcomeModal("cancelled");
         }
     }, [bookingStatusData?.status]);
+
+    const isNavigating = useRef(false);
+
+    function handleOutcomeDismiss() {
+        const current = outcomeModal;
+        isNavigating.current = true;
+        setOutcomeModal(null);
+        if (current === "completed") {
+            rideRequest.clearRideRequestDetails();
+        } else if (current === "cancelled") {
+            rideRequest.clearBookingDetails();
+        }
+        router.replace("/(tabs)/carpool");
+    }
+
 
     useEffect(() => {
         if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
@@ -88,6 +135,8 @@ export default function RideDetails({ride}: Props) {
             rideId: ride.id
         });
     }
+
+    if (isNavigating.current) return null;
 
     return (
         <GestureHandlerRootView className={"flex-1"}>
@@ -419,17 +468,25 @@ export default function RideDetails({ride}: Props) {
 
                         {/* Done button — only shown when accepted */}
                         {isAccepted && (
-                            <PrimaryButton
-                                title="Done"
-                                onPress={() => {
-                                    rideRequest.clearRideRequestDetails();
-                                    router.replace("/(tabs)/carpool");
-                                }}
+                            <OutlineButton
+                                title={"Cancel Ride"}
+                                variant="destructive"
+                                className="flex-1"
+                                disabled={isCancelling}
+                                onPress={() => cancelRide({rideId: ride.id!, bookingId: bookingId!})}
                             />
                         )}
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>
+
+            {outcomeModal && (
+                <RideOutcomeModal
+                    visible={true}
+                    outcome={outcomeModal}
+                    onDismiss={handleOutcomeDismiss}
+                />
+            )}
         </GestureHandlerRootView>
     )
 }

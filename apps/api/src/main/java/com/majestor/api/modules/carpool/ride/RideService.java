@@ -1,11 +1,16 @@
 package com.majestor.api.modules.carpool.ride;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.modules.carpool.booking.Booking;
+import com.majestor.api.modules.carpool.booking.BookingRepository;
+import com.majestor.api.modules.carpool.booking.BookingStatus;
 import com.majestor.api.modules.carpool.ride.dto.GetRecentRidesDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +27,7 @@ public class RideService {
 
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
     private final RideMapper rideMapper;
 
     @Transactional
@@ -72,6 +78,46 @@ public class RideService {
             log.info("Expired rides older than 2 hours at {}", LocalDateTime.now());
         } catch (Exception e) {
             log.error("Error while expiring old rides: {}", e.getMessage());
+        }
+    }
+
+    @Transactional
+    public void completeRide(Long rideId, Long bookingId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        Booking booking = bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        ride.setRideStatus(RideStatus.COMPLETED);
+        booking.setStatus(BookingStatus.COMPLETED);
+
+        try {
+            rideRepository.save(ride);
+            bookingRepository.save(booking);
+        } catch (Exception e) {
+            log.error("Error while completing ride: {}", e.getMessage());
+            throw new RuntimeException("Failed to complete ride: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void cancelRide(Long rideId, Long bookingId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        Booking booking = bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        ride.setRideStatus(RideStatus.CANCELLED);
+        booking.setStatus(BookingStatus.CANCELLED);
+
+        try {
+            rideRepository.save(ride);
+            bookingRepository.save(booking);
+        } catch (Exception e) {
+            log.error("Error while cancelling booking: {}", e.getMessage());
+            throw new RuntimeException("Failed to cancelling booking: " + e.getMessage(), e);
         }
     }
 }

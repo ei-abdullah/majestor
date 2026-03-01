@@ -33,6 +33,8 @@ export const useRideRequestStore = create<RideRequestState>()(
                 set(() => ({bookingId, bookingStatus}))
             },
 
+            clearBookingDetails: () => set(() => ({bookingId: undefined, bookingStatus: undefined})),
+
             clearRideRequestDetails: () => set(() => ({...defaultState})),
 
             isEmpty: () => {

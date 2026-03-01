@@ -99,13 +99,6 @@ export default function PostRide() {
         if (location) {
             setValue('startLocation', location);
             animateToLocation(location.latitude, location.longitude);
-            Toast.show({
-                type: 'success',
-                text1: '📍 Location Set',
-                text2: 'Start location set to your current location',
-                position: 'top',
-                visibilityTime: 2000,
-            });
         }
     };
 

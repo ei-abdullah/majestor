@@ -34,22 +34,8 @@ public class UserService {
     public GetUserDetailsResponseDTO getUserDetails(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-
-        String avatarUri = null;
-
-        if (user.getAvatar() != null && !user.getAvatar().trim().isEmpty()) {
-            String key = utils.GetUploadUserAvatarKey(user.getId(), user.getAvatar());
-            try {
-                avatarUri = s3Service.createPresignedGetUrl(
-                        s3Buckets.getBucket(),
-                        key
-                );
-            } catch (SdkClientException e) {
-                log.warn("Failed to download avatar from S3: {}", e.getMessage(), e);
-            } catch (Exception e) {
-                log.warn("Failed to read avatar from S3: {}", e.getMessage(), e);
-            }
-        }
+        
+        String avatarUri = utils.DownloadUserAvatar(user);
 
         return userMapper.toGetUserDetailsResponseDTO(user, avatarUri);
     }
