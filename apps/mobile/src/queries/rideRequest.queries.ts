@@ -16,11 +16,6 @@ export const useUploadRideRequest = (onCallback?: (data:UploadRideRequestRespons
         }) => uploadRideRequestApi(uploadRideRequestDetails, userId),
         onSuccess: async (data: UploadRideRequestResponse) => {
             await queryClient.invalidateQueries({queryKey: ["rideRequest"]})
-            Toast.show({
-                type: "success",
-                text1: "Ride Request Submitted Successfully",
-                position: "top"
-            })
             onCallback?.(data);
         },
         onError: (error: any) => {

@@ -17,10 +17,10 @@ export const recentRidesApi = async (): Promise<RecentRideResponse[]> => {
     return res.data;
 }
 
-export const completeRideApi = async (rideId: number): Promise<void> => {
-    await api.patch(`/ride/completeRide/${rideId}`);
+export const completeRideApi = async (rideId: number, bookingId: number): Promise<void> => {
+    await api.patch(`/ride/completeRide/${rideId}/${bookingId}`);
 }
 
-export const cancelRideApi = async (rideId: number): Promise<void> => {
-    await api.patch(`/ride/cancelRide/${rideId}`);
+export const cancelRideApi = async (rideId: number, bookingId: number): Promise<void> => {
+    await api.patch(`/ride/cancelRide/${rideId}/${bookingId}`);
 }

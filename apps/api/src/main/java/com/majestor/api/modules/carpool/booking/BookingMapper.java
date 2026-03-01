@@ -4,21 +4,27 @@ import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.user.User;
+import com.majestor.api.modules.utils.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class BookingMapper {
+
+    private final Utils utils;
 
     // Maps a RideRequest to its detail DTO
     public GetBookingDTO toGetBookingDTO(Booking booking) {
         RideRequest bookedRide = booking.getBookedRide();
         User rideRequester = bookedRide.getRideRequester();
+        String imageUri = utils.DownloadUserAvatar(rideRequester);
         return GetBookingDTO
                 .builder()
                 .bookingId(booking.getId())
                 .rideRequestId(bookedRide.getId())
                 .rideRequesterUsername(rideRequester.getUsername())
-                .rideRequesterAvatar((rideRequester.getAvatar()))
+                .rideRequesterAvatar(imageUri)
                 .rideRequesterEmail(rideRequester.getEmail())
                 .rideRequesterPhone(bookedRide.getPhone())
                 .pickupLocationLat(bookedRide.getPickupLocationLat())

@@ -6,12 +6,6 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
-import com.majestor.api.modules.carpool.ride.Ride;
-import com.majestor.api.modules.carpool.ride.RideRepository;
-import com.majestor.api.modules.carpool.ride.RideStatus;
-import com.majestor.api.modules.carpool.ride.VehicleType;
-import com.majestor.api.modules.carpool.rideRequest.RideRequest;
-import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -22,8 +16,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

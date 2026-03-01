@@ -48,9 +48,6 @@ function UserSettings() {
     const handleAvatarUpdate = (formData: FormData) => {
         const userId = user!.id;
         uploadProfileImage({userId, formData}, {
-            onSuccess: () => {
-                Alert.alert('Success', 'Profile image updated successfully');
-            },
             onError: (error: any) => {
                 console.error('Upload error:', error);
                 Alert.alert('Error', 'Failed to upload profile image');

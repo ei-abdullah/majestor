@@ -1,6 +1,9 @@
 package com.majestor.api.modules.carpool.ride;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.modules.carpool.booking.Booking;
+import com.majestor.api.modules.carpool.booking.BookingRepository;
+import com.majestor.api.modules.carpool.booking.BookingStatus;
 import com.majestor.api.modules.carpool.ride.dto.GetRecentRidesDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
@@ -24,6 +27,7 @@ public class RideService {
 
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
+    private final BookingRepository bookingRepository;
     private final RideMapper rideMapper;
 
     @Transactional
@@ -78,32 +82,42 @@ public class RideService {
     }
 
     @Transactional
-    public void completeRide(Long rideId) {
+    public void completeRide(Long rideId, Long bookingId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
 
+        Booking booking = bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
         ride.setRideStatus(RideStatus.COMPLETED);
+        booking.setStatus(BookingStatus.COMPLETED);
 
         try {
             rideRepository.save(ride);
+            bookingRepository.save(booking);
         } catch (Exception e) {
-            log.error("Error while rejecting booking: {}", e.getMessage());
-            throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);
+            log.error("Error while completing ride: {}", e.getMessage());
+            throw new RuntimeException("Failed to complete ride: " + e.getMessage(), e);
         }
     }
 
     @Transactional
-    public void cancelRide(Long rideId) {
+    public void cancelRide(Long rideId, Long bookingId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
 
+        Booking booking = bookingRepository.findById(bookingId)
+                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
         ride.setRideStatus(RideStatus.CANCELLED);
+        booking.setStatus(BookingStatus.CANCELLED);
 
         try {
             rideRepository.save(ride);
+            bookingRepository.save(booking);
         } catch (Exception e) {
-            log.error("Error while rejecting booking: {}", e.getMessage());
-            throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);
+            log.error("Error while cancelling booking: {}", e.getMessage());
+            throw new RuntimeException("Failed to cancelling booking: " + e.getMessage(), e);
         }
     }
 }

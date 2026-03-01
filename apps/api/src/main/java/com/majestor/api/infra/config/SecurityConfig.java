@@ -55,8 +55,7 @@ public class SecurityConfig {
                                     "/api/v1/auth/forgetPassword",
                                     "/api/v1/auth/signup/verify",
                                     "/api/v1/auth/refresh",
-                                    "/api/v1/university/getWithFaculties",
-                                    "/api/v1/s3/**"
+                                    "/api/v1/university/getWithFaculties"
                             )
                             .permitAll();
 
@@ -64,12 +63,12 @@ public class SecurityConfig {
                         config = config
                                 .requestMatchers(
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**"
+                                        "/v3/api-docs/**",
+                                        "/api/v1/s3/**"
                                 ).permitAll();
                     }
 
-//                    config.anyRequest().authenticated();
-                    config.anyRequest().permitAll();
+                    config.anyRequest().authenticated();
                 })
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -100,7 +99,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("*"));
+        configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(true);
