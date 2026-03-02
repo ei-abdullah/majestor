@@ -33,18 +33,51 @@ public class DataInitializer implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) {
+        log.info("=== DataInitializer starting ===");
 
-        if (universityRepository.count() == 0) {
-            initializeUniversitiesAndFaculties();
+        try {
+            long universityCount = universityRepository.count();
+            log.info("University count: {}", universityCount);
+            if (universityCount == 0) {
+                log.info("No universities found, initializing...");
+                initializeUniversitiesAndFaculties();
+                log.info("Universities and faculties initialized successfully.");
+            } else {
+                log.info("Universities already exist, skipping initialization.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize universities and faculties: {}", e.getMessage(), e);
         }
 
-        if (userRepository.findByEmail("bcs233188@cust.pk").isEmpty()) {
-            initializeAdminUser();
+        try {
+            boolean adminExists = userRepository.findByEmail("bcs233188@cust.pk").isPresent();
+            log.info("Admin user exists: {}", adminExists);
+            if (!adminExists) {
+                log.info("Admin user not found, creating...");
+                initializeAdminUser();
+                log.info("Admin user created successfully.");
+            } else {
+                log.info("Admin user already exists, skipping.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize admin user: {}", e.getMessage(), e);
         }
 
-        if (courseRepository.count() == 0) {
-            initializeCourses();
+        try {
+            long courseCount = courseRepository.count();
+            log.info("Course count: {}", courseCount);
+            if (courseCount == 0) {
+                log.info("No courses found, initializing...");
+                initializeCourses();
+                log.info("Courses initialized successfully.");
+            } else {
+                log.info("Courses already exist, skipping initialization.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
+
+        log.info("=== DataInitializer finished ===");
     }
 
     private void initializeCourses() {
