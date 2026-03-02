@@ -161,22 +161,7 @@ public class DataInitializer implements CommandLineRunner {
                 .verificationToken(null)
                 .build();
 
-        User adminUser2 = User.builder()
-                .email("bcs233189@cust.pk")
-                .username("ZA")
-                .passwordHash(passwordEncoder.encode("Cust@23"))
-                .phone("03155180641")
-                .avatar("")
-                .hasOnboarded(Boolean.FALSE)
-                .university(firstUniversity)
-                .studentFaculty(firstFaculty)
-                .roles(List.of(Role.ADMIN, Role.STUDENT))
-                .isVerified(true)
-                .verificationToken(null)
-                .build();
-
         userRepository.save(adminUser1);
-        userRepository.save(adminUser2);
     }
 
     private University createUniversity(String name, String address) {
