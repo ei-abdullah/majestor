@@ -19,6 +19,7 @@ import java.util.List;
 public class S3Service {
 
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
 
     public void uploadFile(byte[] file, String key, String bucketName) {
         PutObjectRequest objectRequest = PutObjectRequest
@@ -112,22 +113,20 @@ public class S3Service {
             String bucketName,
             String key
     ) {
-        try (S3Presigner presigner = S3Presigner.create()) {
-            GetObjectRequest getObjectRequest = GetObjectRequest
-                    .builder()
-                    .bucket(bucketName)
-                    .key(key)
-                    .build();
+        GetObjectRequest getObjectRequest = GetObjectRequest
+                .builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
 
-            GetObjectPresignRequest presignRequest = GetObjectPresignRequest
-                    .builder()
-                    .signatureDuration(Duration.ofHours(2))
-                    .getObjectRequest(getObjectRequest)
-                    .build();
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest
+                .builder()
+                .signatureDuration(Duration.ofHours(2))
+                .getObjectRequest(getObjectRequest)
+                .build();
 
-            PresignedGetObjectRequest presignedGetObjectRequest = presigner.presignGetObject(presignRequest);
+        PresignedGetObjectRequest presignedGetObjectRequest = s3Presigner.presignGetObject(presignRequest);
 
-            return presignedGetObjectRequest.url().toString();
-        }
+        return presignedGetObjectRequest.url().toString();
     }
 }

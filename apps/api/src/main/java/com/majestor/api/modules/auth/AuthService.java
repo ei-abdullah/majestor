@@ -1,6 +1,7 @@
 package com.majestor.api.modules.auth;
 
 import com.majestor.api.infra.emailservice.EmailService;
+import com.majestor.api.infra.exception.DuplicateResourceException;
 import com.majestor.api.infra.jwt.JwtService;
 import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
@@ -9,7 +10,6 @@ import com.majestor.api.modules.academia.university.UniversityRepository;
 import com.majestor.api.modules.auth.dto.*;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
-import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.sql.Time;
 import java.util.UUID;
 
 @Service
@@ -43,7 +42,7 @@ public class AuthService {
             SignupRequestDTO request
     ) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new DuplicateRequestException("Email already exists");
+            throw new DuplicateResourceException("Email already exists");
         }
 
         University university = universityRepository.findById(request.getUniversityId())
@@ -80,7 +79,7 @@ public class AuthService {
         }
 
         if (Boolean.TRUE.equals(user.getIsVerified())) {
-            throw new DuplicateRequestException("Email already verified");
+            throw new DuplicateResourceException("Email already verified");
         }
 
         user.setVerificationToken(null);

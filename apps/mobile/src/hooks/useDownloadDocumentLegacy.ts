@@ -4,6 +4,7 @@ import {getDownloadUrl} from "@/src/services/document.api";
 import {Alert, Platform} from "react-native";
 import {shareAsync} from "expo-sharing";
 import {Document} from "@/src/types/document";
+import {useAuthStore} from "@/src/stores/authStore";
 
 interface DownloadState {
     isDownloading: boolean,
@@ -39,7 +40,7 @@ function useDownloadDocumentLegacy() {
         setState({isDownloading: true, error: null, progress: 0});
 
         try {
-            // Get download endpoint
+            const accessToken = useAuthStore.getState().accessToken;
             const downloadUrl = getDownloadUrl(document.id);
 
             // Create a unique filename with a timestamp to avoid conflicts
@@ -64,7 +65,11 @@ function useDownloadDocumentLegacy() {
             const downloadResumable = FileSystem.createDownloadResumable(
                 downloadUrl,
                 filePath,
-                {},
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`
+                    }
+                },
                 (downloadProgress) => {
                     const progress = downloadProgress.totalBytesWritten / downloadProgress.totalBytesExpectedToWrite;
                     setState(prev => ({...prev, progress}));
@@ -75,7 +80,7 @@ function useDownloadDocumentLegacy() {
 
             if (result) {
                 // Save a file to a device or share
-                await save(result.uri, fileName, result.headers["Content-Type"]);
+                await save(result.uri, fileName, result.headers["content-type"] ?? "application/zip");
                 setState({isDownloading: false, error: null, progress: 1});
             } else {
                 const errorMessage = "Download failed - no result returned";
