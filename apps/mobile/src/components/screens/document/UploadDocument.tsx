@@ -46,8 +46,8 @@ function UploadDocument() {
         mutate: uploadDocument,
         isPending: isDownloading
     } = useUploadDocument(handleReset);
-    const {data: courses, isPending: loadingCourses} = useCourse(1);
 
+    const {data: courses, isPending: loadingCourses} = useCourse(user!.id);
 
     const onSubmit = async (data: any) => {
         // Validate required fields
@@ -258,7 +258,7 @@ function UploadDocument() {
                         <View className={"flex flex-col gap-2"}>
                             <Text className={"text-sm font-medium text-gray-600"}>Faculty</Text>
                             <StyledTextInput
-                                value={courses!.data.facultyName!}
+                                value={courses?.data.facultyName ?? ""}
                                 placeholder={"Faculty"}
                                 icon="home"
                                 onChangeText={() => {
@@ -280,7 +280,7 @@ function UploadDocument() {
                     {/* Submit Button */}
                     <View className={"mt-6 mb-4"}>
                         <PrimaryButton
-                            title={loadingCourses ? "Loading..." : ""}
+                            title={isDownloading ? "Uploading..." : "Upload"}
                             icon="upload"
                             iconSize={22}
                             className={"w-full"}
