@@ -1,10 +1,11 @@
 import axios from "axios";
 import {useAuthStore} from "@/src/stores/authStore";
 import {getRefreshToken} from "@/src/stores/secureStore";
+import {API_BASE_URL} from "@/src/constants";
 
 
 const api = axios.create({
-    baseURL: process.env.EXPO_PUBLIC_API_URL,
+    baseURL: API_BASE_URL,
     timeout: 3000
 })
 

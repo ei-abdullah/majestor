@@ -32,8 +32,11 @@ export const semesterType = [
 ]
 
 // Google Maps API Key
-export const GOOGLE_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY || "";
+export const GOOGLE_API_KEY = "AIzaSyCR9iqbq620EMK2XwY_yipxEeKi8hnaOgo";
 
 // Years list
 export const years = generateYearList();
+
+// API BASE URL
+export const API_BASE_URL = "https://majestor-app-ynclq.ondigitalocean.app/api/v1"
 

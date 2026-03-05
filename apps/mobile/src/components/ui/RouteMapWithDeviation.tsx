@@ -3,6 +3,7 @@ import {View, Text, StyleSheet} from "react-native";
 import MapView, {Marker, Polyline, PROVIDER_GOOGLE} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
 import CustomMarker from "./CustomMarker";
+import {GOOGLE_API_KEY} from "@/src/constants";
 
 type Location = {
     latitude: number;
@@ -25,7 +26,7 @@ type Props = {
     className?: string;
 };
 
-const API_KEY = process.env.EXPO_PUBLIC_GOOGLE_API_KEY|| "";
+const API_KEY = GOOGLE_API_KEY;
 
 function RouteMapWithDeviation({
     posterStart,

@@ -36,4 +36,5 @@ export const downloadDocument = async (documentId: number): Promise<void> =>
 export const getDownloadUrl = (documentId: number): string => {
     const baseUrl = api.defaults.baseURL || process.env.EXPO_PUBLIC_API_URL;
     return `${baseUrl}/document/downloadDocument/${documentId}`
+
 }
