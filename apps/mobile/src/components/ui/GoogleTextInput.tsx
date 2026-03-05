@@ -2,8 +2,9 @@ import React, {useState} from "react";
 import {View} from "react-native";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Feather} from "@expo/vector-icons";
+import {GOOGLE_API_KEY} from "@/src/constants";
 
-const googlePlacesApiKey = process.env.EXPO_PUBLIC_GOOGLE_API_KEY;
+const googlePlacesApiKey = GOOGLE_API_KEY;
 
 type GoogleInputProps = {
     icon?: keyof typeof Feather.glyphMap;

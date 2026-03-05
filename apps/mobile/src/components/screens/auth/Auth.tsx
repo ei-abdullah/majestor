@@ -35,8 +35,11 @@ function Auth() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex-row items-center mb-16 gap-4"}>
-                        <View>
-                            <Image source={require("@/assets/images/icon.png")} style={{width: 60, height: 60}}/>
+                        <View style={{borderRadius: 20, overflow: "hidden"}}>
+                            <Image
+                                source={require("@/assets/images/majestor-logo.png")}
+                                style={{width: 60, height: 60}}
+                            />
                         </View>
                         <View>
                             <Text className={"font-bold text-2xl"}>Majestor</Text>
