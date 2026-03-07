@@ -16,6 +16,11 @@ export const metadata: Metadata = {
   title: "Majestor - Your Campus Life, Unified",
   description: "A comprehensive academic resource sharing and carpooling platform for universities. Share documents, find rides, and connect with your academic community.",
   keywords: ["university", "academic", "document sharing", "carpooling", "students", "education"],
+  icons: {
+    icon: "/majestor-logo.png",
+    shortcut: "/majestor-logo.png",
+    apple: "/majestor-logo.png",
+  },
 };
 
 export default function RootLayout({
