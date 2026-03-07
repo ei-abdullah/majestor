@@ -1,13 +1,30 @@
+"use client";
+
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Privacy Policy - Majestor",
-  description: "Learn how Majestor collects, uses, and protects your personal information.",
-};
+import { useState } from "react";
 
 export default function PrivacyPolicy() {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    reason: "",
+  });
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Frontend only - just show success message
+    setIsSubmitted(true);
+    setFormData({ fullName: "", email: "", reason: "" });
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
   return (
     <div className="min-h-screen flex flex-col">
       <Header />
@@ -250,6 +267,144 @@ export default function PrivacyPolicy() {
                 <li>✓ You can request access, correction, or deletion of your data</li>
                 <li>✓ Location access is optional and can be disabled anytime</li>
               </ul>
+            </section>
+
+            {/* Account Deletion Request Form */}
+            <section id="delete-account" className="mt-12 scroll-mt-24">
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">
+                Request Account Deletion
+              </h2>
+              <p className="text-[#5A6275] leading-relaxed mb-6">
+                As stated in our privacy policy, you have the right to request deletion of your account
+                and all associated data. Please fill out the form below, and our team will process your
+                request within 30 days. You will receive a confirmation email once your request is received.
+              </p>
+
+              <div className="card p-6 md:p-8 border border-[#E1E5ED]">
+                {isSubmitted ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <svg
+                        className="w-8 h-8 text-green-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M5 13l4 4L19 7"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold text-[#121826] mb-2">
+                      Request Submitted
+                    </h3>
+                    <p className="text-[#5A6275] mb-6">
+                      Thank you for your request. Our team will review it and contact you via email
+                      within the next 30 days. Please check your inbox (and spam folder) for updates.
+                    </p>
+                    <button
+                      onClick={() => setIsSubmitted(false)}
+                      className="text-[#3A6FF8] hover:underline font-medium"
+                    >
+                      Submit another request
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div>
+                      <label
+                        htmlFor="fullName"
+                        className="block text-sm font-medium text-[#121826] mb-2"
+                      >
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        id="fullName"
+                        name="fullName"
+                        value={formData.fullName}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter your full name"
+                        className="w-full px-4 py-3 rounded-xl border border-[#E1E5ED] focus:border-[#3A6FF8] focus:ring-2 focus:ring-[#3A6FF8]/20 outline-none transition-all text-[#121826] placeholder:text-[#9CA3AF]"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-sm font-medium text-[#121826] mb-2"
+                      >
+                        Email Address <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                        placeholder="Enter the email associated with your account"
+                        className="w-full px-4 py-3 rounded-xl border border-[#E1E5ED] focus:border-[#3A6FF8] focus:ring-2 focus:ring-[#3A6FF8]/20 outline-none transition-all text-[#121826] placeholder:text-[#9CA3AF]"
+                      />
+                    </div>
+
+                    <div>
+                      <label
+                        htmlFor="reason"
+                        className="block text-sm font-medium text-[#121826] mb-2"
+                      >
+                        Reason for Deletion <span className="text-[#5A6275] text-xs">(Optional)</span>
+                      </label>
+                      <textarea
+                        id="reason"
+                        name="reason"
+                        value={formData.reason}
+                        onChange={handleChange}
+                        rows={4}
+                        placeholder="Please let us know why you'd like to delete your account (optional)"
+                        className="w-full px-4 py-3 rounded-xl border border-[#E1E5ED] focus:border-[#3A6FF8] focus:ring-2 focus:ring-[#3A6FF8]/20 outline-none transition-all text-[#121826] placeholder:text-[#9CA3AF] resize-none"
+                      />
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                      <div className="flex items-start gap-3">
+                        <svg
+                          className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                          />
+                        </svg>
+                        <div className="text-sm text-amber-800">
+                          <p className="font-medium mb-1">Important Notice</p>
+                          <p>
+                            Account deletion is permanent and cannot be undone. All your data,
+                            including uploaded documents, ride history, and profile information
+                            will be permanently removed from our systems.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full gradient-primary text-white font-semibold py-3 px-6 rounded-xl hover:opacity-90 transition-opacity"
+                    >
+                      Submit Deletion Request
+                    </button>
+                  </form>
+                )}
+              </div>
             </section>
           </div>
         </div>
