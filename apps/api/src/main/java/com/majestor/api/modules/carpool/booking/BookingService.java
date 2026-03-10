@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +48,8 @@ public class BookingService {
                 .bookedRide(rideRequest)
                 .deviationKm(createBookingDTO.getDeviationKm())
                 .status(BookingStatus.BOOKED)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
 
         try {
