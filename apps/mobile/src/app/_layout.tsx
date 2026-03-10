@@ -1,7 +1,8 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {Stack} from "expo-router";
 import Toast from "react-native-toast-message";
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
+import {ActivityIndicator, View} from "react-native";
 
 import "./global.css"
 
@@ -17,7 +18,21 @@ const client = new QueryClient({
 });
 
 export default function RootLayout() {
-    const isLoggedIn = useAuthStore((state) => state.isLoggedIn)
+    const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
+    const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
+
+    useEffect(() => {
+        const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
+        return unsub;
+    }, []);
+
+    if (!hydrated) {
+        return (
+            <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
+                <ActivityIndicator size="large"/>
+            </View>
+        );
+    }
 
     return (
         <React.Fragment>

@@ -59,4 +59,9 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:PROD}
 
+logging:
+  level:
+    com.majestor.api: INFO
+    org.springframework.web: INFO
+
 
