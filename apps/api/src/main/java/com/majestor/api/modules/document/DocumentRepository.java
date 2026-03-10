@@ -15,6 +15,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             LEFT JOIN FETCH d.course c
             WHERE d.uploader.studentFaculty.id = :facultyId
             AND di.serialNumber = 1
+            ORDER BY d.id DESC
             """)
     List<Document> getDocumentsByFacultyId(
             @Param("facultyId") Long facultyId

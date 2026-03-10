@@ -6,6 +6,8 @@ import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
 import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
+
 @Component
 public class DocumentMapper {
 
@@ -22,6 +24,8 @@ public class DocumentMapper {
                 .semesterType(documentUploadRequestDTO.getSemesterType())
                 .uploader(user)
                 .course(course)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
     }
 
