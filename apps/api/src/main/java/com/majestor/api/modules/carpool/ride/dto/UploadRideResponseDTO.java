@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder
@@ -55,5 +55,5 @@ public class UploadRideResponseDTO {
     private BigDecimal routeDistanceKm;
 
     @NotNull(message = "Time of creation is required")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 }

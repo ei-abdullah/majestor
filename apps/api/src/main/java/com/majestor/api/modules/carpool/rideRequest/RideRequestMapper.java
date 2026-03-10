@@ -7,7 +7,8 @@ import com.majestor.api.modules.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+
 
 @Component
 @RequiredArgsConstructor
@@ -31,7 +32,7 @@ public class RideRequestMapper {
                 .routeDistanceKm(uploadRideRequestDTO.getRouteDistanceKm())
                 .phone(uploadRideRequestDTO.getPhone())
                 .rideRequester(user)
-                .createdAt(LocalDateTime.now())
+                .createdAt(Instant.now())
                 .build();
     }
 

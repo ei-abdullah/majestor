@@ -8,7 +8,7 @@ import com.majestor.api.modules.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Component
@@ -37,8 +37,8 @@ public class RideMapper {
                 .routeDistanceKm(uploadRideDTO.getRouteDistanceKm())
                 .ridePoster(user)
                 .rideStatus(RideStatus.ACTIVE)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
     }
 

@@ -1,6 +1,5 @@
 package com.majestor.api.modules.academia.faculty;
 
-
 import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.user.User;
@@ -11,11 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.context.annotation.Primary;
 
-import java.time.LocalDateTime;
+
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -43,9 +40,6 @@ public class Faculty {
     @OneToMany(mappedBy = "facultyCourses")
     private List<Course> courses;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }

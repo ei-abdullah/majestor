@@ -5,11 +5,11 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
-    List<Ride> findByCreatedAtAfter(LocalDateTime createdAtAfter);
+    List<Ride> findByCreatedAtAfter(Instant createdAtAfter);
 
     @Modifying
     @Query("""
@@ -19,7 +19,7 @@ public interface RideRepository extends JpaRepository<Ride, Long> {
                 AND r.rideStatus = :currentStatus
             """)
     void updateExpiredRides(
-            @Param("cutoff") LocalDateTime cutoff,
+            @Param("cutoff") Instant cutoff,
             @Param("currentStatus") RideStatus currentStatus,
             @Param("newStatus") RideStatus newStatus
     );
