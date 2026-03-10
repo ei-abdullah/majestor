@@ -252,8 +252,8 @@ export default function PrivacyPolicy() {
                 please contact us at:
               </p>
               <div className="mt-4 p-4 bg-[#F0F4FF] rounded-xl space-y-2">
-                <p className="text-[#3A6FF8] font-medium">Email: privacy@majestor.app</p>
-                <p className="text-[#3A6FF8] font-medium">General Inquiries: contact@majestor.app</p>
+                <p className="text-[#3A6FF8] font-medium">Email: abdullah.zafar.career@gmail</p>
+                <p className="text-[#3A6FF8] font-medium">General Inquiries: abdullah.zafar.career@gmail</p>
               </div>
             </section>
 

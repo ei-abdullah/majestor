@@ -187,7 +187,7 @@ export default function TermsOfService() {
                 If you have any questions about these Terms of Service, please contact us at:
               </p>
               <div className="mt-4 p-4 bg-[#F0F4FF] rounded-xl">
-                <p className="text-[#3A6FF8] font-medium">contact@majestor.app</p>
+                <p className="text-[#3A6FF8] font-medium">abdullah.zafar.career@gmail.com</p>
               </div>
             </section>
           </div>

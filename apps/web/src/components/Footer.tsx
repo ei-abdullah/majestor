@@ -90,7 +90,7 @@ export default function Footer() {
               </svg>
             </a>
             <a
-              href="mailto:contact@majestor.app"
+              href="mailto:abdullah.zafar.career@gmail.com"
               className="text-[#9E9E9E] hover:text-[#121826] transition-colors"
               aria-label="Email"
             >
