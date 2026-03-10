@@ -16,7 +16,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -32,7 +33,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -49,7 +50,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -66,7 +67,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -82,7 +83,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -99,7 +100,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
@@ -115,7 +116,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -132,7 +133,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
@@ -149,7 +150,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
@@ -166,7 +167,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message("Please verify your email before logging in!")
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
@@ -183,7 +184,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.FORBIDDEN.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.FORBIDDEN);
@@ -200,7 +201,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.CONFLICT.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.CONFLICT);
@@ -217,7 +218,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
@@ -233,7 +234,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.NOT_FOUND.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
@@ -250,7 +251,7 @@ public class GlobalExceptionHandler {
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
                 .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value())
-                .localDateTime(LocalDateTime.now())
+                .instantDateTime(Instant.now())
                 .build();
 
         return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);

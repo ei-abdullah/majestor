@@ -8,7 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -55,7 +55,7 @@ public class LostItemAndFoundersResponseDTO {
     private List<LostItemAndFoundersDTO> itemFounders;
 
     @NotNull(message = "Created at is required")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Data
     @Builder
@@ -88,6 +88,6 @@ public class LostItemAndFoundersResponseDTO {
         private List<String> foundItemImageUris;
 
         @NotNull(message = "Created at is required")
-        private LocalDateTime createdAt;
+        private Instant createdAt;
     }
 }

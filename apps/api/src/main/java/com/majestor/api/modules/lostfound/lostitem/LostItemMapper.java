@@ -8,7 +8,7 @@ import com.majestor.api.modules.lostfound.lostitem.dto.LostItemsResponseDTO;
 import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Component
@@ -24,7 +24,7 @@ public class LostItemMapper {
                 .lastLocation(createLostItemRequestDTO.getLastLocation())
                 .status(Status.LOST)
                 .owner(owner)
-                .createdAt(LocalDateTime.now())
+                .createdAt(Instant.now())
                 .build();
     }
 

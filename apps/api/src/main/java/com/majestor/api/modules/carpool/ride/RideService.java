@@ -17,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Slf4j
@@ -51,7 +52,7 @@ public class RideService {
     }
 
     public List<GetRecentRidesDTO> getRecentRides() {
-        LocalDateTime cutoffTime = LocalDateTime.now().minusMinutes(10);
+        Instant cutoffTime = Instant.now().minus(10, ChronoUnit.MINUTES);
 
         List<Ride> recentRidesList;
 
@@ -72,10 +73,10 @@ public class RideService {
     @Scheduled(fixedDelay = 2 * 60 * 60 * 1000) // runs after every 2 hours
     @Transactional
     public void expireOldRides() {
-        LocalDateTime cutoffTime = LocalDateTime.now().minusHours(2);
+        Instant cutoffTime = Instant.now().minus(2, ChronoUnit.HOURS);
         try {
             rideRepository.updateExpiredRides(cutoffTime, RideStatus.ACTIVE, RideStatus.EXPIRED);
-            log.info("Expired rides older than 2 hours at {}", LocalDateTime.now());
+            log.info("Expired rides older than 2 hours at {}", Instant.now());
         } catch (Exception e) {
             log.error("Error while expiring old rides: {}", e.getMessage());
         }
