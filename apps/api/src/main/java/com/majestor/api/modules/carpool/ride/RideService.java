@@ -9,8 +9,6 @@ import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
