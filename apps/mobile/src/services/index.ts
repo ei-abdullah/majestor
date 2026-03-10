@@ -1,12 +1,12 @@
 import axios from "axios";
 import {useAuthStore} from "@/src/stores/authStore";
-import {getRefreshToken} from "@/src/stores/secureStore";
+import {getRefreshToken, saveRefreshToken} from "@/src/stores/secureStore";
 import {API_BASE_URL} from "@/src/constants";
 
 
 const api = axios.create({
     baseURL: API_BASE_URL,
-    timeout: 3000
+    timeout: 10000
 })
 
 type RefreshTokenResponse = {
@@ -36,11 +36,17 @@ api.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config;
 
-        // 1. If not 401 OR it's already a retry OR it's a refresh call itself failed -> Exit
+        // 1. If the refresh call itself returned 401, the refresh token is expired -> log out
+        if (error.response?.status === 401 && originalRequest.url?.includes("/auth/refresh")) {
+            refreshPromise = null;
+            useAuthStore.getState().clearSession();
+            return Promise.reject(error);
+        }
+
+        // 2. If not 401 OR already a retry OR it's an auth endpoint -> Exit
         if (
             error.response?.status !== 401 ||
             originalRequest._retry ||
-            originalRequest.url?.includes("/auth/refresh") ||
             originalRequest.url?.includes("/auth/signup") ||
             originalRequest.url?.includes("/auth/login") ||
             originalRequest.url?.includes("/auth/forgetPassword") ||
@@ -52,7 +58,7 @@ api.interceptors.response.use(
         originalRequest._retry = true;
 
         try {
-            // 2. Singleton Promise: If multiple requests hit 401, they all wait for this ONE call
+            // 3. Singleton Promise: If multiple requests hit 401, they all wait for this ONE call
             if (!refreshPromise) {
                 refreshPromise = (async () => {
                     const refreshToken = await getRefreshToken();
@@ -73,18 +79,21 @@ api.interceptors.response.use(
                 return Promise.reject(error);
             }
 
-            // 3. Update store and retry the original request
+            // 4. Update store and retry the original request
             const user = refreshPromiseResponse.authUserDTO;
             const accessToken = refreshPromiseResponse.accessToken;
             const refreshToken = refreshPromiseResponse.refreshToken;
 
             useAuthStore.getState().setSession(user, accessToken);
+            await saveRefreshToken(refreshToken);
             originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
             return api(originalRequest);
-        } catch (refreshError) {
+        } catch (refreshError: any) {
             refreshPromise = null;
-            useAuthStore.getState().clearSession();
+            if (refreshError?.response?.status === 401) {
+                useAuthStore.getState().clearSession();
+            }
             return Promise.reject(error);
         }
     }
