@@ -4,21 +4,19 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -150,6 +148,23 @@ public class GlobalExceptionHandler {
                 .builder()
                 .path(request.getRequestURI())
                 .message(exception.getMessage())
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .localDateTime(LocalDateTime.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
+    // Account exists but email not verified
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiError> handleException(
+            DisabledException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message("Please verify your email before logging in!")
                 .statusCode(HttpStatus.UNAUTHORIZED.value())
                 .localDateTime(LocalDateTime.now())
                 .build();

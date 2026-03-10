@@ -13,7 +13,6 @@ import com.majestor.api.modules.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
@@ -104,10 +103,6 @@ public class AuthService {
 
         if (!authentication.isAuthenticated()) {
             throw new BadCredentialsException("Invalid email or password");
-        }
-
-        if (!Boolean.TRUE.equals(user.getIsVerified())) {
-            throw new AccessDeniedException("Please verify your email before logging in!");
         }
 
         String accessToken = jwtService.generateAccessToken(user);
