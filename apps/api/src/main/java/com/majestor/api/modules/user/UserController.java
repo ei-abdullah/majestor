@@ -51,7 +51,7 @@ public class UserController {
     @PatchMapping("/updateUserDetails/{userId}")
     public ResponseEntity<?> updateUserDetails(
             @PathVariable @NotNull @Positive Long userId,
-            @Valid @ModelAttribute UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
+            @Valid @RequestBody UpdateUserDetailsRequestDTO updateUserDetailsRequestDTO
     ) {
         userService.updateUserDetails(userId, updateUserDetailsRequestDTO);
 
