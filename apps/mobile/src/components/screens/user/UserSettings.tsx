@@ -33,7 +33,7 @@ function UserSettings() {
     });
 
     const {mutate: uploadProfileImage} = useUpdateProfileImage();
-    const {mutate: updateUserDetails} = useUpdateUserDetails();
+    const {mutate: updateUserDetails, isPending} = useUpdateUserDetails();
 
     // Initialize form when userDetails loads
     React.useEffect(() => {
@@ -218,9 +218,10 @@ function UserSettings() {
                             <View className="mt-2">
                                 <PrimaryButton
                                     title=""
-                                    icon="check"
+                                    icon={isPending? "loader" : "check"}
                                     onPress={handleSubmit(onSubmit)}
                                     size="compact"
+                                    disabled={isPending}
                                 />
                             </View>
                         )}
