@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Text, View, Pressable, TouchableOpacity} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -23,6 +23,7 @@ import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {useUploadRideRequest} from "@/src/queries/rideRequest.queries";
 import {UploadRideRequestResponse} from "@/src/types/rideRequest";
 import {router} from "expo-router";
+import {useIsFocused} from "@react-navigation/native";
 
 interface FormData {
     pickupLocation: {
@@ -46,6 +47,7 @@ export default function BookRide() {
     const {hasLocationPermission} = useLocationPermissions();
     const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
+    const isFocused = useIsFocused();
 
     const {user} = useAuthStore();
     const rideRequestState = useRideRequestStore();
@@ -68,7 +70,7 @@ export default function BookRide() {
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const snapPoints = ["5%", "70%"]
+    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
 
     // Get current form values safely
     let pickupLocation = watch('pickupLocation');
@@ -135,7 +137,7 @@ export default function BookRide() {
                     initialRegion={initialRegion}
                     showsBuildings={false}
                     showsCompass={false}
-                    showsUserLocation={true}
+                    showsUserLocation={hasLocationPermission && isFocused}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
@@ -197,32 +199,41 @@ export default function BookRide() {
                     )}
                 </MapView>
 
-                {/* Floating Locate Button */}
-                <View className="absolute right-4 bottom-12">
-                    <TouchableOpacity
-                        onPress={centerOnUserLocation}
-                        className="bg-white rounded-full p-3 shadow-lg"
-                        style={{
-                            shadowColor: '#000',
-                            shadowOffset: {width: 0, height: 2},
-                            shadowOpacity: 0.25,
-                            shadowRadius: 3.84,
-                            elevation: 5,
-                        }}
-                    >
-                        <Ionicons
-                            name={hasLocationPermission ? "locate" : "location-outline"}
-                            size={24}
-                            color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
-                        />
-                    </TouchableOpacity>
-                </View>
+                {/* Floating Locate Button - Top Right, beneath location card */}
+                {!isExpanded && (
+                    <View style={{
+                        position: 'absolute',
+                        right: 16,
+                        top: 140,
+                        zIndex: 99
+                    }}>
+                        <TouchableOpacity
+                            onPress={centerOnUserLocation}
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 50,
+                                padding: 12,
+                                shadowColor: '#000',
+                                shadowOffset: {width: 0, height: 4},
+                                shadowOpacity: 0.15,
+                                shadowRadius: 8,
+                                elevation: 8,
+                            }}
+                        >
+                            <Ionicons
+                                name={hasLocationPermission ? "locate" : "location-outline"}
+                                size={24}
+                                color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Location Card */}
                 {!isExpanded ? (
                     <Pressable
                         onPress={() => setIsExpanded(true)}
-                        className="absolute top-4 right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        className="absolute top-20 right-4 bg-white rounded-2xl p-3 shadow-lg"
                     >
                         <View className="items-center gap-2">
                             <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
@@ -235,7 +246,7 @@ export default function BookRide() {
                         </View>
                     </Pressable>
                 ) : (
-                    <View className="absolute top-4 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
+                    <View className="absolute top-20 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-semibold">Select Locations</Text>
                             <Pressable onPress={() => setIsExpanded(false)} className="p-1">

@@ -25,8 +25,8 @@ export default function CarpoolHome() {
 
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; address: string } | null>(null);
 
-    // Bottom sheet snap points
-    const snapPoints = ["5%", "25%", "40%"]
+    // Bottom sheet snap points - starts above tab bar but can scroll down
+    const snapPoints = ["40%"]
 
 
     useEffect(() => {
@@ -59,27 +59,34 @@ export default function CarpoolHome() {
                     mapType={"standard"}
                     showsPointsOfInterests={false}
                     initialRegion={initialRegion}
-                    showsUserLocation={true}
+                    showsUserLocation={false}
                     showsBuildings={false}
                     showsCompass={false}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
-                    mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
+                    mapPadding={{top: 80, right: 10, bottom: 130, left: 10}}
                 />
 
-                {/* Custom Map Controls */}
-                <View className="absolute right-4 bottom-20 gap-3">
+                {/* Custom Map Controls - Locator button beneath header */}
+                <View style={{
+                    position: 'absolute',
+                    right: 16,
+                    top: 100,
+                    zIndex: 99
+                }}>
                     {/* My Location Button */}
                     <TouchableOpacity
                         onPress={centerOnUserLocation}
-                        className="bg-white rounded-full p-3 shadow-lg"
                         style={{
+                            backgroundColor: 'white',
+                            borderRadius: 50,
+                            padding: 12,
                             shadowColor: '#000',
-                            shadowOffset: {width: 0, height: 20},
-                            shadowOpacity: 0.25,
-                            shadowRadius: 3.84,
-                            elevation: 5,
+                            shadowOffset: {width: 0, height: 4},
+                            shadowOpacity: 0.15,
+                            shadowRadius: 8,
+                            elevation: 8,
                         }}
                     >
                         <Ionicons
@@ -99,7 +106,7 @@ export default function CarpoolHome() {
                     handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
                 >
                     <BottomSheetView>
-                        <View className={"px-6 py-16 flex justify-center"}>
+                        <View className={"px-6 py-4 flex justify-center"}>
                             {hasLocationPermission ? (
                                 <>
                                     <View className="w-2/3">

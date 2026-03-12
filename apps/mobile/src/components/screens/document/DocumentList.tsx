@@ -8,7 +8,8 @@ interface DocumentListProps {
     documents: any[],
     isPending: boolean,
     isError: Error | null,
-    onRefetch: () => void
+    onRefetch: () => void,
+    searchComponent?: React.ComponentType<any> | React.ReactElement | null
 }
 
 function DocumentList(
@@ -17,6 +18,7 @@ function DocumentList(
         isPending,
         isError,
         onRefetch,
+        searchComponent,
     }: DocumentListProps) {
 
     const [isRefreshing, setIsRefreshing] = React.useState(false);
@@ -44,8 +46,12 @@ function DocumentList(
                     progressBackgroundColor="#fff"
                 />
             }
+            ListHeaderComponent={searchComponent}
             renderItem={({item}) => <DocumentCard document={item}/>}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingBottom: 130, paddingTop: 20}}
+            contentInset={{bottom: 130}}
+            automaticallyAdjustContentInsets={false}
         />
     );
 }

@@ -75,74 +75,84 @@ function Document() {
 
     return (
         <GradientView>
-            <View className="flex-1 pt-8 gap-4 justify-start mx-6">
-                <View className={"flex-col gap-3"}>
-                    {/* Search bar + search button */}
-                    <View className={"flex-row items-center gap-2"}>
-                        <SearchBar
-                            value={filters!.searchQuery}
-                            onChange={handleSearchQuery}
-                            className={"flex-1 shrink"}
-                            size={"compact"}
-                        />
-                        <PrimaryButton
-                            icon={"search"}
-                            onPress={handleRefetchData}
-                            className={"w-16"}
-                            disabled={isPending}
-                            size={"compact"}
-                        />
-                    </View>
-
-                    {/* Filter chips — horizontal scroll */}
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={{gap: 8, paddingRight: 4}}
-                    >
-                        <StyledDropDown
-                            options={type}
-                            value={filters.docType}
-                            onChange={handleTypeChange}
-                            icon={"book"}
-                            placeholder={"Type"}
-                            size={"compact"}
-                            className={"w-36"}
-                        />
-                        <StyledDropDown
-                            options={years}
-                            value={filters.year}
-                            onChange={handleYearChange}
-                            icon={"calendar"}
-                            placeholder={"Year"}
-                            size={"compact"}
-                            className={"w-36"}
-                        />
-                        <StyledDropDown
-                            options={filterByLike}
-                            value={filters.sortByLikes}
-                            onChange={handleLikeFilterChange}
-                            icon={"heart"}
-                            placeholder={"Sort"}
-                            size={"compact"}
-                            className={"w-36"}
-                        />
-                        <OutlineButton
-                            title={"Reset"}
-                            onPress={handleReset}
-                            variant={"destructive"}
-                            size={"compact"}
-                            className={"w-24"}
-                        />
-                    </ScrollView>
-                </View>
+            <View className="flex-1 pt-[6rem] mx-6">
                 <DocumentList
                     documents={documentData || []}
                     isPending={isPending}
                     isError={error}
                     onRefetch={refetch}
-                />
+                    searchComponent={
+                        <View className={"flex-col gap-3 mb-4"}>
+                            {/* Search bar + search button */}
+                            <View className={"flex-row items-center gap-2"}>
+                                <SearchBar
+                                    value={filters!.searchQuery}
+                                    onChange={handleSearchQuery}
+                                    className={"flex-1 shrink"}
+                                    size={"compact"}
+                                />
+                                <PrimaryButton
+                                    icon={"search"}
+                                    onPress={handleRefetchData}
+                                    className={"w-16"}
+                                    disabled={isPending}
+                                    size={"compact"}
+                                />
+                            </View>
 
+                            {/* Filter chips — horizontal scroll */}
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={false}
+                                contentContainerStyle={{gap: 8, paddingRight: 4}}
+                            >
+                                <StyledDropDown
+                                    options={type}
+                                    value={filters.docType}
+                                    onChange={handleTypeChange}
+                                    icon={"book"}
+                                    placeholder={"Type"}
+                                    size={"compact"}
+                                    className={"w-36"}
+                                />
+                                <StyledDropDown
+                                    options={years}
+                                    value={filters.year}
+                                    onChange={handleYearChange}
+                                    icon={"calendar"}
+                                    placeholder={"Year"}
+                                    size={"compact"}
+                                    className={"w-36"}
+                                />
+                                <StyledDropDown
+                                    options={filterByLike}
+                                    value={filters.sortByLikes}
+                                    onChange={handleLikeFilterChange}
+                                    icon={"heart"}
+                                    placeholder={"Sort"}
+                                    size={"compact"}
+                                    className={"w-36"}
+                                />
+                                <OutlineButton
+                                    title={"Reset"}
+                                    onPress={handleReset}
+                                    variant={"destructive"}
+                                    size={"compact"}
+                                    className={"w-24"}
+                                />
+                            </ScrollView>
+                        </View>
+                    }
+                />
+            </View>
+            
+            {/* Floating Action Button positioned above tab bar - PERFECT POSITION */}
+            <View style={{
+                position: 'absolute', 
+                bottom: 110,
+                left: 30,
+                zIndex: 1000
+            }}>
                 <FloatingActionButton href={"/document/upload"} icon={"plus"}/>
             </View>
         </GradientView>

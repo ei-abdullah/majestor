@@ -21,7 +21,22 @@ export default function Layout() {
             {/* Home Screen */}
             <Stack.Screen
                 name={"index"}
-                options={{headerShown: false}}
+                options={{
+                    title: "Carpool",
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name={"ride"}
+                options={{
+                    headerShown: false,
+                }}
+            />
+            <Stack.Screen
+                name={"rideRequest"}
+                options={{
+                    headerShown: false,
+                }}
             />
         </Stack>
     );

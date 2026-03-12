@@ -19,6 +19,7 @@ import {RecentRideResponse} from "@/src/types/ride";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useCancelRide} from "@/src/queries/ride.queries";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+import {useIsFocused} from "@react-navigation/native";
 
 
 interface Props {
@@ -27,6 +28,7 @@ interface Props {
 
 export default function RideDetails({ride}: Props) {
     const router = useRouter();
+    const isFocused = useIsFocused();
 
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
@@ -148,7 +150,7 @@ export default function RideDetails({ride}: Props) {
                     showsPointsOfInterests={false}
                     showsBuildings={false}
                     showsCompass={false}
-                    showsUserLocation={true}
+                    showsUserLocation={isFocused}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}

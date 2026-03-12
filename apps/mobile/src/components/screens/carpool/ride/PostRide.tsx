@@ -24,6 +24,7 @@ import {UploadRideResponse} from "@/src/types/ride";
 import {useRouter} from "expo-router";
 import {useUploadRide} from "@/src/queries/ride.queries";
 import {useAuthStore} from "@/src/stores/authStore";
+import {useIsFocused} from "@react-navigation/native";
 
 interface FormData {
     startLocation: {
@@ -50,6 +51,7 @@ export default function PostRide() {
     const {hasLocationPermission} = useLocationPermissions();
     const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
+    const isFocused = useIsFocused();
 
     const {user} = useAuthStore();
     const rideState = useRideStore();
@@ -76,7 +78,7 @@ export default function PostRide() {
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
 
 
-    const snapPoints = useMemo(() => ["5%", "60%", "90%"], []);
+    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
 
     // Get current form values safely
     const startLocation = watch('startLocation');
@@ -164,7 +166,7 @@ export default function PostRide() {
                     initialRegion={initialRegion}
                     showsBuildings={false}
                     showsCompass={false}
-                    showsUserLocation={true}
+                    showsUserLocation={hasLocationPermission && isFocused}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
@@ -227,32 +229,41 @@ export default function PostRide() {
                     )}
                 </MapView>
 
-                {/* Floating Locate Button */}
-                <View className="absolute right-4 bottom-12">
-                    <TouchableOpacity
-                        onPress={centerOnUserLocation}
-                        className="bg-white rounded-full p-3 shadow-lg"
-                        style={{
-                            shadowColor: '#000',
-                            shadowOffset: {width: 0, height: 2},
-                            shadowOpacity: 0.25,
-                            shadowRadius: 3.84,
-                            elevation: 5,
-                        }}
-                    >
-                        <Ionicons
-                            name={hasLocationPermission ? "locate" : "location-outline"}
-                            size={24}
-                            color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
-                        />
-                    </TouchableOpacity>
-                </View>
+                {/* Floating Locate Button - Top Right, beneath location card */}
+                {!isExpanded && (
+                    <View style={{
+                        position: 'absolute',
+                        right: 16,
+                        top: 140,
+                        zIndex: 99
+                    }}>
+                        <TouchableOpacity
+                            onPress={centerOnUserLocation}
+                            style={{
+                                backgroundColor: 'white',
+                                borderRadius: 50,
+                                padding: 12,
+                                shadowColor: '#000',
+                                shadowOffset: {width: 0, height: 4},
+                                shadowOpacity: 0.15,
+                                shadowRadius: 8,
+                                elevation: 8,
+                            }}
+                        >
+                            <Ionicons
+                                name={hasLocationPermission ? "locate" : "location-outline"}
+                                size={24}
+                                color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
+                            />
+                        </TouchableOpacity>
+                    </View>
+                )}
 
                 {/* Location Card */}
                 {!isExpanded ? (
                     <Pressable
                         onPress={() => setIsExpanded(true)}
-                        className="absolute top-4 right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        className="absolute top-20 right-4 bg-white rounded-2xl p-3 shadow-lg"
                     >
                         <View className="items-center gap-2">
                             <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
@@ -265,7 +276,7 @@ export default function PostRide() {
                         </View>
                     </Pressable>
                 ) : (
-                    <View className="absolute top-4 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
+                    <View className="absolute top-20 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-semibold">Select Locations</Text>
                             <Pressable onPress={() => setIsExpanded(false)} className="p-1">

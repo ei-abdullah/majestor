@@ -81,7 +81,7 @@ function UserSettings() {
         <GradientView>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 40}}
+                contentContainerStyle={{paddingBottom: 130, paddingTop: 80}}
             >
                 <View className={"mx-4"}>
                     {/* Avatar Section */}

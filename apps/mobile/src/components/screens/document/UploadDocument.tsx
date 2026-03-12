@@ -90,7 +90,7 @@ function UploadDocument() {
         <GradientView>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 24}}
+                contentContainerStyle={{paddingBottom: 130, paddingTop: 80}}
             >
                 <View className={"mx-6 mt-6"}>
                     {/* Image Upload Section */}

@@ -58,7 +58,7 @@ function Home() {
         <GradientView>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 32}}
+                contentContainerStyle={{paddingBottom: 130}}
             >
                 {/* ── Header Banner ────────────────────────────────────── */}
                 <LinearGradient
