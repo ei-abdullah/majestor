@@ -18,7 +18,7 @@ cssInterop(LinearGradient, {
 
 function Home() {
     const {user, clearSession} = useAuthStore();
-    const {data: userDetails, isPending} = useUserDetails(user!.id);
+    const {data: userDetails, isPending, isError, refetch} = useUserDetails(user!.id);
     const [showStory, setShowStory] = useState(false);
 
     if (isPending) {
