@@ -1,5 +1,5 @@
 import React from "react";
-import {Text, View, ScrollView, Alert} from "react-native";
+import {Text, View, ScrollView, Alert, Pressable} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 
 import {useAuthStore} from "@/src/stores/authStore";
@@ -14,10 +14,10 @@ import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import UserAvatar from "@/src/components/ui/UserAvatar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import ErrorText from "@/src/components/ui/ErrorText";
-import styledTextInput from "@/src/components/ui/StyledTextInput";
+import {Feather} from "@expo/vector-icons";
 
 function UserSettings() {
-    const {user} = useAuthStore();
+    const {user, clearSession} = useAuthStore();
 
     const {
         data: userDetails,
@@ -244,6 +244,30 @@ function UserSettings() {
                                 <Text className="text-gray-500 text-sm">No roles assigned</Text>
                             )}
                         </View>
+                    </Card>
+
+                    {/* Logout */}
+                    <Card className="py-0 mx-4 mb-2 px-5 overflow-hidden">
+                        <Pressable
+                            onPress={() =>
+                                Alert.alert(
+                                    'Sign out',
+                                    'Are you sure you want to sign out?',
+                                    [
+                                        {text: 'Cancel', style: 'cancel'},
+                                        {text: 'Sign out', style: 'destructive', onPress: clearSession},
+                                    ]
+                                )
+                            }
+                            className="flex-row items-center gap-4 active:opacity-60"
+                        >
+                            <View className="bg-red-100 rounded-xl p-2">
+                                <Feather name="log-out" size={18} color="#DC2626" />
+                            </View>
+                            <Text className="text-red-600 font-semibold text-base">
+                                Sign out
+                            </Text>
+                        </Pressable>
                     </Card>
                 </View>
             </ScrollView>

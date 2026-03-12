@@ -16,10 +16,7 @@ interface Option {
 
 function Auth() {
     const [tab, setTab] = useState<"Login" | "Signup">("Login");
-    const [message, setMessage] = useState<Option | null>({
-        name: "error",
-        message: "We're currently implementing forgot password feature. Please remember yours for time being."
-    });
+    const [message, setMessage] = useState<Option | null>();
     const [loading, setLoading] = useState<boolean>(false);
 
     const handleTabChange = (tab: "Login" | "Signup") => {

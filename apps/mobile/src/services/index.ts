@@ -35,9 +35,11 @@ api.interceptors.response.use(
     (res) => res,
     async (error) => {
         const originalRequest = error.config;
+        const status = error.response?.status;
+        const url = originalRequest?.url;
 
         // 1. If the refresh call itself returned 401, the refresh token is expired -> log out
-        if (error.response?.status === 401 && originalRequest.url?.includes("/auth/refresh")) {
+        if (status === 401 && url?.includes("/auth/refresh")) {
             refreshPromise = null;
             useAuthStore.getState().clearSession();
             return Promise.reject(error);
@@ -45,12 +47,12 @@ api.interceptors.response.use(
 
         // 2. If not 401 OR already a retry OR it's an auth endpoint -> Exit
         if (
-            error.response?.status !== 401 ||
+            status !== 401 ||
             originalRequest._retry ||
-            originalRequest.url?.includes("/auth/signup") ||
-            originalRequest.url?.includes("/auth/login") ||
-            originalRequest.url?.includes("/auth/forgetPassword") ||
-            originalRequest.url?.includes("/auth/signup/verify")
+            url?.includes("/auth/signup") ||
+            url?.includes("/auth/login") ||
+            url?.includes("/auth/forgetPassword") ||
+            url?.includes("/auth/signup/verify")
         ) {
             return Promise.reject(error);
         }
@@ -62,9 +64,12 @@ api.interceptors.response.use(
             if (!refreshPromise) {
                 refreshPromise = (async () => {
                     const refreshToken = await getRefreshToken();
+
                     if (!refreshToken) return null;
 
-                    const {data} = await api.post("/auth/refresh", {refreshToken});
+                    const {data} = await api.post("/auth/refresh", {refreshToken}, {
+                        headers: {skipAuth: true}
+                    });
                     return data;
                 })();
             }
@@ -91,9 +96,7 @@ api.interceptors.response.use(
             return api(originalRequest);
         } catch (refreshError: any) {
             refreshPromise = null;
-            if (refreshError?.response?.status === 401) {
-                useAuthStore.getState().clearSession();
-            }
+            useAuthStore.getState().clearSession();
             return Promise.reject(error);
         }
     }

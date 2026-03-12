@@ -12,18 +12,12 @@ export const useAuthStore = create<AuthState>()(
             markOnboarded: () => set((state) => ({
                 user: state.user ? {...state.user, hasOnboarded: true} : null
             })),
-            setSession: (user, accessToken) =>
-                set({
-                    user,
-                    accessToken,
-                    isLoggedIn: true,
-                }),
-            clearSession: () =>
-                set({
-                    user: null,
-                    accessToken: null,
-                    isLoggedIn: false,
-                }),
+            setSession: (user, accessToken) => {
+                set({user, accessToken, isLoggedIn: true});
+            },
+            clearSession: () => {
+                set({user: null, accessToken: null, isLoggedIn: false});
+            },
         }),
         {
             name: 'auth-storage',
