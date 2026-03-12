@@ -26,9 +26,6 @@ async function useDownloadDocument({document}: { document: any }) {
         // const destinationFile = new FileSystem.File(userDir.uri + '/' + 'majestor' + '/' + fileName);
         const destinationFile = new FileSystem.File(cacheDir, fileName);
 
-        console.log('📁 Download URL:', downloadUrl);
-        console.log('📄 Cache destination:', destinationFile.uri);
-
         // // Check if a file exists and delete if it does (make it async)
         // const fileInfo = destinationFile.info();
         // console.log(fileInfo);
