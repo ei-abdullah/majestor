@@ -280,8 +280,7 @@ function UploadDocument() {
                     {/* Submit Button */}
                     <View className={"mt-6 mb-4"}>
                         <PrimaryButton
-                            title={isDownloading ? "Uploading..." : "Upload"}
-                            icon="upload"
+                            icon={isDownloading ? "loader" : "upload"}
                             iconSize={22}
                             className={"w-full"}
                             disabled={loadingCourses || isDownloading}

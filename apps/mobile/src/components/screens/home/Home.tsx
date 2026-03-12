@@ -14,6 +14,7 @@ function Home() {
     const {data: userDetails, isPending, isError, refetch} = useUserDetails(user!.id);
 
     const displayName = userDetails?.username?.split(' ')[0]
+        ?? user?.username?.split(' ')[0]
         ?? 'Student';
 
     if (isPending) return <LoadingIndicator />;
@@ -75,13 +76,10 @@ function Home() {
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
                         <View style={{flex: 1}}>
                             <Text style={{color: 'rgba(255,255,255,0.75)', fontSize: 13, marginBottom: 4}}>
-                                Welcome back,
+                                Welcome back
                             </Text>
                             <Text style={{color: 'white', fontSize: 26, fontWeight: '700', letterSpacing: 0.2}}>
-                                {displayName} 👋
-                            </Text>
-                            <Text style={{color: 'rgba(255,255,255,0.65)', fontSize: 13, marginTop: 6}}>
-                                {userDetails?.faculty ?? 'Loading faculty...'}
+                                {displayName}
                             </Text>
                         </View>
                         <Pressable onPress={() => router.push("/(tabs)/user")} style={{marginLeft: 12}}>
