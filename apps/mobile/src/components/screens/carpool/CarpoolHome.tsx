@@ -12,6 +12,7 @@ import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
 import { DEFAULT_LOCATION } from "@/src/utils/location.utils";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 export default function CarpoolHome() {
     const router = useRouter();
@@ -22,8 +23,10 @@ export default function CarpoolHome() {
     const { hasLocationPermission } = useLocationPermissions();
     const { centerOnUserLocation, animateToLocation } = useMapLocation(mapRef);
     const { getCurrentLocation } = useCurrentLocation();
+    const insets = useSafeAreaInsets();
 
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; address: string } | null>(null);
+    const headerOffset = insets.top + 72;
 
     // Bottom sheet snap points - starts above tab bar but can scroll down
     const snapPoints = ["40%"]
@@ -59,20 +62,20 @@ export default function CarpoolHome() {
                     mapType={"standard"}
                     showsPointsOfInterests={false}
                     initialRegion={initialRegion}
-                    showsUserLocation={false}
+                    showsUserLocation={true}
                     showsBuildings={false}
                     showsCompass={false}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
-                    mapPadding={{top: 80, right: 10, bottom: 130, left: 10}}
+                    mapPadding={{top: headerOffset + 8, right: 10, bottom: 130, left: 10}}
                 />
 
                 {/* Custom Map Controls - Locator button beneath header */}
                 <View style={{
                     position: 'absolute',
                     right: 16,
-                    top: 100,
+                    top: headerOffset + 8,
                     zIndex: 99
                 }}>
                     {/* My Location Button */}

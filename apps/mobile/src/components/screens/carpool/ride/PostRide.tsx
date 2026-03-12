@@ -25,6 +25,7 @@ import {useRouter} from "expo-router";
 import {useUploadRide} from "@/src/queries/ride.queries";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useIsFocused} from "@react-navigation/native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface FormData {
     startLocation: {
@@ -49,9 +50,10 @@ export default function PostRide() {
 
     // Use custom hooks
     const {hasLocationPermission} = useLocationPermissions();
-    const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
+    const {animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
     const isFocused = useIsFocused();
+    const insets = useSafeAreaInsets();
 
     const {user} = useAuthStore();
     const rideState = useRideStore();
@@ -76,9 +78,10 @@ export default function PostRide() {
     const [vehicleType, setVehicleType] = React.useState<'CAR' | 'BIKE'>('CAR');
     const [isExpanded, setIsExpanded] = useState(false);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
+    const headerOffset = insets.top + 72;
 
 
-    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
+    const snapPoints = useMemo(() => ["25%", "60%", "80%"], []);
 
     // Get current form values safely
     const startLocation = watch('startLocation');
@@ -170,7 +173,7 @@ export default function PostRide() {
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
-                    mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
+                    mapPadding={{top: headerOffset + 8, right: 10, bottom: 10, left: 10}}
                 >
                     {/* Show markers only when locations are selected */}
                     {startLocation && (
@@ -180,7 +183,7 @@ export default function PostRide() {
                                 longitude: startLocation.longitude
                             }}
                         >
-                            <CustomMarker color={"red"} icon={"home"}/>
+                            <CustomMarker color={"#3A6FF8"} icon={"home"}/>
                         </Marker>
                     )}
 
@@ -192,7 +195,7 @@ export default function PostRide() {
                             }}
 
                         >
-                            <CustomMarker color={"red"} icon={"flag"}/>
+                            <CustomMarker color={"#3A6FF8"} icon={"flag"}/>
                         </Marker>
                     )}
 
@@ -208,7 +211,7 @@ export default function PostRide() {
                                     longitude: endLocation.longitude
                                 }}
                                 strokeWidth={2}
-                                strokeColor="red"
+                                strokeColor="#3A6FF8"
                                 apikey={GOOGLE_API_KEY}
                                 mode={"DRIVING"}
                                 precision={"high"}
@@ -229,41 +232,12 @@ export default function PostRide() {
                     )}
                 </MapView>
 
-                {/* Floating Locate Button - Top Right, beneath location card */}
-                {!isExpanded && (
-                    <View style={{
-                        position: 'absolute',
-                        right: 16,
-                        top: 140,
-                        zIndex: 99
-                    }}>
-                        <TouchableOpacity
-                            onPress={centerOnUserLocation}
-                            style={{
-                                backgroundColor: 'white',
-                                borderRadius: 50,
-                                padding: 12,
-                                shadowColor: '#000',
-                                shadowOffset: {width: 0, height: 4},
-                                shadowOpacity: 0.15,
-                                shadowRadius: 8,
-                                elevation: 8,
-                            }}
-                        >
-                            <Ionicons
-                                name={hasLocationPermission ? "locate" : "location-outline"}
-                                size={24}
-                                color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                )}
-
                 {/* Location Card */}
                 {!isExpanded ? (
                     <Pressable
                         onPress={() => setIsExpanded(true)}
-                        className="absolute top-20 right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        className="absolute right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        style={{top: headerOffset}}
                     >
                         <View className="items-center gap-2">
                             <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
@@ -276,7 +250,7 @@ export default function PostRide() {
                         </View>
                     </Pressable>
                 ) : (
-                    <View className="absolute top-20 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
+                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg" style={{top: headerOffset}}>
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-semibold">Select Locations</Text>
                             <Pressable onPress={() => setIsExpanded(false)} className="p-1">
@@ -301,7 +275,10 @@ export default function PostRide() {
                                 <GoogleTextInput
                                     icon="map-pin"
                                     initialLocation={value?.address}
-                                    handlePress={(location) => onChange(location)}
+                                    handlePress={(location) => {
+                                        onChange(location);
+                                        animateToLocation(location.latitude, location.longitude);
+                                    }}
                                 />
                             )}
                         />
@@ -331,7 +308,11 @@ export default function PostRide() {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingVertical: 16}}
+                    contentContainerStyle={{
+                        paddingHorizontal: 24,
+                        paddingTop: 16,
+                        paddingBottom: insets.bottom + 120,
+                    }}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>

@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, TouchableOpacity} from "react-native";
+import {View, Text, TouchableOpacity, StyleSheet} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
 import {BlurView} from "expo-blur";
@@ -24,16 +24,14 @@ function CustomHeader(
     const insets = useSafeAreaInsets();
 
     return (
-        <BlurView 
+        <BlurView
             intensity={80}
+            tint="light"
             style={{
                 paddingTop: insets.top,
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1000,
-                backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                backgroundColor: 'rgba(239, 243, 250, 0.8)',
+                borderBottomWidth: StyleSheet.hairlineWidth,
+                borderBottomColor: 'rgba(90, 98, 117, 0.1)',
             }}
         >
             <View className={"h-16 flex-row items-center justify-between px-4"}>

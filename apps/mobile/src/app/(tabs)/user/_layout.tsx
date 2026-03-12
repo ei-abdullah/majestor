@@ -6,6 +6,7 @@ export default function Layout() {
         <Stack
             screenOptions={{
                 headerShown: true,
+                headerTransparent: true,
                 header: ({options, navigation}) => (
                     <CustomHeader
                         title={options.title ?? "Settings"}

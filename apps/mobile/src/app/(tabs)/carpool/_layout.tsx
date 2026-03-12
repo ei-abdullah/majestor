@@ -6,6 +6,7 @@ export default function Layout() {
         <Stack
             screenOptions={{
                 headerShown: true,
+                headerTransparent: true,
                 header: ({options, navigation}) => (
                     <CustomHeader
                         title={options.title ?? "Carpool"}
@@ -23,7 +24,6 @@ export default function Layout() {
                 name={"index"}
                 options={{
                     title: "Carpool",
-                    headerShown: false,
                 }}
             />
             <Stack.Screen

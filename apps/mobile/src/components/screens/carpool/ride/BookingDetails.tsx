@@ -19,6 +19,7 @@ import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
 import {useCancelRide, useCompleteRide} from "@/src/queries/ride.queries";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface BookingDetailsProps {
     booking: GetBookingsResponse;
@@ -28,6 +29,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const router = useRouter();
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
+    const insets = useSafeAreaInsets();
 
     const {setAcceptedBooking, bookingId, clearRideDetails} = useRideStore();
     const {clearBooking} = useSelectedBookingStore();
@@ -56,6 +58,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     } = useRideStore();
 
     const deviationKm = Math.abs(booking.routeDistanceKm - routeDistanceKm);
+    const headerOffset = insets.top + 72;
 
     // Rough fare estimate: base 50 + 20/km
     const estimatedFare = Math.round(50 + booking.routeDistanceKm * 20);
@@ -120,7 +123,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                     showsMyLocationButton={false}
                     userInterfaceStyle="light"
                     style={{flex: 1}}
-                    mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
+                    mapPadding={{top: headerOffset + 8, right: 10, bottom: 10, left: 10}}
                     onMapReady={() => {
                         if (booking.pickupLocationLat && booking.pickupLocationLng) animateToLocation(booking.pickupLocationLat, booking.pickupLocationLng);
                     }}

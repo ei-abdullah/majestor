@@ -75,7 +75,7 @@ function Document() {
 
     return (
         <GradientView>
-            <View className="flex-1 pt-[6rem] mx-6">
+            <View className="flex-1 mx-6">
                 <DocumentList
                     documents={documentData || []}
                     isPending={isPending}
