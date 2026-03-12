@@ -19,6 +19,8 @@ import {RecentRideResponse} from "@/src/types/ride";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useCancelRide} from "@/src/queries/ride.queries";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+import {useIsFocused} from "@react-navigation/native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 
 interface Props {
@@ -27,6 +29,8 @@ interface Props {
 
 export default function RideDetails({ride}: Props) {
     const router = useRouter();
+    const isFocused = useIsFocused();
+    const insets = useSafeAreaInsets();
 
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
@@ -44,6 +48,7 @@ export default function RideDetails({ride}: Props) {
 
     const hasBooked = Boolean(bookingId);
     const isAccepted = bookingStatus === "ACCEPTED";
+    const headerOffset = insets.top + 72;
 
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
@@ -148,11 +153,11 @@ export default function RideDetails({ride}: Props) {
                     showsPointsOfInterests={false}
                     showsBuildings={false}
                     showsCompass={false}
-                    showsUserLocation={true}
+                    showsUserLocation={isFocused}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
-                    mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
+                    mapPadding={{top: headerOffset + 8, right: 10, bottom: 10, left: 10}}
                     onMapReady={() => {
                         if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
                             animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng)

@@ -15,8 +15,11 @@ import UserAvatar from "@/src/components/ui/UserAvatar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import ErrorText from "@/src/components/ui/ErrorText";
 import {Feather} from "@expo/vector-icons";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 function UserSettings() {
+    const insets = useSafeAreaInsets();
+    const headerOffset = insets.top + 76;
     const {user, clearSession} = useAuthStore();
 
     const {
@@ -81,7 +84,7 @@ function UserSettings() {
         <GradientView>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 40}}
+                contentContainerStyle={{paddingBottom: 130, paddingTop: headerOffset}}
             >
                 <View className={"mx-4"}>
                     {/* Avatar Section */}

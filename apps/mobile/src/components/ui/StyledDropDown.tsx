@@ -64,7 +64,7 @@ const StyledDropDown = <T extends Record<string, any>>(
         if (!open && buttonRef.current) {
             buttonRef.current.measureInWindow((x, y, width, height) => {
                 setDropdownLayout({
-                    top: y + height + 8, // 8px gap (mt-2)
+                    top: y + height + 4,
                     left: x,
                     width: width,
                 });
@@ -102,8 +102,8 @@ const StyledDropDown = <T extends Record<string, any>>(
                     ].join(" ")}
                     style={{elevation: open ? 4 : 1}}
                 >
-                    {/* Show icon only when no option is selected */}
-                    {icon && size === "default" && (
+                    {/* Show icon always */}
+                    {icon && (
                         <Feather
                             name={icon}
                             size={iconSize}
@@ -141,7 +141,7 @@ const StyledDropDown = <T extends Record<string, any>>(
                                     top: dropdownLayout.top,
                                     left: dropdownLayout.left,
                                     width: dropdownLayout.width,
-                                    maxHeight: 250,
+                                    maxHeight: 180,
                                     elevation: 10,
                                 }}
                             >

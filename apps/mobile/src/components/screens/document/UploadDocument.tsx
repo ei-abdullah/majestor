@@ -19,9 +19,12 @@ import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import Card from "@/src/components/ui/Card";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 
 function UploadDocument() {
+    const insets = useSafeAreaInsets();
+    const headerOffset = insets.top + 76;
     const {user} = useAuthStore();
     const {control, handleSubmit, reset, formState: {errors}} = useForm({
         defaultValues: {
@@ -90,9 +93,9 @@ function UploadDocument() {
         <GradientView>
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{paddingBottom: 24}}
+                contentContainerStyle={{paddingBottom: 130, paddingTop: headerOffset}}
             >
-                <View className={"mx-6 mt-6"}>
+                <View className={"mx-6"}>
                     {/* Image Upload Section */}
                     <Card className={"px-4 py-6"}>
                         <Text className={"text-base font-semibold text-gray-700 mb-3"}>Document Images</Text>
@@ -280,8 +283,7 @@ function UploadDocument() {
                     {/* Submit Button */}
                     <View className={"mt-6 mb-4"}>
                         <PrimaryButton
-                            title={isDownloading ? "Uploading..." : "Upload"}
-                            icon="upload"
+                            icon={isDownloading ? "loader" : "upload"}
                             iconSize={22}
                             className={"w-full"}
                             disabled={loadingCourses || isDownloading}

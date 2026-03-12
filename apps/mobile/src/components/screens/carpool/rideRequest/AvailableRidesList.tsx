@@ -5,6 +5,7 @@ import AvailableRidesCard from "@/src/components/ui/AvailableRidesCard";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import EmptyState from "@/src/components/ui/EmptyState";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface AvailableRidesListProps {
     rides: RecentRideResponse[];
@@ -28,6 +29,7 @@ function AvailableRidesList(
     }: AvailableRidesListProps) {
 
     const [isRefreshing, setIsRefreshing] = React.useState(false);
+    const insets = useSafeAreaInsets();
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
@@ -41,7 +43,7 @@ function AvailableRidesList(
 
     return (
         <FlatList<RecentRideResponse>
-            className="mx-5 mt-2"
+            className="mx-5"
             data={rides}
             keyExtractor={(item) => String(item.id)}
             ListHeaderComponent={header}
@@ -69,7 +71,7 @@ function AvailableRidesList(
                 />
             )}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingBottom: 40}}
+            contentContainerStyle={{paddingTop: insets.top + 76, paddingBottom: 40}}
         />
     );
 }

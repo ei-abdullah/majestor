@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from "react";
+import React, {useEffect, useMemo, useRef, useState} from "react";
 import {Text, View, Pressable, TouchableOpacity} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -23,6 +23,8 @@ import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {useUploadRideRequest} from "@/src/queries/rideRequest.queries";
 import {UploadRideRequestResponse} from "@/src/types/rideRequest";
 import {router} from "expo-router";
+import {useIsFocused} from "@react-navigation/native";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface FormData {
     pickupLocation: {
@@ -44,8 +46,10 @@ export default function BookRide() {
 
     // Use custom hooks
     const {hasLocationPermission} = useLocationPermissions();
-    const {centerOnUserLocation, animateToLocation} = useMapLocation(mapRef);
+    const {animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
+    const isFocused = useIsFocused();
+    const insets = useSafeAreaInsets();
 
     const {user} = useAuthStore();
     const rideRequestState = useRideRequestStore();
@@ -67,8 +71,9 @@ export default function BookRide() {
     const [numberOfPassengers, setNumberOfPassengers] = useState(1);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const [isExpanded, setIsExpanded] = useState(false);
+    const headerOffset = insets.top + 72;
 
-    const snapPoints = ["5%", "70%"]
+    const snapPoints = useMemo(() => ["25%", "73%"], []);
 
     // Get current form values safely
     let pickupLocation = watch('pickupLocation');
@@ -135,11 +140,11 @@ export default function BookRide() {
                     initialRegion={initialRegion}
                     showsBuildings={false}
                     showsCompass={false}
-                    showsUserLocation={true}
+                    showsUserLocation={hasLocationPermission && isFocused}
                     showsMyLocationButton={false}
                     userInterfaceStyle={"light"}
                     style={{flex: 1}}
-                    mapPadding={{top: 0, right: 10, bottom: 10, left: 10}}
+                    mapPadding={{top: headerOffset + 8, right: 10, bottom: 10, left: 10}}
                 >
                     {/* Show markers only when locations are selected */}
                     {pickupLocation && (
@@ -149,7 +154,7 @@ export default function BookRide() {
                                 longitude: pickupLocation.longitude
                             }}
                         >
-                            <CustomMarker color={"red"} icon={"home"}/>
+                            <CustomMarker color={"#3A6FF8"} icon={"home"}/>
                         </Marker>
                     )}
 
@@ -160,7 +165,7 @@ export default function BookRide() {
                                 longitude: dropOffLocation.longitude
                             }}
                         >
-                            <CustomMarker color={"red"} icon={"flag"}/>
+                            <CustomMarker color={"#3A6FF8"} icon={"flag"}/>
                         </Marker>
                     )}
 
@@ -176,7 +181,7 @@ export default function BookRide() {
                                     longitude: dropOffLocation.longitude
                                 }}
                                 strokeWidth={2}
-                                strokeColor="red"
+                                strokeColor="#3A6FF8"
                                 mode={"DRIVING"}
                                 precision={"high"}
                                 apikey={GOOGLE_API_KEY}
@@ -197,32 +202,13 @@ export default function BookRide() {
                     )}
                 </MapView>
 
-                {/* Floating Locate Button */}
-                <View className="absolute right-4 bottom-12">
-                    <TouchableOpacity
-                        onPress={centerOnUserLocation}
-                        className="bg-white rounded-full p-3 shadow-lg"
-                        style={{
-                            shadowColor: '#000',
-                            shadowOffset: {width: 0, height: 2},
-                            shadowOpacity: 0.25,
-                            shadowRadius: 3.84,
-                            elevation: 5,
-                        }}
-                    >
-                        <Ionicons
-                            name={hasLocationPermission ? "locate" : "location-outline"}
-                            size={24}
-                            color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
-                        />
-                    </TouchableOpacity>
-                </View>
 
                 {/* Location Card */}
                 {!isExpanded ? (
                     <Pressable
                         onPress={() => setIsExpanded(true)}
-                        className="absolute top-4 right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        className="absolute right-4 bg-white rounded-2xl p-3 shadow-lg"
+                        style={{top: headerOffset}}
                     >
                         <View className="items-center gap-2">
                             <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
@@ -235,7 +221,7 @@ export default function BookRide() {
                         </View>
                     </Pressable>
                 ) : (
-                    <View className="absolute top-4 left-4 right-4 bg-white rounded-2xl p-4 shadow-lg">
+                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg" style={{top: headerOffset}}>
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-semibold">Select Locations</Text>
                             <Pressable onPress={() => setIsExpanded(false)} className="p-1">
@@ -260,7 +246,10 @@ export default function BookRide() {
                                 <GoogleTextInput
                                     icon="map-pin"
                                     initialLocation={value?.address}
-                                    handlePress={(location) => onChange(location)}
+                                    handlePress={(location) => {
+                                        onChange(location);
+                                        animateToLocation(location.latitude, location.longitude);
+                                    }}
                                 />
                             )}
                         />

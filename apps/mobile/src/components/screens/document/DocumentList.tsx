@@ -3,12 +3,14 @@ import {FlatList, RefreshControl} from "react-native";
 import DocumentCard from "@/src/components/screens/document/DocumentCard";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
+import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface DocumentListProps {
     documents: any[],
     isPending: boolean,
     isError: Error | null,
-    onRefetch: () => void
+    onRefetch: () => void,
+    searchComponent?: React.ComponentType<any> | React.ReactElement | null
 }
 
 function DocumentList(
@@ -17,9 +19,12 @@ function DocumentList(
         isPending,
         isError,
         onRefetch,
+        searchComponent,
     }: DocumentListProps) {
 
     const [isRefreshing, setIsRefreshing] = React.useState(false);
+    const insets = useSafeAreaInsets();
+    const headerOffset = insets.top + 76;
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
@@ -44,8 +49,12 @@ function DocumentList(
                     progressBackgroundColor="#fff"
                 />
             }
+            ListHeaderComponent={searchComponent}
             renderItem={({item}) => <DocumentCard document={item}/>}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{paddingBottom: 130, paddingTop: headerOffset}}
+            contentInset={{bottom: 130}}
+            automaticallyAdjustContentInsets={false}
         />
     );
 }
