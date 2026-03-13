@@ -3,10 +3,12 @@ import {View} from "react-native";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Feather} from "@expo/vector-icons";
 import {GOOGLE_API_KEY} from "@/src/constants";
+import {placeholder} from "@babel/types";
 
 const googlePlacesApiKey = GOOGLE_API_KEY;
 
 type GoogleInputProps = {
+    placeholderString?: string;
     icon?: keyof typeof Feather.glyphMap;
     initialLocation?: string;
     containerStyle?: string;
@@ -15,6 +17,7 @@ type GoogleInputProps = {
 
 function GoogleTextInput(
     {
+        placeholderString,
         icon,
         initialLocation,
         containerStyle,
@@ -58,7 +61,7 @@ function GoogleTextInput(
             )}
             textInputProps={{
                 placeholderTextColor: '#9CA3AF',
-                placeholder: initialLocation ?? "Where do you want to go?",
+                placeholder: initialLocation ?? placeholderString ?? "Where do you want to go?",
                 onFocus: () => {
                     setFocused(true);
                 },

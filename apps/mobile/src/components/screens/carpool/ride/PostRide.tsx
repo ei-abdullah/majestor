@@ -273,6 +273,7 @@ export default function PostRide() {
                             name="startLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
+                                    placeholderString={"Enter origin"}
                                     icon="map-pin"
                                     initialLocation={value?.address}
                                     handlePress={(location) => {
@@ -289,6 +290,7 @@ export default function PostRide() {
                             name="endLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
+                                    placeholderString={"Enter destination"}
                                     icon="flag"
                                     initialLocation={value?.address}
                                     handlePress={(location) => onChange(location)}
