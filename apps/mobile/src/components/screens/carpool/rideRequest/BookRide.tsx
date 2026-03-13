@@ -244,6 +244,7 @@ export default function BookRide() {
                             name="pickupLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
+                                    placeholderString={"Enter pickup location"}
                                     icon="map-pin"
                                     initialLocation={value?.address}
                                     handlePress={(location) => {
@@ -260,6 +261,7 @@ export default function BookRide() {
                             name="dropOffLocation"
                             render={({field: {onChange, value}}) => (
                                 <GoogleTextInput
+                                    placeholderString={"Enter drop-off location"}
                                     icon="flag"
                                     initialLocation={value?.address}
                                     handlePress={(location) => onChange(location)}
