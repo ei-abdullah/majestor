@@ -36,7 +36,7 @@ export default function RideDetails({ride}: Props) {
     const {animateToLocation} = useMapLocation(mapRef);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = ["30%", "55%", "85%"];
+    const snapPoints = ["30%", "55%", "100%"];
 
     // Skip useEffect on first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
@@ -282,7 +282,7 @@ export default function RideDetails({ride}: Props) {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingVertical: 16}}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">

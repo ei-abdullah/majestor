@@ -281,7 +281,7 @@ export default function BookRide() {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingVertical: 16}}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>

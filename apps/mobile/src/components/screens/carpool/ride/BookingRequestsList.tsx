@@ -72,7 +72,7 @@ function BookingRequestsList(
                 />
             )}
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{paddingTop: insets.top + 76, paddingBottom: 40}}
+            contentContainerStyle={{paddingTop: insets.top + 76, paddingBottom: 130}}
         />
     );
 }
