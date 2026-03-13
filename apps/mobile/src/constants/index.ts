@@ -40,3 +40,4 @@ export const years = generateYearList();
 // API BASE URL
 export const API_BASE_URL = "https://majestor-app-ynclq.ondigitalocean.app/api/v1"
 
+export const WEBSOCKET_URL = "wss://majestor-app-ynclq.ondigitalocean.app/ws";
