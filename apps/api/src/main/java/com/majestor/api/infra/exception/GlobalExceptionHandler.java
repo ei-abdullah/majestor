@@ -15,6 +15,7 @@ import org.springframework.validation.BindException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import io.jsonwebtoken.JwtException;
 
 import java.time.Instant;
 
@@ -139,6 +140,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
     }
 
+    // JWT specific errors (Expired, Malformed, Signature, etc.)
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ApiError> handleException(
+            JwtException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message("Invalid or expired token")
+                .statusCode(HttpStatus.UNAUTHORIZED.value())
+                .instantDateTime(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.UNAUTHORIZED);
+    }
+
     // Invalid authentication credentials
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ApiError> handleException(
@@ -239,6 +257,7 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
+
 
     // Generic exception
     @ExceptionHandler(Exception.class)
