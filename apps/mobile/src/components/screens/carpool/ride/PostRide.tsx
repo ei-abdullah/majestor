@@ -313,7 +313,7 @@ export default function PostRide() {
                     contentContainerStyle={{
                         paddingHorizontal: 24,
                         paddingTop: 16,
-                        paddingBottom: insets.bottom + 120,
+                        paddingBottom: 130,
                     }}
                     showsVerticalScrollIndicator={false}
                 >

@@ -223,12 +223,12 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingVertical: 16}}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
 
-                        {/* Confirmed banner — only shown after accept */}
+                        {/* Confirmed banner — only shown after acceptance */}
                         {hasAccepted && (
                             <Card className="bg-green-50 border border-green-200 px-5 py-4">
                                 <View className="flex-row items-center justify-center gap-2">
