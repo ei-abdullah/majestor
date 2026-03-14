@@ -38,7 +38,7 @@ export default function RideDetails({ride}: Props) {
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = ["30%", "55%", "100%"];
 
-    // Skip useEffect on first mount to avoid routing on stale persisted status
+    // Skip useEffect on the first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
 
     const rideRequest = useRideRequestStore();
@@ -65,7 +65,7 @@ export default function RideDetails({ride}: Props) {
         rideRequest.setBookingDetails(response.id, response.status);
     });
 
-    // Passenger-initiated cancel — show modal, then clean up on dismiss
+    // Passenger-initiated cancel — show modal, then clean up on dismissing
     const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
         setOutcomeModal("cancelled");
     });
@@ -101,10 +101,10 @@ export default function RideDetails({ride}: Props) {
             });
             router.replace("/(tabs)/carpool");
         } else if (bookingStatusData.status === "COMPLETED") {
-            // Show modal first — store is cleared only when user dismisses
+            // Show modal first — store is cleared only when the user dismisses
             setOutcomeModal("completed");
         } else if (bookingStatusData.status === "CANCELLED") {
-            // Driver cancelled the ride — show modal then clean up
+            // Driver canceled the ride — show modal then clean up
             setOutcomeModal("cancelled");
         }
     }, [bookingStatusData?.status]);
