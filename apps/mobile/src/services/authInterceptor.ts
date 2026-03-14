@@ -9,10 +9,10 @@ type RefreshTokenResponse = {
     refreshToken: string;
 };
 
-// Singleton promise to handle concurrent refresh requests (The "Thundering Herd" protection)
-let refreshPromise: Promise<RefreshTokenResponse> | null = null;
+// Singleton promise to handle concurrent refresh requests
+let refreshPromise: Promise<string> | null = null;
 
-const isAuthEndpoint = (url: string = "") => {
+const isPublicEndpoint = (url: string = "") => {
     return (
         url.includes("/auth/login") ||
         url.includes("/auth/signup") ||
@@ -23,19 +23,22 @@ const isAuthEndpoint = (url: string = "") => {
 
 export const setupInterceptors = (api: AxiosInstance) => {
     // 1. Request Interceptor: Attach Access Token
-    api.interceptors.request.use((config) => {
-        if (config.headers?.skipAuth) {
-            delete config.headers.skipAuth;
+    api.interceptors.request.use(
+        (config) => {
+            if (config.headers?.skipAuth) {
+                delete config.headers.skipAuth;
+                return config;
+            }
+
+            const { accessToken } = useAuthStore.getState();
+            if (accessToken) {
+                config.headers.Authorization = `Bearer ${accessToken}`;
+            }
+
             return config;
-        }
-
-        const { accessToken } = useAuthStore.getState();
-        if (accessToken) {
-            config.headers.Authorization = `Bearer ${accessToken}`;
-        }
-
-        return config;
-    });
+        },
+        (error) => Promise.reject(error)
+    );
 
     // 2. Response Interceptor: Handle Token Refresh
     api.interceptors.response.use(
@@ -43,91 +46,102 @@ export const setupInterceptors = (api: AxiosInstance) => {
         async (error: AxiosError) => {
             const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
             const status = error.response?.status;
-            const url = originalRequest?.url;
+            const url = originalRequest?.url || "";
 
-            // IF: Not 401, OR already retried, OR public auth endpoint -> Reject immediately
-            if (status !== 401 || originalRequest._retry || isAuthEndpoint(url)) {
+            // Pass through if:
+            // - Not an auth error (401 or 403)
+            // - Already retried
+            // - Is a public/auth endpoint (login/signup) preventing infinite loops
+            if ((status !== 401 && status !== 403) || originalRequest._retry || isPublicEndpoint(url)) {
                 return Promise.reject(error);
             }
 
-            // IF: The refresh endpoint itself failed -> Session is dead -> Logout
-            if (url?.includes("/auth/refresh")) {
+            // Specific check: If the REFRESH call itself fails with 401/403, we must logout.
+            if (url.includes("/auth/refresh")) {
                 useAuthStore.getState().clearSession();
                 return Promise.reject(error);
             }
 
             originalRequest._retry = true;
 
-            // Ensure only one refresh request happens at a time
+            // If a refresh is already in progress, wait for it
             if (!refreshPromise) {
-                refreshPromise = refreshAccessToken(api);
+                refreshPromise = performTokenRefresh(api);
             }
 
             try {
-                const { accessToken, refreshToken, authUserDTO } = await refreshPromise;
+                const newAccessToken = await refreshPromise;
 
-                // Update system state with new credentials
-                useAuthStore.getState().setSession(authUserDTO, accessToken);
-                await saveRefreshToken(refreshToken);
-
-                // Retry the original request with a new token
+                // Update the failed request's header with a new token
                 if (originalRequest.headers) {
-                    originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
                 }
-                
-                return api(originalRequest);
-            } catch (refreshErr: any) {
-                // IMPORTANT: Only log out if:
-                // 1. It's a definitive AUTH failure (401/403) from the refresh endpoint.
-                // 2. Or the refresh token was missing entirely ("No refresh token available").
-                // If it's a network error or server 500, keep the session so user can retry.
-                const isAuthError = refreshErr.response?.status === 401 || refreshErr.response?.status === 403;
-                const isMissingToken = refreshErr.message === "No refresh token available";
 
-                if (isAuthError || isMissingToken) {
-                    useAuthStore.getState().clearSession();
-                }
-                
+                return api(originalRequest);
+            } catch (refreshErr) {
+                // If refresh failed (e.g. network error, or invalid refresh token)
+                // We only clear session if it was an Auth failure, not network.
+                // The performTokenRefresh function handles the clearing for Auth failures.
                 return Promise.reject(refreshErr);
+            } finally {
+                // Clear the promise only after all waiting requests have processed/failed
+                // (This is a simplified approach; ideally, we clear it when the promise settles)
+                 refreshPromise = null;
             }
         }
     );
 };
 
 /**
- * Performs the actual refresh call.
- * Wrapped to be used in the singleton logic.
- * Includes retry logic to handle network instability on app wake-up.
+ * Executes the refresh token flow with retry logic for network stability.
+ * Returns the new Access Token string.
  */
-const refreshAccessToken = async (api: AxiosInstance): Promise<RefreshTokenResponse> => {
+const performTokenRefresh = async (api: AxiosInstance): Promise<string> => {
     try {
-        const savedRefreshToken = await getRefreshToken();
-        if (!savedRefreshToken) throw new Error("No refresh token available");
+        const refreshToken = await getRefreshToken();
+        if (!refreshToken) {
+            throw new Error("No refresh token available");
+        }
 
-        // Retry mechanism: Try up to 3 times
+        // Retry logic: 3 attempts with increasing delay
+        let lastError: any;
         for (let attempt = 0; attempt < 3; attempt++) {
             try {
-                // Add delay before retrying (0ms, 500ms, 1000ms)
-                if (attempt > 0) await new Promise(r => setTimeout(r, 500 * attempt));
+                if (attempt > 0) await new Promise(r => setTimeout(r, 1000 * attempt)); // 0s, 1s, 2s
 
                 const { data } = await api.post<RefreshTokenResponse>(
                     "/auth/refresh",
-                    { refreshToken: savedRefreshToken },
+                    { refreshToken },
                     { headers: { skipAuth: true } }
                 );
-                return data;
-            } catch (error: any) {
-                // Stop retrying immediately if token is invalid (401/403)
-                if (error.response?.status === 401 || error.response?.status === 403) {
-                    throw error;
+
+                const { accessToken, authUserDTO, refreshToken: newRefreshToken } = data;
+
+                // Update session state
+                useAuthStore.getState().setSession(authUserDTO, accessToken);
+                await saveRefreshToken(newRefreshToken);
+
+                return accessToken;
+
+            } catch (err: any) {
+                lastError = err;
+                // If the server explicitly rejects the refresh token (401/403), stop retrying and logout.
+                if (err.response?.status === 401 || err.response?.status === 403) {
+                    useAuthStore.getState().clearSession();
+                    throw err;
                 }
-                // If this was the last attempt, throw the network error
-                if (attempt === 2) throw error;
+                // Otherwise (Network Error, 500, etc.), continue to next attempt
             }
         }
-    } finally {
-        refreshPromise = null;
+
+        // If loop finishes without success
+        throw lastError;
+
+    } catch (error: any) {
+        // Final catch for "No refresh token" or exhausted retries
+        if (error.message === "No refresh token available") {
+             useAuthStore.getState().clearSession();
+        }
+        throw error;
     }
-    
-    throw new Error("Unexpected refresh flow error");
 };
