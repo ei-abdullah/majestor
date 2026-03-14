@@ -17,6 +17,10 @@ const client = new QueryClient({
     }
 });
 
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+global.Buffer = Buffer;
+
 export default function RootLayout() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
