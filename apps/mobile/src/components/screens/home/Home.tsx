@@ -1,13 +1,15 @@
 import React from "react";
-import {View, Text, ScrollView, Pressable, Platform} from "react-native";
+import {View, Text, ScrollView, Pressable, Platform, Button} from "react-native";
+import {Feather} from "@expo/vector-icons";
+import {LinearGradient} from "expo-linear-gradient";
+import {router} from "expo-router";
+import * as Sentry from "@sentry/react-native"
+
 import {useAuthStore} from "@/src/stores/authStore";
 import {useUserDetails} from "@/src/queries/user.queries";
 import GradientView from "@/src/components/ui/GradientView";
 import UserAvatar from "@/src/components/ui/UserAvatar";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
-import {Feather} from "@expo/vector-icons";
-import {LinearGradient} from "expo-linear-gradient";
-import {router} from "expo-router";
 
 function Home() {
     const {user, clearSession} = useAuthStore();

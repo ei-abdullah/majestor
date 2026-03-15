@@ -17,6 +17,7 @@
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
     "@react-navigation/native": "^7.1.8",
+    "@sentry/react-native": "^8.4.0",
     "@stomp/stompjs": "^7.3.0",
     "@tanstack/react-query": "^5.90.12",
     "axios": "^1.13.2",
@@ -68,6 +69,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "@types/text-encoding": "^0.0.40",
     "eslint": "^9.39.3",
     "eslint-config-expo": "^10.0.0",
     "prettier": "^3.8.1",

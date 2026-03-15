@@ -1,4 +1,5 @@
 import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import * as Sentry from "@sentry/react-native";
 import { useAuthStore } from "@/src/stores/authStore";
 import { getRefreshToken, saveRefreshToken } from "@/src/stores/secureStore";
 
@@ -40,7 +41,27 @@ export const setupInterceptors = (api: AxiosInstance) => {
         (error) => Promise.reject(error)
     );
 
-    // 2. Response Interceptor: Handle Token Refresh
+    // 2. Response Interceptor: Sentry Error logging
+    api.interceptors.response.use(
+        (response) => response,
+        (error: AxiosError) => {
+            if (error.response && (error.response.status >= 500 || error.response.status === 400)) {
+                Sentry.captureException(error, {
+                    extra: {
+                        url: error.config?.url,
+                        method: error.config?.method,
+                        status: error.response?.status,
+                        data: error.response?.data,
+                    },
+                });
+                // Mark as reported to distinguish in other error handlers
+                (error as any)._sentryReported = true;
+            }
+            return Promise.reject(error);
+        }
+    );
+
+    // 3. Response Interceptor: Handle Token Refresh
     api.interceptors.response.use(
         (res) => res,
         async (error: AxiosError) => {
@@ -79,7 +100,7 @@ export const setupInterceptors = (api: AxiosInstance) => {
 
                 return api(originalRequest);
             } catch (refreshErr) {
-                // If refresh failed (e.g. network error, or invalid refresh token)
+                // If refresh failed (e.g., network error, or invalid refresh token)
                 // We only clear session if it was an Auth failure, not network.
                 // The performTokenRefresh function handles the clearing for Auth failures.
                 return Promise.reject(refreshErr);
