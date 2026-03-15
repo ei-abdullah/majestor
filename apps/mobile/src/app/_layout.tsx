@@ -57,6 +57,7 @@ Sentry.init({
     sendDefaultPii: true,
 
     // Enable Logs
+    // enableLogs: __DEV__,
     enableLogs: true,
 
     // Configure Session Replay
@@ -82,8 +83,7 @@ function RootLayout() {
     }, [pathname]);
 
     useEffect(() => {
-        const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
-        return unsub;
+        return useAuthStore.persist.onFinishHydration(() => setHydrated(true));
     }, []);
 
     if (!hydrated) {
