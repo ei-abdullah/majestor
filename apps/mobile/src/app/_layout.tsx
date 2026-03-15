@@ -6,16 +6,41 @@ global.TextDecoder = TextDecoder;
 global.Buffer = Buffer;
 
 import React, {useEffect, useState} from "react";
-import {Stack} from "expo-router";
-import Toast from "react-native-toast-message";
-import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
 import {ActivityIndicator, View} from "react-native";
+import {Stack, usePathname} from "expo-router";
+import Toast from "react-native-toast-message";
+import {QueryClientProvider, QueryClient, QueryCache, MutationCache} from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native"
 
 import "./global.css"
 import {useAuthStore} from "@/src/stores/authStore";
 
 const client = new QueryClient({
+    queryCache: new QueryCache({
+        onError: (error: any, query) => {
+            if (error?._sentryReported) return;
+            // Ignore 401/403 as they are handled by auth flow
+            if (error?.response?.status === 401 || error?.response?.status === 403) return;
+
+            Sentry.captureException(error, {
+                extra: {
+                    queryKey: query.queryKey,
+                }
+            });
+        },
+    }),
+    mutationCache: new MutationCache({
+        onError: (error: any, _variables, _context, mutation) => {
+            if (error?._sentryReported) return;
+            if (error?.response?.status === 401 || error?.response?.status === 403) return;
+
+            Sentry.captureException(error, {
+                extra: {
+                    mutationKey: mutation.options.mutationKey,
+                }
+            });
+        },
+    }),
     defaultOptions: {
         queries: {
             retry: 2,
@@ -46,6 +71,15 @@ Sentry.init({
 function RootLayout() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
+    const pathname = usePathname();
+
+    useEffect(() => {
+        Sentry.addBreadcrumb({
+            category: "navigation",
+            message: `Route changed to ${pathname}`,
+            level: "info",
+        });
+    }, [pathname]);
 
     useEffect(() => {
         const unsub = useAuthStore.persist.onFinishHydration(() => setHydrated(true));
