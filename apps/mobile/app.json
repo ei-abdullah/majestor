@@ -43,6 +43,7 @@
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry",
           "project": "react-native",
           "organization": "abdullah-y5"
         }
@@ -76,14 +77,6 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Majestor to use your location."
-        }
-      ],
-      [
-        "@sentry/react-native/expo",
-        {
-          "url": "https://sentry.io/",
-          "project": "react-native",
-          "organization": "abdullah-y5"
         }
       ]
     ],

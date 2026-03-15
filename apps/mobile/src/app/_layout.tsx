@@ -1,10 +1,3 @@
-import { TextEncoder, TextDecoder } from "text-encoding"
-import { Buffer } from 'buffer';
-
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-global.Buffer = Buffer;
-
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, View} from "react-native";
 import {Stack, usePathname} from "expo-router";
@@ -14,6 +7,7 @@ import * as Sentry from "@sentry/react-native"
 
 import "./global.css"
 import {useAuthStore} from "@/src/stores/authStore";
+import {isRunningInExpoGo} from "expo";
 
 const client = new QueryClient({
     queryCache: new QueryCache({
@@ -48,6 +42,10 @@ const client = new QueryClient({
         }
     }
 });
+
+const navigationIntegration = Sentry.reactNavigationIntegration({
+    enableTimeToInitialDisplay: !isRunningInExpoGo()
+})
 
 Sentry.init({
     dsn: 'https://955f5849bf09988aeed526b5b587d901@o4511044632903680.ingest.de.sentry.io/4511044954423376',
