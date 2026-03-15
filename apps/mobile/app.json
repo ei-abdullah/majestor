@@ -40,6 +40,14 @@
     "plugins": [
       "expo-router",
       [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "abdullah-y5"
+        }
+      ],
+      [
         "expo-splash-screen",
         {
           "image": "./assets/images/majestor-logo.png",
@@ -68,6 +76,14 @@
         "expo-location",
         {
           "locationAlwaysAndWhenInUsePermission": "Allow Majestor to use your location."
+        }
+      ],
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "react-native",
+          "organization": "abdullah-y5"
         }
       ]
     ],

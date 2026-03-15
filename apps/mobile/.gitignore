@@ -43,3 +43,7 @@ app-example
 /ios
 /android
 # Note: We need to commit android folder for custom native builds
+
+.env.local
+
+.env.local
