@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {View, Text, Image} from "react-native";
+import {View, Text, Image, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -274,6 +274,21 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                         <Text className="text-base font-semibold text-mj-blue">
                                             {booking.rideRequesterPhone}
                                         </Text>
+                                        <Text>|</Text>
+                                        <Pressable
+                                            onPress={() => router.push({
+                                                pathname: "/chat",
+                                                params: {
+                                                    receiverEmail: booking.rideRequesterEmail,
+                                                    receiverUsername: booking.rideRequesterUsername
+                                                }
+                                            })}
+                                        >
+                                            <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
+                                            <Text className="text-base font-semibold text-mj-blue">
+                                                Chat with Booker
+                                            </Text>
+                                        </Pressable>
                                     </View>
                                 </>
                             )}

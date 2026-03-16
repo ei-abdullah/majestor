@@ -1,3 +1,8 @@
+import {TextEncoder, TextDecoder} from "text-encoding";
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 import React, {useEffect, useState} from "react";
 import {ActivityIndicator, View} from "react-native";
 import {Stack, usePathname} from "expo-router";
@@ -102,6 +107,7 @@ function RootLayout() {
 
                     <Stack.Protected guard={isLoggedIn}>
                         <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
+                        <Stack.Screen name={"chat"} options={{headerShown: false}}/>
                     </Stack.Protected>
 
                 </Stack>
