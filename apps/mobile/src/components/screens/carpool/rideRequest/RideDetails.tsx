@@ -357,8 +357,18 @@ export default function RideDetails({ride}: Props) {
                                         </Text>
                                         <Text>|</Text>
                                         <Pressable
+                                            onPress={() => router.push({
+                                                pathname: "/chat",
+                                                params: {
+                                                    receiverEmail: ride.ridePosterEmail,
+                                                    receiverUsername: ride.ridePosterUsername,
+                                                }
+                                            })}
                                         >
                                             <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
+                                            <Text className="text-base font-semibold text-mj-blue">
+                                                Chat with Rider
+                                            </Text>
                                         </Pressable>
                                     </View>
                                 </>

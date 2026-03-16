@@ -276,8 +276,18 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                         </Text>
                                         <Text>|</Text>
                                         <Pressable
+                                            onPress={() => router.push({
+                                                pathname: "/chat",
+                                                params: {
+                                                    receiverEmail: booking.rideRequesterEmail,
+                                                    receiverUsername: booking.rideRequesterUsername
+                                                }
+                                            })}
                                         >
                                             <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
+                                            <Text className="text-base font-semibold text-mj-blue">
+                                                Chat with Booker
+                                            </Text>
                                         </Pressable>
                                     </View>
                                 </>

@@ -107,6 +107,7 @@ function RootLayout() {
 
                     <Stack.Protected guard={isLoggedIn}>
                         <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
+                        <Stack.Screen name={"chat"} options={{headerShown: false}}/>
                     </Stack.Protected>
 
                 </Stack>
