@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {View, Text, Image} from "react-native";
+import {View, Text, Image, Pressable} from "react-native";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
@@ -8,7 +8,7 @@ import CustomMarker from "@/src/components/ui/CustomMarker";
 import MapViewDirections from "react-native-maps-directions";
 import {GOOGLE_API_KEY} from "@/src/constants";
 import Card from "@/src/components/ui/Card";
-import {Ionicons} from "@expo/vector-icons";
+import {Feather, Ionicons} from "@expo/vector-icons";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
@@ -230,7 +230,10 @@ export default function RideDetails({ride}: Props) {
                         ride.startLocationLat && ride.startLocationLng && (
                             <MapViewDirections
                                 origin={{latitude: ride.startLocationLat, longitude: ride.startLocationLng}}
-                                destination={{latitude: rideRequest.pickupLocationLat, longitude: rideRequest.pickupLocationLng}}
+                                destination={{
+                                    latitude: rideRequest.pickupLocationLat,
+                                    longitude: rideRequest.pickupLocationLng
+                                }}
                                 strokeWidth={2}
                                 strokeColor={"#3A6FF8"}
                                 mode={"DRIVING"}
@@ -244,8 +247,14 @@ export default function RideDetails({ride}: Props) {
                     {rideRequest.pickupLocationLat && rideRequest.pickupLocationLng &&
                         rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng && (
                             <MapViewDirections
-                                origin={{latitude: rideRequest.pickupLocationLat, longitude: rideRequest.pickupLocationLng}}
-                                destination={{latitude: rideRequest.dropoffLocationLat, longitude: rideRequest.dropoffLocationLng}}
+                                origin={{
+                                    latitude: rideRequest.pickupLocationLat,
+                                    longitude: rideRequest.pickupLocationLng
+                                }}
+                                destination={{
+                                    latitude: rideRequest.dropoffLocationLat,
+                                    longitude: rideRequest.dropoffLocationLng
+                                }}
                                 strokeWidth={2}
                                 strokeColor={"#3A6FF8"}
                                 mode={"DRIVING"}
@@ -259,7 +268,10 @@ export default function RideDetails({ride}: Props) {
                     {rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng &&
                         ride.endLocationLat && ride.endLocationLng && (
                             <MapViewDirections
-                                origin={{latitude: rideRequest.dropoffLocationLat, longitude: rideRequest.dropoffLocationLng}}
+                                origin={{
+                                    latitude: rideRequest.dropoffLocationLat,
+                                    longitude: rideRequest.dropoffLocationLng
+                                }}
                                 destination={{latitude: ride.endLocationLat, longitude: ride.endLocationLng}}
                                 strokeWidth={3}
                                 strokeColor={"#3A6FF8"}
@@ -322,7 +334,8 @@ export default function RideDetails({ride}: Props) {
                                         />
                                     </View>
                                 ) : (
-                                    <View className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
+                                    <View
+                                        className="w-16 h-16 rounded-full bg-mj-blue-50 items-center justify-center mb-2">
                                         <Ionicons name="person-outline" size={28} color="#3A6FF8"/>
                                     </View>
                                 )}
@@ -342,6 +355,11 @@ export default function RideDetails({ride}: Props) {
                                         <Text className="text-base font-semibold text-mj-blue">
                                             {ride.phone ?? "—"}
                                         </Text>
+                                        <Text>|</Text>
+                                        <Pressable
+                                        >
+                                            <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
+                                        </Pressable>
                                     </View>
                                 </>
                             )}
@@ -374,7 +392,8 @@ export default function RideDetails({ride}: Props) {
                                         size={22}
                                         color="#6FD0C5"
                                     />
-                                    <Text className="text-sm font-semibold text-mj-text-main text-center" numberOfLines={1}>
+                                    <Text className="text-sm font-semibold text-mj-text-main text-center"
+                                          numberOfLines={1}>
                                         {ride.vehicleModal ?? "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary text-center">
@@ -397,7 +416,8 @@ export default function RideDetails({ride}: Props) {
                         {/* Card 3 - Booker's request */}
                         {hasBooked && (
                             <Card className="px-5 py-6">
-                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your Request</Text>
+                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your
+                                    Request</Text>
 
                                 <View className="h-px bg-gray-100 mb-4"/>
 
