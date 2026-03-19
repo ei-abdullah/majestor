@@ -14,7 +14,6 @@ public class MessageController {
     private final SimpMessagingTemplate simpMessagingTemplate;
 
     @MessageMapping("/message")
-    @SendTo("/chatroom/public")
     public Message sendMessage(
             @Payload Message message
     ) {
@@ -22,12 +21,11 @@ public class MessageController {
     }
 
     @MessageMapping("/private-message")
-    public Message addUser(
+    public Message sendPrivateMessage(
             @Payload Message chatMessage
     ) {
-        simpMessagingTemplate.convertAndSendToUser(
-                chatMessage.getReceiverName(),
-                "/private",
+        simpMessagingTemplate.convertAndSend(
+                "/private" + chatMessage.getReceiverName(),
                 chatMessage
         );
         return chatMessage;

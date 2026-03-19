@@ -55,7 +55,8 @@ public class SecurityConfig {
                                     "/api/v1/auth/forgetPassword",
                                     "/api/v1/auth/signup/verify",
                                     "/api/v1/auth/refresh",
-                                    "/api/v1/university/getWithFaculties"
+                                    "/api/v1/university/getWithFaculties",
+                                    "/ws/**"
                             )
                             .permitAll();
 
