@@ -1,8 +1,9 @@
+
 import {View, Text, ActivityIndicator, Pressable} from "react-native";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCallback, useEffect, useRef, useState} from "react";
-import {GiftedChat, IMessage, Bubble, Send, InputToolbar} from "react-native-gifted-chat";
+import {GiftedChat, IMessage, Bubble, Send, InputToolbar, Time} from "react-native-gifted-chat";
 import {Client} from "@stomp/stompjs";
 import SockJs from "sockjs-client";
 import {WEBSOCKET_URL} from "@/src/constants";
@@ -195,15 +196,20 @@ function Chat() {
                                 fontSize: 15,
                             },
                         }}
-                        timeTextStyle={{
-                            right: {
-                                color: '#FFFFFF',
-                                opacity: 0.7,
-                            },
-                            left: {
-                                color: '#9E9E9E',
-                            },
-                        }}
+                        renderTime={(timeProps) => (
+                            <Time
+                                {...timeProps}
+                                timeTextStyle={{
+                                    right: {
+                                        color: '#FFFFFF',
+                                        opacity: 0.7,
+                                    },
+                                    left: {
+                                        color: '#9E9E9E',
+                                    },
+                                }}
+                            />
+                        )}
                     />
                 )}
                 renderInputToolbar={(props) => (
@@ -221,22 +227,24 @@ function Chat() {
                         }}
                     />
                 )}
-                renderSend={(props) => (
-                    <Send
-                        {...props}
-                        disabled={!props.text || !connected}
-                        containerStyle={{
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            marginRight: 0,
-                            marginLeft: 8,
-                        }}
-                    >
-                        <View className={`rounded-full p-2.5 ${!props.text || !connected ? 'bg-gray-300' : 'bg-mj-blue'}`}>
-                            <Ionicons name="send" size={18} color="white" />
-                        </View>
-                    </Send>
-                )}
+                renderSend={(props) => {
+                    const isDisabled = !props.text || !connected;
+                    return (
+                        <Send
+                            {...props}
+                            containerStyle={{
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                marginRight: 0,
+                                marginLeft: 8,
+                            }}
+                        >
+                            <View className={`rounded-full p-2.5 ${isDisabled ? 'bg-gray-300' : 'bg-mj-blue'}`}>
+                                <Ionicons name="send" size={18} color="white" />
+                            </View>
+                        </Send>
+                    );
+                }}
                 textInputProps={{
                     style: {
                         backgroundColor: '#F0F4FF',
@@ -251,8 +259,6 @@ function Chat() {
                     placeholder: "Type a message...",
                     placeholderTextColor: '#9E9E9E',
                 }}
-                alwaysShowSend={true}
-                scrollToBottom={true}
             />
         </View>
     );
