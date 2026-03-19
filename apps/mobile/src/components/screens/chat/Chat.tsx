@@ -8,6 +8,7 @@ import SockJs from "sockjs-client";
 import {WEBSOCKET_URL} from "@/src/constants";
 import * as encoding from "text-encoding";
 import {Ionicons} from "@expo/vector-icons";
+import {useHeaderHeight} from "@react-navigation/elements";
 
 const _global = global as any;
 if (!_global.TextEncoder) {
@@ -17,6 +18,8 @@ if (!_global.TextEncoder) {
 
 function Chat() {
     const router = useRouter();
+    const headerHeight = useHeaderHeight();
+
     const {receiverEmail, receiverUsername} = useLocalSearchParams<{
         receiverEmail: string,
         receiverUsername: string
@@ -131,6 +134,7 @@ function Chat() {
     }
 
     return (
+
         <View className="flex-1 bg-white">
             {/* Simple header */}
             <View className="bg-mj-blue px-4 py-4 pt-14">
@@ -159,9 +163,9 @@ function Chat() {
 
             {/* Chat messages */}
             <KeyboardAvoidingView
-                className="flex-1"
+                style={{flex: 1}}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={0}
+                keyboardVerticalOffset={100 + headerHeight}
             >
                 <GiftedChat
                     messages={messages}
@@ -169,7 +173,7 @@ function Chat() {
                     user={{
                         _id: user.email,
                     }}
-
+                    keyboardAvoidingViewProps={{keyboardVerticalOffset: headerHeight}}
                     messagesContainerStyle={{
                         backgroundColor: '#F7F9FC',
                         paddingBottom: 8,
@@ -241,7 +245,7 @@ function Chat() {
                                     justifyContent: 'center',
                                     alignItems: 'center',
                                     marginRight: 0,
-                                    marginBottom: 50,
+                                    // marginBottom: 50,
                                     marginLeft: 8,
                                 }}
                             >
@@ -258,7 +262,7 @@ function Chat() {
                             paddingHorizontal: 16,
                             paddingTop: 10,
                             paddingBottom: 10,
-                            marginBottom: 50,
+                            // marginBottom: 50,
                             color: '#121826',
                             fontSize: 15,
                             minHeight: 40,
