@@ -99,9 +99,9 @@ function UserSettings() {
                         />
                     </View>
 
-                    {/* University Information */}
-                    <Text className="text-lg font-bold text-gray-800 mb-3 mx-4">University Information</Text>
+                    {/* Academic Profile */}
                     <Card className="px-5 py-6 mb-6 mx-4">
+                        <Text className="text-base font-semibold text-gray-700 mb-4">Academic Profile</Text>
                         {/* Full Name */}
                         <View className="mb-4">
                             <Text className="text-sm text-gray-500 mb-2">Username</Text>
@@ -160,8 +160,8 @@ function UserSettings() {
                     </Card>
 
                     {/* Personal Information */}
-                    <Text className="text-lg font-bold text-gray-800 mb-3 mx-4">Personal Information</Text>
                     <Card className="px-5 py-6 mb-6 mx-4">
+                        <Text className="text-base font-semibold text-gray-700 mb-4">Personal Information</Text>
                         {/* Personal Email */}
                         <View className="mb-4">
                             <Text className="text-sm text-gray-500 mb-2">Personal Email</Text>
@@ -221,7 +221,7 @@ function UserSettings() {
                             <View className="mt-2">
                                 <PrimaryButton
                                     title=""
-                                    icon={isPending? "loader" : "check"}
+                                    icon={isPending ? "loader" : "check"}
                                     onPress={handleSubmit(onSubmit)}
                                     size="compact"
                                     disabled={isPending}
@@ -231,8 +231,8 @@ function UserSettings() {
                     </Card>
 
                     {/* Your Roles */}
-                    <Text className="text-lg font-bold text-gray-800 mb-3 mx-4">Your Roles</Text>
                     <Card className="px-5 py-5 mb-6 mx-4">
+                        <Text className="text-base font-semibold text-gray-700 mb-4">Your Roles</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {userDetails.roles && userDetails.roles.length > 0 ? (
                                 userDetails.roles.map((role, index) => (
@@ -250,7 +250,7 @@ function UserSettings() {
                     </Card>
 
                     {/* Logout */}
-                    <Card className="py-0 mx-4 mb-2 px-5 overflow-hidden">
+                    <Card className="py-5 mx-4 mb-2 px-5 overflow-hidden">
                         <Pressable
                             onPress={() =>
                                 Alert.alert(
@@ -265,7 +265,7 @@ function UserSettings() {
                             className="flex-row items-center gap-4 active:opacity-60"
                         >
                             <View className="bg-red-100 rounded-xl p-2">
-                                <Feather name="log-out" size={18} color="#DC2626" />
+                                <Feather name="log-out" size={18} color="#DC2626"/>
                             </View>
                             <Text className="text-red-600 font-semibold text-base">
                                 Sign out
