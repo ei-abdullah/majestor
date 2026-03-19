@@ -364,6 +364,7 @@ export default function RideDetails({ride}: Props) {
                                                     receiverUsername: ride.ridePosterUsername,
                                                 }
                                             })}
+                                            className={"flex-row items-center gap-1"}
                                         >
                                             <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
                                             <Text className="text-base font-semibold text-mj-blue">
