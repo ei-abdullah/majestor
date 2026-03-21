@@ -22,7 +22,7 @@ export default function TermsOfService() {
                 Service
               </span>
             </h1>
-            <p className="text-[#5A6275]">Last updated: March 6, 2026</p>
+            <p className="text-[#5A6275]">Last updated: March 21, 2026</p>
           </div>
 
           {/* Content */}
@@ -84,9 +84,25 @@ export default function TermsOfService() {
               </ul>
             </section>
 
+            {/* User-Generated Content */}
+            <section>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">5. User-Generated Content</h2>
+              <p className="text-[#5A6275] leading-relaxed mb-4">
+                You are solely responsible for the content you upload, post, or otherwise make available
+                through the Service (&quot;User Content&quot;). You retain all ownership rights in your User
+                Content, but you grant Majestor a worldwide, non-exclusive, royalty-free license to use,
+                reproduce, modify, and distribute your User Content in connection with the Service.
+              </p>
+              <p className="text-[#5A6275] leading-relaxed">
+                We do not endorse any User Content and are not responsible or liable for any User
+                Content. We reserve the right to remove any User Content that violates these Terms or
+                is otherwise objectionable.
+              </p>
+            </section>
+
             {/* Document Sharing */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">5. Document Sharing</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">6. Document Sharing</h2>
               <p className="text-[#5A6275] leading-relaxed mb-4">
                 When uploading documents to Majestor:
               </p>
@@ -104,7 +120,7 @@ export default function TermsOfService() {
 
             {/* Carpooling Services */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">6. Carpooling Services</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">7. Carpooling Services</h2>
               <p className="text-[#5A6275] leading-relaxed mb-4">
                 Majestor facilitates connections between drivers and passengers. You acknowledge that:
               </p>
@@ -117,9 +133,25 @@ export default function TermsOfService() {
               </ul>
             </section>
 
+            {/* User Conduct and Responsibilities */}
+            <section>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">8. User Conduct and Responsibilities</h2>
+              <p className="text-[#5A6275] leading-relaxed mb-4">
+                You agree to use the Service in a manner that is lawful, respectful, and in accordance
+                with these Terms. You are responsible for your own conduct and for any consequences
+                thereof. This includes, but is not limited to, the following:
+              </p>
+              <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                <li>Treating other users with respect and courtesy</li>
+                <li>Not engaging in any form of harassment, discrimination, or hate speech</li>
+                <li>Not using the Service to promote illegal activities</li>
+                <li>Not engaging in any fraudulent or deceptive practices</li>
+              </ul>
+            </section>
+
             {/* Intellectual Property */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">7. Intellectual Property</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">9. Intellectual Property</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 The Service and its original content (excluding user-generated content), features,
                 and functionality are owned by Majestor and are protected by international copyright,
@@ -131,7 +163,7 @@ export default function TermsOfService() {
 
             {/* Disclaimers */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">8. Disclaimers</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">10. Disclaimers</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 THE SERVICE IS PROVIDED &quot;AS IS&quot; AND &quot;AS AVAILABLE&quot; WITHOUT WARRANTIES OF ANY KIND,
                 EITHER EXPRESS OR IMPLIED. WE DO NOT WARRANT THAT THE SERVICE WILL BE UNINTERRUPTED,
@@ -142,7 +174,7 @@ export default function TermsOfService() {
 
             {/* Limitation of Liability */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">9. Limitation of Liability</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">11. Limitation of Liability</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 TO THE MAXIMUM EXTENT PERMITTED BY LAW, MAJESTOR SHALL NOT BE LIABLE FOR ANY
                 INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING
@@ -152,7 +184,7 @@ export default function TermsOfService() {
 
             {/* Termination */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">10. Termination</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">12. Termination</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 We may terminate or suspend your account and access to the Service immediately,
                 without prior notice or liability, for any reason, including if you breach these
@@ -162,7 +194,7 @@ export default function TermsOfService() {
 
             {/* Changes to Terms */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">11. Changes to Terms</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">13. Changes to Terms</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 We reserve the right to modify these Terms at any time. We will notify users of
                 any material changes by posting the new Terms on the Service. Your continued use
@@ -172,7 +204,7 @@ export default function TermsOfService() {
 
             {/* Governing Law */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">12. Governing Law</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">14. Governing Law</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 These Terms shall be governed by and construed in accordance with the laws of Pakistan,
                 without regard to its conflict of law provisions. Any disputes arising under these
@@ -182,7 +214,7 @@ export default function TermsOfService() {
 
             {/* Contact */}
             <section>
-              <h2 className="text-2xl font-bold text-[#121826] mb-4">13. Contact Us</h2>
+              <h2 className="text-2xl font-bold text-[#121826] mb-4">15. Contact Us</h2>
               <p className="text-[#5A6275] leading-relaxed">
                 If you have any questions about these Terms of Service, please contact us at:
               </p>

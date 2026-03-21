@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
                 Policy
               </span>
             </h1>
-            <p className="text-[#5A6275]">Last updated: March 6, 2026</p>
+            <p className="text-[#5A6275]">Last updated: March 21, 2026</p>
           </div>
 
           {/* Content */}
