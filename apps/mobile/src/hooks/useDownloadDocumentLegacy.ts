@@ -5,6 +5,7 @@ import {Alert, Platform} from "react-native";
 import {shareAsync} from "expo-sharing";
 import {Document} from "@/src/types/document";
 import {useAuthStore} from "@/src/stores/authStore";
+import * as Sentry from "@sentry/react-native";
 
 interface DownloadState {
     isDownloading: boolean,
@@ -88,6 +89,7 @@ function useDownloadDocumentLegacy() {
                 Alert.alert("Download Error", errorMessage);
             }
         } catch (error: any) {
+            Sentry.captureException(error);
             const errorMessage = error.message || "An error occurred while downloading the document.";
             setState({isDownloading: false, error: errorMessage, progress: 0});
             Alert.alert("Download Error", errorMessage);

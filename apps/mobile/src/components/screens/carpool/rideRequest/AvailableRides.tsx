@@ -29,7 +29,6 @@ function AvailableRides() {
         const topic = '/topic/available-rides';
 
         const subscription = stompService.subscribe(topic, async (message) => {
-            console.log('New ride posted, refreshing available rides list:', message.body);
             await queryClient.invalidateQueries({ queryKey: ['ride'] });
         });
 

@@ -1,6 +1,7 @@
 import {Client, IMessage, StompSubscription} from '@stomp/stompjs';
-import {WEBSOCKET_URL} from '../constants';
 import SockJS from "sockjs-client";
+import {WEBSOCKET_URL} from '../constants';
+import * as Sentry from "@sentry/react-native";
 
 type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
 
@@ -22,23 +23,17 @@ class StompService {
 
             onConnect: () => {
                 this.status = 'CONNECTED';
-                console.log('STOMP Service: Connected successfully.');
                 this.pendingSubscription.forEach(callback => callback());
                 this.pendingSubscription = [];
             },
-
             onStompError: (frame) => {
-                console.error('STOMP Service: Broker reported error: ' + frame.headers['message']);
-                console.error('STOMP Service: Additional details: ' + frame.body);
+                Sentry.captureMessage(`STOMP Broker Error: ${frame.headers['message']}`);
             },
-
             onWebSocketError: (event) => {
-                console.error('STOMP Service: WebSocket error', event);
+                Sentry.captureException(new Error(`WebSocket Error: ${JSON.stringify(event)}`));
             },
-
             onDisconnect: () => {
                 this.status = 'DISCONNECTED';
-                console.log('STOMP Service: Disconnected.');
             }
         });
     }
@@ -71,13 +66,11 @@ class StompService {
             }
             const subscription = this.client.subscribe(topic, callback);
             this.subscriptions.set(topic, subscription);
-            console.log(`STOMP Service: Subscribed to ${topic}`);
         };
 
         if (this.status === 'CONNECTED') {
             subscribeAction();
         } else {
-            console.log(`STOMP Service: Queuing subscription for ${topic}`);
             this.pendingSubscription.push(subscribeAction);
         }
 
@@ -93,7 +86,7 @@ class StompService {
         if (this.status === 'CONNECTED') {
             this.client.publish({destination, body});
         } else {
-            console.error('Cannot publish: STOMP client is not connected.');
+            Sentry.captureMessage(`Attempted to publish to ${destination} while disconnected.`);
         }
     }
 
@@ -101,7 +94,6 @@ class StompService {
         if (this.subscriptions.has(topic)) {
             this.subscriptions.get(topic)?.unsubscribe();
             this.subscriptions.delete(topic);
-            console.log(`STOMP Service: Unsubscribed from ${topic}`);
         }
     }
 }

@@ -1,5 +1,6 @@
 import Toast from "react-native-toast-message";
 import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/react-query";
+import * as Sentry from "@sentry/react-native";
 import {
     acceptBookingApi,
     createBookingApi,
@@ -29,6 +30,7 @@ export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => v
             onCallback?.(data);
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Submit Booking",
@@ -69,6 +71,7 @@ export const useAcceptBooking = (onCallback?: () => void) => {
             onCallback?.();
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Accept Booking",
@@ -94,6 +97,7 @@ export const useRejectBooking = (onCallback?: () => void) => {
             onCallback?.();
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Reject Booking",

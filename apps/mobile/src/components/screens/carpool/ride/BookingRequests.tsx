@@ -39,8 +39,6 @@ export default function BookingRequests() {
         const topic = `/topic/ride-requests/${id}`
 
         const subscription = stompService.subscribe(topic, async (message) => {
-            console.log(`Real-time update for ride ${id}:`, message.body);
-
             await queryClient.invalidateQueries({queryKey: ["booking"]})
         });
 

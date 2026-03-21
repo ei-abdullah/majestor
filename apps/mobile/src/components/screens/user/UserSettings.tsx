@@ -1,6 +1,7 @@
 import React from "react";
 import {Text, View, ScrollView, Alert, Pressable} from "react-native";
 import {Controller, useForm} from "react-hook-form";
+import * as Sentry from "@sentry/react-native";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {validateEmail, validatePhone} from "@/src/utils/validation";
@@ -52,7 +53,7 @@ function UserSettings() {
         const userId = user!.id;
         uploadProfileImage({userId, formData}, {
             onError: (error: any) => {
-                console.error('Upload error:', error);
+                Sentry.captureException(new Error('Profile image upload failed'))
                 Alert.alert('Error', 'Failed to upload profile image');
             }
         });
@@ -66,7 +67,7 @@ function UserSettings() {
                 reset(data);
             },
             onError: (error: any) => {
-                console.error('Update error:', error);
+                Sentry.captureException(new Error('Failed to update personal information'));
                 Alert.alert('Error', 'Failed to update personal information');
             }
         });
@@ -232,7 +233,7 @@ function UserSettings() {
 
                     {/* Your Roles */}
                     <Card className="px-5 py-5 mb-6 mx-4">
-                        <Text className="text-base font-semibold text-gray-700 mb-4">Your Roles</Text>
+                        <Text className="text-base font-semibold text-gray-700 mb-4">Roles</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {userDetails.roles && userDetails.roles.length > 0 ? (
                                 userDetails.roles.map((role, index) => (

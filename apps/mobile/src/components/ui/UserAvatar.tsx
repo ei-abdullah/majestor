@@ -3,6 +3,7 @@ import {View, Text, Pressable, Image, Alert} from "react-native";
 import {AntDesign} from "@expo/vector-icons";
 import * as ImagePicker from 'expo-image-picker';
 import {LinearGradient} from 'expo-linear-gradient';
+import * as Sentry from '@sentry/react-native';
 
 type Props = {
     avatarUrl: string | null;
@@ -52,41 +53,32 @@ const UserAvatar = ({
             return;
         }
 
-        let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ["images"],
-            allowsMultipleSelection: false,
-            allowsEditing: true,
-            aspect: [1, 1],
-            quality: 0.8,
-        });
+        try {
+            let result = await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ["images"],
+                allowsMultipleSelection: false,
+                allowsEditing: true,
+                aspect: [1, 1],
+                quality: 0.8,
+            });
 
-        if (!result.canceled) {
-            const imageUri = result.assets[0].uri;
-            setAvatarUri(imageUri);
-
-            try {
-                // Create FormData with proper file structure
+            if (!result.canceled) {
+                const asset = result.assets[0];
                 const formData = new FormData();
+                const file = {
+                    uri: asset.uri,
+                    name: asset.fileName || `avatar_${Date.now()}.jpg`,
+                    type: asset.mimeType || 'image/jpeg',
+                } as any;
 
-                // Get file extension from URI or default to jpg
-                const uriParts = imageUri.split('.');
-                const fileType = uriParts[uriParts.length - 1];
-
-                formData.append('profileImage', {
-                    uri: imageUri,
-                    name: `profile_${Date.now()}.${fileType}`,
-                    type: `image/${fileType}`
-                } as any);
-
+                formData.append('file', file);
                 onAvatarUpdate(formData);
-            } catch (error) {
-                console.error('Error preparing upload:', error);
-                Alert.alert('Error', 'Failed to prepare image for upload');
-                setAvatarUri(avatarUrl);
             }
+        } catch (error) {
+            Sentry.captureException(error);
+            Alert.alert('Error', 'Could not open image library.');
         }
     };
-
 
     return (
         <Pressable
@@ -136,4 +128,3 @@ const UserAvatar = ({
 };
 
 export default UserAvatar;
-

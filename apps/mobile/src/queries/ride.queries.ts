@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient, UseQueryOptions} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import * as Sentry from "@sentry/react-native";
 
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
 import {cancelRideApi, completeRideApi, recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
@@ -18,6 +19,7 @@ export const useUploadRide = (onCallback?: (data: UploadRideResponse) => void) =
             onCallback?.(data);
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Submit Ride Request",
@@ -57,6 +59,7 @@ export const useCompleteRide = (onCallback?: () => void) => {
             onCallback?.();
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Complete Ride",
@@ -86,6 +89,7 @@ export const useCancelRide = (onCallback?: () => void) => {
             onCallback?.();
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Cancel Ride",
