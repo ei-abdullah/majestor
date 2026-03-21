@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {View, Text} from "react-native";
 import {useRouter} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
@@ -11,16 +11,32 @@ import GradientView from "@/src/components/ui/GradientView";
 import Card from "@/src/components/ui/Card";
 import AvailableRidesList from "@/src/components/screens/carpool/rideRequest/AvailableRidesList";
 import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
+import {useQueryClient} from "@tanstack/react-query";
+import {stompService} from "@/src/services/stompService";
 
 function AvailableRides() {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const {pickupLocationAddress, dropoffLocationAddress, numberOfPassengers, routeDistanceKm} = useRideRequestStore();
     const {setRide} = useSelectedRideStore();
 
-    const {data: recentRides, isPending, isError, refetch} = useRecentRides({
-        refetchInterval: 1000 * 60,
-    });
+    const {data: recentRides, isPending, isError, refetch} = useRecentRides();
+
+    useEffect(() => {
+        stompService.connect();
+
+        const topic = '/topic/available-rides';
+
+        const subscription = stompService.subscribe(topic, async (message) => {
+            console.log('New ride posted, refreshing available rides list:', message.body);
+            await queryClient.invalidateQueries({ queryKey: ['ride'] });
+        });
+
+        return () => {
+            stompService.unsubscribe(topic);
+        };
+    }, [queryClient]);
 
     function handleRidePress(ride: RecentRideResponse) {
         setRide(ride);

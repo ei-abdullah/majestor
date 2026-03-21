@@ -14,7 +14,7 @@ import {Ionicons} from "@expo/vector-icons";
 import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
 import {useCancelRide} from "@/src/queries/ride.queries";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
-import {stompService} from "@/src/services/StompService";
+import {stompService} from "@/src/services/stompService";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 
 import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";

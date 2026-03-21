@@ -43,6 +43,8 @@ public class RideService {
 
         try {
             ride = rideRepository.save(ride);
+            String topic = "/topic/available-rides";
+            webSocketService.sendMessage(topic, "NEW_RIDE");
         } catch (Exception e) {
             log.error("Error while saving ride: {}", e.getMessage());
             throw new RuntimeException("Failed to save ride: " + e.getMessage(), e);

@@ -56,6 +56,8 @@ public class BookingService {
 
         try {
             bookingRepository.save(booking);
+            String topic = "/topic/ride-requests/" + ride.getId();
+            webSocketService.sendMessage(topic, "NEW_BOOKING_REQUEST");
         } catch (Exception e) {
             log.error("Error while creating booking: {}", e.getMessage());
             throw new RuntimeException("Failed to create booking: " + e.getMessage(), e);

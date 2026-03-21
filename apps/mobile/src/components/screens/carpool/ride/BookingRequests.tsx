@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import {View, Text} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {useRouter} from "expo-router";
@@ -11,9 +11,12 @@ import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
 import GradientView from "@/src/components/ui/GradientView";
 import Card from "@/src/components/ui/Card";
 import BookingRequestsList from "@/src/components/screens/carpool/ride/BookingRequestsList";
+import {useQueryClient} from "@tanstack/react-query";
+import {stompService} from "@/src/services/stompService";
 
 export default function BookingRequests() {
     const router = useRouter();
+    const queryClient = useQueryClient();
 
     const {
         id,
@@ -26,9 +29,25 @@ export default function BookingRequests() {
     } = useRideStore();
 
     const {setBooking} = useSelectedBookingStore();
-    const {data: bookings, isPending, isError, refetch} = useGetBookings(id, {
-        refetchInterval: 1000 * 60,
-    });
+    const {data: bookings, isPending, isError, refetch} = useGetBookings(id);
+
+    useEffect(() => {
+        if(!id) return;
+
+        stompService.connect();
+
+        const topic = `/topic/ride-requests/${id}`
+
+        const subscription = stompService.subscribe(topic, async (message) => {
+            console.log(`Real-time update for ride ${id}:`, message.body);
+
+            await queryClient.invalidateQueries({queryKey: ["booking"]})
+        });
+
+        return () => {
+            stompService.unsubscribe(topic);
+        }
+    }, [id, queryClient]);
 
     function handleBookingPress(booking: GetBookingsResponse) {
         setBooking(booking);
