@@ -1,27 +1,31 @@
 import React, {useEffect, useRef, useState} from "react";
 import {View, Text, Image, Pressable} from "react-native";
-import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {useIsFocused} from "@react-navigation/native";
+import {useRouter} from "expo-router";
+import {useQueryClient} from "@tanstack/react-query";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
+import MapViewDirections from "react-native-maps-directions";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
-import CustomMarker from "@/src/components/ui/CustomMarker";
-import MapViewDirections from "react-native-maps-directions";
-import {GOOGLE_API_KEY} from "@/src/constants";
-import Card from "@/src/components/ui/Card";
-import {Feather, Ionicons} from "@expo/vector-icons";
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
-import {useMapLocation} from "@/src/hooks/useMapLocation";
-import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
-import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
-import {useRouter} from "expo-router";
-import Toast from "react-native-toast-message";
-import {RecentRideResponse} from "@/src/types/ride";
-import OutlineButton from "@/src/components/ui/OutlineButton";
-import {useCancelRide} from "@/src/queries/ride.queries";
-import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
-import {useIsFocused} from "@react-navigation/native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
+import {Ionicons} from "@expo/vector-icons";
 
+import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
+import {useCancelRide} from "@/src/queries/ride.queries";
+import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {stompService} from "@/src/services/StompService";
+import {useMapLocation} from "@/src/hooks/useMapLocation";
+
+import {CreateBookingDetails, CreateBookingResponse} from "@/src/types/booking";
+import {RecentRideResponse} from "@/src/types/ride";
+import {GOOGLE_API_KEY} from "@/src/constants";
+
+import Card from "@/src/components/ui/Card";
+import CustomMarker from "@/src/components/ui/CustomMarker";
+import PrimaryButton from "@/src/components/ui/PrimaryButton";
+import OutlineButton from "@/src/components/ui/OutlineButton";
+import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
 
 interface Props {
     ride: RecentRideResponse;
@@ -31,35 +35,22 @@ export default function RideDetails({ride}: Props) {
     const router = useRouter();
     const isFocused = useIsFocused();
     const insets = useSafeAreaInsets();
+    const queryClient = useQueryClient();
 
     const mapRef = useRef<MapView>(null);
     const {animateToLocation} = useMapLocation(mapRef);
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = ["30%", "55%", "100%"];
-
-    // Skip useEffect on the first mount to avoid routing on stale persisted status
     const hasMounted = useRef(false);
-
-    const rideRequest = useRideRequestStore();
-
-    const bookingId = useRideRequestStore((state) => state.bookingId);
-    const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
-
-    const hasBooked = Boolean(bookingId);
-    const isAccepted = bookingStatus === "ACCEPTED";
-    const headerOffset = insets.top + 72;
-
+    const isNavigating = useRef(false);
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
 
-    // On mount: if a previous booking for this ride was rejected,
-    // clear it so the user sees the Book button instead of "Waiting..."
-    useEffect(() => {
-        if (bookingStatus === "REJECTED") {
-            rideRequest.clearBookingDetails();
-        }
-    }, []);
+    const rideRequest = useRideRequestStore();
+    const bookingId = useRideRequestStore((state) => state.bookingId);
+    const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
+
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
 
     const {mutate: createBooking, isPending} = useCreateBooking((response: CreateBookingResponse) => {
         rideRequest.setBookingDetails(response.id, response.status);
@@ -70,15 +61,31 @@ export default function RideDetails({ride}: Props) {
         setOutcomeModal("cancelled");
     });
 
-    const {data: bookingStatusData} = useGetBookingStatus(bookingId!, {
-        refetchInterval: (query) => {
-            const status = query.state.data?.status;
-            if (status === "REJECTED" || status === "COMPLETED" || status === "CANCELLED") return false;
-            return 60 * 1000;
-        },
-        refetchIntervalInBackground: false,
-    });
+    const hasBooked = Boolean(bookingId);
+    const isAccepted = bookingStatus === "ACCEPTED";
+    const headerOffset = insets.top + 72;
+    const snapPoints = ["30%", "55%", "100%"];
 
+    // Effect: Subscribe to real-time booking status updates
+    useEffect(() => {
+        if (!bookingId) return;
+
+        stompService.connect();
+
+        const topic = `/topic/booking-status/${bookingId}`;
+
+        const subscription = stompService.subscribe(topic, async (message) => {
+            console.log(`Real-time update for booking ${bookingId}:`, message.body);
+
+            await queryClient.invalidateQueries({queryKey: ['bookingStatus', bookingId]});
+        });
+
+        return () => {
+            stompService.unsubscribe(topic);
+        };
+    }, [bookingId, queryClient]);
+
+    // Effect: On mount, clear a previously rejected booking
     useEffect(() => {
         if (!hasMounted.current) {
             hasMounted.current = true;
@@ -109,7 +116,19 @@ export default function RideDetails({ride}: Props) {
         }
     }, [bookingStatusData?.status]);
 
-    const isNavigating = useRef(false);
+    // Effect: On mount, clear a previously rejected booking
+    useEffect(() => {
+        if (bookingStatus === "REJECTED") {
+            rideRequest.clearBookingDetails();
+        }
+    }, []);
+
+    // Effect: Animate map to pickup location on mount
+    useEffect(() => {
+        if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
+            animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
+    }, []);
+
 
     function handleOutcomeDismiss() {
         const current = outcomeModal;
@@ -122,12 +141,6 @@ export default function RideDetails({ride}: Props) {
         }
         router.replace("/(tabs)/carpool");
     }
-
-
-    useEffect(() => {
-        if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
-            animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
-    }, []);
 
     function onSubmit() {
 

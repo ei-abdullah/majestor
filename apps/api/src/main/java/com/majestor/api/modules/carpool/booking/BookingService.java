@@ -1,6 +1,7 @@
 package com.majestor.api.modules.carpool.booking;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.infra.websocket.WebSocketService;
 import com.majestor.api.modules.carpool.booking.dto.CreateBookingDTO;
 import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
@@ -28,6 +29,7 @@ public class BookingService {
     private final RideRepository rideRepository;
     private final RideRequestRepository rideRequestRepository;
     private final BookingMapper bookingMapper;
+    private final WebSocketService webSocketService;
 
 
     public CreateBookingResponseDTO createBooking(
@@ -126,6 +128,10 @@ public class BookingService {
         try {
             bookingRepository.save(booking);
             rideRepository.save(ride);
+
+            // Broadcast booking status
+            String topic = "/topic/booking-status/" + bookingId;
+            webSocketService.sendMessage(topic, "STATUS_UPDATED");
         } catch (Exception e) {
             log.error("Error while accepting booking: {}", e.getMessage());
             throw new RuntimeException("Failed to accept booking: " + e.getMessage(), e);
@@ -142,6 +148,10 @@ public class BookingService {
 
         try {
             bookingRepository.save(booking);
+
+            // Broadcast booking status
+            String topic = "/topic/booking-status/" + bookingId;
+            webSocketService.sendMessage(topic, "STATUS_UPDATED");
         } catch (Exception e) {
             log.error("Error while rejecting booking: {}", e.getMessage());
             throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);

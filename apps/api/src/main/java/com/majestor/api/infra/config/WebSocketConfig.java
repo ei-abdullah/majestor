@@ -25,7 +25,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         log.info("Configuring message broker");
-        registry.enableSimpleBroker("/chatroom", "/private");
+        registry.enableSimpleBroker("/chatroom", "/private", "/topic");
         registry.setApplicationDestinationPrefixes("/app");
         log.info("Message broker configured");
     }
