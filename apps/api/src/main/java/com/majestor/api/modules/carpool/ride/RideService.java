@@ -1,6 +1,7 @@
 package com.majestor.api.modules.carpool.ride;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.infra.websocket.WebSocketService;
 import com.majestor.api.modules.carpool.booking.Booking;
 import com.majestor.api.modules.carpool.booking.BookingRepository;
 import com.majestor.api.modules.carpool.booking.BookingStatus;
@@ -28,6 +29,7 @@ public class RideService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final RideMapper rideMapper;
+    private final WebSocketService webSocketService;
 
     @Transactional
     public UploadRideResponseDTO uploadRide(
@@ -94,6 +96,10 @@ public class RideService {
         try {
             rideRepository.save(ride);
             bookingRepository.save(booking);
+
+            // Broadcast booking status
+            String topic = "/topic/booking-status/" + bookingId;
+            webSocketService.sendMessage(topic, "STATUS_UPDATED");
         } catch (Exception e) {
             log.error("Error while completing ride: {}", e.getMessage());
             throw new RuntimeException("Failed to complete ride: " + e.getMessage(), e);
@@ -114,6 +120,10 @@ public class RideService {
         try {
             rideRepository.save(ride);
             bookingRepository.save(booking);
+
+            // Broadcast booking status
+            String topic = "/topic/booking-status/" + bookingId;
+            webSocketService.sendMessage(topic, "STATUS_UPDATED");
         } catch (Exception e) {
             log.error("Error while cancelling booking: {}", e.getMessage());
             throw new RuntimeException("Failed to cancelling booking: " + e.getMessage(), e);
