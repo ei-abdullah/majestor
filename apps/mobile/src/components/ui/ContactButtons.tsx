@@ -1,6 +1,7 @@
 import React from "react";
 import {View, Text, Pressable, Linking, Alert} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
+import * as Sentry from "@sentry/react-native";
 
 type Props = {
     phoneNumber: string;
@@ -18,7 +19,7 @@ function ContactButtons({phoneNumber, className = ""}: Props) {
                     Alert.alert("Error", "Unable to make phone calls on this device");
                 }
             })
-            .catch((err) => console.error("Error opening phone:", err));
+            .catch((err) => Sentry.captureException(err));
     };
 
     const handleWhatsApp = () => {
@@ -37,7 +38,7 @@ function ContactButtons({phoneNumber, className = ""}: Props) {
                     );
                 }
             })
-            .catch((err) => console.error("Error opening WhatsApp:", err));
+            .catch((err) => Sentry.captureException(err));
     };
 
     return (

@@ -3,6 +3,7 @@ import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useLocationStore } from '@/src/stores/locationStore';
 import { DEFAULT_LOCATION, formatShortAddress, formatAddress } from '@/src/utils/location.utils';
+import * as Sentry from "@sentry/react-native";
 
 /**
  * Custom hook to handle location permissions and initial location fetch
@@ -39,6 +40,7 @@ export const useLocationPermissions = () => {
             setHasLocationPermission(true);
             await fetchAndSetLocation();
         } catch (error: any) {
+            Sentry.captureException(error);
             handleLocationError(error);
         }
     };
@@ -99,7 +101,7 @@ export const useLocationPermissions = () => {
     };
 
     const handleLocationError = (error: any) => {
-        console.error('Error fetching location:', error);
+        Sentry.captureException(error);
         setHasLocationPermission(false);
         setUserLocation({
             latitude: DEFAULT_LOCATION.latitude,
@@ -129,4 +131,3 @@ export const useLocationPermissions = () => {
         refetchLocation: fetchAndSetLocation
     };
 };
-

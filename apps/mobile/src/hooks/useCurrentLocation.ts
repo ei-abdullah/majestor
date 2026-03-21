@@ -1,6 +1,7 @@
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { formatShortAddress } from '@/src/utils/location.utils';
+import * as Sentry from "@sentry/react-native";
 
 /**
  * Hook to get the current location on demand
@@ -41,7 +42,7 @@ export const useCurrentLocation = () => {
                 address: formatShortAddress(address[0])
             };
         } catch (error) {
-            console.error('Error getting current location:', error);
+            Sentry.captureException(error);
             Toast.show({
                 type: 'error',
                 text1: '❌ Location Error',
@@ -55,4 +56,3 @@ export const useCurrentLocation = () => {
 
     return { getCurrentLocation };
 };
-

@@ -1,6 +1,7 @@
 import React from "react";
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import * as Sentry from "@sentry/react-native";
 
 import {
     getAllDocumentsApi,
@@ -48,6 +49,7 @@ export const useUploadDocument = (onCallback?: () => void) => {
             onCallback?.();
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: 'error',
                 text1: 'Upload Failed',
@@ -69,7 +71,17 @@ export const useLikeDocument = () => {
             documentId: number
         }) => likeDocumentApi(userId, documentId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["document"]})
+            await queryClient.invalidateQueries({queryKey: ["document"]});
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: 'error',
+                text1: 'Like Failed',
+                text2: error?.response?.data?.message || error?.message || 'There was an error liking the document',
+                position: 'top',
+                visibilityTime: 4000,
+            });
         }
     })
 }

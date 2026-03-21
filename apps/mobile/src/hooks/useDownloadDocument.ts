@@ -1,5 +1,6 @@
 import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing"
+import * as Sentry from "@sentry/react-native";
 
 import {getDownloadUrl} from "@/src/services/document.api";
 import {Alert} from "react-native";
@@ -28,15 +29,12 @@ async function useDownloadDocument({document}: { document: any }) {
 
         // // Check if a file exists and delete if it does (make it async)
         // const fileInfo = destinationFile.info();
-        // console.log(fileInfo);
         // if(destinationFile.exists) {
         //     destinationFile.delete();
         // }
 
         // Download the file
         const result = await FileSystem.File.downloadFileAsync(downloadUrl, destinationFile);
-
-        console.log('✅ Downloaded to cache:', result.uri);
 
         // 🎉 NEW: Immediately share so user can save anywhere they want
         if (await Sharing.isAvailableAsync()) {
@@ -54,7 +52,7 @@ async function useDownloadDocument({document}: { document: any }) {
             Alert.alert('Success', `File downloaded to app cache: ${fileName}`);
         }
     } catch (error: any) {
-        console.error("Download Failed:", error);
+        Sentry.captureException(error);
         Alert.alert('Error', 'Download failed. Please try again.');
     }
 }

@@ -75,8 +75,6 @@ export default function RideDetails({ride}: Props) {
         const topic = `/topic/booking-status/${bookingId}`;
 
         const subscription = stompService.subscribe(topic, async (message) => {
-            console.log(`Real-time update for booking ${bookingId}:`, message.body);
-
             await queryClient.invalidateQueries({queryKey: ['bookingStatus', bookingId]});
         });
 

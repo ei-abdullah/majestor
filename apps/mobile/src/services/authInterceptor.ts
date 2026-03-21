@@ -159,6 +159,7 @@ const performTokenRefresh = async (api: AxiosInstance): Promise<string> => {
         throw lastError;
 
     } catch (error: any) {
+        Sentry.captureException(error);
         // Final catch for "No refresh token" or exhausted retries
         if (error.message === "No refresh token available") {
              useAuthStore.getState().clearSession();

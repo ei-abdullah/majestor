@@ -1,5 +1,6 @@
 import {useMutation, useQueryClient} from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
+import * as Sentry from "@sentry/react-native";
 
 import {uploadRideRequestApi} from "@/src/services/rideRequest.api";
 import {UploadRideRequestDetails, UploadRideRequestResponse} from "@/src/types/rideRequest";
@@ -19,6 +20,7 @@ export const useUploadRideRequest = (onCallback?: (data:UploadRideRequestRespons
             onCallback?.(data);
         },
         onError: (error: any) => {
+            Sentry.captureException(error);
             Toast.show({
                 type: "error",
                 text1: "Failed to Submit Ride Request",

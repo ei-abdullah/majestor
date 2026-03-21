@@ -3,7 +3,7 @@ import {View} from "react-native";
 import {GooglePlacesAutocomplete} from "react-native-google-places-autocomplete";
 import {Feather} from "@expo/vector-icons";
 import {GOOGLE_API_KEY} from "@/src/constants";
-import {placeholder} from "@babel/types";
+import * as Sentry from "@sentry/react-native";
 
 const googlePlacesApiKey = GOOGLE_API_KEY;
 
@@ -33,6 +33,9 @@ function GoogleTextInput(
             placeholder={"Search"}
             debounce={200}
             enablePoweredByContainer={false}
+            GooglePlacesDetailsQuery={{
+                fields: 'geometry',
+            }}
             onPress={(data, details = null) => {
                 if (details?.geometry?.location) {
                     handlePress({
@@ -41,10 +44,10 @@ function GoogleTextInput(
                         address: data.description,
                     });
                 } else {
-                    console.error('No geometry details available');
+                    Sentry.captureMessage('Google Places: No geometry details available');
                 }
             }}
-            onFail={(error) => console.error('Google Places API Error:', error)}
+            onFail={(error) => Sentry.captureException(error)}
             query={{
                 key: googlePlacesApiKey,
                 language: 'en',

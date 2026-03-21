@@ -1,12 +1,13 @@
 import {View, Text, ActivityIndicator, Pressable, KeyboardAvoidingView, Platform} from "react-native";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAuthStore} from "@/src/stores/authStore";
-import {useCallback, useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {GiftedChat, IMessage, Bubble, Send, InputToolbar, Time} from "react-native-gifted-chat";
 import {Ionicons} from "@expo/vector-icons";
 import {useHeaderHeight} from "@react-navigation/elements";
+import {SafeAreaView} from "react-native-safe-area-context";
+import * as Sentry from "@sentry/react-native";
 import {stompService} from "@/src/services/stompService";
-
 
 function Chat() {
     const router = useRouter();
@@ -30,39 +31,41 @@ function Chat() {
 
         // 2. Define the private subscription path
         const subscriptionPath = `/private/${user.email}`;
-        console.log('📬 Subscribing to:', subscriptionPath);
 
         // 3. Use the service to subscribe
         stompService.subscribe(subscriptionPath, (message) => {
             if (message.body) {
-                const body = JSON.parse(message.body);
-                console.log('📩 Private message received:', body);
+                try {
+                    const body = JSON.parse(message.body);
 
-                if (body.senderName === receiverEmail) {
-                    const newMessage: IMessage = {
-                        _id: Math.random().toString(),
-                        text: body.message,
-                        createdAt: new Date(body.date),
-                        user: {
-                            _id: body.senderName,
-                            name: body.senderName,
-                        },
-                    };
-                    setMessages(previous => GiftedChat.append(previous, [newMessage]));
+                    // Only show messages from the person we are chatting with
+                    if (body.senderName === receiverEmail) {
+                        const newMessage: IMessage = {
+                            _id: Math.random().toString(),
+                            text: body.message,
+                            createdAt: new Date(body.date),
+                            user: {
+                                _id: body.senderName,
+                                name: body.senderName,
+                            },
+                        };
+                        setMessages(previous => GiftedChat.append(previous, [newMessage]));
+                    }
+                } catch (error) {
+                    Sentry.captureException(error);
                 }
             }
         });
 
         // 4. Return a cleanup function to unsubscribe when the screen closes
         return () => {
-            console.log('🔌 Unsubscribing from:', subscriptionPath);
             stompService.unsubscribe(subscriptionPath);
         };
     }, [user, receiverEmail]);
 
     const onSend = useCallback((newMessages: IMessage[] = []) => {
         if (!user) {
-            console.warn('⚠️ Cannot send: not connected');
+            Sentry.captureMessage("Chat: Cannot send message, user is not available");
             return;
         }
 
@@ -76,12 +79,7 @@ function Chat() {
             status: "MESSAGE"
         };
 
-        console.log('📤 Sending message:', payload);
-
-        stompService.publish(
-            "/app/private-message",
-            JSON.stringify(payload)
-        );
+        stompService.publish("/app/private-message", JSON.stringify(payload));
 
         setMessages(previous => GiftedChat.append(previous, newMessages));
     }, [user, receiverEmail]);
@@ -95,10 +93,9 @@ function Chat() {
     }
 
     return (
-
-        <View className="flex-1 bg-white">
+        <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
             {/* Simple header */}
-            <View className="bg-mj-blue px-4 py-4 pt-14">
+            <View className="bg-mj-blue px-4 py-4">
                 <View className="flex-row items-center">
                     <Pressable onPress={() => router.back()} className="mr-3">
                         <Ionicons name="chevron-back" size={28} color="white"/>
@@ -125,8 +122,8 @@ function Chat() {
             {/* Chat messages */}
             <KeyboardAvoidingView
                 style={{flex: 1}}
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-                keyboardVerticalOffset={100 + headerHeight}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                keyboardVerticalOffset={headerHeight}
             >
                 <GiftedChat
                     messages={messages}
@@ -236,7 +233,7 @@ function Chat() {
                     maxComposerHeight={150}
                 />
             </KeyboardAvoidingView>
-        </View>
+        </SafeAreaView>
     );
 }
 
