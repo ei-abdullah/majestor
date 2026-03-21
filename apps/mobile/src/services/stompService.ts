@@ -1,5 +1,5 @@
-import { Client, IMessage, StompSubscription } from '@stomp/stompjs';
-import { WEBSOCKET_URL } from '../constants';
+import {Client, IMessage, StompSubscription} from '@stomp/stompjs';
+import {WEBSOCKET_URL} from '../constants';
 import SockJS from "sockjs-client";
 
 type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
@@ -7,7 +7,7 @@ type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
 class StompService {
     private static instance: StompService;
     private client: Client;
-    private status: ConnectionStatus = 'DISCONNECTED';
+    status: ConnectionStatus = 'DISCONNECTED';
     private subscriptions: Map<string, StompSubscription> = new Map();
     private pendingSubscription: Array<() => void> = [];
 
@@ -44,7 +44,7 @@ class StompService {
     }
 
     public static getInstance(): StompService {
-        if(!StompService.instance) {
+        if (!StompService.instance) {
             StompService.instance = new StompService();
         }
 
@@ -87,6 +87,14 @@ class StompService {
                 this.unsubscribe(topic);
             },
         } as StompSubscription;
+    }
+
+    public publish(destination: string, body: string): void {
+        if (this.status === 'CONNECTED') {
+            this.client.publish({destination, body});
+        } else {
+            console.error('Cannot publish: STOMP client is not connected.');
+        }
     }
 
     public unsubscribe(topic: string): void {

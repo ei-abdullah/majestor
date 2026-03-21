@@ -3,18 +3,10 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCallback, useEffect, useRef, useState} from "react";
 import {GiftedChat, IMessage, Bubble, Send, InputToolbar, Time} from "react-native-gifted-chat";
-import {Client} from "@stomp/stompjs";
-import SockJs from "sockjs-client";
-import {WEBSOCKET_URL} from "@/src/constants";
-import * as encoding from "text-encoding";
 import {Ionicons} from "@expo/vector-icons";
 import {useHeaderHeight} from "@react-navigation/elements";
+import {stompService} from "@/src/services/stompService";
 
-const _global = global as any;
-if (!_global.TextEncoder) {
-    _global.TextEncoder = encoding.TextEncoder;
-    _global.TextDecoder = encoding.TextDecoder;
-}
 
 function Chat() {
     const router = useRouter();
@@ -27,80 +19,49 @@ function Chat() {
     const {user} = useAuthStore();
 
     const [messages, setMessages] = useState<IMessage[]>([]);
-    const stompClient = useRef<Client | null>(null);
-    const [connected, setConnected] = useState<boolean>(false);
+    // const [connected, setConnected] = useState<boolean>(false);
+    const connected = stompService.status === "CONNECTED";
 
     useEffect(() => {
         if (!user) return;
 
-        const client = new Client({
-            webSocketFactory: () => {
-                console.log('🔌 Creating WebSocket connection to:', WEBSOCKET_URL);
-                return new SockJs(WEBSOCKET_URL);
-            },
+        // 1. Ensure the service is trying to connect
+        stompService.connect();
 
-            heartbeatIncoming: 10000,
-            heartbeatOutgoing: 10000,
-            reconnectDelay: 5000,
+        // 2. Define the private subscription path
+        const subscriptionPath = `/private/${user.email}`;
+        console.log('📬 Subscribing to:', subscriptionPath);
 
-            onConnect: (frame) => {
-                console.log('✅ WebSocket connected successfully');
-                setConnected(true);
+        // 3. Use the service to subscribe
+        stompService.subscribe(subscriptionPath, (message) => {
+            if (message.body) {
+                const body = JSON.parse(message.body);
+                console.log('📩 Private message received:', body);
 
-                const subscriptionPath = `/private/${user.email}`;
-                console.log('📬 Subscribing to:', subscriptionPath);
-
-                client.subscribe(subscriptionPath, (message) => {
-                    if (message.body) {
-                        const body = JSON.parse(message.body);
-                        console.log('📩 Private message received:', body);
-
-                        if (body.senderName === receiverEmail) {
-                            const newMessage: IMessage = {
-                                _id: Math.random().toString(),
-                                text: body.message,
-                                createdAt: new Date(body.date),
-                                user: {
-                                    _id: body.senderName,
-                                    name: body.senderName,
-                                },
-                            };
-                            setMessages(previous => GiftedChat.append(previous, [newMessage]));
-                        }
-                    }
-                });
-            },
-
-            onStompError: (frame) => {
-                console.error('❌ STOMP error:', frame.headers['message']);
-                console.error('Details:', frame.body);
-            },
-
-            onWebSocketError: (event) => {
-                console.error('❌ WebSocket error:', event);
-            },
-
-            onWebSocketClose: (event) => {
-                console.warn('⚠️ WebSocket closed:', event);
-                setConnected(false);
-            },
-
-            debug: (str) => {
-                console.log('🔍 STOMP debug:', str);
-            },
+                if (body.senderName === receiverEmail) {
+                    const newMessage: IMessage = {
+                        _id: Math.random().toString(),
+                        text: body.message,
+                        createdAt: new Date(body.date),
+                        user: {
+                            _id: body.senderName,
+                            name: body.senderName,
+                        },
+                    };
+                    setMessages(previous => GiftedChat.append(previous, [newMessage]));
+                }
+            }
         });
 
-        client.activate();
-        stompClient.current = client;
-
+        // 4. Return a cleanup function to unsubscribe when the screen closes
         return () => {
-            console.log('🔌 Disconnecting WebSocket');
-            client.deactivate();
+            console.log('🔌 Unsubscribing from:', subscriptionPath);
+            stompService.unsubscribe(subscriptionPath);
         };
     }, [user, receiverEmail]);
 
     const onSend = useCallback((newMessages: IMessage[] = []) => {
-        if (!stompClient.current || !connected || !user) {
+        if (!user) {
             console.warn('⚠️ Cannot send: not connected');
             return;
         }
@@ -117,13 +78,13 @@ function Chat() {
 
         console.log('📤 Sending message:', payload);
 
-        stompClient.current.publish({
-            destination: "/app/private-message",
-            body: JSON.stringify(payload)
-        });
+        stompService.publish(
+            "/app/private-message",
+            JSON.stringify(payload)
+        );
 
         setMessages(previous => GiftedChat.append(previous, newMessages));
-    }, [connected, user, receiverEmail]);
+    }, [user, receiverEmail]);
 
     if (!user) {
         return (
