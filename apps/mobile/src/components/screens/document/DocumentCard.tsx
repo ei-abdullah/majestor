@@ -36,10 +36,10 @@ function DocumentCard({document}: { document: any }) {
     return (
         <React.Fragment>
             <Pressable onPress={() => setShowImageModal(true)}>
-                <Card className={"mb-4 py-6"}>
+                <Card className={"mb-4 py-0 overflow-hidden"}>
                     <ImageBackground
                         source={{uri: imageUri}}
-                        style={{width: '100%', height: 120}}
+                        style={{width: '100%', height: 140, borderRadius: 16, overflow: 'hidden'}}
                         blurRadius={8}
                         resizeMode="cover"
                     >
@@ -47,7 +47,8 @@ function DocumentCard({document}: { document: any }) {
                             backgroundColor: 'rgba(58,111,248,0.59)',
                             flex: 1,
                             padding: 16,
-                            justifyContent: 'space-between'
+                            justifyContent: 'space-between',
+                            borderRadius: 16
                         }}>
                             {/* Top row - Name and DocType */}
                             <View className={"flex-row justify-between items-start"}>
@@ -85,7 +86,7 @@ function DocumentCard({document}: { document: any }) {
                                 <Text className={"text-white text-sm font-medium"}>
                                     {document.year} • {document.semesterType}
                                 </Text >
-                                <Text className={"text-white text-sm font-medium"}>
+                                <Text className={"text-white text-[12px] font-medium"}>
                                     {document.course}
                                 </Text>
                             </View>

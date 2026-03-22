@@ -1,7 +1,9 @@
 import React, {useEffect} from "react";
-import {Text, View} from "react-native";
+import {Text, View, Linking, Pressable} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {isAxiosError} from "axios";
+import {LinearGradient} from "expo-linear-gradient";
+import {Feather} from "@expo/vector-icons";
 
 import {useAcademiaStore} from "@/src/stores/academiaStore";
 import {signup} from "@/src/services/auth.api";
@@ -25,12 +27,23 @@ interface Props {
 }
 
 function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
-    const {control, watch, handleSubmit, formState: {errors}} = useForm();
+    const {control, watch, handleSubmit, formState: {errors}} = useForm({
+        defaultValues: {
+            username: "",
+            email: "",
+            password: "",
+            university: "",
+            faculty: "",
+            termsAccepted: false
+        }
+    });
     const {universities, fetchUniversities, isLoading: universitiesLoading, error} = useAcademiaStore();
 
     const selectedUniversity = watch("university");
+    const termsAccepted = watch("termsAccepted");
+
     const faculties = selectedUniversity
-        ? universities.find(university => university.id === selectedUniversity)?.faculties || []
+        ? universities.find(university => university.id === parseInt(selectedUniversity))?.faculties || []
         : [];
 
     useEffect(() => {
@@ -56,6 +69,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
 
             delete newData.university;
             delete newData.faculty;
+            delete newData.termsAccepted;
 
             const response = await signup(newData);
             setMessage({
@@ -110,7 +124,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* Username */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
-                    <Text className={"font-semibold"}>Username</Text>
+                    <Text className={"font-semibold text-mj-text-main"}>Username</Text>
                     {
                         errors.username &&
                         <ErrorText message={errors.username.message as string}/>
@@ -136,7 +150,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* University Email */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
-                    <Text className={"font-semibold"}>University Email</Text>
+                    <Text className={"font-semibold text-mj-text-main"}>University Email</Text>
                     {
                         errors.email &&
                         <ErrorText message={errors.email.message as string}/>
@@ -164,7 +178,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* Password */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
-                    <Text className={"font-semibold"}>Password</Text>
+                    <Text className={"font-semibold text-mj-text-main"}>Password</Text>
                     {
                         errors.password &&
                         <ErrorText message={errors.password.message as string}/>
@@ -192,7 +206,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* University */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
-                    <Text className={"font-semibold"}>University</Text>
+                    <Text className={"font-semibold text-mj-text-main"}>University</Text>
                     {
                         errors.university &&
                         <ErrorText message={errors.university.message as string}/>
@@ -224,7 +238,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                 selectedUniversity && (
                     <View className={"flex flex-col gap-2"}>
                         <View className={"flex flex-row justify-between items-end"}>
-                            <Text className={"font-semibold"}>Faculty</Text>
+                            <Text className={"font-semibold text-mj-text-main"}>Faculty</Text>
                             {
                                 errors.faculty &&
                                 <ErrorText message={errors.faculty.message as string}/>
@@ -251,8 +265,58 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                 )
             }
 
+            {/* Terms and Privacy Checkbox */}
+            <View className="flex-col gap-2">
+                <Controller
+                    control={control}
+                    name="termsAccepted"
+                    render={({field: {onChange, value}}) => (
+                        <View className="flex-row items-start gap-3">
+                            <Pressable
+                                onPress={() => onChange(!value)}
+                                className="mt-0.5"
+                            >
+                                {value ? (
+                                    <LinearGradient
+                                        colors={["#3A6FF8", "#8DDDD3"]}
+                                        start={{x: 0, y: 0}}
+                                        end={{x: 1, y: 1}}
+                                        className="w-6 h-6 rounded-md items-center justify-center"
+                                    >
+                                        <Feather name="check" size={16} color="white"/>
+                                    </LinearGradient>
+                                ) : (
+                                    <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
+                                )}
+                            </Pressable>
+
+                            <View className="flex-1">
+                                <Text className="text-sm text-mj-text-secondary leading-5">
+                                    I agree to the{" "}
+                                    <Text
+                                        onPress={() => Linking.openURL('https://www.majestor.org/terms')}
+                                        className="text-mj-blue font-semibold"
+                                    >
+                                        Terms of Service
+                                    </Text>
+                                    {" "}and{" "}
+                                    <Text
+                                        onPress={() => Linking.openURL('https://www.majestor.org/privacy')}
+                                        className="text-mj-blue font-semibold"
+                                    >
+                                        Privacy Policy
+                                    </Text>
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+                />
+            </View>
+
             <PrimaryButton
-                title={loading ? "Loading..." : "Create Account"} className={"w-full"} disabled={loading}
+                title={loading ? "Loading..." : "Create Account"}
+                className={"w-full"}
+                disabled={loading || !termsAccepted}
                 onPress={handleSubmit(onSubmit)}/>
         </View>
     );

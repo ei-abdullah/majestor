@@ -221,7 +221,8 @@ export default function BookRide() {
                         </View>
                     </Pressable>
                 ) : (
-                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg" style={{top: headerOffset}}>
+                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg"
+                          style={{top: headerOffset}}>
                         <View className="flex-row items-center justify-between mb-3">
                             <Text className="text-base font-semibold">Select Locations</Text>
                             <Pressable onPress={() => setIsExpanded(false)} className="p-1">
@@ -328,13 +329,11 @@ export default function BookRide() {
                         </View>
 
                         {/* Submit */}
-                        <View className="z-0">
-                            <PrimaryButton
-                                title={isPending ? "Finding Rides" : "Find Rides"}
-                                onPress={handleSubmit(onSubmit)}
-                                disabled={isPending}
-                            />
-                        </View>
+                        <PrimaryButton
+                            title={isPending ? "Finding Rides" : "Find Rides"}
+                            onPress={handleSubmit(onSubmit)}
+                            disabled={isPending}
+                        />
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>

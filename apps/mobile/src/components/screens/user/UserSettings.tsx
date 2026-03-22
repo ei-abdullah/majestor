@@ -1,5 +1,5 @@
 import React from "react";
-import {Text, View, ScrollView, Alert, Pressable} from "react-native";
+import {Text, View, ScrollView, Alert, Pressable, Linking} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
 
@@ -247,6 +247,40 @@ function UserSettings() {
                             ) : (
                                 <Text className="text-gray-500 text-sm">No roles assigned</Text>
                             )}
+                        </View>
+                    </Card>
+
+                    {/* Legal */}
+                    <Card className="px-5 py-5 mb-6 mx-4">
+                        <Text className="text-base font-semibold text-gray-700 mb-4">Legal</Text>
+                        <View className="gap-4">
+                            <Pressable
+                                onPress={() => Linking.openURL('https://www.majestor.org/terms')}
+                                className="flex-row items-center justify-between active:opacity-60"
+                            >
+                                <View className="flex-row items-center gap-3">
+                                    <View className="bg-blue-100 rounded-lg p-2">
+                                        <Feather name="file-text" size={18} color="#2563EB"/>
+                                    </View>
+                                    <Text className="text-gray-700 font-medium">Terms of Service</Text>
+                                </View>
+                                <Feather name="chevron-right" size={18} color="#9CA3AF"/>
+                            </Pressable>
+
+                            <View className="h-[1px] bg-gray-100 w-full" />
+
+                            <Pressable
+                                onPress={() => Linking.openURL('https://www.majestor.org/privacy')}
+                                className="flex-row items-center justify-between active:opacity-60"
+                            >
+                                <View className="flex-row items-center gap-3">
+                                    <View className="bg-green-100 rounded-lg p-2">
+                                        <Feather name="shield" size={18} color="#059669"/>
+                                    </View>
+                                    <Text className="text-gray-700 font-medium">Privacy Policy</Text>
+                                </View>
+                                <Feather name="chevron-right" size={18} color="#9CA3AF"/>
+                            </Pressable>
                         </View>
                     </Card>
 
