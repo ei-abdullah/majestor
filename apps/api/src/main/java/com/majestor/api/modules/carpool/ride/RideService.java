@@ -8,6 +8,9 @@ import com.majestor.api.modules.carpool.booking.BookingStatus;
 import com.majestor.api.modules.carpool.ride.dto.GetRecentRidesDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
+import com.majestor.api.modules.carpool.rideRequest.RideRequest;
+import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
+import com.majestor.api.modules.carpool.rideRequest.RideRequestStatus;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +30,7 @@ public class RideService {
 
     private final RideRepository rideRepository;
     private final UserRepository userRepository;
+    private final RideRequestRepository rideRequestRepository;
     private final BookingRepository bookingRepository;
     private final RideMapper rideMapper;
     private final WebSocketService webSocketService;
@@ -92,12 +96,16 @@ public class RideService {
         Booking booking = bookingRepository.findById(bookingId)
                         .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
+        RideRequest rideRequest = booking.getBookedRide();
+
         ride.setRideStatus(RideStatus.COMPLETED);
         booking.setStatus(BookingStatus.COMPLETED);
+        rideRequest.setRideRequestStatus(RideRequestStatus.COMPLETED);
 
         try {
             rideRepository.save(ride);
             bookingRepository.save(booking);
+            rideRequestRepository.save(rideRequest);
 
             // Broadcast booking status
             String topic = "/topic/booking-status/" + bookingId;
