@@ -71,6 +71,10 @@ public class RideRequest {
     @PositiveOrZero(message = "Route total distance must be a positive number")
     private BigDecimal routeDistanceKm;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private RideRequestStatus rideRequestStatus;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ride_requester_id", nullable = false)
     private User rideRequester;

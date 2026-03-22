@@ -10,3 +10,7 @@ export const uploadRideRequestApi = async (
     const res: AxiosResponse<UploadRideRequestResponse> = await api.post(`/rideRequest/uploadRideRequest/${userId}`, uploadRideRequestDetails);
     return res.data!;
 }
+
+export const cancelRideRequestApi = async (rideRequestId: number): Promise<void> => {
+    await api.patch(`/cancelRideRequest/${rideRequestId}`);
+}
