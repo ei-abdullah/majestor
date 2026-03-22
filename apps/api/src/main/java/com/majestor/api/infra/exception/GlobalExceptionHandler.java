@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.ValidationException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -258,6 +259,30 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
     }
 
+    // Data integrity exception (e.g., unique constraint violation, foreign key violation)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiError> handleDataIntegrityViolation(
+            DataIntegrityViolationException e,
+            HttpServletRequest request
+    ) {
+        String message = "A database constraint was violated. Please check your input.";
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        // Specifically check for unique constraint violations
+        if (e.getMostSpecificCause().getMessage().contains("violates unique constraint")) {
+            message = "This resource already exists. Please provide a unique value.";
+            status = HttpStatus.CONFLICT; // 409 is the correct status for duplicates
+        }
+
+        ApiError apiError = ApiError.builder()
+                .path(request.getRequestURI())
+                .message(message)
+                .statusCode(status.value())
+                .instantDateTime(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, status);
+    }
 
     // Generic exception
     @ExceptionHandler(Exception.class)

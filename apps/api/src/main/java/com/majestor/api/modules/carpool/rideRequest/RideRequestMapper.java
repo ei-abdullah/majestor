@@ -31,6 +31,7 @@ public class RideRequestMapper {
                 .numberOfPassengers(uploadRideRequestDTO.getNumberOfPassengers())
                 .routeDistanceKm(uploadRideRequestDTO.getRouteDistanceKm())
                 .phone(uploadRideRequestDTO.getPhone())
+                .rideRequestStatus(RideRequestStatus.ACTIVE)
                 .rideRequester(user)
                 .createdAt(Instant.now())
                 .build();
