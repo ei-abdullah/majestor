@@ -19,12 +19,19 @@ function AvailableRides() {
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    const {id, pickupLocationAddress, dropoffLocationAddress, numberOfPassengers, routeDistanceKm, clearBookingDetails} = useRideRequestStore();
+    const {
+        id,
+        pickupLocationAddress,
+        dropoffLocationAddress,
+        numberOfPassengers,
+        routeDistanceKm,
+        clearRideRequestDetails
+    } = useRideRequestStore();
     const {setRide} = useSelectedRideStore();
 
-    const {data: recentRides, isPending: isLoadingRides , isError, refetch} = useRecentRides();
+    const {data: recentRides, isPending: isLoadingRides, isError, refetch} = useRecentRides();
     const {mutate: cancelRideRequest, isPending: isCancelingRequest} = useCancelRideRequest(() => {
-        clearBookingDetails();
+        clearRideRequestDetails();
         router.replace("/(tabs)/carpool")
     });
 
@@ -48,7 +55,7 @@ function AvailableRides() {
     }
 
     function handleCancelSearch() {
-        cancelRideRequest(id)
+        cancelRideRequest(id);
     }
 
     const searchHeader = (

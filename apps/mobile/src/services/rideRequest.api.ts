@@ -12,5 +12,5 @@ export const uploadRideRequestApi = async (
 }
 
 export const cancelRideRequestApi = async (rideRequestId: number): Promise<void> => {
-    await api.patch(`/cancelRideRequest/${rideRequestId}`);
+    await api.patch(`/rideRequest/cancelRideRequest/${rideRequestId}`);
 }
