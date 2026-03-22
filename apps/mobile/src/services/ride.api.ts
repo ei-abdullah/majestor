@@ -21,6 +21,10 @@ export const completeRideApi = async (rideId: number, bookingId: number): Promis
     await api.patch(`/ride/completeRide/${rideId}/${bookingId}`);
 }
 
-export const cancelRideApi = async (rideId: number, bookingId: number): Promise<void> => {
-    await api.patch(`/ride/cancelRide/${rideId}/${bookingId}`);
+export const cancelBookedRideApi = async (rideId: number, bookingId: number): Promise<void> => {
+    await api.patch(`/ride/cancelBookedRide/${rideId}/${bookingId}`);
+}
+
+export const cancelPostedRideApi = async (rideId: number): Promise<void> => {
+    await api.patch(`/ride/cancelPostedRide/${rideId}`);
 }

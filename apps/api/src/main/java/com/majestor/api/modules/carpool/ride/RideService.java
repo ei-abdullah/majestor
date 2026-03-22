@@ -94,7 +94,7 @@ public class RideService {
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
 
         Booking booking = bookingRepository.findById(bookingId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
         RideRequest rideRequest = booking.getBookedRide();
 
@@ -117,12 +117,12 @@ public class RideService {
     }
 
     @Transactional
-    public void cancelRide(Long rideId, Long bookingId) {
+    public void cancelBookedRide(Long rideId, Long bookingId) {
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
 
         Booking booking = bookingRepository.findById(bookingId)
-                        .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
 
         ride.setRideStatus(RideStatus.CANCELLED);
         booking.setStatus(BookingStatus.CANCELLED);
@@ -138,5 +138,35 @@ public class RideService {
             log.error("Error while cancelling booking: {}", e.getMessage());
             throw new RuntimeException("Failed to cancelling booking: " + e.getMessage(), e);
         }
+    }
+
+    @Transactional
+    public void cancelPostedRide(Long rideId) {
+        Ride ride = rideRepository.findById(rideId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        if (ride.getRideStatus() != RideStatus.ACTIVE) {
+            throw new IllegalStateException("Only active rides can be cancelled");
+        }
+
+        ride.setRideStatus(RideStatus.CANCELLED);
+
+        try {
+            rideRepository.save(ride);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to cancel ride: " + e.getMessage(), e);
+        }
+
+        // Canceling booking to ride
+        List<Booking> pendingBookings = bookingRepository.findByRideId(rideId);
+
+        for(Booking booking : pendingBookings) {
+            booking.setStatus(BookingStatus.CANCELLED);
+
+            String topic = "/topic/booking-status/" + booking.getId();
+            webSocketService.sendMessage(topic, "STATUS_UPDATED");
+        }
+
+        bookingRepository.saveAll(pendingBookings);
     }
 }

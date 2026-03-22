@@ -3,7 +3,13 @@ import Toast from "react-native-toast-message";
 import * as Sentry from "@sentry/react-native";
 
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
-import {cancelRideApi, completeRideApi, recentRidesApi, uploadRideApi} from "@/src/services/ride.api";
+import {
+    cancelBookedRideApi,
+    cancelPostedRideApi,
+    completeRideApi,
+    recentRidesApi,
+    uploadRideApi
+} from "@/src/services/ride.api";
 
 
 export const useUploadRide = (onCallback?: (data: UploadRideResponse) => void) => {
@@ -79,7 +85,7 @@ export const useCancelRide = (onCallback?: () => void) => {
         mutationFn: ({rideId, bookingId}: {
             rideId: number,
             bookingId: number
-        }) => cancelRideApi(rideId, bookingId),
+        }) => cancelBookedRideApi(rideId, bookingId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ["ride"]})
             Toast.show({
@@ -93,7 +99,32 @@ export const useCancelRide = (onCallback?: () => void) => {
             Toast.show({
                 type: "error",
                 text1: "Failed to Cancel Ride",
-                text2: error?.response?.data?.message || error?.message || "There was an error cancelling your ride",
+                position: "top",
+                visibilityTime: 4000,
+            })
+        }
+    })
+}
+
+export const useCancelPostedRide = (onCallback?: () => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationKey: ["ride"],
+        mutationFn: (rideId: number) => cancelPostedRideApi(rideId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            Toast.show({
+                type: "success",
+                text1: "Ride Cancelled Successfully",
+            })
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: "error",
+                text1: "Failed to Cancel Ride",
                 position: "top",
                 visibilityTime: 4000,
             })

@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -70,12 +71,27 @@ public class RideController {
      * Cancel a ride. Only the ride poster can cancel the ride.
      * Convert the ride status from ACCEPTED to CANCELLED
      */
-    @PatchMapping("/cancelRide/{rideId}/{bookingId}")
-    public ResponseEntity<?> cancelRide(
+    @PatchMapping("/cancelBookedRide/{rideId}/{bookingId}")
+    public ResponseEntity<?> cancelBookedRide(
             @PathVariable @NotNull @Positive Long rideId,
             @PathVariable @NotNull @Positive Long bookingId
     ) {
-        rideService.cancelRide(rideId, bookingId);
+        rideService.cancelBookedRide(rideId, bookingId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
+    /**
+     * Cancel a posted ride that has no accepted bookings.
+     * Used by the driver
+     */
+    @PatchMapping("/cancelPostedRide/{rideId}")
+    public ResponseEntity<?> cancelPostedRide(
+            @PathVariable @NotNull @Positive Long rideId
+    ) {
+        rideService.cancelPostedRide(rideId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
