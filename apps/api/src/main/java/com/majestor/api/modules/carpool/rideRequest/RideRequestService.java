@@ -8,6 +8,7 @@ import com.majestor.api.modules.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -35,5 +36,20 @@ public class RideRequestService {
         }
 
         return rideRequestMapper.toUploadRideRequestResponseDTO(rideRequest);
+    }
+
+    @Transactional
+    public void cancelRideRequest(Long rideRequestId) {
+        RideRequest rideRequest = rideRequestRepository.findById(rideRequestId)
+                .orElseThrow(() -> new ResourceNotFoundException("RideRequest not found with id: " + rideRequestId));
+
+        rideRequest.setRideRequestStatus(RideRequestStatus.CANCELLED);
+
+        try {
+            rideRequestRepository.save(rideRequest);
+        } catch (Exception e) {
+            log.error("Error while cancelling ride request: {}", e.getMessage());
+            throw new RuntimeException("Failed to save ride request: " + e.getMessage(), e);
+        }
     }
 }

@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -29,5 +30,17 @@ public class RideRequestController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(uploadedRide);
+    }
+
+    @PatchMapping("/cancelRideRequest/{rideRequestId}")
+    public ResponseEntity<?> cancelRideRequest(
+            @PathVariable Long rideRequestId
+     ) {
+
+        rideRequestService.cancelRideRequest(rideRequestId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 }

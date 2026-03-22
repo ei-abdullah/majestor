@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {View, Text} from "react-native";
+import {View, Text, Pressable, ActivityIndicator} from "react-native";
 import {useRouter} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 
@@ -13,15 +13,20 @@ import AvailableRidesList from "@/src/components/screens/carpool/rideRequest/Ava
 import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
 import {useQueryClient} from "@tanstack/react-query";
 import {stompService} from "@/src/services/stompService";
+import {useCancelRideRequest} from "@/src/queries/rideRequest.queries";
 
 function AvailableRides() {
     const router = useRouter();
     const queryClient = useQueryClient();
 
-    const {pickupLocationAddress, dropoffLocationAddress, numberOfPassengers, routeDistanceKm} = useRideRequestStore();
+    const {id, pickupLocationAddress, dropoffLocationAddress, numberOfPassengers, routeDistanceKm, clearBookingDetails} = useRideRequestStore();
     const {setRide} = useSelectedRideStore();
 
-    const {data: recentRides, isPending, isError, refetch} = useRecentRides();
+    const {data: recentRides, isPending: isLoadingRides , isError, refetch} = useRecentRides();
+    const {mutate: cancelRideRequest, isPending: isCancelingRequest} = useCancelRideRequest(() => {
+        clearBookingDetails();
+        router.replace("/(tabs)/carpool")
+    });
 
     useEffect(() => {
         stompService.connect();
@@ -42,11 +47,27 @@ function AvailableRides() {
         router.push("/(tabs)/carpool/rideRequest/rideDetails");
     }
 
+    function handleCancelSearch() {
+        cancelRideRequest(id)
+    }
+
     const searchHeader = (
         <View className="mb-4">
             <Card className="px-5 py-5 mb-4">
-                <View className="items-center pb-3 mb-3 border-b border-gray-200">
+                <View className="relative flex-row items-center justify-center border-b border-gray-200 pb-3 mb-3">
                     <Text className="text-sm font-bold text-mj-text-main">Your Search</Text>
+                    <Pressable
+                        onPress={handleCancelSearch}
+                        className="absolute -right-2 -top-2"
+                        hitSlop={20}
+                        disabled={isCancelingRequest}
+                    >
+                        {isCancelingRequest ? (
+                            <ActivityIndicator size="small" color="#9CA3AF" />
+                        ) : (
+                            <Ionicons name="close-circle" size={24} color="#9CA3AF"/>
+                        )}
+                    </Pressable>
                 </View>
 
                 <View className="mb-4 py-3">
@@ -73,7 +94,7 @@ function AvailableRides() {
                 </View>
             </Card>
 
-            {!isPending && !isError && (
+            {!isLoadingRides && !isError && (
                 <Text className="text-xs font-semibold text-mj-text-secondary mb-2 uppercase tracking-wide">
                     {recentRides.length > 0 ? `${recentRides.length} ride${recentRides.length === 1 ? "" : "s"} found` : "Available Rides"}
                 </Text>
@@ -86,7 +107,7 @@ function AvailableRides() {
             <AvailableRidesList
                 rides={recentRides!}
                 rideDistance={routeDistanceKm}
-                isPending={isPending}
+                isPending={isLoadingRides}
                 isError={isError}
                 onRefetch={refetch}
                 header={searchHeader}
