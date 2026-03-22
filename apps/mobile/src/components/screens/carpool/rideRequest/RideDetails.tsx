@@ -135,7 +135,7 @@ export default function RideDetails({ride}: Props) {
         if (current === "completed") {
             rideRequest.clearRideRequestDetails();
         } else if (current === "cancelled") {
-            rideRequest.clearBookingDetails();
+            rideRequest.clearRideRequestDetails();
         }
         router.replace("/(tabs)/carpool");
     }

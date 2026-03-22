@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {View, Text} from "react-native";
+import {View, Text, ActivityIndicator, Pressable} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {useRouter} from "expo-router";
 
@@ -13,6 +13,8 @@ import Card from "@/src/components/ui/Card";
 import BookingRequestsList from "@/src/components/screens/carpool/ride/BookingRequestsList";
 import {useQueryClient} from "@tanstack/react-query";
 import {stompService} from "@/src/services/stompService";
+import {useCancelPostedRide} from "@/src/queries/ride.queries";
+import OutlineButton from "@/src/components/ui/OutlineButton";
 
 export default function BookingRequests() {
     const router = useRouter();
@@ -26,13 +28,19 @@ export default function BookingRequests() {
         vehicleType,
         availableSeats,
         routeDistanceKm,
+        clearRideDetails,
     } = useRideStore();
 
     const {setBooking} = useSelectedBookingStore();
     const {data: bookings, isPending, isError, refetch} = useGetBookings(id);
 
+    const {mutate: cancelPostedRide, isPending: isCancelling} = useCancelPostedRide(() => {
+        clearRideDetails();
+        router.replace("/(tabs)/carpool");
+    });
+
     useEffect(() => {
-        if(!id) return;
+        if (!id) return;
 
         stompService.connect();
 
@@ -57,8 +65,20 @@ export default function BookingRequests() {
     const rideHeader = (
         <View className="mb-4">
             <Card className="px-5 py-5 mb-4">
-                <View className="items-center pb-3 mb-3 border-b border-gray-200">
+                <View className="relative flex-row items-center justify-center pb-3 mb-3 border-b border-gray-200">
                     <Text className="text-sm font-bold text-mj-text-main">Your Ride</Text>
+                    <Pressable
+                        onPress={() => cancelPostedRide(id)}
+                        className="absolute -right-2 -top-2"
+                        hitSlop={20}
+                        disabled={isCancelling}
+                    >
+                        {isCancelling ? (
+                            <ActivityIndicator size="small" color="#9CA3AF"/>
+                        ) : (
+                            <Ionicons name="close-circle" size={24} color="#9CA3AF"/>
+                        )}
+                    </Pressable>
                 </View>
 
                 {/* Route */}
@@ -99,14 +119,6 @@ export default function BookingRequests() {
                     </View>
                 </View>
             </Card>
-
-            {!isPending && !isError && (
-                <Text className="text-xs font-semibold text-mj-text-secondary mb-2 uppercase tracking-wide">
-                    {bookings.length > 0
-                        ? `${bookings.length} booking request${bookings.length === 1 ? "" : "s"}`
-                        : "Booking Requests"}
-                </Text>
-            )}
         </View>
     );
 
