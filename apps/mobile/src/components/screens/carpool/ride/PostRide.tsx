@@ -331,7 +331,7 @@ export default function PostRide() {
 
                         {/* Vehicle Details Card */}
                         <View className="z-0">
-                            <Card className={"px-4"}>
+                            <Card className={"p-6"}>
                                 <View>
                                     <Text className="text-base font-semibold mb-2">Vehicle Model</Text>
                                     <Controller
@@ -392,7 +392,7 @@ export default function PostRide() {
 
                         {/* Phone number */}
                         <View className="z-0">
-                            <Card className={"px-4"}>
+                            <Card className={"p-6"}>
                                 <Text className="text-base font-semibold mb-2">Phone Number</Text>
                                 <Controller
                                     control={control}

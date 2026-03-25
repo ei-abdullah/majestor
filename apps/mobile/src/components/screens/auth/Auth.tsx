@@ -45,7 +45,7 @@ function Auth() {
                         </View>
                     </View>
                     {message && (
-                        <Card className={"bg-red-50 border border-red-200 mb-4 p-2"}>
+                        <Card className={"bg-red-50 border border-red-200 mb-4 p-8"}>
                             <View>
                                 <Text
                                     className={`text-center font-medium ${message.name === "error" ? "text-red-600" : "text-green-600"}`}
@@ -55,7 +55,7 @@ function Auth() {
                             </View>
                         </Card>
                     )}
-                    <Card className={"px-8"}>
+                    <Card className={"p-8"}>
                         <AuthTabs
                             value={tab}
                             loading={loading}
