@@ -22,7 +22,7 @@ public class AuthUserDTO {
     @Size(min = 2, max = 20, message = "Username must be greater than 2 and less than 20 characters")
     private String username;
 
-    @NotBlank(message = "User onboarding status is required")
+    @NotNull(message = "User onboarding status is required")
     private Boolean hasOnboarded;
 
     @NotNull(message = "University ID is required")

@@ -47,6 +47,10 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
         ? universities.find(university => university.id === parseInt(selectedUniversity))?.faculties || []
         : [];
 
+    const allowedDomains = selectedUniversity
+        ? universities.find(university => university.id === parseInt(selectedUniversity))?.allowedDomains || []
+        : [];
+
     useEffect(() => {
         fetchUniversities()
             .then(r => null)
@@ -141,7 +145,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
-                            placeholder={"Murat"}
+                            placeholder={"Your username"}
                             icon="user"
                             onChangeText={onChange}
                         />
@@ -168,7 +172,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
-                            placeholder={"BCS233000@cust.pk"}
+                            placeholder={"name@university.edu"}
                             icon="mail"
                             onChangeText={onChange}
                             keyboardType="email-address"

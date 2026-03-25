@@ -19,7 +19,7 @@ export const validateUniEmail = (email: string): true | string => {
 };
 
 /**
- * Validates CUST email format (must end with @cust.pk)
+ * Validates CUST email format (must end with specific domain)
  * @param email - Email string to validate
  * @returns true if valid, error message if invalid
  */

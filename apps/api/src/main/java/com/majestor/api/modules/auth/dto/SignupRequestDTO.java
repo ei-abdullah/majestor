@@ -19,7 +19,7 @@ public class SignupRequestDTO {
     @NotBlank(message = "Password is required")
     private String password;
 
-    @NotBlank(message = "Signer status is required")
+    @NotNull(message = "Signer status is required")
     private Boolean isFaculty;
 
     @NotNull(message = "University ID is required")

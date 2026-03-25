@@ -96,7 +96,7 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
                             value={value}
-                            placeholder={"BCS233000@cust.pk"}
+                            placeholder={"name@university.edu"}
                             icon="mail"
                             onChangeText={onChange}
                             keyboardType="email-address"
