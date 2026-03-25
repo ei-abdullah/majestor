@@ -33,6 +33,9 @@ public class AuthUserDTO {
     @Positive(message = "Faculty ID must be a positive number")
     private Long facultyId;
 
+    @NotNull(message = "isFaculty is required")
+    private Boolean isFaculty;
+
     @NotEmpty(message = "Roles are required")
     private List<Role> roles;
 }

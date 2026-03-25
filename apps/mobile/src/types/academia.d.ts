@@ -6,7 +6,8 @@ export interface Faculty  {
 export interface UniversityWithFaculties {
     id: number,
     name: string,
-    faculties: Faculty[]
+    faculties: Faculty[],
+    allowedDomains: string[]
 }
 
 export interface AcademiaState {

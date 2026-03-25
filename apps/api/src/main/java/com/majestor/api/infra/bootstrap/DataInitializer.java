@@ -168,7 +168,8 @@ public class DataInitializer implements CommandLineRunner {
         // Capital University of Science & Technology
         University cust = createUniversity(
                 "Capital University of Science & Technology",
-                "Expressway, Kahuta Road, Zone-V, Islamabad, Pakistan"
+                "Expressway, Kahuta Road, Zone-V, Islamabad, Pakistan",
+                List.of("cust.pk", "cust.edu.pk")
         );
 
         createFaculties(cust, List.of(
@@ -188,7 +189,7 @@ public class DataInitializer implements CommandLineRunner {
                 .avatar("")
                 .hasOnboarded(Boolean.FALSE)
                 .university(firstUniversity)
-                .studentFaculty(firstFaculty)
+                .faculty(firstFaculty)
                 .roles(List.of(Role.ADMIN, Role.STUDENT))
                 .isVerified(true)
                 .verificationToken(null)
@@ -197,10 +198,11 @@ public class DataInitializer implements CommandLineRunner {
         userRepository.save(adminUser1);
     }
 
-    private University createUniversity(String name, String address) {
+    private University createUniversity(String name, String address, List<String> domains) {
         University university = University.builder()
                 .name(name)
                 .address(address)
+                .allowedDomains(domains)
                 .build();
 
         return universityRepository.save(university);

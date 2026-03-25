@@ -3,6 +3,22 @@
  */
 
 /**
+ * Validates any university email format (validation handled by backend)
+ * @param email - Email string to validate
+ * @returns true if valid, error message if invalid
+ */
+export const validateUniEmail = (email: string): true | string => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!email) {
+        return "Email is required";
+    }
+    if (!emailRegex.test(email)) {
+        return "Invalid email address";
+    }
+    return true;
+};
+
+/**
  * Validates CUST email format (must end with @cust.pk)
  * @param email - Email string to validate
  * @returns true if valid, error message if invalid
@@ -54,6 +70,7 @@ export const validatePhone = (phone: string): true | string => {
  * Regular expressions exported for direct use
  */
 export const REGEX = {
+    UNI_EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     CUST_EMAIL: /^[a-zA-Z0-9._%+-]+@cust\.pk$/,
     EMAIL: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
     PHONE: /^03[0-9]{9}$/,

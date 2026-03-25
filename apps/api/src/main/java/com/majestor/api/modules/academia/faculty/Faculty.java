@@ -34,7 +34,7 @@ public class Faculty {
     @JoinColumn(name = "university_id", nullable = false)
     private University universityFaculties;
 
-    @OneToMany(mappedBy = "studentFaculty")
+    @OneToMany(mappedBy = "faculty")
     private List<User> students;
 
     @OneToMany(mappedBy = "facultyCourses")

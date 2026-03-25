@@ -13,7 +13,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             FROM Document d
             LEFT JOIN FETCH d.documentImages di
             LEFT JOIN FETCH d.course c
-            WHERE d.uploader.studentFaculty.id = :facultyId
+            WHERE d.uploader.faculty.id = :facultyId
             AND di.serialNumber = 1
             ORDER BY d.id DESC
             """)
@@ -25,7 +25,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
                 SELECT d.id, COUNT(l)
                 FROM Document d
                 LEFT JOIN d.likes l
-                WHERE d.uploader.studentFaculty.id = :facultyId
+                WHERE d.uploader.faculty.id = :facultyId
                 GROUP BY d.id
             """)
     List<Object[]> getLikeCountByFacultyId(

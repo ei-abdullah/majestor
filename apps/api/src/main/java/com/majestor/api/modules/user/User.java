@@ -56,6 +56,8 @@ public class User {
 
     private Boolean hasOnboarded;
 
+    private Boolean isFaculty;
+
     @NotEmpty(message = "At least one user role is required")
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -77,7 +79,7 @@ public class User {
     @JoinColumn(name = "faculty_id")
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
-    private Faculty studentFaculty;
+    private Faculty faculty;
 
     @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
     @EqualsAndHashCode.Exclude

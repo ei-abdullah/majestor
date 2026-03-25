@@ -9,7 +9,7 @@ import {saveRefreshToken} from "@/src/stores/secureStore";
 import {useAuthStore} from "@/src/stores/authStore";
 import {login} from "@/src/services/auth.api";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
-import {validateCustEmail} from "@/src/utils/validation";
+import {validateUniEmail} from "@/src/utils/validation";
 import ErrorText from "@/src/components/ui/ErrorText";
 
 
@@ -91,7 +91,7 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
                     name="email"
                     rules={{
                         required: "Email is required",
-                        validate: validateCustEmail
+                        validate: validateUniEmail
                     }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput

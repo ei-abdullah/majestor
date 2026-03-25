@@ -27,7 +27,7 @@ public class AuthMapper {
         if (user.getUniversity() == null) {
             throw new IllegalStateException("University is null for student: " + user.getId());
         }
-        if (user.getStudentFaculty() == null) {
+        if (user.getFaculty() == null) {
             throw new IllegalStateException("Faculty is null for student: " + user.getId());
         }
 
@@ -38,7 +38,8 @@ public class AuthMapper {
                 .username(user.getUsername())
                 .hasOnboarded(user.getHasOnboarded())
                 .universityId(user.getUniversity().getId())
-                .facultyId(user.getStudentFaculty().getId())
+                .facultyId(user.getFaculty().getId())
+                .isFaculty(user.getIsFaculty())
                 .roles(user.getRoles())
                 .build();
     }
@@ -60,7 +61,8 @@ public class AuthMapper {
                 .passwordHash(bCryptPasswordEncoder.encode(request.getPassword()))
                 .hasOnboarded(Boolean.FALSE)
                 .university(university)
-                .studentFaculty(faculty)
+                .faculty(faculty)
+                .isFaculty(request.getIsFaculty())
                 .roles(roles)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
@@ -68,6 +70,12 @@ public class AuthMapper {
     }
 
     public User toUser(SignupRequestDTO request, University university, Faculty faculty) {
+        Boolean isFaculty = request.getIsFaculty();
+
+        if (isFaculty) {
+            return toUser(request, university, faculty, List.of(Role.FACULTY));
+        }
+
         return toUser(request, university, faculty, List.of(Role.STUDENT));
     }
 }

@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -28,6 +29,11 @@ public class University {
     @NotBlank(message = "University address is required")
     @Size(max = 255, message = "University address must be less than 255 characters")
     private String address;
+
+    @ElementCollection
+    @CollectionTable(name="university_domains", joinColumns = @JoinColumn(name="university_id"))
+    @Column(name="domain")
+    private List<String> allowedDomains = new ArrayList<>();
 
     @OneToMany(mappedBy = "universityFaculties")
     private List<Faculty> faculties;
