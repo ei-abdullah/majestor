@@ -41,7 +41,7 @@ function NumberStepper(
     const canIncrement = value < maxValue && !disabled;
 
     return (
-        <Card className={"px-4"}>
+        <Card className={"p-6"}>
             {label && (
                 <Text className="text-base font-semibold">
                     {label}

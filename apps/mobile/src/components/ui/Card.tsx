@@ -8,7 +8,7 @@ type Props = {
 
 
 function Card({className = "", children}: Props) {
-    return <View className={`py-10 bg-mj-bg-white rounded-xl ${className}`}>
+    return <View className={`bg-mj-bg-white rounded-xl ${className}`}>
         {children}
     </View>
 }

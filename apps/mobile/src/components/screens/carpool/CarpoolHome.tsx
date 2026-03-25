@@ -3,8 +3,6 @@ import {View, TouchableOpacity, Text} from "react-native";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import PrimaryButton from "@/src/components/ui/PrimaryButton";
-import OutlineButton from "@/src/components/ui/OutlineButton";
 import {Ionicons} from "@expo/vector-icons";
 import Card from "@/src/components/ui/Card";
 import {useRouter} from "expo-router";
@@ -15,6 +13,7 @@ import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRideStore} from "@/src/stores/rideStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {LinearGradient} from "expo-linear-gradient";
 
 export default function CarpoolHome() {
     const router = useRouter();
@@ -234,20 +233,42 @@ export default function CarpoolHome() {
                                     </Card>
                                 </View>
                             ) : hasLocationPermission ? (
-                                <>
-                                    <View className="w-2/3">
-                                        <PrimaryButton
-                                            title={"Book a Ride"}
-                                            onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide")}
-                                        />
-                                    </View>
-                                    <View className="w-2/3 self-end mt-3">
-                                        <OutlineButton
-                                            title={"Post a Ride"}
-                                            onPress={() => router.push("/(tabs)/carpool/ride/postRide")}
-                                        />
-                                    </View>
-                                </>
+                                <View className="flex-row gap-4 px-1 mt-4">
+                                    {/* Passenger Action */}
+                                    <TouchableOpacity 
+                                        activeOpacity={0.8}
+                                        onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide")}
+                                        className="flex-1 shadow-xl elevation-5 rounded-[32px] overflow-hidden"
+                                        style={{ aspectRatio: 1 }}
+                                    >
+                                        <LinearGradient
+                                            colors={["#3A6FF8", "#8DDDD3"]}
+                                            start={{x: 0, y: 0}}
+                                            end={{x: 1, y: 1}}
+                                            className="flex-1 items-center justify-center p-4"
+                                        >
+                                            <View className="bg-white/20 p-3 rounded-full mb-2">
+                                                <Ionicons name="search" size={28} color="white" />
+                                            </View>
+                                            <Text className="text-white font-bold text-base text-center">Find a Ride</Text>
+                                            <Text className="text-white/80 text-[10px] font-bold uppercase tracking-widest mt-0.5">Passenger</Text>
+                                        </LinearGradient>
+                                    </TouchableOpacity>
+
+                                    {/* Driver Action */}
+                                    <TouchableOpacity 
+                                        activeOpacity={0.8}
+                                        onPress={() => router.push("/(tabs)/carpool/ride/postRide")}
+                                        className="flex-1 bg-white rounded-[32px] items-center justify-center shadow-xl elevation-5 border border-mj-blue-50"
+                                        style={{ aspectRatio: 1 }}
+                                    >
+                                        <View className="bg-mj-blue-50 p-3 rounded-full mb-2">
+                                            <Ionicons name="car-sport" size={28} color="#3A6FF8" />
+                                        </View>
+                                        <Text className="text-mj-blue-600 font-bold text-base text-center">Offer a Ride</Text>
+                                        <Text className="text-mj-blue-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Driver</Text>
+                                    </TouchableOpacity>
+                                </View>
                             ) : (
                                 <>
                                     <Card className={"bg-red-50 border border-red-200 mb-4 p-2"}>

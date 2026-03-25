@@ -27,7 +27,7 @@ function ToggleButton<T extends string | number>({
     disabled = false,
 }: Props<T>) {
     return (
-        <Card className="px-4">
+        <Card className="p-6">
             <View className={`${className} w-full`}>
                 {/* Label - Match NumberStepper style */}
                 {label && (

@@ -299,7 +299,7 @@ export default function BookRide() {
 
                         {/* Phone number */}
                         <View className="z-0">
-                            <Card className={"px-4"}>
+                            <Card className={"p-6"}>
                                 <Text className="text-base font-semibold mb-2">Phone Number</Text>
                                 <Controller
                                     control={control}
