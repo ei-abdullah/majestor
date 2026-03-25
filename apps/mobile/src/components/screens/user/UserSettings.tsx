@@ -103,19 +103,6 @@ function UserSettings() {
                     {/* Academic Profile */}
                     <Card className="px-5 py-6 mb-6 mx-4">
                         <Text className="text-base font-semibold text-gray-700 mb-4">Academic Profile</Text>
-                        {/* Full Name */}
-                        <View className="mb-4">
-                            <Text className="text-sm text-gray-500 mb-2">Username</Text>
-                            <StyledTextInput
-                                value={userDetails.username || 'N/A'}
-                                placeholder="Full Name"
-                                icon="user"
-                                onChangeText={() => {
-                                }}
-                                disabled={true}
-                                size="compact"
-                            />
-                        </View>
 
                         {/* University Name */}
                         <View className="mb-4">

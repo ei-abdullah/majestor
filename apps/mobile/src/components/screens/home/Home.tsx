@@ -80,9 +80,23 @@ function Home() {
                             <Text style={{color: 'rgba(255,255,255,0.75)', fontSize: 13, marginBottom: 4}}>
                                 Welcome back
                             </Text>
-                            <Text style={{color: 'white', fontSize: 26, fontWeight: '700', letterSpacing: 0.2}}>
-                                {displayName}
-                            </Text>
+                            <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+                                <Text style={{color: 'white', fontSize: 26, fontWeight: '700', letterSpacing: 0.2}}>
+                                    {displayName}
+                                </Text>
+                                {userDetails?.roles?.includes('FACULTY') && (
+                                    <View style={{
+                                        backgroundColor: 'rgba(255,255,255,0.25)',
+                                        paddingHorizontal: 8,
+                                        paddingVertical: 2,
+                                        borderRadius: 6,
+                                        borderWidth: 1,
+                                        borderColor: 'rgba(255,255,255,0.4)'
+                                    }}>
+                                        <Text style={{color: 'white', fontSize: 10, fontWeight: '800'}}>FACULTY</Text>
+                                    </View>
+                                )}
+                            </View>
                         </View>
                         <Pressable onPress={() => router.push("/(tabs)/user")} style={{marginLeft: 12}}>
                             <UserAvatar
