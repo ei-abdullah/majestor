@@ -24,6 +24,8 @@ public class UniversitiesWithFacultiesDTO {
     @NotEmpty(message = "Faculties are required")
     private List<FacultyDTO> faculties;
 
+    private List<String> allowedDomains;
+
     @Data
     @Builder
     @AllArgsConstructor

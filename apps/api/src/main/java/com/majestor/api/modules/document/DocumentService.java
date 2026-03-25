@@ -142,7 +142,7 @@ public class DocumentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
 
-        Faculty faculty = facultyRepository.findById(user.getStudentFaculty().getId())
+        Faculty faculty = facultyRepository.findById(user.getFaculty().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Faculty not found for user id " + userId + "!"));
 
         List<Document> documents = documentRepository.getDocumentsByFacultyId(

@@ -8,6 +8,7 @@ import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
 import com.majestor.api.modules.auth.dto.*;
+import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,6 +22,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -50,8 +52,22 @@ public class AuthService {
         Faculty faculty = facultyRepository.findById(request.getFacultyId())
                 .orElseThrow(() -> new EntityNotFoundException("Faculty not found"));
 
+        String email = request.getEmail().trim().toLowerCase();
+        String domain = email.substring(email.indexOf("@") + 1);
 
-        User user = authMapper.toUser(request, university, faculty);
+        boolean isAllowedDomain = university.getAllowedDomains()
+                .stream()
+                .anyMatch(allowed -> allowed.equalsIgnoreCase(domain));
+
+        if(!isAllowedDomain) {
+            throw new IllegalArgumentException("Email domain is not allowed for the selected university");
+        }
+
+        List<Role> roles = request.getIsFaculty()
+                ? List.of(Role.FACULTY)
+                : List.of(Role.STUDENT);
+
+        User user = authMapper.toUser(request, university, faculty, roles);
 
         String verificationToken = generateVerificationToken();
         user.setVerificationToken(verificationToken);

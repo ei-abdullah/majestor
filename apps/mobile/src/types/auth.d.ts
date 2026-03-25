@@ -8,7 +8,8 @@ export interface SignupPayload {
     email: string,
     password: string,
     universityId: number,
-    facultyId: number
+    facultyId: number,
+    isFaculty: boolean
 }
 
 export interface LoginResponse {
@@ -28,7 +29,9 @@ export interface AuthUser {
     universityId: number,
     facultyId: number,
     hasOnboarded: boolean,
-    role?: string
+    isFaculty: boolean,
+    roles: string[]
+}
 }
 
 type AuthState = {

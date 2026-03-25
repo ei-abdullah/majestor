@@ -34,6 +34,7 @@ public class UniversityMapper {
                 .id(university.getId())
                 .name(university.getName())
                 .faculties(toUniversityFacultiesListDTO(university.getFaculties()))
+                .allowedDomains(university.getAllowedDomains())
                 .build();
     }
 }

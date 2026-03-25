@@ -22,7 +22,7 @@ public class CourseService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
-        Long facultyId = user.getStudentFaculty().getId();
+        Long facultyId = user.getFaculty().getId();
 
         Faculty faculty = courseRepository.findFacultyByIdWithCourses(facultyId);
 

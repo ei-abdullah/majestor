@@ -14,14 +14,13 @@ public class SignupRequestDTO {
     private String username;
 
     @NotBlank(message = "Email is required")
-    @Pattern(
-            regexp = "^[a-zA-Z0-9._%+-]+@cust\\.pk$",
-            message = "Invalid email address"
-    )
     private String email;
 
     @NotBlank(message = "Password is required")
     private String password;
+
+    @NotBlank(message = "Signer status is required")
+    private Boolean isFaculty;
 
     @NotNull(message = "University ID is required")
     @Positive(message = "University ID must be a positive number")

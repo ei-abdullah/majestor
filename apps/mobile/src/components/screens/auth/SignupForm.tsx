@@ -11,7 +11,7 @@ import {signup} from "@/src/services/auth.api";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
-import {validateCustEmail} from "@/src/utils/validation";
+import {validateUniEmail} from "@/src/utils/validation";
 import ErrorText from "@/src/components/ui/ErrorText";
 
 interface Option {
@@ -34,6 +34,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             password: "",
             university: "",
             faculty: "",
+            isFaculty: false,
             termsAccepted: false
         }
     });
@@ -64,7 +65,8 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             const newData = {
                 ...data,
                 universityId: data.university,
-                facultyId: data.faculty
+                facultyId: data.faculty,
+                isFaculty: data.isFaculty
             }
 
             delete newData.university;
@@ -161,7 +163,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                     name="email"
                     rules={{
                         required: {value: true, message: "Email is required"},
-                        validate: validateCustEmail
+                        validate: validateUniEmail
                     }}
                     render={({field: {onChange, value}}) => (
                         <StyledTextInput
@@ -173,6 +175,13 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                         />
                     )}
                 />
+                {
+                    allowedDomains.length > 0 && (
+                        <Text className="text-xs text-mj-text-secondary mt-1">
+                            Accepted domains: {allowedDomains.map(d => `@${d}`).join(", ")}
+                        </Text>
+                    )
+                }
             </View>
 
             {/* Password */}
@@ -264,6 +273,35 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                     </View>
                 )
             }
+
+            {/* Faculty Checkbox */}
+            <View className="flex-col gap-2">
+                <Controller
+                    control={control}
+                    name="isFaculty"
+                    render={({field: {onChange, value}}) => (
+                        <View className="flex-row items-center gap-3">
+                            <Pressable
+                                onPress={() => onChange(!value)}
+                            >
+                                {value ? (
+                                    <LinearGradient
+                                        colors={["#3A6FF8", "#8DDDD3"]}
+                                        start={{x: 0, y: 0}}
+                                        end={{x: 1, y: 1}}
+                                        className="w-6 h-6 rounded-md items-center justify-center"
+                                    >
+                                        <Feather name="check" size={16} color="white"/>
+                                    </LinearGradient>
+                                ) : (
+                                    <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
+                                )}
+                            </Pressable>
+                            <Text className="text-mj-text-main font-semibold">Sign up as Faculty?</Text>
+                        </View>
+                    )}
+                />
+            </View>
 
             {/* Terms and Privacy Checkbox */}
             <View className="flex-col gap-2">
