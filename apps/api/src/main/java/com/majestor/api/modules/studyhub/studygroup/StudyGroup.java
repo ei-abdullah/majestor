@@ -2,6 +2,8 @@ package com.majestor.api.modules.studyhub.studygroup;
 
 import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.studyhub.document.Document;
+import com.majestor.api.modules.studyhub.studygroup.rating.Rating;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;

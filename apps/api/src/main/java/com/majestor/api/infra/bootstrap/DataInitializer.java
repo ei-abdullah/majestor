@@ -16,6 +16,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,8 +192,11 @@ public class DataInitializer implements CommandLineRunner {
                 .university(firstUniversity)
                 .faculty(firstFaculty)
                 .roles(List.of(Role.ADMIN, Role.STUDENT))
+                .isFaculty(false)
                 .isVerified(true)
                 .verificationToken(null)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
                 .build();
 
         userRepository.save(adminUser1);

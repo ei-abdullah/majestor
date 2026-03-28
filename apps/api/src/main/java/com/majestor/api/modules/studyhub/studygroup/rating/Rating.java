@@ -1,5 +1,6 @@
-package com.majestor.api.modules.studyhub.studygroup;
+package com.majestor.api.modules.studyhub.studygroup.rating;
 
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -14,20 +15,20 @@ import java.time.Instant;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "study_group_members")
-public class StudyGroupMember {
+@Table(name = "ratings")
+public class Rating {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "study_group_id", nullable = false)
-    private StudyGroup studyGroup;
+    @JoinColumn(name = "ratedBy")
+    private User ratedBy;
 
     @ManyToOne
-    @JoinColumn(name = "group_member_id", nullable = false)
-    private User studyGroupMember;
+    @JoinColumn(name = "ratedStudyGroup")
+    private StudyGroup ratedStudyGroup;
 
-    private Instant joinedAt;
-    private Instant leftAt;
+    private Instant createdAt;
+    private Instant updatedAt;
 }
