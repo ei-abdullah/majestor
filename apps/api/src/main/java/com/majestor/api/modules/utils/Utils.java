@@ -2,7 +2,7 @@ package com.majestor.api.modules.utils;
 
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
-import com.majestor.api.modules.document.Document;
+import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import com.majestor.api.modules.user.User;
@@ -130,5 +130,11 @@ public class Utils {
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
 
+    public Long StandardFileSize() {
+        return 15L * 1024 * 1024; // 15 MB
+    }
 
+    public Long EliteFileSize() {
+        return 500L * 1024 * 1024; // 500 MB
+    }
 }

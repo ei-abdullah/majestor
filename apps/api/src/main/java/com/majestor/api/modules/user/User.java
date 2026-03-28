@@ -4,10 +4,13 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.carpool.ride.Ride;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
-import com.majestor.api.modules.document.Document;
-import com.majestor.api.modules.document.like.Like;
+import com.majestor.api.modules.studyhub.document.Document;
+import com.majestor.api.modules.studyhub.document.like.Like;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
+import com.majestor.api.modules.studyhub.studygroup.Rating;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroupMember;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -24,12 +27,13 @@ import java.util.List;
 @Table(
         name = "users",
         indexes = {
-                @Index(name = "idx_user_email", columnList = "email")
+                @Index(name = "idx_user_email", columnList = "email"),
+                @Index(name="idx_user_id", columnList = "id")
         }
 )
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -56,8 +60,23 @@ public class User {
 
     private Boolean hasOnboarded;
 
+    @Column(nullable = false)
+    @NotNull(message = "User type is required")
     private Boolean isFaculty;
 
+    private Instant premiumUntil;
+
+    @Builder.Default
+    @Column(nullable = false)
+    @NotNull(message = "Storage used is required")
+    private Long storageUsed = 0L;
+
+    @Builder.Default
+    @Column(nullable = false)
+    @NotNull(message = "Storage limit is required")
+    private Long storageLimit = 15L * 1024 * 1024;  // 15 MBs
+
+    @Builder.Default
     @NotEmpty(message = "At least one user role is required")
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
@@ -103,9 +122,19 @@ public class User {
     @OneToMany(mappedBy = "rideRequester", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<RideRequest> rideRequests;
 
+    @OneToMany(mappedBy = "studyGroupHost")
+    private List<StudyGroup> hostedStudyGroups;
+
+    @OneToMany(mappedBy = "studyGroupMember")
+    private List<StudyGroupMember>  joinedStudyGroups;
+
+    @OneToMany(mappedBy = "ratedBy")
+    private List<Rating> ratedStudyGroups;
+
     // For email-based verification
     private String verificationToken;
 
+    @Builder.Default
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified = false;
 
@@ -114,4 +143,9 @@ public class User {
 
     private Instant createdAt;
     private Instant updatedAt;
+
+    @Transient
+    public Boolean isElite() {
+        return this.premiumUntil != null && this.premiumUntil.isAfter(Instant.now());
+    }
 }

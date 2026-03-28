@@ -1,7 +1,7 @@
-package com.majestor.api.modules.document.dto;
+package com.majestor.api.modules.studyhub.document.dto;
 
-import com.majestor.api.modules.document.DocType;
-import com.majestor.api.modules.document.SemType;
+import com.majestor.api.modules.studyhub.document.DocType;
+import com.majestor.api.modules.studyhub.document.SemType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -35,4 +35,7 @@ public class DocumentUploadRequestDTO {
 
     @NotEmpty(message = "Document images are required")
     private MultipartFile[] documentImages;
+
+    @Builder.Default
+    private Boolean isPremium = true;
 }

@@ -1,4 +1,4 @@
-package com.majestor.api.modules.document.dto;
+package com.majestor.api.modules.studyhub.document.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

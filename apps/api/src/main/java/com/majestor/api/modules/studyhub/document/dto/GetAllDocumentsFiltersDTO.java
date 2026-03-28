@@ -1,6 +1,5 @@
-package com.majestor.api.modules.document.dto;
+package com.majestor.api.modules.studyhub.document.dto;
 
-import com.majestor.api.modules.document.DocType;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

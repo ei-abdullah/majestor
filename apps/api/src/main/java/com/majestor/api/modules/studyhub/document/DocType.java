@@ -1,4 +1,4 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
 public enum DocType {
     PAST_PAPER,

@@ -1,8 +1,8 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.modules.academia.course.Course;
-import com.majestor.api.modules.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
+import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
 import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +24,7 @@ public class DocumentMapper {
                 .semesterType(documentUploadRequestDTO.getSemesterType())
                 .uploader(user)
                 .course(course)
+                .isPremiumOnly(documentUploadRequestDTO.getIsPremium())
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();

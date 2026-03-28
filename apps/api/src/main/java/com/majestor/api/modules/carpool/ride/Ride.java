@@ -21,7 +21,7 @@ import java.util.List;
 @Table(name = "rides")
 public class Ride {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, precision = 10, scale = 7)

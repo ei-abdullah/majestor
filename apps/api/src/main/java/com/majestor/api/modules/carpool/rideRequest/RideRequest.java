@@ -22,7 +22,7 @@ import java.util.List;
 @Table(name = "ride_requests")
 public class RideRequest {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, precision = 10, scale = 7)

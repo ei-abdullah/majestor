@@ -92,12 +92,10 @@ __________________________________________________________
 ---
 
 ## 4. The Faculty Feed (Locked Institutional View)
-A discovery engine for all academic content within the user's University and Faculty.
+After signup, the user is locked into their University and Faculty. They can only see and search content within this specific context. No global discovery is allowed.
 
 ```text
 __________________________________________________________
-|  [ 🏛️ [User's University] - [User's Faculty] ]        |
-|________________________________________________________|
 |  [🔍 Search documents in your faculty... ]             |
 |________________________________________________________|
 |                                                        |
@@ -125,19 +123,18 @@ __________________________________________________________
 |  X CANCEL            [ 📤 UPLOAD ]                    |
 |________________________________________________________|
 |                                                        |
+|  UPLOAD DESTINATION:                                   |
+|  [ STUDY GROUP ] [ FACULTY FEED ] [ PERSONAL VAULT ]   |
+|                                                        |
 |  [ 📑 SELECT FILE ] -> "My_Lecture_Notes.pdf"          |
 |                                                        |
-|  WHERE TO UPLOAD?                                      |
-|  ( ) Personal Vault (Private - Only you see it)        |
-|  (•) Study Group: [ CS101 - Intro to Computing ]       |
-|  ( ) Faculty Feed (Public - Only your Faculty sees it) |
+|  LINK TO COURSE (Optional for Vault):                  |
+|  [ 🔍 Search Course ]                                  |
 |                                                        |
-|  ADD TAGS: [#Notes] [#Midterm] [#Important]            |
-|                                                        |
-|  [         CONFIRM & UPLOAD TO GROUP         ]         |
+|  [         CONFIRM & UPLOAD         ]                  |
 |________________________________________________________|
 ```
-**Description:** The centralized upload interface. It is "context-aware," meaning it knows which groups the user belongs to. Users can choose to keep a file private (Personal Vault), share it with a specific Course Group, or post it to the general Faculty Feed for everyone in their department to see.
+**Description:** The centralized upload interface. It is "context-aware." Users can choose to keep a file private (Personal Vault), share it with a specific Course Group, or post it to the general Faculty Feed for everyone in their department to see.
 
 ---
 
@@ -166,7 +163,31 @@ __________________________________________________________
 
 ---
 
-## 7. Feature Summary & Monetization Logic
+## 7. Create Study Group
+The interface for starting a new course-based community.
+
+```text
+__________________________________________________________
+|  X CANCEL            [ ✅ CREATE ]                    |
+|________________________________________________________|
+|                                                        |
+|  GROUP NAME:                                           |
+|  [ "Murat's Study Squad" ]                             |
+|                                                        |
+|  LINK TO COURSE:                                       |
+|  [ 🔍 Search Course (e.g. CS101) ]                     |
+|                                                        |
+|  VISIBILITY:                                           |
+|  (•) Faculty Only (Default)                            |
+|                                                        |
+|  [        START STUDY GROUP        ]                   |
+|________________________________________________________|
+```
+**Description:** This screen allows users to initiate a new Study Group. A user must select a course from the database to link the group to. If the creator is a Faculty member (`isFaculty = true`), the group is automatically tagged as "Official" and featured prominently.
+
+---
+
+## 8. Feature Summary & Monetization Logic
 
 | Feature | Free Student | Faculty Member | Majestor Elite (Premium) |
 | :--- | :--- | :--- | :--- |
@@ -178,7 +199,7 @@ __________________________________________________________
 
 ---
 
-## 8. Technical Requirements (Architecture)
+## 9. Technical Requirements (Architecture)
 
 1.  **Backend (JPA/Spring)**:
     -   **Strict Multi-Tenancy**: All `StudyGroup` and `Document` queries MUST be filtered by the `universityId` and `facultyId` of the authenticated user.

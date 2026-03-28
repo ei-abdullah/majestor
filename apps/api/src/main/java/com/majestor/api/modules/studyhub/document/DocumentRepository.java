@@ -1,4 +1,4 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -1,7 +1,8 @@
 package com.majestor.api.modules.academia.course;
 
 import com.majestor.api.modules.academia.faculty.Faculty;
-import com.majestor.api.modules.document.Document;
+import com.majestor.api.modules.studyhub.document.Document;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ import java.util.List;
 @Table(name = "courses")
 public class Course {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
@@ -34,7 +35,9 @@ public class Course {
     @JoinColumn(name = "faculty_id", nullable = false)
     private Faculty facultyCourses;
 
-    private Instant createdAt;
+    @OneToMany(mappedBy = "studyGroupCourse")
+    private List<StudyGroup> courseStudyGroups;
 
+    private Instant createdAt;
     private Instant updatedAt;
 }
