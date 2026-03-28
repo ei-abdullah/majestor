@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -32,6 +33,17 @@ public class AuthUserDTO {
     @NotNull(message = "Faculty ID is required")
     @Positive(message = "Faculty ID must be a positive number")
     private Long facultyId;
+
+    @NotNull(message = "Storage used by user is required")
+    @PositiveOrZero(message = "Storage used must be positive or zero")
+    private Long totalStorageUsed;
+
+    @NotNull(message = "Storage limit must be defined")
+    @PositiveOrZero(message = "Storage limit must be positive or zero")
+    private Long storageLimit;
+
+    @NotNull(message = "User's premium timeline is required")
+    private Instant premiumUntil;
 
     @NotNull(message = "isFaculty is required")
     private Boolean isFaculty;

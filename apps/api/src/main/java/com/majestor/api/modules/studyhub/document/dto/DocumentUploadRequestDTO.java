@@ -1,6 +1,7 @@
 package com.majestor.api.modules.studyhub.document.dto;
 
 import com.majestor.api.modules.studyhub.document.DocType;
+import com.majestor.api.modules.studyhub.document.DocumentDestination;
 import com.majestor.api.modules.studyhub.document.SemType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -29,13 +30,16 @@ public class DocumentUploadRequestDTO {
     @NotNull(message = "Document uploaded year is required")
     private Long uploadedYear;
 
-    @NotNull(message = "Document course is required")
-    @Positive(message = "Course ID must be positive")
     private Long courseId;
+
+    private Long studyGroupId;
+
+    @NotNull(message = "Destination is required")
+    private DocumentDestination destination;
+
+    @Builder.Default
+    private Boolean isPremiumOnly = true;
 
     @NotEmpty(message = "Document images are required")
     private MultipartFile[] documentImages;
-
-    @Builder.Default
-    private Boolean isPremium = true;
 }

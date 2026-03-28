@@ -24,7 +24,8 @@ public class DocumentMapper {
                 .semesterType(documentUploadRequestDTO.getSemesterType())
                 .uploader(user)
                 .course(course)
-                .isPremiumOnly(documentUploadRequestDTO.getIsPremium())
+                .destination(documentUploadRequestDTO.getDestination())
+                .isPremiumOnly(documentUploadRequestDTO.getIsPremiumOnly())
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();
