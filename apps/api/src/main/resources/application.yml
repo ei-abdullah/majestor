@@ -14,27 +14,8 @@ aws:
 spring:
   application:
     name: api
-
-  datasource:
-    url: ${DATABASE_URL}
-    username: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    driver-class-name: org.postgresql.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: ${DDL_AUTO:create-drop}
-
-    show-sql: false
-    properties:
-      hibernate:
-        format_sql: false
-        jdbc:
-          batch_size: 20
-        order_inserts: true
-        order_updates: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev} # Defaults to local dev
 
   servlet:
     multipart:
@@ -56,12 +37,48 @@ spring:
             enable: true
             required: true
 
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:PROD}
-
 logging:
   level:
     com.majestor.api: INFO
     org.springframework.web: INFO
+
+---
+# 🛠️ LOCAL DEVELOPMENT (Docker)
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:postgresql://localhost:5432/majestor_db
+    username: abdullah
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    properties:
+      hibernate:
+        format_sql: true
+
+---
+# 🚀 PRODUCTION (Digital Ocean)
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
 
 
