@@ -1,8 +1,9 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.modules.academia.course.Course;
-import com.majestor.api.modules.document.documentimage.DocumentImage;
-import com.majestor.api.modules.document.like.Like;
+import com.majestor.api.modules.studyhub.document.documentimage.DocumentImage;
+import com.majestor.api.modules.studyhub.document.like.Like;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Set;
 
 @Data
 @Entity
@@ -30,7 +32,7 @@ import java.util.List;
 )
 public class Document {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true)
@@ -52,12 +54,28 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private SemType semesterType;
 
+    @Valid
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DocumentDestination destination;
+
+    @Builder.Default
+    @Column(nullable = false)
+    @NotNull(message = "Premium only field is required")
+    private Boolean isPremiumOnly = true;
+
+    // Total images uploaded for this document
+    @Builder.Default
+    @Column(nullable = false)
+    @NotNull(message = "Total file size is required")
+    private Long totalFileSize = 0L;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "uploader_id", nullable = false)
     private User uploader;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "course_id", nullable = false)
+    @JoinColumn(name = "course_id")
     private Course course;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -65,6 +83,10 @@ public class Document {
 
     @OneToMany(mappedBy = "likedDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Like> likes;
+
+    @ManyToOne
+    @JoinColumn(name = "study_group_id")
+    private StudyGroup documentStudyGroup;
 
     private Instant createdAt;
     private Instant updatedAt;

@@ -1,4 +1,4 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
 import com.majestor.api.infra.s3.S3Buckets;
@@ -7,13 +7,13 @@ import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.academia.course.CourseRepository;
 import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
-import com.majestor.api.modules.document.documentimage.DocumentImage;
-import com.majestor.api.modules.document.documentimage.DocumentImageRepository;
-import com.majestor.api.modules.document.dto.DocumentImageAndExtensionDTO;
-import com.majestor.api.modules.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
-import com.majestor.api.modules.document.dto.GetAllDocumentsFiltersDTO;
-import com.majestor.api.modules.document.like.LikeRepository;
+import com.majestor.api.modules.studyhub.document.documentimage.DocumentImage;
+import com.majestor.api.modules.studyhub.document.documentimage.DocumentImageRepository;
+import com.majestor.api.modules.studyhub.document.dto.DocumentImageAndExtensionDTO;
+import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
+import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsFiltersDTO;
+import com.majestor.api.modules.studyhub.document.like.LikeRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import com.majestor.api.modules.utils.Utils;
@@ -70,6 +70,7 @@ public class DocumentService {
         List<DocumentImageAndExtensionDTO> documentImages = new ArrayList<>();
         List<String> successfulUploadedKeys = new ArrayList<>();
 
+        long totalFileSize = 0L;
         long serialNumber = 1L;
         String documentImageId;
 
@@ -77,6 +78,7 @@ public class DocumentService {
             if (image.isEmpty()) continue;
 
             String fileExt = utils.ExtractFileExtension(image.getOriginalFilename());
+            totalFileSize += image.getSize();
 
             try {
                 documentImageId = UUID.randomUUID().toString();
@@ -124,6 +126,7 @@ public class DocumentService {
                     .toList();
             List<DocumentImage> savedDocumentImages = documentImageRepository.saveAll(imagesToSave);
             document.setDocumentImages(savedDocumentImages);
+            document.setTotalFileSize(totalFileSize);
             documentRepository.save(document);
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());

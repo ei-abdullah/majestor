@@ -32,7 +32,6 @@ export interface AuthUser {
     isFaculty: boolean,
     roles: string[]
 }
-}
 
 type AuthState = {
     user: AuthUser | null;

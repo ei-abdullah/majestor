@@ -17,7 +17,7 @@ import java.time.Instant;
 @Table(name = "found_item_images")
 public class FoundItemImage {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

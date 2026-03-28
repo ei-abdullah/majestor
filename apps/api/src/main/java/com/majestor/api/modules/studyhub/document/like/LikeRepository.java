@@ -1,6 +1,6 @@
-package com.majestor.api.modules.document.like;
+package com.majestor.api.modules.studyhub.document.like;
 
-import com.majestor.api.modules.document.Document;
+import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

@@ -21,6 +21,10 @@ import Card from "@/src/components/ui/Card";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
+/*TODO
+    - Add a new checkbox for status of document. Default set it to isPremium if not
+    user is set free for open vault.
+ */
 
 function UploadDocument() {
     const insets = useSafeAreaInsets();

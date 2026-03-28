@@ -7,6 +7,8 @@ import com.majestor.api.modules.auth.dto.AuthUserDTO;
 import com.majestor.api.modules.auth.dto.SignupRequestDTO;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
+import com.majestor.api.modules.utils.Utils;
+import jdk.jshell.execution.Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -19,6 +21,7 @@ import java.util.List;
 public class AuthMapper {
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final Utils utils;
 
     public AuthUserDTO toAuthUserDTO(User user) {
         if (user == null) {
@@ -63,6 +66,8 @@ public class AuthMapper {
                 .university(university)
                 .faculty(faculty)
                 .isFaculty(request.getIsFaculty())
+                .storageUsed(0L)
+                .storageLimit(utils.StandardFileSize())
                 .roles(roles)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())

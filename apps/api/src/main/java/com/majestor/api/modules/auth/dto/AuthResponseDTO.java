@@ -15,7 +15,7 @@ public class AuthResponseDTO {
     @NotBlank(message = "Refresh token is required")
     private String refreshToken;
 
-    @NotNull(message = "Auth user is required")
     @Valid
+    @NotNull(message = "Auth user is required")
     private AuthUserDTO authUserDTO;
 }

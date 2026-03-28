@@ -1,6 +1,6 @@
-package com.majestor.api.modules.document.dto;
+package com.majestor.api.modules.studyhub.document.dto;
 
-import com.majestor.api.modules.document.documentimage.DocumentImage;
+import com.majestor.api.modules.studyhub.document.documentimage.DocumentImage;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package com.majestor.api.modules.document.documentimage;
+package com.majestor.api.modules.studyhub.document.documentimage;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

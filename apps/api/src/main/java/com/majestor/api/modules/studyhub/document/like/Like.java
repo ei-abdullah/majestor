@@ -1,6 +1,6 @@
-package com.majestor.api.modules.document.like;
+package com.majestor.api.modules.studyhub.document.like;
 
-import com.majestor.api.modules.document.Document;
+import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "likes")
 public class Like {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

@@ -19,7 +19,7 @@ import java.util.List;
 @Table(name = "universities")
 public class University {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank(message = "University name is required")

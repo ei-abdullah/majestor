@@ -1,8 +1,8 @@
-package com.majestor.api.modules.document;
+package com.majestor.api.modules.studyhub.document;
 
-import com.majestor.api.modules.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.document.dto.GetAllDocumentsDTO;
-import com.majestor.api.modules.document.dto.GetAllDocumentsFiltersDTO;
+import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
+import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsFiltersDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
