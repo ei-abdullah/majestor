@@ -74,7 +74,7 @@ public class User {
     @Builder.Default
     @Column(nullable = false)
     @NotNull(message = "Storage limit is required")
-    private Long storageLimit = 15L * 1024 * 1024;  // 15 MBs
+    private Long storageLimit = 100L * 1024 * 1024;  // 100 MBs
 
     @Builder.Default
     @NotEmpty(message = "At least one user role is required")

@@ -6,6 +6,10 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.academia.university.UniversityRepository;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroupRepository;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.Role;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -30,6 +34,8 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
+    private final StudyGroupRepository studyGroupRepository;
+    private final StudyGroupMemberRepository studyGroupMemberRepository;
 
     @Override
     @Transactional
@@ -78,7 +84,70 @@ public class DataInitializer implements CommandLineRunner {
             log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
 
+        try {
+            long groupCount = studyGroupRepository.count();
+            if (groupCount == 0) {
+                initializeStudyGroups();
+                log.info("Study groups initialized successfully.");
+            }
+        } catch (Exception e) {
+            log.error("Failed to initialize study groups: {}", e.getMessage(), e);
+        }
+
         log.info("=== DataInitializer finished ===");
+    }
+
+    private void initializeStudyGroups() {
+        User admin = userRepository.findByEmail("bcs233188@cust.pk").orElseThrow();
+        Course progCourse = courseRepository.findAll().stream()
+                .filter(c -> c.getName().equals("Introduction to Programming"))
+                .findFirst().orElseThrow();
+        Course dataCourse = courseRepository.findAll().stream()
+                .filter(c -> c.getName().equals("Data Structures"))
+                .findFirst().orElseThrow();
+
+        // 1. Official Group (Faculty-led)
+        StudyGroup officialGroup = StudyGroup.builder()
+                .name("Official CS101 - Spring 2026")
+                .studyGroupHost(admin) // Admin acts as faculty here for testing
+                .studyGroupCourse(progCourse)
+                .isOfficial(true)
+                .isActive(true)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        // 2. Trending Peer Group
+        StudyGroup trendingGroup = StudyGroup.builder()
+                .name("Data Structures Hacking")
+                .studyGroupHost(admin)
+                .studyGroupCourse(dataCourse)
+                .isOfficial(false)
+                .isActive(true)
+                .popularityScore(95L)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        // 3. Simple Peer Group
+        StudyGroup peerGroup = StudyGroup.builder()
+                .name("Calculus Study Squad")
+                .studyGroupHost(admin)
+                .studyGroupCourse(dataCourse)
+                .isOfficial(false)
+                .isActive(true)
+                .popularityScore(10L)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
+        studyGroupRepository.saveAll(List.of(officialGroup, trendingGroup, peerGroup));
+
+        // Auto-join admin to the Official and Trending group for testing
+        StudyGroupMember m1 = StudyGroupMember.builder().studyGroup(officialGroup).studyGroupMember(admin).joinedAt(Instant.now()).build();
+        StudyGroupMember m2 = StudyGroupMember.builder().studyGroup(trendingGroup).studyGroupMember(admin).joinedAt(Instant.now()).build();
+        
+        studyGroupMemberRepository.saveAll(List.of(m1, m2));
     }
 
     private void initializeCourses() {

@@ -63,12 +63,13 @@ public class DocumentController {
                 .build();
     }
 
-    @GetMapping("/downloadDocument/{documentId}")
+    @GetMapping("/downloadDocument/{userId}/{documentId}")
     public ResponseEntity<?> downloadDocument(
+            @PathVariable @NotNull @Positive Long userId,
             @PathVariable @NotNull @Positive Long documentId,
             HttpServletResponse response
     ) {
-        documentService.downloadDocument(documentId, response);
+        documentService.downloadDocument(userId, documentId, response);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -1,170 +1,127 @@
-# Majestor Academia Study Hub - Feature Prototype
+# Majestor Academia Study Hub - Visual Prototype (v2.1)
 
-This document outlines the visual structure and user flow for the new "Study Hub" feature, integrating real-time study groups, faculty content, and monetization.
+This prototype reflects the final design specifications for the Majestor Academia ecosystem.
 
 ---
 
-## 1. The Study Hub (Main Feed)
-The entry point for students. Official groups are course-specific and identified by the creator's `isFaculty` status.
+## 📱 1. Study Hub Home (Main Entry)
+The central directory for all course-based communities in your Faculty.
 
 ```text
 __________________________________________________________
-|  [🔍 Search courses, codes, or groups...]             |
+|  [🔍 Search courses or groups...]                     |
 |________________________________________________________|
 |                                                        |
-|  🌟 OFFICIAL FACULTY GROUPS (Course-Specific)         |
+|  👥 JOINED GROUPS                                      |
 |  ____________________________________________________  |
-|  | [🎓 CS101]          | [🎓 CS302]          | [🎓.. |
-|  | Intro to Computing  | Database Systems    |       |
-|  | By: Dr. Ahmed       | By: Dr. Ahmed       |       |
-|  | 👥 124 | 📄 15      | 👥 45 | 📄 12       |       |
-|  |____________________|____________________|_______|  |
+|  | [📚 CS101] | [💻 CS302] | [📂 VIEW ALL ] <---------|-- (Swipe to End)
+|  | Intro Prg. | Databases  | (Full List)  |           |
+|  |____________|____________|______________|           |
+|                                                        |
+|  🌟 OFFICIAL FACULTY GROUPS                            |
+|  ____________________________________________________  |
+|  | [🎓 CS101] | [🎓 MT204] | [🎓 VIEW ALL ] <---------|-- (Swipe to End)
+|  | Dr. Ahmed  | Calculus   | (Full List)  |           |
+|  |____________|____________|______________|           |
 |                                                        |
 |  🔥 TRENDING PEER GROUPS                               |
 |  ____________________________________________________  |
 |  | 👥 Algorithm Masters [CS301]          [ 🟢 5 LIVE ] |
-|  | Shared by: Murat | 📄 42 docs | ⭐ 4.9             |
+|  | By: Murat | 📄 42 docs | ⭐ 4.9                     |
 |  |____________________________________________________|
-|  ____________________________________________________  |
-|  | 👥 Physics Study Squad [PH102]        [ 🟢 2 LIVE ] |
-|  | Shared by: Sara  | 📄 12 docs | ⭐ 4.5             |
-|  |____________________________________________________|
+|                                                        |
+|  [ VIEW ALL TRENDING ]                                 |
+|                                                        |
+|  ________________________    ________________________  |
+|  |      📁 PERSONAL      |    |       🔓 OPEN        |  |
+|  |         VAULT         |    |        VAULT         |  |
+|  |______________________|    |______________________|  |
 |                                                        |
 |  [ + CREATE NEW GROUP ] <-- (Free: 1/1 | Elite: ∞)     |
 |________________________________________________________|
 ```
-**Description:** This is the primary dashboard for the Academia side of the app. It acts as a directory for all **Study Groups** available within the user's Faculty. Official groups (created by users where `isFaculty = true`) are featured at the top, while student-led groups are ranked by real-time popularity below.
+**Description:** The primary Academia tab. Navigation is optimized via horizontal "End of Scroll" buttons for Joined and Official groups. The bottom row serves as the gateway to the Vault ecosystem.
 
 ---
 
-## 2. Study Group Details (The "Vault" & Chat)
-Each group contains a dedicated space for document sharing ("The Vault") and real-time discussion.
+## 📱 2. Study Group Details (The "Classroom")
+The social and academic heart of a specific course.
 
 ```text
 __________________________________________________________
 |  < [ CS101 - Dr. Ahmed ]                 [ 👥 124 ]    |
 |________________________________________________________|
-|   [ CHAT ]    [[ 📄 VAULT ]]    [ 📊 STATS ]           |
+|  HOST: Dr. Ahmed (Faculty)                             |
+|________________________________________________________|
+|   [ 💬 CHAT ]    [ ✅ JOINED ]    [ 📄 15 DOCS ]       |
 |________________________________________________________|
 |                                                        |
-|  📂 FOLDERS: [Past Papers] [Lectures] [Assignments]    |
+|  FILTER: [Past Papers] [Lectures] [Notes] [Reset]      |
+|________________________________________________________|
 |                                                        |
 |  📄 Midterm_CheatSheet.pdf                             |
-|     (Uploaded by: Dr. Ahmed)        [ 🔒 PREMIUM ]     |  <-- Locked Access
-|  ____________________________________________________  |
-|  📄 OS_Notes_Solved.pdf                                |
-|     (Uploaded by: Murat)            [ 📥 DOWNLOAD ]    |  <-- Free Access
-|  ____________________________________________________  |
-|  📄 Chapter_5_Review.pdf                               |
 |     (Uploaded by: Dr. Ahmed)        [ 🔒 PREMIUM ]     |
-|                                                        |
-|  [ 📤 UPLOAD DOCUMENT ] <-- (Free for everyone!)       |
-|________________________________________________________|
-```
-**Description:** This is the "Classroom" view. Once a user joins a group, they gain access to a real-time Chat for peer-to-peer discussion and a **Vault** (a course-specific library). The Vault organizes files into folders. Access to specific files is determined by the uploader's status: Faculty-uploaded documents are exclusive to Premium users.
-
----
-
-## 3. Subscription & Paywall (Majestor Elite)
-Triggered when a free user reaches a group limit or attempts to access faculty content.
-
-```text
-__________________________________________________________
-|                                                        |
-|               ✨ UNLOCK MAJESTOR ELITE ✨              |
-|                                                        |
-|          [ 🔒 ] This document is protected.            |
-|       It was verified by Faculty: Dr. Ahmed            |
-|                                                        |
-|   Join 500+ students getting better grades with:       |
-|                                                        |
-|   ✅ Unlimited Study Groups (Currently: 3/3)           |
-|   ✅ Full Access to Faculty Vaults                    |
-|   ✅ Real-time Audio Study Huddles                    |
-|   ✅ AI-Powered Exam Summaries                        |
-|                                                        |
-|   [     BECOME ELITE - $4.99/mo     ]                  |
-|          (Cancel anytime)                              |
-|________________________________________________________|
-```
-**Description:** A high-conversion modal that appears when a user hits a functional wall (e.g., reaching the 3-group limit or clicking a locked Faculty document). it highlights the benefits of the "Majestor Elite" tier to incentivize upgrades.
-
----
-
-## 4. The Faculty Feed (Locked Institutional View)
-After signup, the user is locked into their University and Faculty. They can only see and search content within this specific context. No global discovery is allowed.
-
-```text
-__________________________________________________________
-|  [🔍 Search documents in your faculty... ]             |
-|________________________________________________________|
-|                                                        |
-|  RECENT DOCUMENTS IN YOUR FACULTY                      |
 |  ____________________________________________________  |
-|  📄 Calc_Integration_Hacks.pdf                         |
-|     Group: [MT102 - Calculus]       [ 👀 VIEW ]        |
-|  ____________________________________________________  |
-|  📄 Resume_Template_CS.docx                            |
-|     Group: [Career & Internships]   [ 👀 VIEW ]        |
-|  ____________________________________________________  |
+|  📄 Lab_Exercise_1.pdf                                 |
+|     (Uploaded by: Murat)            [ 📥 DOWNLOAD ]    |
 |                                                        |
-|  [ 💡 Suggested: Join "CS201" to see 50 more docs ]    |
+|  [ 📤 UPLOAD TO GROUP ] <-- (Passes GroupID as Prop)   |
 |________________________________________________________|
 ```
-**Description:** This screen provides a "Discovery" experience. Unlike the Study Hub (which focuses on Groups), the Faculty Feed focuses on **Documents**. It allows users to search and browse *every* public document recently uploaded across their entire Faculty, regardless of which group it belongs to. Access is strictly limited to the user's own institution.
+**Description:** The detailed view for a group. It acts as a dashboard for accessing the Group Chat and the Document Vault.
 
 ---
 
-## 5. The Upload Document Flow
-A context-aware screen that allows users to pick where their data lives.
+## 📱 3. Group Chat (Real-Time Communication)
+The interactive layer where students and faculty collaborate.
 
 ```text
 __________________________________________________________
-|  X CANCEL            [ 📤 UPLOAD ]                    |
+|  < [ CS101 CHAT ]                        [ 🟢 12 ]    |
 |________________________________________________________|
 |                                                        |
-|  UPLOAD DESTINATION:                                   |
-|  [ STUDY GROUP ] [ FACULTY FEED ] [ PERSONAL VAULT ]   |
+|  [📄 Dr. Ahmed shared 'Lab_1.pdf']                     |
 |                                                        |
-|  [ 📑 SELECT FILE ] -> "My_Lecture_Notes.pdf"          |
+|  (Avatar) Murat: Yo, anyone solved Q3 yet?            |
 |                                                        |
-|  LINK TO COURSE (Optional for Vault):                  |
-|  [ 🔍 Search Course ]                                  |
+|  (Avatar) Sara: Yea, check the Vault, just uploaded it!|
 |                                                        |
-|  [         CONFIRM & UPLOAD         ]                  |
+|  (Avatar) Dr. Ahmed: Make sure to follow the rubric.   |
+|                                                        |
+|  [ 🖊️ Murat is typing... ]                             |
+|  ____________________________________________________  |
+|  [ 😃 ] [ Type a message...             ] [ 📎 ] [ 🎤 ] |
 |________________________________________________________|
 ```
-**Description:** The centralized upload interface. It is "context-aware." Users can choose to keep a file private (Personal Vault), share it with a specific Course Group, or post it to the general Faculty Feed for everyone in their department to see.
+**Description:** A dedicated messaging interface for each group. Powered by WebSockets, it features real-time uploader alerts, typing indicators, and presence counts.
 
 ---
 
-## 6. User's Personal Vault (My Docs)
-The private workspace for documents not yet shared with a group.
+## 📱 4. Document Viewer (The Product)
+High-fidelity viewing of academic resources.
 
 ```text
 __________________________________________________________
-|  [ 👤 MY PROFILE ]                                     |
-|________________________________________________________|
-|   [ My Rides ]    [[ 📁 MY VAULT ]]    [ My Stats ]    |
+|  X CLOSE      [ Midterm_Prep.pdf ]      [ 📥 ] [ 💬 ] |
 |________________________________________________________|
 |                                                        |
-|  📊 STORAGE: [||||||||||----------] 50% (Free Tier)    |
+|  ____________________________________________________  |
+|  |                                                  |  |
+|  |                  [ PAGE 1 / 15 ]                 |  |
+|  |                                                  |  |
+|  |             ( Document Image View )              |  |
+|  |                                                  |  |
+|  |__________________________________________________|  |
 |                                                        |
-|  📁 Unsorted Uploads (4)                               |
-|  📁 Scanned Assignments (2)                            |
-|                                                        |
-|  📄 My_Draft_Notes.pdf                                 |
-|     [ 📤 SHARE TO GROUP ]    [ 🗑️ DELETE ]            |
-|                                                        |
-|  ✨ [ Upgrade to Elite for unlimited storage ]         |
+|  [ < PREV ]          [ SYNC SCROLL ]          [ NEXT > ]|
 |________________________________________________________|
 ```
-**Description:** Located within the user's profile, this is a private "Cloud Drive." It stores documents that the user has uploaded but hasn't yet shared with the community. It uses a storage-limit model (e.g., 100MB for free users) to drive subscriptions.
+**Description:** The final destination for documents. It renders the `DocumentImage` list as a swipeable gallery. Includes specialized tools like "Sync Scroll" for real-time collaborative review.
 
 ---
 
-## 7. Create Study Group
-The interface for starting a new course-based community.
+## 📱 5. Create Study Group
+The starting point for a new community.
 
 ```text
 __________________________________________________________
@@ -174,44 +131,96 @@ __________________________________________________________
 |  GROUP NAME:                                           |
 |  [ "Murat's Study Squad" ]                             |
 |                                                        |
+|  GROUP EMOJI: [ 📚 ] [ 💻 ] [ 🧠 ] [ ⚡ ]              |
+|                                                        |
 |  LINK TO COURSE:                                       |
-|  [ 🔍 Search Course (e.g. CS101) ]                     |
+|  [ 🔍 Search Course Name (e.g. Algorithms) ]           |
 |                                                        |
 |  VISIBILITY:                                           |
-|  (•) Faculty Only (Default)                            |
+|  (•) Public (Visible on Hub)                           |
+|  ( ) Private (Invite Only)                             |
 |                                                        |
 |  [        START STUDY GROUP        ]                   |
 |________________________________________________________|
 ```
-**Description:** This screen allows users to initiate a new Study Group. A user must select a course from the database to link the group to. If the creator is a Faculty member (`isFaculty = true`), the group is automatically tagged as "Official" and featured prominently.
 
 ---
 
-## 8. Feature Summary & Monetization Logic
+## 📱 6. Closed (Personal) Vault
+Private cloud storage for every student.
 
-| Feature | Free Student | Faculty Member | Majestor Elite (Premium) |
-| :--- | :--- | :--- | :--- |
-| **Visibility Scope** | **Locked (Uni & Faculty)** | **Locked (Uni & Faculty)** | **Locked (Uni & Faculty)** |
-| **Group Creation** | Limit: 1 Group | **Unlimited** | **Unlimited** |
-| **Group Joining** | Limit: 3 Groups | **Unlimited** | **Unlimited** |
-| **Faculty Documents**| Preview Only | Full Access | Full Access |
-| **Personal Storage** | 100MB Limit | 500MB Limit | 5GB + Folders |
+```text
+__________________________________________________________
+|  [ 📁 MY PERSONAL VAULT ]                              |
+|________________________________________________________|
+|                                                        |
+|  STORAGE USED:                                         |
+|  [██████████░░░░] 72% Used                             |
+|  ( 72 MB / 100 MB )                                    |
+|________________________________________________________|
+|                                                        |
+|  📄 Lab_Report_Draft.docx                              |
+|     [ 📤 SHARE ] [ 🗑️ DELETE ]                         |
+|________________________________________________________|
+```
 
 ---
 
-## 9. Technical Requirements (Architecture)
+## 📱 7. Open Vault (Faculty Feed)
+The public "Commons" where the community shares resources.
 
-1.  **Backend (JPA/Spring)**:
-    -   **Strict Multi-Tenancy**: All `StudyGroup` and `Document` queries MUST be filtered by the `universityId` and `facultyId` of the authenticated user.
-    -   **StudyGroup Entity**: 
-        -   `courseId`: Link to specific Course.
-        -   `creatorId`: Link to the `User` who created it.
-        -   `isOfficial`: Boolean (Derived logic: True if `creator.isFaculty == true`).
-        -   `popularityScore`, `courseCode`.
-    -   **SubscriptionService**: To track user tier (`FREE`, `ELITE`).
-    -   **Document Entity**: Add `studyGroupId` and `isPremiumOnly` flag.
-2.  **Real-Time (STOMP)**:
-    -   WebSocket topics for "Studying Now" presence and live document sync events.
-3.  **Mobile (React Native)**:
-    -   Conditional rendering of download buttons vs. lock icons.
-    -   Animated "Elite Upgrade" modals.
+```text
+__________________________________________________________
+|  [ 🔓 FACULTY OPEN VAULT ]                             |
+|________________________________________________________|
+|  [🔍 Search all public resources... ]                  |
+|________________________________________________________|
+|                                                        |
+|  📄 Integration_Hacks.pdf                              |
+|     From: [Calculus II Group]       [ 📥 DOWNLOAD ]    |
+|________________________________________________________|
+```
+
+---
+
+## 📱 8. Upload Document (Context-Aware)
+The intelligent gateway for adding content.
+
+```text
+__________________________________________________________
+|  X CANCEL            [ 📤 UPLOAD ]                    |
+|________________________________________________________|
+|                                                        |
+|  UPLOAD DESTINATION:                                   |
+|  [ PRIVATE ] [ PUBLIC ] [ STUDY GROUP ]                |
+|                                                        |
+|  IF GROUP:                                             |
+|  [ Select Group: Algorithms A (Auto-Selected) ]        |
+|                                                        |
+|  [ ✅ ] Mark as Premium Only (Elite Access)            |
+|        (Checked by default)                            |
+|                                                        |
+|  [         CONFIRM & UPLOAD         ]                  |
+|________________________________________________________|
+```
+
+---
+
+## 📱 9. Elite Paywall (The Upsell)
+Triggered by limits or locked content.
+
+```text
+__________________________________________________________
+|                                                        |
+|               ✨ UNLOCK MAJESTOR ELITE ✨              |
+|                                                        |
+|   Join Majestor Elite to unlock:                       |
+|                                                        |
+|   ✅ Unlimited Study Groups                            |
+|   ✅ Full Access to Faculty Documents                  |
+|   ✅ 5GB Personal Cloud Storage                        |
+|   ✅ Real-time Voice Study Huddles                     |
+|                                                        |
+|   [     BECOME ELITE - $4.99/mo     ]                  |
+|________________________________________________________|
+```

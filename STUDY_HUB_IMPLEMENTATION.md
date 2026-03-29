@@ -1,73 +1,69 @@
-# Majestor Study Hub: Implementation Guide
+# Majestor Study Hub: Implementation Roadmap (v2.0)
 
-This document maps your **current implementation** to the new **Study Hub** model.
-
----
-
-## 1. The "Faculty Feed" (Currently `Document.tsx`)
-This screen moves from being a generic list to a scoped "Search Engine" for your specific Faculty.
-
-### ✅ What Stays:
-*   **Search Bar:** Keep the existing search logic.
-*   **Filters:** Keep Year, Type, and Sort filters.
-*   **Component:** Continue using `DocumentList.tsx`.
-
-### 🛠️ What Changes:
-*   **Visual Context:** Each `DocumentCard` must now display its source (e.g., *"From: Algorithms Group"* or *"From: Public Feed"*).
-*   **Role Check:** The "View" button should check if the doc is `isPremiumOnly` and if the user is `Elite`.
+This document tracks the technical execution and current state of the Study Hub feature.
 
 ---
 
-## 2. The "Contextual Upload" (Currently `UploadDocument.tsx`)
-The upload flow becomes smarter by knowing "where" the file is going.
+## 1. Current Progress (Backend Surgery)
+The foundational data layer has been refactored to support the Freemium and Institutional Isolation models.
 
-### ✅ What Stays:
-*   **Image Upload:** The `ImageCarousel` and `ImageUpload` logic.
-*   **Core Details:** Title, Type, Semester, and Year.
-
-### 🛠️ What Changes:
-*   **Destination Picker (New):** A new dropdown/toggle:
-    *   `STUDY_GROUP`: Links the file to a specific course group (Default).
-    *   `FACULTY_FEED`: Makes the file public to the whole faculty.
-    *   `PERSONAL_VAULT`: Keeps the file private (Only the uploader sees it).
-*   **Course Logic:** The `courseId` is currently `@NotNull`. We must make it optional if the user selects `PERSONAL_VAULT`.
-*   **Monetization Logic:** If the uploader has `isFaculty = true`, the system should default the document to `isPremiumOnly = true`.
-
----
-
-## 3. The New Components (To be created)
-These features do not exist in your current code and must be built from scratch.
-
-### 🆕 `StudyGroup` Module:
-*   **StudyHubHome:** A horizontal scrolling list of Faculty Groups and a vertical list of Peer Groups.
-*   **StudyGroupDetails:** A screen containing a real-time Chat tab and a Vault (Document list) tab.
+### ✅ Completed Tasks
+- **Entity Refactoring**: 
+    - `User.java`: Added `storageUsed`, `storageLimit`, `isFaculty`, and `premiumUntil`.
+    - `Document.java`: Added `destination`, `isPremiumOnly`, and `totalFileSize` (Long/Bytes).
+    - `StudyGroup.java`: Added `isOfficial` and course relationships.
+- **Storage Tracking**:
+    - `Utils.java`: Defined 100MB (Free), 500MB (Faculty), and 5GB (Elite) constants.
+    - `DocumentService.java`: Implemented quota enforcement and `storageUsed` updates for `PERSONAL_VAULT` uploads.
+- **Access Control**:
+    - `DocumentService.java`: Added `validateAccess` to enforce the Elite paywall on premium documents.
+    - `DocumentController.java`: Updated `downloadDocument` to require `userId` for validation.
+- **DTO & Mapping**:
+    - `AuthUserDTO.java`: Includes storage metrics and premium status.
+    - `AuthMapper.java`: Correctly populates the DTO during login/signup.
+    - `DocumentMapper.java`: Supports `studyGroupId` and optional `courseId`.
 
 ---
 
-## 4. Database & API Requirements (The "Surgery")
+## 2. Pending Implementation (Logic Layer)
+The following business rules need to be implemented in the Service layer:
 
-### `Course` Entity
-*   Add `String code` (e.g., "CS101").
-*   Add `Long universityId` and `Long facultyId` (to ensure courses are scoped to the institution).
+### A. Study Group Limits
+- **Join Limit**: Free students are restricted to joining **1 group**.
+- **Creation Limit**: Free students are restricted to creating **1 group**.
+- **Elite/Faculty Bypass**: Users with `isFaculty=true` or an active `premiumUntil` date skip these checks.
 
-### `Document` Entity
-*   Add `Long studyGroupId` (nullable).
-*   Add `Boolean isPremiumOnly` (default false).
-*   Add `String destination` (Enum: `GROUP`, `FEED`, `PRIVATE`).
+### B. Institutional Isolation
+- All Study Hub feeds (Joined, Official, Trending) must be filtered by the user's `facultyId` and `universityId`.
+- **Repository Queries**: Implement `@Query` methods in `StudyGroupRepository` to fetch groups within the user's academic bubble.
 
-### `StudyGroup` Entity (New)
-*   `String name`
-*   `Long courseId`
-*   `Long creatorId`
-*   `Boolean isOfficial` (derived from creator status).
-*   `Integer popularityScore`.
+### C. Study Hub Feed API
+- Create a `GET /api/v1/study-hub/feed` endpoint that returns a consolidated response:
+    - `joinedGroups`: List of groups where the user is an active member.
+    - `officialGroups`: List of instructor-led groups (`isOfficial=true`).
+    - `trendingGroups`: Top-rated groups in the user's university.
 
 ---
 
-## 5. Implementation Order (Recommended)
-1.  **Backend:** Update `Course` entity (Add code and scope).
-2.  **Backend:** Update `Document` entity (Add group link and premium flag).
-3.  **Backend:** Create `StudyGroup` entity and CRUD services.
-4.  **Mobile:** Update `UploadDocument.tsx` with the new Destination logic.
-5.  **Mobile:** Transform `Document.tsx` into the Scoped Faculty Feed.
-6.  **Mobile:** Build the new `StudyGroup` Hub.
+## 3. Pending Implementation (Mobile UI)
+The React Native app requires the following screens and updates:
+
+### A. Study Hub Home
+- **Feed Sections**: Implement the 3-section horizontal/vertical layout.
+- **Vault Access**: Add "Personal Vault" and "Open Vault" navigation tiles.
+- **Badges**: Integrate "FACULTY" and "ELITE" visual indicators on user profiles.
+
+### B. Document Viewer & Paywall
+- **Paywall Overlay**: Add a blur effect and "Upgrade to Elite" CTA for `isPremiumOnly` documents.
+- **Storage Bar**: Implement a visual progress bar in the Personal Vault showing `%` of 100MB used.
+
+### C. Study Group Interaction
+- **Join/Leave Flow**: Connect the UI buttons to the new backend endpoints.
+- **Group Chat**: Initialize the STOMP connection using the existing `stompService.ts`.
+
+---
+
+## 4. Development Standards
+- **Storage**: Always use `Long` for file sizes (stored in bytes) to prevent floating-point errors.
+- **Security**: Never expose the full S3 URL; always use presigned URIs via `Utils.java`.
+- **Environment**: Mobile uses `__DEV__` to toggle between local IP (`192.168.18.40`) and production.

@@ -22,13 +22,22 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     );
 
     @Query("""
-                SELECT d.id, COUNT(l)
-                FROM Document d
-                LEFT JOIN d.likes l
-                WHERE d.uploader.faculty.id = :facultyId
-                GROUP BY d.id
+            SELECT d.id, COUNT(l)
+            FROM Document d
+            LEFT JOIN d.likes l
+            WHERE d.id IN :ids
+            GROUP BY d.id
             """)
-    List<Object[]> getLikeCountByFacultyId(
-            @Param("facultyId") Long facultyId
-    );
+    List<Object[]> getLikeCountsForIds(@Param("ids") List<Long> ids);
+
+    @Query("""
+            SELECT DISTINCT d
+            FROM Document d
+            LEFT JOIN FETCH d.documentImages di
+            LEFT JOIN FETCH d.course c
+            WHERE d.documentStudyGroup.id = :groupId
+            AND di.serialNumber = 1
+            ORDER BY d.createdAt DESC
+            """)
+    List<Document> getDocumentsByGroupId(@Param("groupId") Long groupId);
 }

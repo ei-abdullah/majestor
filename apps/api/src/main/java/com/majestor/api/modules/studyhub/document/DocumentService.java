@@ -17,17 +17,21 @@ import com.majestor.api.modules.studyhub.document.like.LikeRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import com.majestor.api.modules.utils.Utils;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
+import com.majestor.api.modules.studyhub.studygroup.StudyGroupRepository;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +56,7 @@ public class DocumentService {
     private final S3Buckets s3Buckets;
     private final DocumentMapper documentMapper;
     private final FacultyRepository facultyRepository;
+    private final StudyGroupRepository studyGroupRepository;
 
     @Transactional
     public void uploadDocument(
@@ -61,10 +66,30 @@ public class DocumentService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
 
-        Course course = courseRepository.findById(documentUploadRequestDTO.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course with id " + documentUploadRequestDTO.getCourseId() + " not found!"));
+        // Check Storage Quota
+        long upcomingTotalSize = Arrays.stream(documentUploadRequestDTO.getDocumentImages())
+                .mapToLong(MultipartFile::getSize)
+                .sum();
 
-        Document document = documentMapper.toDocument(documentUploadRequestDTO, user, course);
+        if (documentUploadRequestDTO.getDestination() == DocumentDestination.PERSONAL_VAULT) {
+            if (user.getStorageUsed() + upcomingTotalSize > user.getStorageLimit()) {
+                throw new IllegalArgumentException("Personal Vault limit exceeded! Upgrade to Elite for more space.");
+            }
+        }
+
+        Course course = null;
+        if (documentUploadRequestDTO.getCourseId() != null) {
+            course = courseRepository.findById(documentUploadRequestDTO.getCourseId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Course with id " + documentUploadRequestDTO.getCourseId() + " not found!"));
+        }
+
+        StudyGroup studyGroup = null;
+        if (documentUploadRequestDTO.getStudyGroupId() != null) {
+            studyGroup = studyGroupRepository.findById(documentUploadRequestDTO.getStudyGroupId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Study group with id " + documentUploadRequestDTO.getStudyGroupId() + " not found!"));
+        }
+
+        Document document = documentMapper.toDocument(documentUploadRequestDTO, user, course, studyGroup);
         document = documentRepository.save(document);
 
         List<DocumentImageAndExtensionDTO> documentImages = new ArrayList<>();
@@ -128,6 +153,13 @@ public class DocumentService {
             document.setDocumentImages(savedDocumentImages);
             document.setTotalFileSize(totalFileSize);
             documentRepository.save(document);
+
+            // Only update user's cumulative storage if it's a private upload
+            if (document.getDestination() == DocumentDestination.PERSONAL_VAULT) {
+                user.setStorageUsed(user.getStorageUsed() + totalFileSize);
+                userRepository.save(user);
+            }
+
         } catch (Exception e) {
             utils.CleanupUploadedImages(successfulUploadedKeys, s3Buckets.getBucket());
             log.error("Failed to save document images metadata: {}", e.getMessage());
@@ -139,9 +171,6 @@ public class DocumentService {
             Long userId,
             GetAllDocumentsFiltersDTO filters
     ) {
-        //1. Filter by stream ✅ or
-        //2. Filter by SQL query
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
 
@@ -159,7 +188,7 @@ public class DocumentService {
             documentsStream = documentsStream
                     .filter(doc ->
                             doc.getTitle().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase()) ||
-                            doc.getCourse().getName().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase())
+                                    doc.getCourse().getName().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase())
                     );
         }
 
@@ -180,16 +209,25 @@ public class DocumentService {
         }
         documents = documentsStream.toList();
 
-        List<Object[]> likesCounts = documentRepository.getLikeCountByFacultyId(
-                faculty.getId()
-        );
-
-        Map<Long, Long> likeCountMap = likesCounts
+        List<Long> docIds = documents
                 .stream()
-                .collect(Collectors.toMap(
-                        row -> (Long) row[0],
-                        row -> (Long) row[1]
-                ));
+                .map(Document::getId)
+                .toList();
+
+        Map<Long, Long> likeCountMap;
+
+        if(!docIds.isEmpty()) {
+            List<Object[]> likesCounts = documentRepository.getLikeCountsForIds(docIds);
+
+            likeCountMap = likesCounts
+                    .stream()
+                    .collect(Collectors.toMap(
+                            row -> (Long) row[0],
+                            row -> (Long) row[1]
+                    ));
+        } else {
+            likeCountMap = Map.of();
+        }
 
         return documents
                 .stream()
@@ -226,12 +264,17 @@ public class DocumentService {
     }
 
     public void downloadDocument(
+            Long userId,
             Long documentId,
             HttpServletResponse response
     ) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User with id " + userId + " not found!"));
 
         Document document = documentRepository.findById(documentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Document with document id " + documentId + " not found!"));
+
+        validateAccess(document, user);
 
         String title = document.getTitle();
         String type = String.valueOf(document.getDocumentType());
@@ -271,4 +314,12 @@ public class DocumentService {
             throw new RuntimeException("Failed to create zip file: " + e.getMessage(), e);
         }
     }
+
+    private void validateAccess(Document doc, User user) {
+        // If doc is premium and user isn't elite/faculty, block download/view
+        if (doc.getIsPremiumOnly() && !user.isElite() && !user.getIsFaculty()) {
+            throw new IllegalArgumentException("This document is locked for Elite members. Upgrade to unlock!");
+        }
+    }
+
 }
