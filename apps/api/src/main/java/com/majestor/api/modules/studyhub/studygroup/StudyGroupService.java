@@ -8,26 +8,25 @@ import com.majestor.api.modules.academia.course.CourseRepository;
 import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.studyhub.document.DocumentMapper;
 import com.majestor.api.modules.studyhub.document.DocumentRepository;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.CreateStudyGroupDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.CreateStudyGroupResponseDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.GetGroupDetailsResponseDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.JoinStudyGroupResponseDTO;
+import com.majestor.api.modules.studyhub.studygroup.rating.Rating;
+import com.majestor.api.modules.studyhub.studygroup.rating.RatingRepository;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import com.majestor.api.modules.utils.Utils;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.print.Doc;
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,6 +41,7 @@ public class StudyGroupService {
     private final DocumentRepository documentRepository;
     private final Utils utils;
     private final DocumentMapper documentMapper;
+    private final RatingRepository ratingRepository;
 
     @Transactional
     public CreateStudyGroupResponseDTO createStudyGroup(
@@ -116,6 +116,38 @@ public class StudyGroupService {
 
         membership.setLeftAt(Instant.now());
         studyGroupMemberRepository.save(membership);
+    }
+
+    @Transactional
+    public void rateStudyGroup(Long studyGroupId, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        StudyGroup group = studyGroupRepository.findById(studyGroupId)
+                .orElseThrow(() -> new ResourceNotFoundException("Study group not found with ID: " + studyGroupId));
+
+        Optional<Rating> existingRating = ratingRepository.findByRatedByAndRatedStudyGroup(user, group);
+
+        if(existingRating.isPresent()) {
+            ratingRepository.delete(existingRating.get());
+        } else {
+            Rating newRating = Rating
+                    .builder()
+                    .ratedBy(user)
+                    .ratedStudyGroup(group)
+                    .build();
+            ratingRepository.save(newRating);
+        }
+
+        long totalLikes = ratingRepository.countByRatedStudyGroup(group);
+        long totalMembers = group.getStudyGroupMembers().size();
+
+        double newScore = totalMembers > 0
+                ? ((double) totalLikes/totalMembers) * 5.0
+                : 0.0;
+
+        group.setPopularityScore(Math.round(newScore * 10.0) / 10.0);
+        studyGroupRepository.save(group);
     }
 
     public GetGroupDetailsResponseDTO getGroupDetails(Long studyGroupId, Long userId) {

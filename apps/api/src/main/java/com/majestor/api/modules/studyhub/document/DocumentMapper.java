@@ -1,16 +1,14 @@
 package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.modules.academia.course.Course;
-import com.majestor.api.modules.studyhub.document.documentimage.DocumentImage;
 import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
+import com.majestor.api.modules.studyhub.document.dto.VaultDocumentDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.GetGroupDetailsResponseDTO;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.List;
 
 @Component
 public class DocumentMapper {
@@ -37,15 +35,15 @@ public class DocumentMapper {
                 .build();
     }
 
-    public GetAllDocumentsDTO toGetAllDocumentsDTO(Document document, String documentImageUri, long likesCount) {
-        return GetAllDocumentsDTO
+    public VaultDocumentDTO toGetAllDocumentsDTO(Document document, String documentImageUri, long likesCount) {
+        return VaultDocumentDTO
                 .builder()
                 .id(document.getId())
                 .title(document.getTitle())
                 .year(document.getUploadedYear())
                 .documentType(String.valueOf(document.getDocumentType()))
                 .semesterType(String.valueOf(document.getSemesterType()))
-                .course(document.getCourse().getName())
+                .course(document.getCourse() != null ? document.getCourse().getName() : "General")
                 .imageUri(documentImageUri)
                 .likesCount(likesCount)
                 .build();
@@ -59,7 +57,7 @@ public class DocumentMapper {
                 .year(document.getUploadedYear())
                 .documentType(String.valueOf(document.getDocumentType()))
                 .semesterType(String.valueOf(document.getSemesterType()))
-                .course(document.getCourse().getName())
+                .course(document.getCourse() != null ? document.getCourse().getName() : "General")
                 .imageUri(documentImageUri)
                 .likesCount(likesCount)
                 .build();

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllDocumentsFiltersDTO {
+public class FiltersDTO {
     private String searchQuery;
 
     @Positive(message = "Year must be a positive number")

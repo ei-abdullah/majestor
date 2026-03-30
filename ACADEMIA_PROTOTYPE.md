@@ -1,11 +1,28 @@
-# Majestor Academia Study Hub - Visual Prototype (v2.1)
+# Majestor Academia Study Hub - Visual Prototype (v2.2)
 
-This prototype reflects the final design specifications for the Majestor Academia ecosystem.
+This prototype reflects the final design and **API Integration Map** for the Majestor Academia ecosystem.
+
+---
+
+## 📡 0. Global API Integration Map
+| Action | Method | Endpoint |
+| :--- | :--- | :--- |
+| **Hub Feed** | `POST` | `/api/v1/study-hub/feed/{userId}` |
+| **Vault Docs** | `GET` | `/api/v1/document/vault/{userId}?destination={VAULT_TYPE}` |
+| **Group Detail** | `GET` | `/api/v1/studygroup/details/{groupId}/{userId}` |
+| **Upload Doc** | `POST` | `/api/v1/document/uploadDocument/{userId}` |
+| **Create Group** | `POST` | `/api/v1/studygroup/create-group/{userId}` |
+| **Join Group** | `POST` | `/api/v1/studygroup/join-group/{groupId}/{userId}` |
+| **Rate Group** | `PATCH` | `/api/v1/studygroup/rate/{groupId}/{userId}` |
 
 ---
 
 ## 📱 1. Study Hub Home (Main Entry)
 The central directory for all course-based communities in your Faculty.
+
+**API Integration:** 
+*   **Call:** `POST /api/v1/study-hub/feed/{userId}`
+*   **Logic:** Aggregates `joinedGroups`, `officialGroups`, and `trendingGroups` (sorted by `Double popularityScore`).
 
 ```text
 __________________________________________________________
@@ -47,6 +64,10 @@ __________________________________________________________
 ## 📱 2. Study Group Details (The "Classroom")
 The social and academic heart of a specific course.
 
+**API Integration:**
+*   **Call:** `GET /api/v1/studygroup/details/{groupId}/{userId}`
+*   **Teaser Logic:** If `isCurrentUserMember` is `false`, only 3 documents are visible (`isPreview: true`). Joining unlocks the full `documents[]` array.
+
 ```text
 __________________________________________________________
 |  < [ CS101 - Dr. Ahmed ]                 [ 👥 124 ]    |
@@ -68,86 +89,15 @@ __________________________________________________________
 |  [ 📤 UPLOAD TO GROUP ] <-- (Passes GroupID as Prop)   |
 |________________________________________________________|
 ```
-**Description:** The detailed view for a group. It acts as a dashboard for accessing the Group Chat and the Document Vault.
-
----
-
-## 📱 3. Group Chat (Real-Time Communication)
-The interactive layer where students and faculty collaborate.
-
-```text
-__________________________________________________________
-|  < [ CS101 CHAT ]                        [ 🟢 12 ]    |
-|________________________________________________________|
-|                                                        |
-|  [📄 Dr. Ahmed shared 'Lab_1.pdf']                     |
-|                                                        |
-|  (Avatar) Murat: Yo, anyone solved Q3 yet?            |
-|                                                        |
-|  (Avatar) Sara: Yea, check the Vault, just uploaded it!|
-|                                                        |
-|  (Avatar) Dr. Ahmed: Make sure to follow the rubric.   |
-|                                                        |
-|  [ 🖊️ Murat is typing... ]                             |
-|  ____________________________________________________  |
-|  [ 😃 ] [ Type a message...             ] [ 📎 ] [ 🎤 ] |
-|________________________________________________________|
-```
-**Description:** A dedicated messaging interface for each group. Powered by WebSockets, it features real-time uploader alerts, typing indicators, and presence counts.
-
----
-
-## 📱 4. Document Viewer (The Product)
-High-fidelity viewing of academic resources.
-
-```text
-__________________________________________________________
-|  X CLOSE      [ Midterm_Prep.pdf ]      [ 📥 ] [ 💬 ] |
-|________________________________________________________|
-|                                                        |
-|  ____________________________________________________  |
-|  |                                                  |  |
-|  |                  [ PAGE 1 / 15 ]                 |  |
-|  |                                                  |  |
-|  |             ( Document Image View )              |  |
-|  |                                                  |  |
-|  |__________________________________________________|  |
-|                                                        |
-|  [ < PREV ]          [ SYNC SCROLL ]          [ NEXT > ]|
-|________________________________________________________|
-```
-**Description:** The final destination for documents. It renders the `DocumentImage` list as a swipeable gallery. Includes specialized tools like "Sync Scroll" for real-time collaborative review.
-
----
-
-## 📱 5. Create Study Group
-The starting point for a new community.
-
-```text
-__________________________________________________________
-|  X CANCEL            [ ✅ CREATE ]                    |
-|________________________________________________________|
-|                                                        |
-|  GROUP NAME:                                           |
-|  [ "Murat's Study Squad" ]                             |
-|                                                        |
-|  GROUP EMOJI: [ 📚 ] [ 💻 ] [ 🧠 ] [ ⚡ ]              |
-|                                                        |
-|  LINK TO COURSE:                                       |
-|  [ 🔍 Search Course Name (e.g. Algorithms) ]           |
-|                                                        |
-|  VISIBILITY:                                           |
-|  (•) Public (Visible on Hub)                           |
-|  ( ) Private (Invite Only)                             |
-|                                                        |
-|  [        START STUDY GROUP        ]                   |
-|________________________________________________________|
-```
 
 ---
 
 ## 📱 6. Closed (Personal) Vault
 Private cloud storage for every student.
+
+**API Integration:**
+*   **Call:** `GET /api/v1/document/vault/{userId}?destination=PERSONAL_VAULT`
+*   **Quota Logic:** Displays `user.storageUsed` vs `user.storageLimit`. Enforced during `uploadDocument` calls.
 
 ```text
 __________________________________________________________
@@ -169,6 +119,10 @@ __________________________________________________________
 ## 📱 7. Open Vault (Faculty Feed)
 The public "Commons" where the community shares resources.
 
+**API Integration:**
+*   **Call:** `GET /api/v1/document/vault/{userId}?destination=PUBLIC_VAULT`
+*   **Filters:** Supports `searchQuery`, `year`, `docType`, and `sortByLikes`.
+
 ```text
 __________________________________________________________
 |  [ 🔓 FACULTY OPEN VAULT ]                             |
@@ -186,6 +140,10 @@ __________________________________________________________
 ## 📱 8. Upload Document (Context-Aware)
 The intelligent gateway for adding content.
 
+**API Integration:**
+*   **Call:** `POST /api/v1/document/uploadDocument/{userId}`
+*   **Payload:** `multipart/form-data` containing `destination` (Enum) and file array.
+
 ```text
 __________________________________________________________
 |  X CANCEL            [ 📤 UPLOAD ]                    |
@@ -201,26 +159,5 @@ __________________________________________________________
 |        (Checked by default)                            |
 |                                                        |
 |  [         CONFIRM & UPLOAD         ]                  |
-|________________________________________________________|
-```
-
----
-
-## 📱 9. Elite Paywall (The Upsell)
-Triggered by limits or locked content.
-
-```text
-__________________________________________________________
-|                                                        |
-|               ✨ UNLOCK MAJESTOR ELITE ✨              |
-|                                                        |
-|   Join Majestor Elite to unlock:                       |
-|                                                        |
-|   ✅ Unlimited Study Groups                            |
-|   ✅ Full Access to Faculty Documents                  |
-|   ✅ 5GB Personal Cloud Storage                        |
-|   ✅ Real-time Voice Study Huddles                     |
-|                                                        |
-|   [     BECOME ELITE - $4.99/mo     ]                  |
 |________________________________________________________|
 ```

@@ -9,19 +9,6 @@ import java.util.List;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("""
-            SELECT DISTINCT d
-            FROM Document d
-            LEFT JOIN FETCH d.documentImages di
-            LEFT JOIN FETCH d.course c
-            WHERE d.uploader.faculty.id = :facultyId
-            AND di.serialNumber = 1
-            ORDER BY d.id DESC
-            """)
-    List<Document> getDocumentsByFacultyId(
-            @Param("facultyId") Long facultyId
-    );
-
-    @Query("""
             SELECT d.id, COUNT(l)
             FROM Document d
             LEFT JOIN d.likes l
@@ -40,4 +27,34 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             ORDER BY d.createdAt DESC
             """)
     List<Document> getDocumentsByGroupId(@Param("groupId") Long groupId);
+
+    @Query("""
+            SELECT DISTINCT d
+            FROM Document d
+            LEFT JOIN FETCH d.documentImages di
+            LEFT JOIN FETCH d.course c
+            WHERE d.uploader.faculty.id = :facultyId
+            AND d.destination = :destination
+            AND di.serialNumber = 1
+            ORDER BY d.createdAt DESC
+            """)
+    List<Document> findByFacultyAndDestination(
+            @Param("facultyId") Long facultyId,
+            @Param("destination") DocumentDestination destination
+    );
+
+    @Query("""
+            SELECT DISTINCT d
+            FROM Document d
+            LEFT JOIN FETCH d.documentImages di
+            LEFT JOIN FETCH d.course c
+            WHERE d.uploader.id = :userId
+            AND d.destination = :destination
+            AND di.serialNumber = 1
+            ORDER BY d.createdAt DESC
+            """)
+    List<Document> findByUserAndDestination(
+            @Param("userId") Long userId,
+            @Param("destination") DocumentDestination destination
+    );
 }

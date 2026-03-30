@@ -45,7 +45,7 @@ public class StudyGroup {
     @Builder.Default
     @Column(nullable = false)
     @NotNull(message = "Study group popularity score is required")
-    private Long popularityScore = 0L;
+    private Double popularityScore = 0.0;
 
     @OneToMany(mappedBy = "documentStudyGroup")
     private List<Document> studyGroupDocuments;

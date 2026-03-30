@@ -11,8 +11,8 @@ import com.majestor.api.modules.studyhub.document.documentimage.DocumentImage;
 import com.majestor.api.modules.studyhub.document.documentimage.DocumentImageRepository;
 import com.majestor.api.modules.studyhub.document.dto.DocumentImageAndExtensionDTO;
 import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsFiltersDTO;
+import com.majestor.api.modules.studyhub.document.dto.VaultDocumentDTO;
+import com.majestor.api.modules.studyhub.document.dto.FiltersDTO;
 import com.majestor.api.modules.studyhub.document.like.LikeRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
@@ -24,7 +24,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
@@ -167,9 +166,10 @@ public class DocumentService {
         }
     }
 
-    public List<GetAllDocumentsDTO> getAllDocuments(
+    public List<VaultDocumentDTO> getVaultDocuments(
             Long userId,
-            GetAllDocumentsFiltersDTO filters
+            DocumentDestination destination,
+            FiltersDTO filters
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User with user id " + userId + " not found!"));
@@ -177,18 +177,34 @@ public class DocumentService {
         Faculty faculty = facultyRepository.findById(user.getFaculty().getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Faculty not found for user id " + userId + "!"));
 
-        List<Document> documents = documentRepository.getDocumentsByFacultyId(
-                faculty.getId()
-        );
+        List<Document> documents;
 
-        Stream<Document> documentsStream = documents.stream();
+        if (destination == DocumentDestination.PERSONAL_VAULT) {
+            documents = documentRepository.findByUserAndDestination(
+                    user.getId(),
+                    DocumentDestination.PERSONAL_VAULT
+            );
+        } else {
+            documents = documentRepository.findByFacultyAndDestination(
+                    faculty.getId(),
+                    DocumentDestination.PUBLIC_VAULT
+            );
+        }
+
+        if (documents.isEmpty()) {
+            return List.of();
+        }
+
+        Stream<Document> documentsStream = documents
+                .stream();
 
         // Apply filters
         if (filters.getSearchQuery() != null) {
+            String query = filters.getSearchQuery().trim().toLowerCase();
             documentsStream = documentsStream
                     .filter(doc ->
-                            doc.getTitle().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase()) ||
-                                    doc.getCourse().getName().trim().toLowerCase().contains(filters.getSearchQuery().trim().toLowerCase())
+                            doc.getTitle().toLowerCase().contains(query) ||
+                                    (doc.getCourse() != null && doc.getCourse().getName().toLowerCase().contains(query))
                     );
         }
 
@@ -216,7 +232,7 @@ public class DocumentService {
 
         Map<Long, Long> likeCountMap;
 
-        if(!docIds.isEmpty()) {
+        if (!docIds.isEmpty()) {
             List<Object[]> likesCounts = documentRepository.getLikeCountsForIds(docIds);
 
             likeCountMap = likesCounts

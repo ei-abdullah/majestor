@@ -51,6 +51,6 @@ public class FeedResponseDTO {
         private String hostName;
         private String courseName;
         private Integer memberCount;
-        private Long popularityScore;
+        private Double popularityScore;
     }
 }

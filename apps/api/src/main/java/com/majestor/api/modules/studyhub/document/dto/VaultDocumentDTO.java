@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class GetAllDocumentsDTO {
+public class VaultDocumentDTO {
 
     @NotNull(message = "Document ID is required")
     private Long id;

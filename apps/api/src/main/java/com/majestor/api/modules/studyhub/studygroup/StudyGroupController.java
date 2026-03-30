@@ -68,4 +68,16 @@ public class StudyGroupController {
                 .ok()
                 .body(response);
     }
+
+    @PatchMapping("/rate/{studyGroupId}/{userId}")
+    public ResponseEntity<?> rateGroup(
+            @PathVariable @Positive Long studyGroupId,
+            @PathVariable @Positive Long userId
+    ) {
+        studyGroupService.rateStudyGroup(studyGroupId, userId);
+
+        return ResponseEntity
+                .ok()
+                .build();
+    }
 }

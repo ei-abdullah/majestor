@@ -54,7 +54,7 @@ public class StudyGroupMapper {
                 .studyGroupCourse(course)
                 .isOfficial(host.getIsFaculty())
                 .isActive(true)
-                .popularityScore(0L)
+                .popularityScore(0.0)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();
