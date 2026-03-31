@@ -4,7 +4,7 @@ import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 
 import {useAuthStore} from "@/src/stores/authStore";
-import {useLikeDocument} from "@/src/queries/document.queries";
+import {useLikeDocument} from "@/src/queries/studyhub.queries";
 
 import useDownloadDocumentLegacy from "@/src/hooks/useDownloadDocumentLegacy";
 import Card from "@/src/components/ui/Card";

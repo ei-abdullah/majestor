@@ -3,9 +3,9 @@ import {View, ScrollView} from "react-native";
 
 import {useAuthStore} from "@/src/stores/authStore";
 
-import {useDocument} from "@/src/queries/document.queries";
+import {useVault} from "@/src/queries/studyhub.queries";
 import GradientView from "@/src/components/ui/GradientView";
-import DocumentList from "@/src/components/screens/document/DocumentList";
+import DocumentList from "@/src/components/screens/studyhub/DocumentList";
 import SearchBar from "@/src/components/ui/SearchBar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import StyledDropDown from "@/src/components/ui/StyledDropDown";
@@ -13,7 +13,7 @@ import OutlineButton from "@/src/components/ui/OutlineButton";
 import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
 
 import {filterByLike, type, years} from "@/src/constants";
-import {Filters} from "@/src/types/document";
+import {Filters} from "@/src/types/studyHub";
 
 function Document() {
     const {user} = useAuthStore();
@@ -27,7 +27,8 @@ function Document() {
 
     const [appliedFilters, setAppliedFilters] = React.useState<Filters>(filters);
 
-    let {data: documentData, isPending, error, refetch} = useDocument(user!.id, appliedFilters);
+    //TODO: Input document destination from input instead of hardcode
+    let {data: documentData, isPending, error, refetch} = useVault(user!.id, 'PERSONAL_VAULT', appliedFilters);
 
     function handleSearchQuery(query: string) {
         setFilters({

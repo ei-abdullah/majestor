@@ -33,7 +33,7 @@ export default function TabsLayout() {
                 <Tabs.Screen
                     name={"document"}
                     options={{
-                        title: "Document",
+                        title: "Study Hub",
                     }}
                 />
 

@@ -124,7 +124,7 @@ public class DataInitializer implements CommandLineRunner {
                 .studyGroupCourse(dataCourse)
                 .isOfficial(false)
                 .isActive(true)
-                .popularityScore(95L)
+                .popularityScore(3.4)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();
@@ -136,7 +136,7 @@ public class DataInitializer implements CommandLineRunner {
                 .studyGroupCourse(dataCourse)
                 .isOfficial(false)
                 .isActive(true)
-                .popularityScore(10L)
+                .popularityScore(4.5)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
                 .build();

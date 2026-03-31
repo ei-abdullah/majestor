@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Validated
 @RestController
-@RequestMapping("/api/v1/studygroup")
+@RequestMapping("/api/v1/study-group")
 @RequiredArgsConstructor
 public class StudyGroupController {
 
@@ -45,7 +45,7 @@ public class StudyGroupController {
     }
 
     @PatchMapping("/leave-group/{studyGroupId}/{userId}")
-    public ResponseEntity<JoinStudyGroupResponseDTO> leaveStudyGroup(
+    public ResponseEntity<?> leaveStudyGroup(
             @PathVariable @Positive Long studyGroupId,
             @PathVariable @Positive Long userId
     ) {

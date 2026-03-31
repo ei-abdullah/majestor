@@ -1,6 +1,6 @@
 import React from "react";
 import {FlatList, RefreshControl} from "react-native";
-import DocumentCard from "@/src/components/screens/document/DocumentCard";
+import DocumentCard from "@/src/components/screens/studyhub/DocumentCard";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
