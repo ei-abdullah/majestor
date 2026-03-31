@@ -42,7 +42,6 @@ public class AuthUserDTO {
     @PositiveOrZero(message = "Storage limit must be positive or zero")
     private Long storageLimit;
 
-    @NotNull(message = "User's premium timeline is required")
     private Instant premiumUntil;
 
     @NotNull(message = "isFaculty is required")

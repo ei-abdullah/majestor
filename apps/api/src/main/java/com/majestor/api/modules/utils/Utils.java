@@ -130,11 +130,15 @@ public class Utils {
         return filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
     }
 
-    public Long StandardFileSize() {
-        return 15L * 1024 * 1024; // 15 MB
+    public Long FreeStorageLimit() {
+        return 100L * 1024 * 1024; // 100 MB
     }
 
-    public Long EliteFileSize() {
+    public Long FacultyStorageLimit() {
         return 500L * 1024 * 1024; // 500 MB
+    }
+
+    public Long EliteStorageLimit() {
+        return 5L * 1024 * 1024 * 1024; // 5 GB
     }
 }

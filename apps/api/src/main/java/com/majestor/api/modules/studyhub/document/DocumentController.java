@@ -1,8 +1,8 @@
 package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.modules.studyhub.document.dto.DocumentUploadRequestDTO;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsDTO;
-import com.majestor.api.modules.studyhub.document.dto.GetAllDocumentsFiltersDTO;
+import com.majestor.api.modules.studyhub.document.dto.VaultDocumentDTO;
+import com.majestor.api.modules.studyhub.document.dto.FiltersDTO;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,12 +39,13 @@ public class DocumentController {
     }
 
     // /getAllDocuments?courseTitle="CA"&year=2019&documentType=1&sortByLikes=FALSE
-    @GetMapping("/getAllDocuments/{userId}")
-    public ResponseEntity<List<GetAllDocumentsDTO>> getAllDocuments(
-            @Valid @ModelAttribute GetAllDocumentsFiltersDTO getAllDocumentsFiltersDTO,
-            @PathVariable @NotNull @Positive Long userId
+    @GetMapping("/vault/{userId}")
+    public ResponseEntity<List<VaultDocumentDTO>> getVault(
+            @PathVariable @NotNull @Positive Long userId,
+            @RequestParam DocumentDestination destination,
+            @Valid @ModelAttribute FiltersDTO filtersDTO
     ) {
-        List<GetAllDocumentsDTO> response = documentService.getAllDocuments(userId, getAllDocumentsFiltersDTO);
+        List<VaultDocumentDTO> response = documentService.getVaultDocuments(userId, destination, filtersDTO);
 
         return ResponseEntity
                 .ok()
@@ -63,12 +64,13 @@ public class DocumentController {
                 .build();
     }
 
-    @GetMapping("/downloadDocument/{documentId}")
+    @GetMapping("/downloadDocument/{userId}/{documentId}")
     public ResponseEntity<?> downloadDocument(
+            @PathVariable @NotNull @Positive Long userId,
             @PathVariable @NotNull @Positive Long documentId,
             HttpServletResponse response
     ) {
-        documentService.downloadDocument(documentId, response);
+        documentService.downloadDocument(userId, documentId, response);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

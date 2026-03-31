@@ -284,6 +284,23 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, status);
     }
 
+    // Payment required exception
+    @ExceptionHandler(TierLimitExceededException.class)
+    public ResponseEntity<ApiError> handleException(
+            TierLimitExceededException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(exception.getMessage())
+                .statusCode(HttpStatus.PAYMENT_REQUIRED.value())
+                .instantDateTime(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.PAYMENT_REQUIRED);
+    }
+
     // Generic exception
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleException(

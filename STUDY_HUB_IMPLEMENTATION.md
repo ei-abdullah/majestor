@@ -1,73 +1,66 @@
-# Majestor Study Hub: Implementation Guide
+# Majestor Study Hub: Implementation Roadmap (v3.0)
 
-This document maps your **current implementation** to the new **Study Hub** model.
-
----
-
-## 1. The "Faculty Feed" (Currently `Document.tsx`)
-This screen moves from being a generic list to a scoped "Search Engine" for your specific Faculty.
-
-### ✅ What Stays:
-*   **Search Bar:** Keep the existing search logic.
-*   **Filters:** Keep Year, Type, and Sort filters.
-*   **Component:** Continue using `DocumentList.tsx`.
-
-### 🛠️ What Changes:
-*   **Visual Context:** Each `DocumentCard` must now display its source (e.g., *"From: Algorithms Group"* or *"From: Public Feed"*).
-*   **Role Check:** The "View" button should check if the doc is `isPremiumOnly` and if the user is `Elite`.
+This document tracks the technical execution and current state of the Study Hub feature.
 
 ---
 
-## 2. The "Contextual Upload" (Currently `UploadDocument.tsx`)
-The upload flow becomes smarter by knowing "where" the file is going.
+## 1. ✅ Backend Architecture (COMPLETE)
+The foundational data and logic layers are production-ready.
 
-### ✅ What Stays:
-*   **Image Upload:** The `ImageCarousel` and `ImageUpload` logic.
-*   **Core Details:** Title, Type, Semester, and Year.
-
-### 🛠️ What Changes:
-*   **Destination Picker (New):** A new dropdown/toggle:
-    *   `STUDY_GROUP`: Links the file to a specific course group (Default).
-    *   `FACULTY_FEED`: Makes the file public to the whole faculty.
-    *   `PERSONAL_VAULT`: Keeps the file private (Only the uploader sees it).
-*   **Course Logic:** The `courseId` is currently `@NotNull`. We must make it optional if the user selects `PERSONAL_VAULT`.
-*   **Monetization Logic:** If the uploader has `isFaculty = true`, the system should default the document to `isPremiumOnly = true`.
-
----
-
-## 3. The New Components (To be created)
-These features do not exist in your current code and must be built from scratch.
-
-### 🆕 `StudyGroup` Module:
-*   **StudyHubHome:** A horizontal scrolling list of Faculty Groups and a vertical list of Peer Groups.
-*   **StudyGroupDetails:** A screen containing a real-time Chat tab and a Vault (Document list) tab.
+### Completed Tasks
+- **Institutional Isolation**: All queries (Vaults, Feed, Groups) are strictly filtered by `facultyId`.
+- **Freemium Enforcement**: 
+    - 1 Joined Group limit for Free students.
+    - 1 Created Group limit for Free students.
+    - Storage quota (100MB/500MB/5GB) enforced on `PERSONAL_VAULT`.
+- **The "Teaser" Model**: Non-members see exactly 3 documents in `GetGroupDetailsResponseDTO` with `isPreview: true`.
+- **Vault Engine**: Unified parametric service handling Public vs. Private queries.
+- **Popularity Logic**: Real-time decimal-accurate rating toggle (Likes/Members * 5).
+- **Null Safety**: All mappers and filters handle documents with `null` courses (Private Vault items).
 
 ---
 
-## 4. Database & API Requirements (The "Surgery")
+## 2. 📱 Mobile UI Implementation (NEXT PHASE)
+The React Native app requires the following screens and updates:
 
-### `Course` Entity
-*   Add `String code` (e.g., "CS101").
-*   Add `Long universityId` and `Long facultyId` (to ensure courses are scoped to the institution).
+### A. Study Hub Home (`StudyHubScreen.tsx`)
+- **Feed Sections**: 
+    - `joinedGroups` (Horizontal Scroll)
+    - `officialGroups` (Horizontal Scroll)
+    - `trendingGroups` (Vertical List with Popularity Stars)
+- **Vault Entry**: Large "My Personal Vault" and "Faculty Open Vault" tiles.
+- **Action**: Floating Action Button (FAB) for "Create Group".
 
-### `Document` Entity
-*   Add `Long studyGroupId` (nullable).
-*   Add `Boolean isPremiumOnly` (default false).
-*   Add `String destination` (Enum: `GROUP`, `FEED`, `PRIVATE`).
+### B. Vault Screens (`VaultFeedScreen.tsx`)
+- **Generic Component**: Reusable screen that switches between `PERSONAL_VAULT` and `PUBLIC_VAULT` based on route params.
+- **Filters**: Implementation of the `FiltersDTO` (Search, Year, DocType, Like Sorting).
+- **Personal Metrics**: Display of the storage progress bar (Bytes to MB conversion).
 
-### `StudyGroup` Entity (New)
-*   `String name`
-*   `Long courseId`
-*   `Long creatorId`
-*   `Boolean isOfficial` (derived from creator status).
-*   `Integer popularityScore`.
+### C. Study Group Detail (`StudyGroupDetailScreen.tsx`)
+- **Teaser UI**: Render the first 3 documents with a "Join to See More" blur/overlay.
+- **Interaction**: 
+    - Join/Leave button logic.
+    - Like/Rate toggle logic (Optimistic UI update).
+    - Navigation to Group Chat.
+
+### D. Document Interaction
+- **Upload Flow**: Multipart/form-data integration with camera/gallery picker.
+- **Viewer**: Presigned URI rendering and ZIP download trigger.
 
 ---
 
-## 5. Implementation Order (Recommended)
-1.  **Backend:** Update `Course` entity (Add code and scope).
-2.  **Backend:** Update `Document` entity (Add group link and premium flag).
-3.  **Backend:** Create `StudyGroup` entity and CRUD services.
-4.  **Mobile:** Update `UploadDocument.tsx` with the new Destination logic.
-5.  **Mobile:** Transform `Document.tsx` into the Scoped Faculty Feed.
-6.  **Mobile:** Build the new `StudyGroup` Hub.
+## 3. 📡 API Mapping (React Native Queries)
+| Action | Hook/Query | Endpoint |
+| :--- | :--- | :--- |
+| **Get Feed** | `useStudyHubFeed` | `POST /api/v1/study-hub/feed/{userId}` |
+| **Get Vault** | `useVaultDocuments` | `GET /api/v1/document/vault/{userId}` |
+| **Get Group** | `useGroupDetails` | `GET /api/v1/studygroup/details/{groupId}/{userId}` |
+| **Join/Leave** | `useGroupMembership` | `POST /join-group` | `PATCH /leave-group` |
+| **Rate** | `useRateGroup` | `PATCH /api/v1/studygroup/rate/{groupId}/{userId}` |
+
+---
+
+## 4. Development Standards
+- **Validation**: Intercept `402 Payment Required` errors to trigger the `EliteUpgradeModal`.
+- **Optimization**: Use `react-query` for caching the Hub Feed to minimize redundant API calls.
+- **Environment**: Ensure `__DEV__` points to `192.168.18.40:8080`.

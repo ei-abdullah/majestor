@@ -43,6 +43,9 @@ public class AuthMapper {
                 .universityId(user.getUniversity().getId())
                 .facultyId(user.getFaculty().getId())
                 .isFaculty(user.getIsFaculty())
+                .totalStorageUsed(user.getStorageUsed())
+                .storageLimit(user.getStorageLimit())
+                .premiumUntil(user.getPremiumUntil())
                 .roles(user.getRoles())
                 .build();
     }
@@ -57,6 +60,8 @@ public class AuthMapper {
     }
 
     public User toUser(SignupRequestDTO request, University university, Faculty faculty, List<Role> roles) {
+        Long initialStorageLimit = request.getIsFaculty() ? utils.FacultyStorageLimit() : utils.FreeStorageLimit();
+
         return User
                 .builder()
                 .email(request.getEmail().trim().toLowerCase())
@@ -67,7 +72,7 @@ public class AuthMapper {
                 .faculty(faculty)
                 .isFaculty(request.getIsFaculty())
                 .storageUsed(0L)
-                .storageLimit(utils.StandardFileSize())
+                .storageLimit(initialStorageLimit)
                 .roles(roles)
                 .createdAt(Instant.now())
                 .updatedAt(Instant.now())
