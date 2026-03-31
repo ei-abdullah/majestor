@@ -91,6 +91,7 @@ public class StudyGroupMapper {
                 .hostName(studyGroup.getStudyGroupHost().getUsername())
                 .courseName(studyGroup.getStudyGroupCourse().getName())
                 .memberCount(studyGroup.getStudyGroupMembers().size())
+                .popularityScore(studyGroup.getPopularityScore())
                 .isCurrentUserMember(isMember)
                 .isOfficial(studyGroup.getIsOfficial())
                 .isPreview(isPreview)

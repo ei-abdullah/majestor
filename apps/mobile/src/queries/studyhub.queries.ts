@@ -8,8 +8,8 @@ import {
     rateStudyGroupApi
 } from "@/src/services/studyhub.api";
 import Toast from "react-native-toast-message";
-import {DocumentDestination, Filters} from "@/src/types/document";
-import {getVaultDocumentApi, likeDocumentApi, uploadDocumentApi} from "@/src/services/document.api";
+import {DocumentDestination, Filters} from "@/src/types/studyHub";
+import {getVaultDocumentApi, likeDocumentApi, uploadDocumentApi} from "@/src/services/studyhub.api";
 import React from "react";
 
 export const useStudyHubFeed = (userId: number) => {

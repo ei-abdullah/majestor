@@ -40,13 +40,17 @@ public class AuthMapper {
                 .email(user.getEmail())
                 .username(user.getUsername())
                 .hasOnboarded(user.getHasOnboarded())
-                .universityId(user.getUniversity().getId())
-                .facultyId(user.getFaculty().getId())
+                .phone(user.getPhone())
+                .personalEmail(user.getPersonalEmail())
                 .isFaculty(user.getIsFaculty())
+                .premiumUntil(user.getPremiumUntil())
                 .totalStorageUsed(user.getStorageUsed())
                 .storageLimit(user.getStorageLimit())
-                .premiumUntil(user.getPremiumUntil())
+                .universityId(user.getUniversity().getId())
+                .facultyId(user.getFaculty().getId())
                 .roles(user.getRoles())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 

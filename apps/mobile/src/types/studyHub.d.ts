@@ -76,6 +76,7 @@ export interface GetGroupDetails {
     courseName: string;
     memberCount: number;
     isCurrentUserMember: boolean;
+    popularityScore: number,
     isPreview: boolean;
     isOfficial: boolean;
     documents: StudyGroupDocuments[];

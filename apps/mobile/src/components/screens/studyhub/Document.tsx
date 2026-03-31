@@ -154,7 +154,7 @@ function Document() {
                 left: 30,
                 zIndex: 1000
             }}>
-                <FloatingActionButton href={"/document/upload"} icon={"plus"}/>
+                <FloatingActionButton href={"/studyhub/uploadDocument"} icon={"plus"}/>
             </View>
         </GradientView>
     );

@@ -1,9 +1,9 @@
 import {useState, useCallback} from 'react';
 import * as FileSystem from 'expo-file-system/legacy';
-import {getDownloadUrl} from "@/src/services/document.api";
+import {getDownloadUrl} from "@/src/services/studyhub.api";
 import {Alert, Platform} from "react-native";
 import {shareAsync} from "expo-sharing";
-import {Document} from "@/src/types/document";
+import {Document} from "@/src/types/studyHub";
 import {useAuthStore} from "@/src/stores/authStore";
 import * as Sentry from "@sentry/react-native";
 

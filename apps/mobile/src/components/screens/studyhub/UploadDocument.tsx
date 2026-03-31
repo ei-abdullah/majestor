@@ -6,7 +6,7 @@ import {semesterType, type, years} from "@/src/constants";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCourse} from "@/src/queries/course.queries";
-import {useUploadDocument} from "@/src/queries/document.queries";
+import {useUploadDocument} from "@/src/queries/studyhub.queries";
 
 import GradientView from "@/src/components/ui/GradientView";
 import ImageUpload from "@/src/components/ui/ImageUpload";
