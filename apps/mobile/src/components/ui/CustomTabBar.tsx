@@ -16,7 +16,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
   const IconConfig: any = {
     index: 'home',
     carpool: 'car',
-    document: 'file-text',
+    studyhub: 'anchor',
     user: 'user',
   };
 

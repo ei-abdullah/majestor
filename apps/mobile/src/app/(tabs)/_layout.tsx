@@ -31,7 +31,7 @@ export default function TabsLayout() {
                 />
 
                 <Tabs.Screen
-                    name={"document"}
+                    name={"studyhub"}
                     options={{
                         title: "Study Hub",
                     }}

@@ -17,69 +17,62 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
     if (groups.length === 0) return null;
 
     return (
-        <View className="mb-8 px-6">
-            <View className="flex-row justify-between items-center mb-4">
-                <View className="flex-row items-center">
-                    <Feather name="trending-up" size={18} color="#FF4500"/>
-                    <Text className="text-white font-bold text-lg ml-2 uppercase">Trending Peer Groups</Text>
+        <View className="px-6 mb-6">
+            <Card className="bg-white rounded-[32px] border-0 shadow-blue p-6">
+                <View className="flex-row items-center mb-6 px-1">
+                    <View className="bg-orange-50 p-2.5 rounded-2xl mr-4 shadow-sm border border-orange-100">
+                        <Feather name="trending-up" size={18} color="#FF4500" />
+                    </View>
+                    <Text className="text-mj-text-main font-bold text-xl tracking-tighter uppercase">Trending Hubs</Text>
                 </View>
-            </View>
 
-            {groups.map((group) => (
-                <TouchableOpacity
-                    key={group.id}
-                    onPress={() => router.push({
-                            pathname: `/studyhub/studyGroupDetail`,
+                {groups.map((group) => (
+                    <TouchableOpacity
+                        key={group.id}
+                        onPress={() => router.push({
+                            pathname: "/(tabs)/studyhub/studyGroupDetail",
                             params: {id: group.id}
-                        }
-                    )}
-                    activeOpacity={0.8}
-                    className="mb-3"
-                >
-                    <Card className="bg-white/5 border-white/5 p-4 flex-row items-center justify-between">
-                        <View className="flex-1 mr-4">
-                            <View className="flex-row items-center">
-                                <Text className="text-white font-bold text-base mr-2" numberOfLines={1}>
+                        })}
+                        className="mb-5"
+                        activeOpacity={0.7}
+                    >
+                        <View className="bg-mj-bg-light p-6 rounded-[28px] flex-row items-center justify-between border border-mj-bg-blue shadow-sm min-h-[110px]">
+                            <View className="flex-1 mr-4">
+                                <View className="bg-mj-blue-100 self-start px-2 py-0.5 rounded-md mb-2">
+                                    <Text className="text-mj-blue-700 text-[8px] font-black uppercase tracking-widest">
+                                        {group.courseName}
+                                    </Text>
+                                </View>
+                                
+                                <Text className="text-mj-text-main font-bold text-base leading-tight mb-2" numberOfLines={1}>
                                     {group.name}
                                 </Text>
-                                <View className="bg-white/10 px-1.5 py-0.5 rounded">
-                                    <Text className="text-white/60 text-[8px] font-bold uppercase">
-                                        {group.courseName}
+                                
+                                <View className="flex-row items-center">
+                                    <Feather name="users" size={10} color="#5A6275" />
+                                    <Text className="text-mj-text-secondary text-[10px] font-bold uppercase tracking-tighter ml-1.5 opacity-60">
+                                        {group.memberCount} Members • {group.hostName}
                                     </Text>
                                 </View>
                             </View>
 
-                            <View className="flex-row items-center mt-1 gap-3">
-                                <View className="flex-row items-center">
-                                    <Feather name="user" size={10} color="#3A6FF8"/>
-                                    <Text className="text-white/40 text-[10px] ml-1">{group.hostName}</Text>
-                                </View>
-                                <View className="flex-row items-center">
-                                    <Feather name="users" size={10} color="#3A6FF8"/>
-                                    <Text className="text-white/40 text-[10px] ml-1">{group.memberCount} members</Text>
-                                </View>
-                            </View>
-                        </View>
-
-                        <View className="items-end">
-                            <View
-                                className="flex-row items-center bg-orange-500/20 px-2 py-1 rounded-lg border border-orange-500/30">
-                                <Feather name="star" size={12} color="#FFA500"/>
-                                <Text className="text-orange-500 font-bold text-xs ml-1">
+                            <View className="bg-white p-3 rounded-[22px] shadow-sm border border-mj-yellow-100 items-center justify-center min-w-[55px]">
+                                <Feather name="star" size={14} color="#FBCB43" />
+                                <Text className="text-mj-text-main font-black text-xs mt-1">
                                     {group.popularityScore?.toFixed(1) || "0.0"}
                                 </Text>
                             </View>
                         </View>
-                    </Card>
-                </TouchableOpacity>
-            ))}
+                    </TouchableOpacity>
+                ))}
 
-            <TouchableOpacity
-                onPress={() => router.push("/(tabs)/studyhub/trendingGroup")}
-                className="bg-white/5 py-3 rounded-xl items-center border border-white/10 mt-2"
-            >
-                <Text className="text-white/60 text-xs font-bold uppercase tracking-widest">View All Trending</Text>
-            </TouchableOpacity>
+                <TouchableOpacity 
+                    onPress={() => router.push("/(tabs)/studyhub/trendingGroup")}
+                    className="mt-2 py-3 items-center"
+                >
+                    <Text className="text-mj-blue font-bold text-xs uppercase tracking-widest">Discover All Trending</Text>
+                </TouchableOpacity>
+            </Card>
         </View>
     );
 }

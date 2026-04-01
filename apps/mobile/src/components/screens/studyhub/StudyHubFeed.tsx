@@ -27,68 +27,61 @@ export default function StudyHubFeed() {
             <ScrollView 
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{ 
-                    paddingTop: insets.top + 20, 
-                    paddingBottom: 120 
+                    paddingTop: insets.top + 80, // Account for CustomHeader height
+                    paddingBottom: 140 
                 }}
                 refreshControl={
                     <RefreshControl refreshing={isPending} onRefresh={refetch} tintColor="#3A6FF8" />
                 }
             >
-                {/* Header Section */}
-                <View className="px-6 mb-6">
-                    <Text className="text-3xl font-bold text-white mb-4">Study Hub</Text>
-                    <SearchBar 
-                        onChange={() => {}}
-                    />
-                </View>
-
-                {/* 1. Joined Groups - Horizontal Scroll */}
+                {/* Aggregated Sections */}
                 <JoinedGroups groups={feedData?.joinedGroups || []} />
-
-                {/* 2. Official Faculty Groups - Horizontal Scroll */}
                 <OfficialGroup groups={feedData?.officialGroups || []} />
-
-                {/* 3. Trending Peer Groups - Vertical List */}
                 <TrendingGroup groups={feedData?.trendingGroups || []} />
 
-                {/* 4. Vault Gateway Tiles */}
-                <View className="px-6 mt-8 flex-row gap-4">
+                {/* Vault Entry Points - Using Brand Cards with proper contrast */}
+                <View className="px-6 mt-4 flex-row gap-4">
                     <TouchableOpacity 
                         onPress={() => router.push("/(tabs)/studyhub/personalVault")}
                         className="flex-1"
+                        activeOpacity={0.9}
                     >
-                        <Card className="items-center py-6 bg-white/10 border-white/20">
-                            <Feather name="folder" size={28} color="white" />
-                            <Text className="text-white font-bold mt-2">PERSONAL</Text>
-                            <Text className="text-white/60 text-[10px]">PRIVATE VAULT</Text>
+                        <Card className="items-center py-8 bg-white shadow-sm rounded-[32px] border border-mj-bg-blue">
+                            <View className="bg-mj-blue-50 p-4 rounded-2xl mb-3">
+                                <Feather name="folder" size={28} color="#3A6FF8" />
+                            </View>
+                            <Text className="text-mj-text-main font-bold text-base">PERSONAL</Text>
+                            <Text className="text-mj-text-secondary text-[10px] font-black tracking-widest uppercase mt-0.5">Private Vault</Text>
                         </Card>
                     </TouchableOpacity>
 
                     <TouchableOpacity 
                         onPress={() => router.push("/(tabs)/studyhub/publicVault")}
                         className="flex-1"
+                        activeOpacity={0.9}
                     >
-                        <Card className="items-center py-6 bg-primary/20 border-primary/30">
-                            <Feather name="unlock" size={28} color="#3A6FF8" />
-                            <Text className="text-primary font-bold mt-2">OPEN</Text>
-                            <Text className="text-primary/60 text-[10px]">FACULTY VAULT</Text>
+                        <Card className="items-center py-8 bg-white shadow-sm rounded-[32px] border border-mj-bg-blue">
+                            <View className="bg-mj-teal-50 p-4 rounded-2xl mb-3">
+                                <Feather name="unlock" size={28} color="#6FD0C5" />
+                            </View>
+                            <Text className="text-mj-text-main font-bold text-base">OPEN</Text>
+                            <Text className="text-mj-text-secondary text-[10px] font-black tracking-widest uppercase mt-0.5">Faculty Vault</Text>
                         </Card>
                     </TouchableOpacity>
                 </View>
 
-                {/* 5. Create Group Action */}
-                <View className="px-6 mt-6">
-                    <TouchableOpacity
-                        // Open a beautiful modal that would create group based on small inputs like group name, course, and maybe a toggle for official/unofficial if user is faculty.
-                        onPress={() => {}}
-                        className="bg-white py-4 rounded-2xl flex-row items-center justify-center shadow-lg"
+                {/* Create Group Action */}
+                <View className="px-6 mt-8">
+                    <TouchableOpacity 
+                        onPress={() => router.push("/(tabs)/studyhub/uploadDocument")}
+                        className="bg-mj-blue-600 py-5 rounded-[32px] flex-row items-center justify-center shadow-blue"
+                        activeOpacity={0.8}
                     >
-                        <Feather name="plus-circle" size={20} color="#3A6FF8" />
-                        <Text className="text-primary font-bold ml-2 text-base">CREATE NEW GROUP</Text>
+                        <Feather name="plus-circle" size={22} color="white" />
+                        <Text className="text-white font-bold ml-3 text-lg">Create New Group</Text>
                     </TouchableOpacity>
-                    <Text className="text-center text-white/40 text-[9px] mt-2 tracking-widest uppercase">
-                        {user?.isFaculty ? "Unlimited Creation Active" : "Free Student: 1 Group Slot"}
-                        //TODO: ADD isElite and Premium until to user's state
+                    <Text className="text-center text-mj-text-secondary text-[9px] font-black mt-4 tracking-[2px] uppercase">
+                        {user?.premiumUntil ? "Elite Access Active" : "Standard Tier • 1 Slot Available"}
                     </Text>
                 </View>
 

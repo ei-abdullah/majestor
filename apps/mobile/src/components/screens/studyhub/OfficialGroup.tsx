@@ -15,52 +15,63 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
     if (groups.length === 0) return null;
 
     return (
-        <View className="mb-8">
-            <View className="flex-row justify-between items-center px-6 mb-3">
-                <View className="flex-row items-center">
-                    <Feather name="star" size={18} color="#FFD700" />
-                    <Text className="text-white font-bold text-lg ml-2 uppercase tracking-tight">Official Faculty</Text>
-                </View>
-                <TouchableOpacity onPress={() => router.push("/(tabs)/studyhub/officialGroup")}>
-                    <Text className="text-white/60 text-xs font-semibold uppercase tracking-widest">View All</Text>
-                </TouchableOpacity>
-            </View>
-
-            <ScrollView 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{paddingLeft: 24, paddingRight: 8}}
-            >
-                {groups.map((group) => (
-                    <TouchableOpacity 
-                        key={group.id} 
-                        onPress={() => {}}
-                        activeOpacity={0.8}
-                    >
-                        <Card className="mr-4 w-48 bg-white/10 border-white/10 p-4">
-                            <View className="bg-yellow-500/20 w-10 h-10 rounded-xl items-center justify-center mb-3 border border-yellow-500/30">
-                                <Feather name="award" size={20} color="#FFD700" />
-                            </View>
-                            <Text className="text-white font-bold text-sm" numberOfLines={1}>
-                                {group.name}
-                            </Text>
-                            <Text className="text-white/50 text-[10px] mt-1 font-semibold uppercase">
-                                {group.hostName} • {group.courseName}
-                            </Text>
-                        </Card>
-                    </TouchableOpacity>
-                ))}
-                
-                <TouchableOpacity 
-                    onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
-                    className="justify-center"
-                >
-                    <View className="w-20 h-20 bg-yellow-500/5 rounded-2xl items-center justify-center border border-dashed border-yellow-500/20 mr-6">
-                        <Feather name="shield" size={20} color="#FFD700" opacity={0.5} />
-                        <Text className="text-yellow-500/40 text-[8px] font-bold mt-1 uppercase">Full List</Text>
+        <View className="px-6 mb-6">
+            <Card className="bg-white rounded-[32px] border-0 shadow-teal p-6">
+                <View className="flex-row justify-between items-center mb-6 px-1">
+                    <View>
+                        <Text className="text-mj-yellow-600 font-black text-[10px] uppercase tracking-[2px]">Verified</Text>
+                        <Text className="text-mj-text-main font-bold text-xl tracking-tight mt-1">Official Channels</Text>
                     </View>
-                </TouchableOpacity>
-            </ScrollView>
+                    <TouchableOpacity 
+                        onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
+                        className="bg-mj-yellow-50 px-4 py-2 rounded-xl"
+                    >
+                        <Text className="text-mj-yellow-900 font-bold text-xs uppercase tracking-tighter">Full List</Text>
+                    </TouchableOpacity>
+                </View>
+
+                <ScrollView 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{paddingLeft: 0, paddingRight: 8}}
+                >
+                    {groups.map((group) => (
+                        <TouchableOpacity 
+                            key={group.id} 
+                            onPress={() => router.push({
+                                pathname: "/(tabs)/studyhub/studyGroupDetail",
+                                params: {id: group.id}
+                            })}
+                            activeOpacity={0.7}
+                            className="mr-4"
+                        >
+                            <View className="bg-mj-bg-light p-5 rounded-[28px] border border-mj-yellow-100 w-44 min-h-[160px] justify-between">
+                                <View className="bg-mj-yellow-500 w-10 h-10 rounded-xl items-center justify-center shadow-sm">
+                                    <Feather name="shield" size={20} color="white" />
+                                </View>
+                                
+                                <View>
+                                    <Text className="text-mj-text-main font-bold text-sm leading-tight" numberOfLines={2}>
+                                        {group.name}
+                                    </Text>
+                                    <Text className="text-mj-text-secondary text-[10px] font-bold mt-2 uppercase tracking-tighter" numberOfLines={1}>
+                                        {group.hostName} • {group.courseName}
+                                    </Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    ))}
+                    
+                    <TouchableOpacity 
+                        onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
+                        className="justify-center ml-2"
+                    >
+                        <View className="w-16 h-16 bg-mj-yellow-50 rounded-[24px] items-center justify-center border border-dashed border-mj-yellow-200">
+                            <Feather name="arrow-right" size={20} color="#C6941F" opacity={0.5} />
+                        </View>
+                    </TouchableOpacity>
+                </ScrollView>
+            </Card>
         </View>
     );
 }

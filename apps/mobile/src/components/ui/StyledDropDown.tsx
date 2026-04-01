@@ -6,7 +6,7 @@ import {
     FlatList,
     Modal,
     TouchableWithoutFeedback,
-    Pressable,
+    Pressable, Platform,
 } from "react-native";
 import {Feather} from "@expo/vector-icons";
 
@@ -28,6 +28,7 @@ type Props<T = any> = {
     valueField?: string; // Field to use as value (default: 'id')
     disabled?: boolean;
     size?: 'default' | 'compact';
+    noShadow?: boolean;
 };
 
 const StyledDropDown = <T extends Record<string, any>>(
@@ -42,7 +43,8 @@ const StyledDropDown = <T extends Record<string, any>>(
         labelField = 'name',
         valueField = 'id',
         disabled = false,
-        size = 'default'
+        size = 'default',
+        noShadow = false
     }: Props<T>
 ) => {
     const [open, setOpen] = useState(false);
@@ -64,7 +66,7 @@ const StyledDropDown = <T extends Record<string, any>>(
         if (!open && buttonRef.current) {
             buttonRef.current.measureInWindow((x, y, width, height) => {
                 setDropdownLayout({
-                    top: y + height + 4,
+                    top: y + height + 34,
                     left: x,
                     width: width,
                 });
@@ -96,11 +98,11 @@ const StyledDropDown = <T extends Record<string, any>>(
                     className={[
                         `flex-row items-center justify-center rounded-xl px-4 ${heightClass} bg-white`,
                         open
-                            ? "border border-gray-400 shadow-authCard"
+                            ? "border border-gray-400" + (noShadow ? "" : " shadow-authCard")
                             : "border border-gray-50",
                         disabled ? "opacity-50" : "",
                     ].join(" ")}
-                    style={{elevation: open ? 4 : 1}}
+                    style={{elevation: noShadow ? 0 : (open ? 4 : 1)}}
                 >
                     {/* Show icon always */}
                     {icon && (
