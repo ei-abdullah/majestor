@@ -1,11 +1,11 @@
-import {Pressable} from "react-native";
+import {Pressable, View} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
 import {cssInterop} from "nativewind";
 import {Feather} from "@expo/vector-icons";
-import {Link, Href} from "expo-router";
+import {router, Href, useRouter} from "expo-router";
 
 type Props = {
-    href: Href;
+    href: Href<string | object>;
     icon: keyof typeof Feather.glyphMap;
     iconSize?: number;
     className?: string;
@@ -22,24 +22,33 @@ function FloatingActionButton(
         iconSize = 24,
         className = ""
     }: Props) {
+    
+    const router = useRouter();
+
+    const handlePress = () => {
+        router.push(href as any);
+    };
+
     return (
-        <Link href={href} asChild>
-            <Pressable
-                className={`absolute bottom-8 rounded-full shadow-lg ${className}`}
-                style={({pressed}) => ({
-                    opacity: pressed ? 0.85 : 1,
-                })}
+        <Pressable
+            onPress={handlePress}
+            className={`rounded-full shadow-blue ${className}`}
+            style={({pressed}) => ({
+                opacity: pressed ? 0.85 : 1,
+            })}
+        >
+            <LinearGradient
+                colors={["#3A6FF8", "#8DDDD3"]}
+                start={{x: 0, y: 0}}
+                end={{x: 1, y: 1}}
+                className="w-16 h-16 rounded-full flex-row items-center justify-center"
             >
-                <LinearGradient
-                    colors={["#3A6FF8", "#8DDDD3"]}
-                    start={{x: 0, y: 0}}
-                    end={{x: 1, y: 1}}
-                    className="w-16 h-16 rounded-full flex items-center justify-center"
-                >
-                    <Feather name={icon} size={iconSize} color="#fff"/>
-                </LinearGradient>
-            </Pressable>
-        </Link>
+                <View className="flex-row items-center justify-center">
+                    <Feather name="plus" size={14} color="#fff" style={{marginRight: -2}} />
+                    <Feather name={icon} size={22} color="#fff"/>
+                </View>
+            </LinearGradient>
+        </Pressable>
     );
 }
 

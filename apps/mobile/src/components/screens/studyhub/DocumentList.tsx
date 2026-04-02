@@ -11,7 +11,10 @@ interface DocumentListProps {
     isPending: boolean,
     isError: Error | null,
     onRefetch: () => void,
-    searchComponent?: React.ComponentType<any> | React.ReactElement | null
+    searchComponent?: React.ComponentType<any> | React.ReactElement | null,
+    className?: string,
+    contentContainerStyle?: object,
+    disableHeaderOffset?: boolean
 }
 
 function DocumentList(
@@ -21,13 +24,16 @@ function DocumentList(
         isError,
         onRefetch,
         searchComponent,
+        className = "",
+        contentContainerStyle = {},
+        disableHeaderOffset = false
     }: DocumentListProps) {
 
     const [isRefreshing, setIsRefreshing] = React.useState(false);
     const insets = useSafeAreaInsets();
     
-    // Adjusted header offset to prevent overlap
-    const headerOffset = searchComponent ? 20 : 0;
+    // Adjusted header offset to prevent overlap with transparent header
+    const headerOffset = disableHeaderOffset ? 0 : insets.top + (searchComponent ? 80 : 20);
 
     const handleRefresh = async () => {
         setIsRefreshing(true);
@@ -35,7 +41,7 @@ function DocumentList(
         setIsRefreshing(false);
     };
 
-    if (isPending && !isRefreshing) return <LoadingIndicator color="#3A6FF8" />
+    if (isPending && !isRefreshing) return <LoadingIndicator />
 
     if (isError) return <ErrorNotLoad onRefetch={handleRefresh} isRefreshing={isRefreshing}/>
 
@@ -43,6 +49,7 @@ function DocumentList(
         <FlatList
             data={documents}
             keyExtractor={item => item.id.toString()}
+            className={className}
             refreshControl={
                 <RefreshControl
                     refreshing={isPending}
@@ -57,7 +64,8 @@ function DocumentList(
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{
                 paddingBottom: 150, 
-                paddingTop: headerOffset
+                ...contentContainerStyle,
+                paddingTop: headerOffset + ((contentContainerStyle as any).paddingTop || 0),
             }}
             ListEmptyComponent={
                 !isPending ? (

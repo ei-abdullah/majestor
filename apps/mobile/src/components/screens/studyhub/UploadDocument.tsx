@@ -1,13 +1,13 @@
 import React, {useState} from "react";
 import {ScrollView, Text, View, TouchableOpacity} from "react-native";
 import {Controller, useForm} from "react-hook-form";
-import {router} from "expo-router";
+import {router, useRouter} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 
 import {semesterType, type, years} from "@/src/constants";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCourse} from "@/src/queries/course.queries";
-import {useUploadDocument} from "@/src/queries/studyhub.queries";
+import {useUploadDocument, useStudyHubFeed} from "@/src/queries/studyhub.queries";
 
 import GradientView from "@/src/components/ui/GradientView";
 import ImageUpload from "@/src/components/ui/ImageUpload";
@@ -26,17 +26,26 @@ const DESTINATIONS = [
     { label: "Study Group", value: "STUDY_GROUP", icon: "users" }
 ];
 
-function UploadDocument() {
+interface UploadDocumentProps {
+    initialDestination?: string;
+    initialCourseId?: number;
+    initialStudyGroupId?: number;
+}
+
+function UploadDocument({ initialDestination, initialCourseId, initialStudyGroupId }: UploadDocumentProps) {
     const insets = useSafeAreaInsets();
     const {user} = useAuthStore();
+    const router = useRouter();
+
     const {control, handleSubmit, reset, watch, formState: {errors}} = useForm({
         defaultValues: {
             title: '',
             documentType: undefined,
             semesterType: undefined,
             uploadedYear: new Date().getFullYear(),
-            courseId: undefined,
-            destination: 'PERSONAL_VAULT',
+            courseId: initialCourseId,
+            studyGroupId: initialStudyGroupId,
+            destination: (initialDestination || 'PERSONAL_VAULT') as any,
             isPremiumOnly: true
         },
         mode: "onBlur"
@@ -53,9 +62,14 @@ function UploadDocument() {
     const {
         mutate: uploadDocument,
         isPending: isUploading
-    } = useUploadDocument(handleReset);
+    } = useUploadDocument(() => {
+        handleReset();
+        router.back();
+    });
 
     const {data: courses, isPending: loadingCourses} = useCourse(user!.id);
+    const {data: feedData} = useStudyHubFeed(user!.id);
+    const joinedGroups = feedData?.joinedGroups || [];
 
     const onSubmit = async (data: any) => {
         if (images.length === 0) return;
@@ -69,6 +83,9 @@ function UploadDocument() {
         formData.append('isPremiumOnly', data.isPremiumOnly.toString());
         
         if (data.courseId) formData.append('courseId', data.courseId.toString());
+        if (data.studyGroupId && data.destination === 'STUDY_GROUP') {
+            formData.append('studyGroupId', data.studyGroupId.toString());
+        }
 
         images.forEach((uri, index) => {
             const imageFile = {
@@ -103,24 +120,29 @@ function UploadDocument() {
 
                     {/* Step 1: Destination Selection */}
                     <View className="mb-6 flex-row gap-2">
-                        {DESTINATIONS.map((dest) => (
-                            <Controller
-                                key={dest.value}
-                                control={control}
-                                name="destination"
-                                render={({field: {onChange, value}}) => (
-                                    <TouchableOpacity 
-                                        onPress={() => onChange(dest.value)}
-                                        className={`flex-1 p-3 rounded-2xl items-center border ${value === dest.value ? 'bg-white border-white shadow-blue' : 'bg-white/10 border-white/10'}`}
-                                    >
-                                        <Feather name={dest.icon as any} size={18} color={value === dest.value ? "#3A6FF8" : "white"} />
-                                        <Text className={`text-[8px] font-black uppercase mt-1 ${value === dest.value ? 'text-mj-blue' : 'text-white/60'}`}>
-                                            {dest.label}
-                                        </Text>
-                                    </TouchableOpacity>
-                                )}
-                            />
-                        ))}
+                        <Controller
+                            control={control}
+                            name="destination"
+                            render={({field: {onChange, value}}) => (
+                                <View className="flex-row gap-2 flex-1">
+                                    {DESTINATIONS.map((dest) => {
+                                        const isActive = value === dest.value;
+                                        return (
+                                            <TouchableOpacity 
+                                                key={dest.value}
+                                                onPress={() => onChange(dest.value)}
+                                                className={`flex-1 p-3 rounded-2xl items-center border ${isActive ? 'bg-white border-white shadow-blue' : 'bg-white/10 border-white/10'}`}
+                                            >
+                                                <Feather name={dest.icon as any} size={18} color={isActive ? "#3A6FF8" : "white"} />
+                                                <Text className={`text-[8px] font-black uppercase mt-1 ${isActive ? 'text-mj-blue' : 'text-white/60'}`}>
+                                                    {dest.label}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })}
+                                </View>
+                            )}
+                        />
                     </View>
 
                     {/* Step 2: Image Selection */}
@@ -167,6 +189,26 @@ function UploadDocument() {
                                 )}
                             />
                         </View>
+
+                        {/* Study Group (Only for Study Group destination) */}
+                        {selectedDestination === 'STUDY_GROUP' && (
+                            <View className="mb-6">
+                                <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Study Group *</Text>
+                                <Controller
+                                    control={control}
+                                    name="studyGroupId"
+                                    rules={{required: true}}
+                                    render={({field: {onChange, value}}) => (
+                                        <StyledModalWithSearch
+                                            value={value}
+                                            onChange={onChange}
+                                            options={joinedGroups}
+                                            placeholder="Select study group"
+                                        />
+                                    )}
+                                />
+                            </View>
+                        )}
 
                         {/* Type & Semester Row */}
                         <View className="flex-row gap-4 mb-6">

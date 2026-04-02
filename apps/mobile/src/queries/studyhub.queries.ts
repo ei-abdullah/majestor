@@ -5,10 +5,11 @@ import {
     getGroupDetailsApi,
     getStudyHubFeedApi,
     joinStudyGroupApi,
-    rateStudyGroupApi
+    rateStudyGroupApi,
+    createStudyGroupApi
 } from "@/src/services/studyhub.api";
 import Toast from "react-native-toast-message";
-import {DocumentDestination, Filters} from "@/src/types/studyHub";
+import {CreateStudyGroup, CreateStudyGroupResponse, DocumentDestination, Filters} from "@/src/types/studyHub";
 import {getVaultDocumentApi, likeDocumentApi, uploadDocumentApi} from "@/src/services/studyhub.api";
 import React from "react";
 
@@ -17,6 +18,32 @@ export const useStudyHubFeed = (userId: number) => {
         queryKey: ["studyhub", "feed", userId],
         queryFn: () => getStudyHubFeedApi(userId),
         enabled: !!userId
+    });
+};
+
+export const useCreateStudyGroup = (onCallback?: (data: CreateStudyGroupResponse) => void) => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({userId, payload}: { userId: number, payload: CreateStudyGroup }) => createStudyGroupApi(userId, payload),
+        onSuccess: async (data) => {
+            await queryClient.invalidateQueries({queryKey: ["studyhub"]});
+            Toast.show({
+                type: "success",
+                text1: "Group Created!",
+                text2: `Successfully started ${data.name}`
+            });
+            onCallback?.(data);
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: "error",
+                text1: "Creation Failed",
+                text2: error?.response?.data?.message || "Check your tier limits.",
+                position: "top"
+            });
+        }
     });
 };
 

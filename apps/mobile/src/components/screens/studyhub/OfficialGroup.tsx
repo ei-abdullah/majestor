@@ -26,7 +26,7 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                         onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
                         className="bg-mj-yellow-50 px-4 py-2 rounded-xl"
                     >
-                        <Text className="text-mj-yellow-900 font-bold text-xs uppercase tracking-tighter">Full List</Text>
+                        <Text className="text-mj-yellow-900 font-bold text-xs uppercase tracking-tighter">View All</Text>
                     </TouchableOpacity>
                 </View>
 

@@ -51,7 +51,7 @@ export default function Layout() {
             <Stack.Screen
                 name="publicVault"
                 options={{
-                    title: "Faculty Vault",
+                    title: "Public Vault",
                 }}
             />
             <Stack.Screen

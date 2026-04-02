@@ -13,6 +13,7 @@ import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import DocumentCard from "./DocumentCard";
 import Card from "@/src/components/ui/Card";
 import StyledDropDown from "@/src/components/ui/StyledDropDown";
+import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
 
 export default function StudyGroupDetail() {
     const {id} = useLocalSearchParams();
@@ -58,14 +59,7 @@ export default function StudyGroupDetail() {
                 {/* 1. Header & Classroom Info Card */}
                 <View className="px-6 mb-6">
                     <Card className="bg-white rounded-[32px] border-0 shadow-blue p-7">
-                        <View className="flex-row justify-between items-start mb-6">
-                            <TouchableOpacity 
-                                onPress={() => router.back()} 
-                                className="bg-mj-bg-light p-3 rounded-2xl border border-mj-bg-blue shadow-sm"
-                            >
-                                <Feather name="arrow-left" size={20} color="#121826" />
-                            </TouchableOpacity>
-                            
+                        <View className="flex-row justify-between items-end mb-6">
                             {group.isOfficial && (
                                 <View className="bg-mj-yellow-500 px-3 py-1.5 rounded-xl shadow-sm">
                                     <Text className="text-mj-text-main text-[10px] font-black uppercase tracking-widest">Faculty Official</Text>
@@ -73,7 +67,6 @@ export default function StudyGroupDetail() {
                             )}
                         </View>
 
-                        <Text className="text-mj-teal font-black text-[10px] uppercase tracking-[3px] mb-1">Classroom</Text>
                         <Text className="text-mj-text-main font-bold text-3xl leading-tight mb-4">{group.name}</Text>
                         
                         <View className="flex-row items-center bg-mj-bg-light p-4 rounded-2xl border border-mj-bg-blue mb-6">
@@ -229,6 +222,26 @@ export default function StudyGroupDetail() {
                     </Card>
                 </View>
             </ScrollView>
+
+            {/* Floating Action Button positioned above tab bar */}
+            <View style={{
+                position: 'absolute',
+                bottom: 110,
+                left: 30,
+                zIndex: 1000
+            }}>
+                <FloatingActionButton 
+                    href={{
+                        pathname: "/(tabs)/studyhub/uploadDocument",
+                        params: { 
+                            destination: 'STUDY_GROUP',
+                            studyGroupId: String(groupId),
+                            courseId: String(group.courseId)
+                        }
+                    }} 
+                    icon={"file-text"}
+                />
+            </View>
         </GradientView>
     );
 }

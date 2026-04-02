@@ -73,6 +73,7 @@ export interface GetGroupDetails {
     id: number;
     name: string;
     hostName: string;
+    courseId: number;
     courseName: string;
     memberCount: number;
     isCurrentUserMember: boolean;

@@ -89,6 +89,7 @@ public class StudyGroupMapper {
                 .id(studyGroup.getId())
                 .name(studyGroup.getName())
                 .hostName(studyGroup.getStudyGroupHost().getUsername())
+                .courseId(studyGroup.getStudyGroupCourse().getId())
                 .courseName(studyGroup.getStudyGroupCourse().getName())
                 .memberCount(studyGroup.getStudyGroupMembers().size())
                 .popularityScore(studyGroup.getPopularityScore())
