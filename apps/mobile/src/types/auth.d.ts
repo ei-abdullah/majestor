@@ -26,11 +26,18 @@ export interface AuthUser {
     id: number,
     email: string,
     username: string,
+    hasOnboarded: boolean,
+    phone: string,
+    personalEmail: string,
+    isFaculty: boolean,
+    premiumUntil: string,
+    totalStorageUsed: number,
+    storageLimit: number,
     universityId: number,
     facultyId: number,
-    hasOnboarded: boolean,
-    isFaculty: boolean,
-    roles: string[]
+    roles: string[],
+    createdAt: string,
+    updatedAt: string
 }
 
 type AuthState = {

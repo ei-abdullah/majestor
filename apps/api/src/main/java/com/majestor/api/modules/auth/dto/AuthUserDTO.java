@@ -1,6 +1,7 @@
 package com.majestor.api.modules.auth.dto;
 
 import com.majestor.api.modules.user.Role;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 import lombok.Data;
@@ -26,13 +27,16 @@ public class AuthUserDTO {
     @NotNull(message = "User onboarding status is required")
     private Boolean hasOnboarded;
 
-    @NotNull(message = "University ID is required")
-    @Positive(message = "University ID must be a positive number")
-    private Long universityId;
+    @Pattern(regexp = "^03[0-9]{9}$", message = "Invalid phone number")
+    private String phone;
 
-    @NotNull(message = "Faculty ID is required")
-    @Positive(message = "Faculty ID must be a positive number")
-    private Long facultyId;
+    @Email(message = "Invalid email address")
+    private String personalEmail;
+
+    @NotNull(message = "User type is required")
+    private Boolean isFaculty;
+
+    private Instant premiumUntil;
 
     @NotNull(message = "Storage used by user is required")
     @PositiveOrZero(message = "Storage used must be positive or zero")
@@ -42,11 +46,20 @@ public class AuthUserDTO {
     @PositiveOrZero(message = "Storage limit must be positive or zero")
     private Long storageLimit;
 
-    private Instant premiumUntil;
+    @NotNull(message = "University ID is required")
+    @Positive(message = "University ID must be a positive number")
+    private Long universityId;
 
-    @NotNull(message = "isFaculty is required")
-    private Boolean isFaculty;
+    @NotNull(message = "Faculty ID is required")
+    @Positive(message = "Faculty ID must be a positive number")
+    private Long facultyId;
 
     @NotEmpty(message = "Roles are required")
     private List<Role> roles;
+
+    @NotNull(message = "User creation date is required")
+    private Instant createdAt;
+
+    @NotNull(message = "User updated data is required")
+    private Instant updatedAt;
 }

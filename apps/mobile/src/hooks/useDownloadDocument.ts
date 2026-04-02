@@ -2,7 +2,7 @@ import * as FileSystem from "expo-file-system";
 import * as Sharing from "expo-sharing"
 import * as Sentry from "@sentry/react-native";
 
-import {getDownloadUrl} from "@/src/services/document.api";
+import {getDownloadUrl} from "@/src/services/studyhub.api";
 import {Alert} from "react-native";
 
 async function useDownloadDocument({document}: { document: any }) {

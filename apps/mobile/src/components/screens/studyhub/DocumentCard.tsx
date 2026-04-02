@@ -47,30 +47,33 @@ function DocumentCard({document}: { document: any }) {
         await download(document);
     }
 
-    if (document.id === null || document.id === undefined) {
+    if (!document || !document.id) {
         return null;
     }
+
+    // Check if document is premium and user is not elite
+    const isLocked = document.isPremiumOnly && !user?.premiumUntil && !user?.isFaculty;
 
     return (
         <React.Fragment>
             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                 <Pressable 
-                    onPress={() => setShowImageModal(true)}
+                    onPress={() => !isLocked && setShowImageModal(true)}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
-                    className="mb-4"
+                    className="mb-5"
                 >
-                    <Card className="py-0 px-0 overflow-hidden elevation-3 border border-white/10">
+                    <Card className="py-0 px-0 overflow-hidden shadow-blue rounded-3xl border-0 bg-white">
                         <ImageBackground
-                            source={{uri: imageUri}}
-                            style={{width: '100%', height: 150}}
-                            imageStyle={{ borderRadius: 16 }}
-                            blurRadius={10}
+                            source={imageUri ? {uri: imageUri} : require("@/assets/images/majestor-logo.png")}
+                            style={{width: '100%', height: 160}}
+                            imageStyle={{ borderRadius: 24 }}
+                            blurRadius={isLocked ? 20 : 0}
                             resizeMode="cover"
                         >
                             <LinearGradient
-                                colors={['rgba(58,111,248,0.3)', 'rgba(58,111,248,0.7)']}
-                                style={{ flex: 1, padding: 14, borderRadius: 16, justifyContent: 'space-between' }}
+                                colors={['rgba(18,24,38,0.1)', 'rgba(18,24,38,0.8)']}
+                                style={{ flex: 1, padding: 16, borderRadius: 24, justifyContent: 'space-between' }}
                             >
                                 {/* Top row - Name and DocType */}
                                 <View className="flex-row justify-between items-start">
@@ -78,12 +81,11 @@ function DocumentCard({document}: { document: any }) {
                                         <Text 
                                             className="text-lg font-bold text-white leading-tight" 
                                             numberOfLines={2}
-                                            style={{ textShadowColor: 'rgba(0, 0, 0, 0.2)', textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 2 }}
                                         >
                                             {document.title}
                                         </Text>
-                                        <View className="bg-white/20 self-start px-2 py-0.5 rounded-md mt-1 border border-white/20">
-                                            <Text className="text-[10px] text-white font-bold uppercase tracking-wider">
+                                        <View className="bg-mj-teal/30 self-start px-2 py-0.5 rounded-md mt-2 border border-mj-teal/20">
+                                            <Text className="text-[10px] text-mj-teal-50 font-black uppercase tracking-widest">
                                                 {document.documentType.toLowerCase().replace("_", " ")}
                                             </Text>
                                         </View>
@@ -93,43 +95,52 @@ function DocumentCard({document}: { document: any }) {
                                     <View className="items-end gap-2">
                                         <TouchableOpacity 
                                             onPress={() => handleLike(user!.id, document.id)}
-                                            className="bg-red-500/80 w-10 h-10 rounded-full flex-row items-center justify-center border border-white/10 shadow-sm"
+                                            className="bg-white/20 w-10 h-10 rounded-2xl items-center justify-center border border-white/20"
                                         >
                                             <View className="items-center">
                                                 <Text className="text-white text-[10px]">❤️</Text>
-                                                <Text className="text-white text-[9px] font-bold -mt-0.5">
+                                                <Text className="text-white text-[9px] font-black">
                                                     {document.likesCount || 0}
                                                 </Text>
                                             </View>
                                         </TouchableOpacity>
                                         
-                                        <TouchableOpacity
-                                            disabled={isDownloading}
-                                            onPress={handleDownload}
-                                            className="bg-white/25 w-10 h-10 rounded-full items-center justify-center border border-white/20 shadow-sm"
-                                        >
-                                            <Feather 
-                                                name={isDownloading ? "loader" : "download"} 
-                                                size={16} 
-                                                color="white"
-                                            />
-                                        </TouchableOpacity>
+                                        {!isLocked && (
+                                            <TouchableOpacity
+                                                disabled={isDownloading}
+                                                onPress={handleDownload}
+                                                className="bg-mj-blue-600 w-10 h-10 rounded-2xl items-center justify-center shadow-blue"
+                                            >
+                                                <Feather 
+                                                    name={isDownloading ? "loader" : "download"} 
+                                                    size={16} 
+                                                    color="white"
+                                                />
+                                            </TouchableOpacity>
+                                        )}
                                     </View>
                                 </View>
 
                                 {/* Bottom row - Metadata */}
                                 <View className="flex-row justify-between items-end">
                                     <View className="flex-1">
-                                        <Text className="text-white/90 text-xs font-semibold">
+                                        <Text className="text-white/70 text-[10px] font-bold uppercase tracking-tighter">
                                             {document.year} • {document.semesterType}
                                         </Text >
                                         <Text 
-                                            className="text-white text-[13px] font-bold mt-0.5"
+                                            className="text-white text-sm font-bold mt-0.5"
                                             numberOfLines={1}
                                         >
                                             {document.course}
                                         </Text>
                                     </View>
+                                    
+                                    {isLocked && (
+                                        <View className="bg-mj-yellow-500 px-3 py-1.5 rounded-xl flex-row items-center">
+                                            <Feather name="lock" size={12} color="#121826" />
+                                            <Text className="text-mj-text-main text-[10px] font-black ml-1 uppercase">ELITE</Text>
+                                        </View>
+                                    )}
                                 </View>
                             </LinearGradient>
                         </ImageBackground>

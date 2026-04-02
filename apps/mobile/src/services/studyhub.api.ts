@@ -7,7 +7,7 @@ import {
     JoinStudyGroupResponse
 } from "@/src/types/studyHub";
 import {AxiosResponse} from "axios";
-import {DocumentDestination, Filters, GetDocumentResponse} from "@/src/types/document";
+import {DocumentDestination, Filters, GetDocumentResponse} from "@/src/types/studyHub";
 
 export const getStudyHubFeedApi = async (userId: number): Promise<FeedResponse> => {
     const res: AxiosResponse<FeedResponse> = await api.get(`/study-hub/feed/${userId}`)

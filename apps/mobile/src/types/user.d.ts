@@ -1,8 +1,8 @@
 export interface UserDetails {
     id: number,
+    email: string,
     username: string,
     avatar: string,
-    email: string,
     phone?: string,
     personalEmail?: string,
     university: string,

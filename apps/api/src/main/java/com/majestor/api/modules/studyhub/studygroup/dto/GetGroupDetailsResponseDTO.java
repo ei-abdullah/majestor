@@ -16,8 +16,10 @@ public class GetGroupDetailsResponseDTO {
     private Long id;
     private String name;
     private String hostName;
+    private Long courseId;
     private String courseName;
     private Integer memberCount;
+    private Double popularityScore;
 
     private Boolean isCurrentUserMember;
     private Boolean isPreview;

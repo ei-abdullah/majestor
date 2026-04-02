@@ -9,7 +9,11 @@ import Animated, {
 } from 'react-native-reanimated';
 import {AntDesign} from "@expo/vector-icons";
 
-const LoadingIndicator = () => {
+interface LoadingIndicatorProps {
+    size?: number;
+}
+
+const LoadingIndicator = ({size=60}: LoadingIndicatorProps) => {
     const rotation = useSharedValue(0);
 
     useEffect(() => {
@@ -30,7 +34,7 @@ const LoadingIndicator = () => {
     return (
         <View className="flex-1 justify-center items-center bg-transparent">
             <Animated.View style={animatedStyle}>
-                <AntDesign name={"loading"} size={60} color={"#3A6FF8"} />
+                <AntDesign name={"loading"} size={size} color={"#3A6FF8"} />
             </Animated.View>
         </View>
     );

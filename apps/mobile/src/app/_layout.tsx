@@ -13,6 +13,8 @@ import * as Sentry from "@sentry/react-native"
 import "./global.css"
 import {useAuthStore} from "@/src/stores/authStore";
 import {isRunningInExpoGo} from "expo";
+import {GestureHandlerRootView} from "react-native-gesture-handler";
+import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 
 const client = new QueryClient({
     queryCache: new QueryCache({
@@ -98,24 +100,26 @@ function RootLayout() {
     }
 
     return (
-        <React.Fragment>
-            <QueryClientProvider client={client}>
-                <Stack>
-                    <Stack.Protected guard={!isLoggedIn}>
-                        <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>
-                    </Stack.Protected>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <BottomSheetModalProvider>
+                <QueryClientProvider client={client}>
+                    <Stack>
+                        <Stack.Protected guard={!isLoggedIn}>
+                            <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>
+                        </Stack.Protected>
 
-                    <Stack.Protected guard={isLoggedIn}>
-                        <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
-                        <Stack.Screen name={"chat"} options={{headerShown: false}}/>
-                    </Stack.Protected>
+                        <Stack.Protected guard={isLoggedIn}>
+                            <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
+                            <Stack.Screen name={"chat"} options={{headerShown: false}}/>
+                        </Stack.Protected>
 
-                </Stack>
-            </QueryClientProvider>
-            <Toast
-                position={'top'}
-            />
-        </React.Fragment>
+                    </Stack>
+                </QueryClientProvider>
+                <Toast
+                    position={'top'}
+                />
+            </BottomSheetModalProvider>
+        </GestureHandlerRootView>
     )
 }
 

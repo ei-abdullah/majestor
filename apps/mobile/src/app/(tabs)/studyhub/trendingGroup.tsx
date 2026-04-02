@@ -1,5 +1,5 @@
-import TrendingGroup from "@/src/components/screens/studyhub/TrendingGroup";
+import TrendingGroupScreen from "@/src/components/screens/studyhub/TrendingGroupScreen";
 
-export default function TrendingGroupScreen() {
-    return <TrendingGroup />
+export default function Route() {
+    return <TrendingGroupScreen />
 }
