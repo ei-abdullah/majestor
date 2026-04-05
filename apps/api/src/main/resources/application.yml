@@ -80,5 +80,12 @@ spring:
     show-sql: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    user: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    baseline-description: "initial schema"
+    baseline-version: 0
 
 
