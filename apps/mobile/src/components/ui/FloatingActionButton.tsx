@@ -2,10 +2,10 @@ import {Pressable, View} from "react-native";
 import {LinearGradient} from "expo-linear-gradient";
 import {cssInterop} from "nativewind";
 import {Feather} from "@expo/vector-icons";
-import {router, Href, useRouter} from "expo-router";
+import {router, Href} from "expo-router";
 
 type Props = {
-    href: Href<string | object>;
+    href: Href;
     icon: keyof typeof Feather.glyphMap;
     iconSize?: number;
     className?: string;
@@ -22,11 +22,9 @@ function FloatingActionButton(
         iconSize = 24,
         className = ""
     }: Props) {
-    
-    const router = useRouter();
 
     const handlePress = () => {
-        router.push(href as any);
+        router.push(href);
     };
 
     return (

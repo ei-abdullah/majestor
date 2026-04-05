@@ -154,7 +154,7 @@ export default function PublicVault() {
             {/* Floating Action Button positioned above tab bar */}
             <View style={{
                 position: 'absolute',
-                bottom: 110,
+                bottom: 130,
                 left: 30,
                 zIndex: 1000
             }}>
