@@ -1,7 +1,7 @@
+import React, {useState, useEffect, useCallback} from "react";
 import {View, Text, ActivityIndicator, Pressable, KeyboardAvoidingView, Platform} from "react-native";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {useAuthStore} from "@/src/stores/authStore";
-import {useCallback, useEffect, useState} from "react";
 import {GiftedChat, IMessage, Bubble, Send, InputToolbar, Time} from "react-native-gifted-chat";
 import {Ionicons} from "@expo/vector-icons";
 import {useHeaderHeight} from "@react-navigation/elements";
@@ -9,46 +9,46 @@ import {SafeAreaView} from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import {stompService} from "@/src/services/stompService";
 
-function Chat() {
+export default function GroupChat() {
     const router = useRouter();
     const headerHeight = useHeaderHeight();
 
-    const {receiverEmail, receiverUsername} = useLocalSearchParams<{
-        receiverEmail: string,
-        receiverUsername: string
+    const {groupId, groupName} = useLocalSearchParams<{
+        groupId: string,
+        groupName: string
     }>();
     const {user} = useAuthStore();
 
     const [messages, setMessages] = useState<IMessage[]>([]);
-    // const [connected, setConnected] = useState<boolean>(false);
     const connected = stompService.status === "CONNECTED";
 
     useEffect(() => {
-        if (!user) return;
+        if (!user || !groupId) return;
 
-        // 1. Ensure the service is trying to connect
         stompService.connect();
 
-        // 2. Define the private subscription path
-        const subscriptionPath = `/private/${user.email}`;
+        // Subscribe to a group topic
+        const topic = `/topic/group/${groupId}`;
 
-        // 3. Use the service to subscribe
-        const subscription = stompService.subscribe(subscriptionPath, (message) => {
+        const subscription = stompService.subscribe(topic, (message) => {
             if (message.body) {
                 try {
                     const body = JSON.parse(message.body);
 
-                    // Only show messages from the person we are chatting with
-                    if (body.senderName === receiverEmail) {
-                        const newMessage: IMessage = {
-                            _id: Math.random().toString(),
-                            text: body.message,
-                            createdAt: new Date(body.date),
-                            user: {
-                                _id: body.senderName,
-                                name: body.senderName,
-                            },
-                        };
+                    // GiftedChat message structure
+                    const newMessage: IMessage = {
+                        _id: Math.random().toString(),
+                        text: body.content,
+                        createdAt: body.createdAt ? new Date(body.createdAt) : new Date(),
+                        user: {
+                            _id: body.senderEmail,
+                            name: body.senderName,
+                            avatar: body.senderAvatar || undefined,
+                        },
+                    };
+
+                    // Don't append if it's our own message (GiftedChat already does this locally)
+                    if (body.senderEmail !== user.email) {
                         setMessages(previous => GiftedChat.append(previous, [newMessage]));
                     }
                 } catch (error) {
@@ -57,32 +57,29 @@ function Chat() {
             }
         });
 
-        // 4. Return a cleanup function to unsubscribe when the screen closes
         return () => {
-            stompService.unsubscribe(subscriptionPath);
+            stompService.unsubscribe(topic);
         };
-    }, [user, receiverEmail]);
+    }, [user, groupId]);
 
     const onSend = useCallback((newMessages: IMessage[] = []) => {
-        if (!user) {
-            Sentry.captureMessage("Chat: Cannot send message, user is not available");
-            return;
-        }
+        if (!user || !groupId) return;
 
         const msgText = newMessages[0].text;
 
         const payload = {
-            senderName: user.email,
-            receiverName: receiverEmail,
-            message: msgText,
-            date: new Date().toISOString(),
-            status: "MESSAGE"
+            senderName: user.username,
+            senderEmail: user.email,
+            content: msgText,
+            groupId: parseInt(groupId),
+            createdAt: new Date().toISOString(),
         };
 
-        stompService.publish("/app/private-message", JSON.stringify(payload));
+        // Send it to the group endpoint
+        stompService.publish(`/app/study-group/${groupId}/send`, JSON.stringify(payload));
 
         setMessages(previous => GiftedChat.append(previous, newMessages));
-    }, [user, receiverEmail]);
+    }, [user, groupId]);
 
     if (!user) {
         return (
@@ -94,7 +91,7 @@ function Chat() {
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-            {/* Simple header */}
+            {/* Header */}
             <View className="bg-mj-blue px-4 py-4">
                 <View className="flex-row items-center">
                     <Pressable onPress={() => router.back()} className="mr-3">
@@ -102,24 +99,24 @@ function Chat() {
                     </Pressable>
 
                     <View className="w-10 h-10 rounded-full bg-white/20 items-center justify-center mr-3">
-                        <Ionicons name="person" size={20} color="white"/>
+                        <Ionicons name="people" size={20} color="white"/>
                     </View>
 
                     <View className="flex-1">
                         <Text className="text-lg font-bold text-white" numberOfLines={1}>
-                            {receiverUsername || receiverEmail}
+                            {groupName || "Group Chat"}
                         </Text>
                         <View className="flex-row items-center gap-1.5">
                             <View className={`w-2 h-2 rounded-full ${connected ? 'bg-mj-teal' : 'bg-gray-400'}`}/>
                             <Text className="text-xs text-white/90">
-                                {connected ? 'Online' : 'Offline'}
+                                {connected ? 'Online' : 'Connecting...'}
                             </Text>
                         </View>
                     </View>
                 </View>
             </View>
 
-            {/* Chat messages */}
+            {/* Chat */}
             <KeyboardAvoidingView
                 style={{flex: 1}}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -131,7 +128,8 @@ function Chat() {
                     user={{
                         _id: user.email,
                     }}
-                    keyboardAvoidingViewProps={{keyboardVerticalOffset: headerHeight}}
+                    isUserAvatarVisible={false}
+                    isUsernameVisible={true}
                     messagesContainerStyle={{
                         backgroundColor: '#F7F9FC',
                         paddingBottom: 8,
@@ -163,20 +161,6 @@ function Chat() {
                                     fontSize: 15,
                                 },
                             }}
-                            renderTime={(timeProps) => (
-                                <Time
-                                    {...timeProps}
-                                    timeTextStyle={{
-                                        right: {
-                                            color: '#FFFFFF',
-                                            opacity: 0.7,
-                                        },
-                                        left: {
-                                            color: '#9E9E9E',
-                                        },
-                                    }}
-                                />
-                            )}
                         />
                     )}
                     renderInputToolbar={(props) => (
@@ -189,9 +173,6 @@ function Chat() {
                                 paddingHorizontal: 12,
                                 paddingVertical: 8,
                             }}
-                            primaryStyle={{
-                                alignItems: 'center',
-                            }}
                         />
                     )}
                     renderSend={(props) => {
@@ -202,8 +183,6 @@ function Chat() {
                                 containerStyle={{
                                     justifyContent: 'center',
                                     alignItems: 'center',
-                                    marginRight: 0,
-                                    // marginBottom: 50,
                                     marginLeft: 8,
                                 }}
                             >
@@ -213,28 +192,8 @@ function Chat() {
                             </Send>
                         );
                     }}
-                    textInputProps={{
-                        style: {
-                            backgroundColor: '#F0F4FF',
-                            borderRadius: 20,
-                            paddingHorizontal: 16,
-                            paddingTop: 10,
-                            paddingBottom: 10,
-                            // marginBottom: 50,
-                            color: '#121826',
-                            fontSize: 15,
-                            minHeight: 40,
-                            maxHeight: 150
-                        },
-                        placeholder: "Type a message...",
-                        placeholderTextColor: '#9E9E9E',
-                    }}
-                    minComposerHeight={40}
-                    maxComposerHeight={150}
                 />
             </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }
-
-export default Chat;
