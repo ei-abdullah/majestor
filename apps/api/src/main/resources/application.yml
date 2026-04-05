@@ -59,11 +59,10 @@ spring:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+
     properties:
       hibernate:
         format_sql: true
-  flyway:
-    enabled: false
 
 ---
 # 🚀 PRODUCTION (Digital Ocean)
@@ -78,16 +77,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-  flyway:
-    enabled: false
-    baseline-on-migrate: true
-    user: ${DATABASE_USERNAME}
-    password: ${DATABASE_PASSWORD}
-    baseline-description: "initial schema"
-    baseline-version: 0
-
-
