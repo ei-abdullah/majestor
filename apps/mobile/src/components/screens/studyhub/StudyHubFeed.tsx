@@ -19,6 +19,7 @@ import TrendingGroup from "./TrendingGroup";
 import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
+import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
 
 export default function StudyHubFeed() {
     const insets = useSafeAreaInsets();
@@ -126,6 +127,22 @@ export default function StudyHubFeed() {
                         </Text>
                     </View>
                 </ScrollView>
+
+                {/* Floating Action Button positioned above tab bar */}
+                <View style={{
+                    position: 'absolute',
+                    bottom: 130,
+                    left: 30,
+                    zIndex: 1000
+                }}>
+                    <FloatingActionButton
+                        href={{
+                            pathname: "/(tabs)/studyhub/uploadDocument",
+                            params: { destination: 'PERSONAL_VAULT' }
+                        }}
+                        icon={"file-text"}
+                    />
+                </View>
             </GradientView>
 
             <BottomSheetModal

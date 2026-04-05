@@ -153,7 +153,7 @@ public class DocumentService {
             document.setTotalFileSize(totalFileSize);
             documentRepository.save(document);
 
-            // Only update user's cumulative storage if it's a private upload
+            // Only update a user's cumulative storage if it's a private upload
             if (document.getDestination() == DocumentDestination.PERSONAL_VAULT) {
                 user.setStorageUsed(user.getStorageUsed() + totalFileSize);
                 userRepository.save(user);
