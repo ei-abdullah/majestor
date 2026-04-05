@@ -74,7 +74,7 @@ export const downloadDocument = async (documentId: number): Promise<void> => {
     await api.get(`/document/downloadDocument/${documentId}`)
 }
 
-export const getDownloadUrl = (documentId: number): string => {
+export const getDownloadUrl = (userId: number, documentId: number): string => {
     const baseUrl = api.defaults.baseURL
-    return `${baseUrl}/document/downloadDocument/${documentId}`
+    return `${baseUrl}/document/downloadDocument/${userId}/${documentId}`
 }

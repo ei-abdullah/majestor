@@ -122,9 +122,6 @@ export default function StudyHubFeed() {
                             <Feather name="plus-circle" size={22} color="white"/>
                             <Text className="text-white font-bold ml-3 text-lg">Create New Group</Text>
                         </TouchableOpacity>
-                        <Text className="text-center text-mj-text-secondary text-[9px] font-black mt-4 tracking-[2px] uppercase">
-                            {user?.premiumUntil ? "Elite Access Active" : "Standard Tier • 1 Slot Available"}
-                        </Text>
                     </View>
                 </ScrollView>
 
@@ -194,7 +191,7 @@ export default function StudyHubFeed() {
                         onPress={handleSubmit(onSubmit)}
                         disabled={isCreating}
                     >
-                        {isCreating ? <LoadingIndicator /> : <Text className="text-white font-bold text-lg">Launch Group</Text>}
+                        {isCreating ? <LoadingIndicator size={20} /> : <Text className="text-white font-bold text-lg">Launch Group</Text>}
                     </TouchableOpacity>
                 </BottomSheetView>
             </BottomSheetModal>

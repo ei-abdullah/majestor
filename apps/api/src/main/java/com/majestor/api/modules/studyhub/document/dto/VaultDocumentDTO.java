@@ -1,5 +1,6 @@
 package com.majestor.api.modules.studyhub.document.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -33,7 +34,11 @@ public class VaultDocumentDTO {
     @NotNull(message = "Document image is required")
     private String imageUri;
 
+    @JsonProperty("isPremiumOnly")
+    private Boolean isPremiumOnly;
+
     @NotNull(message = "Likes count is required")
-    private long likesCount;
+    @Builder.Default
+    private long likesCount = 0L;
 
 }

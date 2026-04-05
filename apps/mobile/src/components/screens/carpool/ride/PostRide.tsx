@@ -70,7 +70,7 @@ export default function PostRide() {
             endLocation: null,
             vehicleModel: '',
             LicensePlate: '',
-            phone: ''
+            phone: user!.phone || ''
         }
     });
 

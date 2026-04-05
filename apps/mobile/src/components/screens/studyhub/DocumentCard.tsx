@@ -5,6 +5,7 @@ import {LinearGradient} from "expo-linear-gradient";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {useLikeDocument} from "@/src/queries/studyhub.queries";
+import {usePremiumModalStore} from "@/src/stores/premiumModalStore";
 
 import useDownloadDocumentLegacy from "@/src/hooks/useDownloadDocumentLegacy";
 import Card from "@/src/components/ui/Card";
@@ -14,6 +15,7 @@ import ImageModal from "@/src/components/ui/ImageModal";
 function DocumentCard({document}: { document: any }) {
     const imageUri = document.imageUri;
     const {user} = useAuthStore();
+    const openPremiumModal = usePremiumModalStore(state => state.open);
     const {
         mutate: likeDocument,
     } = useLikeDocument();
@@ -44,21 +46,34 @@ function DocumentCard({document}: { document: any }) {
     }
 
     const handleDownload = async () => {
-        await download(document);
+        await download(user!.id, document);
     }
+
+    const handlePress = () => {
+        if (isLocked) {
+            openPremiumModal("This document is exclusive to Majestor Elite members.");
+        } else {
+            setShowImageModal(true);
+        }
+    };
 
     if (!document || !document.id) {
         return null;
     }
 
-    // Check if document is premium and user is not elite
-    const isLocked = document.isPremiumOnly && !user?.premiumUntil && !user?.isFaculty;
+    // Check if user has an active elite subscription
+    const isElite = user?.premiumUntil ? new Date(user.premiumUntil).getTime() > Date.now() : false;
+
+    // A document is locked if it's premium-only AND the user is neither Elite nor Faculty
+    // Defensive check for both 'isPremiumOnly' and 'premiumOnly' from Jackson serialization
+    const isPremium = document.isPremiumOnly ?? (document as any).premiumOnly;
+    const isLocked = isPremium && !isElite && !user?.isFaculty;
 
     return (
         <React.Fragment>
             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
                 <Pressable 
-                    onPress={() => !isLocked && setShowImageModal(true)}
+                    onPress={handlePress}
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                     className="mb-5"
@@ -105,7 +120,14 @@ function DocumentCard({document}: { document: any }) {
                                             </View>
                                         </TouchableOpacity>
                                         
-                                        {!isLocked && (
+                                        {isLocked ? (
+                                            <TouchableOpacity
+                                                onPress={() => openPremiumModal("Upgrade to Elite to download premium resources.")}
+                                                className="bg-mj-yellow-500 w-10 h-10 rounded-2xl items-center justify-center shadow-sm"
+                                            >
+                                                <Feather name="lock" size={16} color="#121826" />
+                                            </TouchableOpacity>
+                                        ) : (
                                             <TouchableOpacity
                                                 disabled={isDownloading}
                                                 onPress={handleDownload}
