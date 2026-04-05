@@ -1,6 +1,7 @@
 package com.majestor.api.modules.studyhub.document;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.infra.exception.TierLimitExceededException;
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.academia.course.Course;
@@ -332,9 +333,9 @@ public class DocumentService {
     }
 
     private void validateAccess(Document doc, User user) {
-        // If doc is premium and user isn't elite/faculty, block download/view
+        // If the doc is premium and the user isn't elite/faculty, block download/view
         if (doc.getIsPremiumOnly() && !user.isElite() && !user.getIsFaculty()) {
-            throw new IllegalArgumentException("This document is locked for Elite members. Upgrade to unlock!");
+            throw new TierLimitExceededException("This document is locked for Elite members. Upgrade to unlock!");
         }
     }
 

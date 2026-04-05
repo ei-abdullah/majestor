@@ -2,6 +2,7 @@ import { AxiosError, AxiosInstance, InternalAxiosRequestConfig } from "axios";
 import * as Sentry from "@sentry/react-native";
 import { useAuthStore } from "@/src/stores/authStore";
 import { getRefreshToken, saveRefreshToken } from "@/src/stores/secureStore";
+import { usePremiumModalStore } from "@/src/stores/premiumModalStore";
 
 // Define the structure of the refresh response
 type RefreshTokenResponse = {
@@ -41,10 +42,16 @@ export const setupInterceptors = (api: AxiosInstance) => {
         (error) => Promise.reject(error)
     );
 
-    // 2. Response Interceptor: Sentry Error logging
+    // 2. Response Interceptor: Sentry Error logging and Premium Check
     api.interceptors.response.use(
         (response) => response,
         (error: AxiosError) => {
+            if (error.response?.status === 402) {
+                const message = (error.response.data as any)?.message || "Upgrade to Elite to unlock this feature!";
+                usePremiumModalStore.getState().open(message);
+                return Promise.reject(error);
+            }
+
             if (error.response && (error.response.status >= 500 || error.response.status === 400)) {
                 Sentry.captureException(error, {
                     extra: {

@@ -1,6 +1,6 @@
 import React, {useState, useMemo} from "react";
-import {View, Text, ScrollView, TouchableOpacity, RefreshControl} from "react-native";
-import {useLocalSearchParams, router} from "expo-router";
+import {View, Text, ScrollView, TouchableOpacity, RefreshControl, Pressable} from "react-native";
+import {router, useLocalSearchParams} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 
@@ -93,13 +93,19 @@ export default function StudyGroupDetail() {
 
                         <View className="flex-row justify-between items-center gap-4 ">
                             {group.isCurrentUserMember ? (
-                                <TouchableOpacity
-                                    onPress={() => {}} // TODO: Navigate to Chat
+                                <Pressable
+                                    onPress={() => router.push({
+                                        pathname: "/groupchat",
+                                        params: {
+                                            groupId: group.id,
+                                            groupName: group.name
+                                        }
+                                    })}
                                     className="flex-1 bg-mj-blue-600 py-5 rounded-[28px] flex-row items-center justify-center shadow-blue"
                                 >
                                     <Feather name="message-square" size={20} color="white" />
                                     <Text className="text-white font-bold ml-2 text-base">Open Chat</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             ) : (
                                 <TouchableOpacity
                                     onPress={() => joinGroup({groupId, userId: user!.id})}

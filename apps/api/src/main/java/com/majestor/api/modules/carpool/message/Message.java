@@ -1,4 +1,4 @@
-package com.majestor.api.modules.chat;
+package com.majestor.api.modules.carpool.message;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -10,5 +10,5 @@ public class Message {
     private String receiverName;
     private String message;
     private String date;
-    private String status;
+    private MessageStatus messageStatus;
 }

@@ -15,6 +15,7 @@ import {useAuthStore} from "@/src/stores/authStore";
 import {isRunningInExpoGo} from "expo";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
+import PremiumModal from "@/src/components/ui/PremiumModal";
 
 const client = new QueryClient({
     queryCache: new QueryCache({
@@ -118,6 +119,7 @@ function RootLayout() {
                 <Toast
                     position={'top'}
                 />
+                <PremiumModal />
             </BottomSheetModalProvider>
         </GestureHandlerRootView>
     )

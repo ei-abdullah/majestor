@@ -44,5 +44,5 @@ export const API_BASE_URL = __DEV__
     : "https://majestor-app-ynclq.ondigitalocean.app/api/v1";
 
 export const WEBSOCKET_URL = __DEV__
-    ? `ws://${LOCAL_IP}:8080/ws`
+    ? `http://${LOCAL_IP}:8080/ws`
     : "https://majestor-app-ynclq.ondigitalocean.app/ws";
