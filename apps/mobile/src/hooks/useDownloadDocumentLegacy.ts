@@ -37,12 +37,12 @@ function useDownloadDocumentLegacy() {
         progress: 0,
     });
 
-    const download = useCallback(async (document: Document) => {
+    const download = useCallback(async (userId: number, document: Document) => {
         setState({isDownloading: true, error: null, progress: 0});
 
         try {
             const accessToken = useAuthStore.getState().accessToken;
-            const downloadUrl = getDownloadUrl(document.id);
+            const downloadUrl = getDownloadUrl(userId, document.id);
 
             // Create a unique filename with a timestamp to avoid conflicts
             const timestamp = Date.now();

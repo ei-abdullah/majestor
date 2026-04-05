@@ -325,7 +325,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                             className="flex-[2] py-5 rounded-3xl bg-mj-blue-600 items-center justify-center shadow-blue"
                         >
                             {isUploading ? (
-                                <LoadingIndicator/>
+                                <LoadingIndicator size={24}/>
                             ) : (
                                 <View className="flex-row items-center">
                                     <Feather name="upload-cloud" size={20} color="white"/>

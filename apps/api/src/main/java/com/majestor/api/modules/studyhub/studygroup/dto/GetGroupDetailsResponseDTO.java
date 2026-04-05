@@ -1,6 +1,6 @@
 package com.majestor.api.modules.studyhub.studygroup.dto;
 
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -39,6 +39,10 @@ public class GetGroupDetailsResponseDTO {
         private String semesterType;
         private String course;
         private String imageUri;
+        
+        @JsonProperty("isPremiumOnly")
+        private Boolean isPremiumOnly;
+        
         private long likesCount;
     }
 }

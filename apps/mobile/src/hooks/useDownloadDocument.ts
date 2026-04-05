@@ -5,20 +5,20 @@ import * as Sentry from "@sentry/react-native";
 import {getDownloadUrl} from "@/src/services/studyhub.api";
 import {Alert} from "react-native";
 
-async function useDownloadDocument({document}: { document: any }) {
+async function useDownloadDocument({userId, document}: { userId: number, document: any }) {
     try {
-        const downloadUrl: string = getDownloadUrl(document.id);
+        const downloadUrl: string = getDownloadUrl(userId, document.id);
 
-        // Let user pick a directory
+        // Let the user pick a directory
         // const userDir = await FileSystem.Directory.pickDirectoryAsync();
         // if (!userDir) return;
 
         const cacheDir = new FileSystem.Directory(FileSystem.Paths.cache, 'majestor-downloads');
-        if(!cacheDir.exists) {
+        if (!cacheDir.exists) {
             cacheDir.create();
         }
 
-        // Create unique filename with timestamp to avoid conflicts
+        // Create a unique filename with a timestamp to avoid conflicts
         const timestamp = Date.now();
         const sanitizedTitle = document.title.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-');
         const fileName = `${sanitizedTitle}-${document.documentType}-${timestamp}.zip`;

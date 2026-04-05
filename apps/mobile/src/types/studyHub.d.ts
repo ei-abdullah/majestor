@@ -15,7 +15,8 @@ export interface GetDocumentResponse {
     semesterType: string,
     course: string,
     likesCount: number,
-    imageUri: string
+    imageUri: string,
+    isPremiumOnly: boolean
 }
 
 export interface Document {
@@ -67,6 +68,7 @@ export interface StudyGroupDocuments {
     course: string;
     imageUri: string;
     likesCount: number;
+    isPremiumOnly: boolean;
 }
 
 export interface GetGroupDetails {

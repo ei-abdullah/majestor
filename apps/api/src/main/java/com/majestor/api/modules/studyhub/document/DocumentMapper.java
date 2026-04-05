@@ -45,6 +45,7 @@ public class DocumentMapper {
                 .semesterType(String.valueOf(document.getSemesterType()))
                 .course(document.getCourse() != null ? document.getCourse().getName() : "General")
                 .imageUri(documentImageUri)
+                .isPremiumOnly(document.getIsPremiumOnly())
                 .likesCount(likesCount)
                 .build();
     }
@@ -59,6 +60,7 @@ public class DocumentMapper {
                 .semesterType(String.valueOf(document.getSemesterType()))
                 .course(document.getCourse() != null ? document.getCourse().getName() : "General")
                 .imageUri(documentImageUri)
+                .isPremiumOnly(document.getIsPremiumOnly())
                 .likesCount(likesCount)
                 .build();
     }
