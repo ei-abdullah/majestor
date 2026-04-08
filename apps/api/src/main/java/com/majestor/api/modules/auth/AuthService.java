@@ -15,7 +15,6 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -118,7 +117,7 @@ public class AuthService {
         );
 
         if (!authentication.isAuthenticated()) {
-            throw new BadCredentialsException("Invalid email or password");
+            throw new InsufficientAuthenticationException("Invalid email or password");
         }
 
         String accessToken = jwtService.generateAccessToken(user);
