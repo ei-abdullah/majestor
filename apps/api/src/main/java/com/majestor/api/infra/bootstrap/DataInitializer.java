@@ -34,8 +34,6 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CourseRepository courseRepository;
-    private final StudyGroupRepository studyGroupRepository;
-    private final StudyGroupMemberRepository studyGroupMemberRepository;
 
     @Override
     @Transactional
@@ -84,70 +82,7 @@ public class DataInitializer implements CommandLineRunner {
             log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
 
-        try {
-            long groupCount = studyGroupRepository.count();
-            if (groupCount == 0) {
-                initializeStudyGroups();
-                log.info("Study groups initialized successfully.");
-            }
-        } catch (Exception e) {
-            log.error("Failed to initialize study groups: {}", e.getMessage(), e);
-        }
-
         log.info("=== DataInitializer finished ===");
-    }
-
-    private void initializeStudyGroups() {
-        User admin = userRepository.findByEmail("bcs233188@cust.pk").orElseThrow();
-        Course progCourse = courseRepository.findAll().stream()
-                .filter(c -> c.getName().equals("Introduction to Programming"))
-                .findFirst().orElseThrow();
-        Course dataCourse = courseRepository.findAll().stream()
-                .filter(c -> c.getName().equals("Data Structures"))
-                .findFirst().orElseThrow();
-
-        // 1. Official Group (Faculty-led)
-        StudyGroup officialGroup = StudyGroup.builder()
-                .name("Official CS101 - Spring 2026")
-                .studyGroupHost(admin) // Admin acts as faculty here for testing
-                .studyGroupCourse(progCourse)
-                .isOfficial(true)
-                .isActive(true)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-
-        // 2. Trending Peer Group
-        StudyGroup trendingGroup = StudyGroup.builder()
-                .name("Data Structures Hacking")
-                .studyGroupHost(admin)
-                .studyGroupCourse(dataCourse)
-                .isOfficial(false)
-                .isActive(true)
-                .popularityScore(3.4)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-
-        // 3. Simple Peer Group
-        StudyGroup peerGroup = StudyGroup.builder()
-                .name("Calculus Study Squad")
-                .studyGroupHost(admin)
-                .studyGroupCourse(dataCourse)
-                .isOfficial(false)
-                .isActive(true)
-                .popularityScore(4.5)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
-
-        studyGroupRepository.saveAll(List.of(officialGroup, trendingGroup, peerGroup));
-
-        // Auto-join admin to the Official and Trending group for testing
-        StudyGroupMember m1 = StudyGroupMember.builder().studyGroup(officialGroup).studyGroupMember(admin).joinedAt(Instant.now()).build();
-        StudyGroupMember m2 = StudyGroupMember.builder().studyGroup(trendingGroup).studyGroupMember(admin).joinedAt(Instant.now()).build();
-        
-        studyGroupMemberRepository.saveAll(List.of(m1, m2));
     }
 
     private void initializeCourses() {
@@ -251,7 +186,7 @@ public class DataInitializer implements CommandLineRunner {
         University firstUniversity = universityRepository.findAll().getFirst();
         Faculty firstFaculty = facultyRepository.findAll().getFirst();
 
-        User adminUser1 = User.builder()
+        User admin = User.builder()
                 .email("bcs233188@cust.pk")
                 .username("AZ")
                 .passwordHash(passwordEncoder.encode("Cust@23"))
@@ -268,25 +203,9 @@ public class DataInitializer implements CommandLineRunner {
                 .updatedAt(Instant.now())
                 .build();
 
-        User user = User.builder()
-                .email("bcs233190@cust.pk")
-                .username("BZ")
-                .passwordHash(passwordEncoder.encode("Cust@23"))
-                .phone("03155180641")
-                .avatar("")
-                .hasOnboarded(Boolean.FALSE)
-                .university(firstUniversity)
-                .faculty(firstFaculty)
-                .roles(List.of(Role.ADMIN, Role.STUDENT))
-                .isFaculty(false)
-                .isVerified(true)
-                .verificationToken(null)
-                .createdAt(Instant.now())
-                .updatedAt(Instant.now())
-                .build();
 
-        userRepository.save(adminUser1);
-        userRepository.save(user);
+
+        userRepository.save(admin);
     }
 
     private University createUniversity(String name, String address, List<String> domains) {
