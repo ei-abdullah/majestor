@@ -203,7 +203,6 @@ public class DataInitializer implements CommandLineRunner {
                 .updatedAt(Instant.now())
                 .build();
 
-
         userRepository.save(admin);
     }
 
