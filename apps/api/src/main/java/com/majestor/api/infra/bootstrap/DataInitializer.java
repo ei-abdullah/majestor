@@ -41,43 +41,25 @@ public class DataInitializer implements CommandLineRunner {
         log.info("=== DataInitializer starting ===");
 
         try {
-            long universityCount = universityRepository.count();
-            log.info("University count: {}", universityCount);
-            if (universityCount == 0) {
-                log.info("No universities found, initializing...");
-                initializeUniversitiesAndFaculties();
-                log.info("Universities and faculties initialized successfully.");
-            } else {
-                log.info("Universities already exist, skipping initialization.");
-            }
+            log.info("Initializing universities and faculties...");
+            initializeUniversitiesAndFaculties();
+            log.info("Universities and faculties initialized successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize universities and faculties: {}", e.getMessage(), e);
         }
 
         try {
-            boolean adminExists = userRepository.findByEmail("bcs233188@cust.pk").isPresent();
-            log.info("Admin user exists: {}", adminExists);
-            if (!adminExists) {
-                log.info("Admin user not found, creating...");
-                initializeAdminUser();
-                log.info("Admin user created successfully.");
-            } else {
-                log.info("Admin user already exists, skipping.");
-            }
+            log.info("Initializing admin user...");
+            initializeAdminUser();
+            log.info("Admin user created successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize admin user: {}", e.getMessage(), e);
         }
 
         try {
-            long courseCount = courseRepository.count();
-            log.info("Course count: {}", courseCount);
-            if (courseCount == 0) {
-                log.info("No courses found, initializing...");
-                initializeCourses();
-                log.info("Courses initialized successfully.");
-            } else {
-                log.info("Courses already exist, skipping initialization.");
-            }
+            log.info("Initializing courses...");
+            initializeCourses();
+            log.info("Courses initialized successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
@@ -226,6 +208,4 @@ public class DataInitializer implements CommandLineRunner {
 
         facultyRepository.saveAll(faculties);
     }
-
-
 }
