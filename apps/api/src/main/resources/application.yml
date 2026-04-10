@@ -77,7 +77,7 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: {DDL_AUTO:update}
+      ddl-auto: ${DDL_AUTO:update}
     show-sql: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
