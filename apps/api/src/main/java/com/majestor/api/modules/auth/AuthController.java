@@ -47,6 +47,16 @@ public class AuthController {
     }
 
     @GetMapping("/signup/verify")
+    public ResponseEntity<String> verifyEmailLanding(
+            @RequestParam("token") @NotBlank String token
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .header("Content-Type", "text/html")
+                .body(htmlPageService.getVerificationLandingPage(token));
+    }
+
+    @PostMapping("/signup/verify")
     public ResponseEntity<String> verifyEmail(
             @RequestParam("token") @NotBlank String token
     ) {

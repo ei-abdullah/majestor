@@ -5,6 +5,133 @@ import org.springframework.stereotype.Service;
 @Service
 public class HtmlPageService {
 
+    public String getVerificationLandingPage(String token) {
+        return """
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Verify Email - Majestor</title>
+                <style>
+                    * { margin: 0; padding: 0; box-sizing: border-box; }
+                    body {
+                        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+                        background: linear-gradient(135deg, #F7F9FC 0%%, #E6ECF5 100%%);
+                        min-height: 100vh;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        padding: 20px;
+                    }
+                    .container {
+                        background: #FFFFFF;
+                        border-radius: 24px;
+                        box-shadow: 0 8px 40px rgba(58, 111, 248, 0.15);
+                        max-width: 500px;
+                        width: 100%%;
+                        overflow: hidden;
+                        animation: slideUp 0.6s ease-out;
+                    }
+                    @keyframes slideUp {
+                        from { opacity: 0; transform: translateY(30px); }
+                        to { opacity: 1; transform: translateY(0); }
+                    }
+                    .header {
+                        background: linear-gradient(135deg, #3A6FF8 0%%, #6FD0C5 100%%);
+                        padding: 48px 32px;
+                        text-align: center;
+                    }
+                    .header h1 {
+                        color: #FFFFFF;
+                        font-size: 32px;
+                        font-weight: 700;
+                        letter-spacing: -0.5px;
+                        margin-bottom: 8px;
+                    }
+                    .header p {
+                        color: rgba(255, 255, 255, 0.95);
+                        font-size: 15px;
+                    }
+                    .content {
+                        padding: 56px 40px;
+                        text-align: center;
+                    }
+                    .content h2 {
+                        color: #121826;
+                        font-size: 28px;
+                        font-weight: 600;
+                        margin-bottom: 16px;
+                    }
+                    .content p {
+                        color: #5A6275;
+                        font-size: 16px;
+                        line-height: 1.6;
+                        max-width: 400px;
+                        margin: 0 auto 32px;
+                    }
+                    .verify-button {
+                        display: inline-block;
+                        background: linear-gradient(135deg, #3A6FF8 0%%, #5B8DFA 100%%);
+                        color: #FFFFFF;
+                        padding: 16px 48px;
+                        border-radius: 12px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        text-decoration: none;
+                        border: none;
+                        cursor: pointer;
+                        box-shadow: 0 4px 12px rgba(58, 111, 248, 0.3);
+                        transition: transform 0.2s, box-shadow 0.2s;
+                    }
+                    .verify-button:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 16px rgba(58, 111, 248, 0.4);
+                    }
+                    .verify-button:active {
+                        transform: translateY(0);
+                    }
+                    .footer {
+                        background: #121826;
+                        padding: 24px;
+                        text-align: center;
+                    }
+                    .footer .brand {
+                        color: #FFFFFF;
+                        font-weight: 700;
+                        font-size: 16px;
+                        margin-bottom: 6px;
+                    }
+                    .footer p {
+                        color: rgba(255, 255, 255, 0.6);
+                        font-size: 12px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="container">
+                    <div class="header">
+                        <h1>Majestor</h1>
+                        <p>Your Academic Companion</p>
+                    </div>
+                    <div class="content">
+                        <h2>Confirm Verification</h2>
+                        <p>Please click the button below to verify your email address and complete your registration.</p>
+                        <form action="/api/v1/auth/signup/verify" method="POST">
+                            <input type="hidden" name="token" value="%s">
+                            <button type="submit" class="verify-button">Verify My Account</button>
+                        </form>
+                    </div>
+                    <div class="footer">
+                        <p class="brand">Majestor</p>
+                        <p>© 2026 Majestor. All rights reserved.</p>
+                    </div>
+                </div>
+            </body>
+            </html>
+            """.formatted(token);
+    }
+
     public String getVerificationSuccessPage() {
         return """
             <!DOCTYPE html>

@@ -49,7 +49,7 @@ export const useCreateStudyGroup = (onCallback?: (data: CreateStudyGroupResponse
 
 export const useGroupDetails = (groupId: number, userId: number) => {
     return useQuery({
-        queryKey: ["studyhub", "group", groupId],
+        queryKey: ["studyhub", groupId],
         queryFn: () => getGroupDetailsApi(groupId, userId),
         enabled: !!groupId && !!userId
     });
@@ -129,6 +129,7 @@ export const useUploadDocument = (onCallback?: () => void) => {
         }) => uploadDocumentApi(userId, formData),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ["document"]});
+            await queryClient.invalidateQueries({queryKey: ["studyhub"]});
             Toast.show({
                 type: 'success',
                 text1: 'Upload Successful',
@@ -159,6 +160,7 @@ export const useLikeDocument = () => {
         }) => likeDocumentApi(userId, documentId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ["document"]});
+            await queryClient.invalidateQueries({queryKey: ["studyhub"]});
         },
         onError: (error: any) => {
             Sentry.captureException(error);
