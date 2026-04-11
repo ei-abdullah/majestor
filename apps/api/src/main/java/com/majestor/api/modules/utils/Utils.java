@@ -3,8 +3,6 @@ package com.majestor.api.modules.utils;
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.studyhub.document.Document;
-import com.majestor.api.modules.lostfound.founder.Founder;
-import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import com.majestor.api.modules.user.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,36 +21,6 @@ public class Utils {
 
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
-
-    public String DownloadLostItemImage(LostItem lostItem, String imageUri) {
-        if (imageUri == null || imageUri.trim().isEmpty()) {
-            return null;
-        }
-
-        try {
-            String key = GetUploadLostItemKey(lostItem.getOwner().getId(), lostItem.getId(), imageUri);
-            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
-        } catch (Exception e) {
-            log.warn("Failed to download image {} for lost item {}: {}",
-                    imageUri, lostItem.getId(), e.getMessage());
-            return null;
-        }
-    }
-
-    public String DownloadFoundItemImage(Founder founder, String imageUri) {
-        if (imageUri == null || imageUri.trim().isEmpty()) {
-            return null;
-        }
-
-        try {
-            String key = GetUploadFoundItemKey(founder.getFounder().getId(), founder.getId(), imageUri);
-            return s3Service.createPresignedGetUrl(s3Buckets.getBucket(), key);
-        } catch (Exception e) {
-            log.warn("Failed to download image {} for founder {}: {}",
-                    imageUri, founder.getId(), e.getMessage());
-            return null;
-        }
-    }
 
     public String DownloadDocumentImage(Document document, String imageUri) {
         if (imageUri == null || imageUri.trim().isEmpty()) {
@@ -86,16 +54,6 @@ public class Utils {
         }
     }
 
-    public String GetUploadLostItemKey(Long userId, Long lostItemId, String lostItemImageId) {
-        return "user/%s/lostItems/%s/%s"
-                .formatted(userId, lostItemId, lostItemImageId);
-    }
-
-    public String GetUploadFoundItemKey(Long userId, Long foundItemId, String foundItemImageId) {
-        return "user/%s/foundItems/%s/%s"
-                .formatted(userId, foundItemId, foundItemImageId);
-    }
-
     public String GetUploadDocumentKey(Long userId, Long documentId, String documentImageId) {
         return "user/%s/documents/%s/%s"
                 .formatted(userId, documentId, documentImageId);
@@ -114,13 +72,6 @@ public class Utils {
                 log.warn("Failed to cleanup uploaded image with key: {}. Manual cleanup may be required.", key, e);
             }
         });
-    }
-
-    public String RemoveSpace(String input) {
-        if (input == null) {
-            return null;
-        }
-        return input.replaceAll("\\s+", "");
     }
 
     public String ExtractFileExtension(String filename) {
