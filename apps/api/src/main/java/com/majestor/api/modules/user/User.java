@@ -7,8 +7,6 @@ import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.notification.Notification;
 import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.studyhub.document.like.Like;
-import com.majestor.api.modules.lostfound.founder.Founder;
-import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import com.majestor.api.modules.studyhub.studygroup.rating.Rating;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import com.majestor.api.modules.studyhub.studygroup.studygroupinvite.StudyGroupInvite;
@@ -104,16 +102,6 @@ public class User {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     private Faculty faculty;
-
-    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private List<LostItem> lostItems;
-
-    @OneToMany(mappedBy = "founder", cascade = CascadeType.ALL, orphanRemoval = true)
-    @EqualsAndHashCode.Exclude
-    @ToString.Exclude
-    private List<Founder> founders;
 
     @OneToMany(mappedBy = "uploader", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Document> documents;
