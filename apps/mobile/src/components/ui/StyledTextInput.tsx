@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import {TextInput, View, Pressable} from 'react-native';
 import {Feather} from "@expo/vector-icons";
+import {BottomSheetTextInput} from "@gorhom/bottom-sheet";
 
 type Props = {
     value: string;
@@ -13,6 +14,7 @@ type Props = {
     keyboardType?: "default" | "email-address" | "numeric" | "phone-pad";
     disabled?: boolean;
     size?: 'default' | 'compact';
+    isInBottomSheet?: boolean;
 };
 
 const StyledTextInput = (
@@ -26,7 +28,8 @@ const StyledTextInput = (
         secureTextEntry = false,
         keyboardType = "default",
         disabled = false,
-        size = 'default'
+        size = 'default',
+        isInBottomSheet = false
     }: Props) => {
     const [focused, setFocused] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
@@ -35,6 +38,8 @@ const StyledTextInput = (
     const heightClass = disabled
         ? (size === 'compact' ? 'min-h-[72px]' : 'min-h-[80px]')
         : (size === 'compact' ? 'h-16' : 'h-[70px]');
+
+    const InputComponent = isInBottomSheet ? BottomSheetTextInput : TextInput;
 
     return (
         <View
@@ -57,7 +62,7 @@ const StyledTextInput = (
                 </View>
             )}
 
-            <TextInput
+            <InputComponent
                 value={value}
                 placeholder={placeholder}
                 onChangeText={onChangeText}

@@ -1,8 +1,8 @@
 import api from "@/src/services/index";
-import {UserDetails} from "@/src/types/user";
+import {AuthUser} from "@/src/types/auth";
 
-export const getUserDetailsApi = async (userId: number): Promise<UserDetails> => {
-    const res = await api.get<UserDetails>(`/user/getUserDetails/${userId}`);
+export const getUserDetailsApi = async (userId: number): Promise<AuthUser> => {
+    const res = await api.get<AuthUser>(`/user/getUserDetails/${userId}`);
     return res.data;
 }
 

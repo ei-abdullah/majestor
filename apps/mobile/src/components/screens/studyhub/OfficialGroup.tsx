@@ -3,6 +3,7 @@ import {View, Text, ScrollView, TouchableOpacity} from "react-native";
 import {router} from "expo-router";
 import Card from "@/src/components/ui/Card";
 import {Feather} from "@expo/vector-icons";
+import {useAuthStore} from "@/src/stores/authStore";
 
 interface Group {
     id: number;
@@ -12,7 +13,10 @@ interface Group {
 }
 
 export default function OfficialGroup({groups}: { groups: Group[] }) {
-    if (groups.length === 0) return null;
+    const {user} = useAuthStore();
+    const filteredGroups = groups.filter(group => group.hostName !== user?.username);
+
+    if (filteredGroups.length === 0) return null;
 
     return (
         <View className="px-6 mb-6">
@@ -35,7 +39,7 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={{paddingLeft: 0, paddingRight: 8}}
                 >
-                    {groups.map((group) => (
+                    {filteredGroups.map((group) => (
                         <TouchableOpacity 
                             key={group.id} 
                             onPress={() => router.push({

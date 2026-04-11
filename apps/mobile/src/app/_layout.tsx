@@ -15,6 +15,7 @@ import {useAuthStore} from "@/src/stores/authStore";
 import {isRunningInExpoGo} from "expo";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
+import {KeyboardProvider} from "react-native-keyboard-controller";
 import PremiumModal from "@/src/components/ui/PremiumModal";
 
 const client = new QueryClient({
@@ -102,26 +103,28 @@ function RootLayout() {
 
     return (
         <GestureHandlerRootView style={{ flex: 1 }}>
-            <BottomSheetModalProvider>
-                <QueryClientProvider client={client}>
-                    <Stack>
-                        <Stack.Protected guard={!isLoggedIn}>
-                            <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>
-                        </Stack.Protected>
+            <KeyboardProvider>
+                <BottomSheetModalProvider>
+                    <QueryClientProvider client={client}>
+                        <Stack>
+                            <Stack.Protected guard={!isLoggedIn}>
+                                <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>
+                            </Stack.Protected>
 
-                        <Stack.Protected guard={isLoggedIn}>
-                            <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
-                            <Stack.Screen name={"chat"} options={{headerShown: false}}/>
-                            <Stack.Screen name={"groupchat"} options={{headerShown: false}}/>
-                        </Stack.Protected>
+                            <Stack.Protected guard={isLoggedIn}>
+                                <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
+                                <Stack.Screen name={"chat"} options={{headerShown: false}}/>
+                                <Stack.Screen name={"groupchat"} options={{headerShown: false}}/>
+                            </Stack.Protected>
 
-                    </Stack>
-                </QueryClientProvider>
-                <Toast
-                    position={'top'}
-                />
-                <PremiumModal />
-            </BottomSheetModalProvider>
+                        </Stack>
+                    </QueryClientProvider>
+                    <Toast
+                        position={'top'}
+                    />
+                    <PremiumModal />
+                </BottomSheetModalProvider>
+            </KeyboardProvider>
         </GestureHandlerRootView>
     )
 }

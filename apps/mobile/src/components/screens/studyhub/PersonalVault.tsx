@@ -2,6 +2,7 @@ import React from "react";
 import {View, Text, TouchableOpacity, ScrollView} from "react-native";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useVault} from "@/src/queries/studyhub.queries";
+import {useUserDetails} from "@/src/queries/user.queries";
 import GradientView from "@/src/components/ui/GradientView";
 import DocumentList from "./DocumentList";
 import Card from "@/src/components/ui/Card";
@@ -18,6 +19,9 @@ import {Filters} from "@/src/types/studyHub";
 export default function PersonalVault() {
     const insets = useSafeAreaInsets();
     const {user} = useAuthStore();
+    
+    // Sync user storage data
+    useUserDetails(user!.id);
 
     const [filters, setFilters] = React.useState<Filters>({
         searchQuery: '',
@@ -30,7 +34,7 @@ export default function PersonalVault() {
 
     const {data: documents, isPending, error, refetch} = useVault(user!.id, 'PERSONAL_VAULT', appliedFilters);
 
-    const storageUsedMB = (user?.totalStorageUsed || 0) / (1024 * 1024);
+    const storageUsedMB = (user?.storageUsed || 0) / (1024 * 1024);
     const storageLimitMB = (user?.storageLimit || 104857600) / (1024 * 1024);
     const usagePercentage = Math.min((storageUsedMB / storageLimitMB) * 100, 100);
 

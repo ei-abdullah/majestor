@@ -40,7 +40,7 @@ public class AuthUserDTO {
 
     @NotNull(message = "Storage used by user is required")
     @PositiveOrZero(message = "Storage used must be positive or zero")
-    private Long totalStorageUsed;
+    private Long storageUsed;
 
     @NotNull(message = "Storage limit must be defined")
     @PositiveOrZero(message = "Storage limit must be positive or zero")
@@ -50,9 +50,15 @@ public class AuthUserDTO {
     @Positive(message = "University ID must be a positive number")
     private Long universityId;
 
+    @NotBlank(message = "University name is required")
+    private String university;
+
     @NotNull(message = "Faculty ID is required")
     @Positive(message = "Faculty ID must be a positive number")
     private Long facultyId;
+
+    @NotBlank(message = "Faculty name is required")
+    private String faculty;
 
     @NotEmpty(message = "Roles are required")
     private List<Role> roles;

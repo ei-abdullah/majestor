@@ -1,7 +1,8 @@
 import React from "react";
-import {Text, View, ScrollView, Alert, Pressable, Linking} from "react-native";
+import {Text, View, Alert, Pressable, Linking} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
+import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {validateEmail, validatePhone} from "@/src/utils/validation";
@@ -83,7 +84,8 @@ function UserSettings() {
 
     return (
         <GradientView>
-            <ScrollView
+            <KeyboardAwareScrollView
+                bottomOffset={62}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 130, paddingTop: headerOffset}}
             >
@@ -91,8 +93,8 @@ function UserSettings() {
                     {/* Avatar Section */}
                     <View className="items-center mt-8 mb-8">
                         <UserAvatar
-                            avatarUrl={userDetails.avatar}
-                            username={userDetails.username}
+                            avatarUrl={userDetails?.avatar ?? null}
+                            username={userDetails?.username ?? 'User'}
                             onAvatarUpdate={handleAvatarUpdate}
                             size={128}
                             showCamera={true}
@@ -295,7 +297,7 @@ function UserSettings() {
                         </Pressable>
                     </Card>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </GradientView>
     );
 

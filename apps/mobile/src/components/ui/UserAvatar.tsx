@@ -71,7 +71,7 @@ const UserAvatar = ({
                     type: asset.mimeType || 'image/jpeg',
                 } as any;
 
-                formData.append('file', file);
+                formData.append('profileImage', file);
                 onAvatarUpdate(formData);
             }
         } catch (error) {

@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from "react";
-import {ScrollView, Text, View, TouchableOpacity, Pressable, StyleSheet} from "react-native";
+import {Text, View, TouchableOpacity, Pressable, StyleSheet} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
+import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 import {semesterType, type, years} from "@/src/constants";
 import {useAuthStore} from "@/src/stores/authStore";
@@ -150,7 +151,8 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
 
     return (
         <GradientView>
-            <ScrollView
+            <KeyboardAwareScrollView
+                bottomOffset={62}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingBottom: 140, paddingTop: insets.top + 80}}
             >
@@ -335,7 +337,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                         </TouchableOpacity>
                     </View>
                 </View>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </GradientView>
     );
 }
