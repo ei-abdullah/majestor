@@ -25,19 +25,22 @@ export interface SignupResponse {
 export interface AuthUser {
     id: number,
     email: string,
-    username: string,
-    hasOnboarded: boolean,
-    phone: string,
-    personalEmail: string,
-    isFaculty: boolean,
-    premiumUntil: string,
-    totalStorageUsed: number,
-    storageLimit: number,
-    universityId: number,
-    facultyId: number,
-    roles: string[],
-    createdAt: string,
-    updatedAt: string
+    username?: string,
+    avatar?: string,
+    hasOnboarded?: boolean,
+    phone?: string,
+    personalEmail?: string,
+    isFaculty?: boolean,
+    premiumUntil?: string,
+    storageUsed?: number,
+    storageLimit?: number,
+    universityId?: number,
+    university?: string,
+    facultyId?: number,
+    faculty?: string,
+    roles?: string[],
+    createdAt?: string,
+    updatedAt?: string
 }
 
 type AuthState = {
@@ -45,6 +48,7 @@ type AuthState = {
     accessToken: string | null;
     isLoggedIn: boolean;
     markOnboarded: () => void;
+    updateUser: (user: Partial<AuthUser>) => void;
     setSession: (user: AuthUser, accessToken: string) => void;
     clearSession: () => void;
 }

@@ -1,14 +1,6 @@
-export interface UserDetails {
-    id: number,
-    email: string,
-    username: string,
-    avatar: string,
-    phone?: string,
-    personalEmail?: string,
-    university: string,
-    faculty: string,
-    roles: [string]
-}
+import {AuthUser} from "./auth";
+
+export type UserDetails = AuthUser;
 
 export interface PersonalDetailsBody {
     personalEmail?: string,

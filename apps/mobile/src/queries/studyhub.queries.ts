@@ -12,6 +12,8 @@ import Toast from "react-native-toast-message";
 import {CreateStudyGroup, CreateStudyGroupResponse, DocumentDestination, Filters} from "@/src/types/studyHub";
 import {getVaultDocumentApi, likeDocumentApi, uploadDocumentApi} from "@/src/services/studyhub.api";
 import React from "react";
+import {useAuthStore} from "@/src/stores/authStore";
+import {getUserDetailsApi} from "@/src/services/user.api";
 
 export const useStudyHubFeed = (userId: number) => {
     return useQuery({
@@ -120,6 +122,7 @@ export const useVault = (userId: number, destination: DocumentDestination, filte
 
 export const useUploadDocument = (onCallback?: () => void) => {
     const queryClient = useQueryClient();
+    const updateUser = useAuthStore(state => state.updateUser);
 
     return useMutation({
         mutationKey: ["document"],
@@ -127,9 +130,11 @@ export const useUploadDocument = (onCallback?: () => void) => {
             userId: number,
             formData: FormData
         }) => uploadDocumentApi(userId, formData),
-        onSuccess: async () => {
+        onSuccess: async (_data, variables) => {
             await queryClient.invalidateQueries({queryKey: ["document"]});
             await queryClient.invalidateQueries({queryKey: ["studyhub"]});
+            await queryClient.invalidateQueries({queryKey: ["user"]});
+
             Toast.show({
                 type: 'success',
                 text1: 'Upload Successful',

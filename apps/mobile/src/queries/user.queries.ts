@@ -1,12 +1,20 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import {getUserDetailsApi, updateProfileImageApi, updateUserDetailsApi} from "@/src/services/user.api";
+import {useEffect} from "react";
+import {useAuthStore} from "@/src/stores/authStore";
 
 export const useUserDetails = (userId: number) => {
+    const updateUser = useAuthStore(state => state.updateUser);
+    
     return useQuery({
         queryKey: ["user"],
-        queryFn: () => getUserDetailsApi(userId),
+        queryFn: async () => {
+            const data = await getUserDetailsApi(userId);
+            updateUser(data);
+            return data;
+        },
         enabled: Boolean(userId),
-    })
+    });
 }
 
 export const useUpdateProfileImage = () => {

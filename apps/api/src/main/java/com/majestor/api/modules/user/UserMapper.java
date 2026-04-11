@@ -17,6 +17,11 @@ public class UserMapper {
                 .personalEmail(user.getPersonalEmail())
                 .university(user.getUniversity().getName())
                 .faculty(user.getFaculty().getName())
+                .premiumUntil(user.getPremiumUntil())
+                .storageUsed(user.getStorageUsed())
+                .storageLimit(user.getStorageLimit())
+                .hasOnboarded(user.getHasOnboarded())
+                .isFaculty(user.getIsFaculty())
                 .roles(user.getRoles())
                 .createdAt(user.getCreatedAt())
                 .build();

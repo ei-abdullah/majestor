@@ -178,7 +178,7 @@ public class DataInitializer implements CommandLineRunner {
                 .university(firstUniversity)
                 .faculty(firstFaculty)
                 .roles(List.of(Role.ADMIN, Role.STUDENT))
-                .isFaculty(true)
+                .isFaculty(false)
                 .isVerified(true)
                 .verificationToken(null)
                 .createdAt(Instant.now())

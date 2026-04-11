@@ -93,8 +93,8 @@ function UserSettings() {
                     {/* Avatar Section */}
                     <View className="items-center mt-8 mb-8">
                         <UserAvatar
-                            avatarUrl={userDetails.avatar}
-                            username={userDetails.username}
+                            avatarUrl={userDetails?.avatar ?? null}
+                            username={userDetails?.username ?? 'User'}
                             onAvatarUpdate={handleAvatarUpdate}
                             size={128}
                             showCamera={true}

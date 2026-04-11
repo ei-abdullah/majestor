@@ -13,6 +13,9 @@ export const useAuthStore = create<AuthState>()(
             markOnboarded: () => set((state) => ({
                 user: state.user ? {...state.user, hasOnboarded: true} : null
             })),
+            updateUser: (updatedUser) => set((state) => ({
+                user: state.user ? {...state.user, ...updatedUser} : null
+            })),
             setSession: (user, accessToken) => {
                 Sentry.setUser({
                     id: String(user.id),

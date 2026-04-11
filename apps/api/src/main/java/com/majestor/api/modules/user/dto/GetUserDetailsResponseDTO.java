@@ -26,6 +26,7 @@ public class GetUserDetailsResponseDTO {
     private String avatar;
 
     @NotBlank(message = "Email is required")
+    @Email(message = "Invalid email address")
     private String email;
 
     @NotBlank(message = "Phone is required")
@@ -42,8 +43,22 @@ public class GetUserDetailsResponseDTO {
     @NotBlank(message = "Faculty name is required")
     private String faculty;
 
+    private Instant premiumUntil;
+
+    @NotNull(message = "Storage used is required")
+    private Long storageUsed;
+
+    @NotNull(message = "Storage limit is required")
+    private Long storageLimit;
+
     @NotEmpty(message = "User must have at least one role")
     private List<Role> roles;
+
+    @NotNull(message = "Onboarding status is required")
+    private Boolean hasOnboarded;
+
+    @NotNull(message = "Is faculty status is required")
+    private Boolean isFaculty;
 
     @NotNull(message = "Creation time is required")
     private Instant createdAt;
