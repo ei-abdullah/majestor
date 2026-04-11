@@ -13,6 +13,7 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Long> {
             FROM StudyGroup g
             WHERE g.isOfficial = TRUE
             AND g.studyGroupCourse.facultyCourses.id = :facultyId
+            AND g.isPrivate = FALSE
             ORDER BY g.createdAt DESC
             """)
     List<StudyGroup> findOfficialGroupByFaculty(@Param("facultyId") Long facultyId);
@@ -22,6 +23,7 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Long> {
             FROM StudyGroup g
             WHERE g.studyGroupCourse.facultyCourses.id = :facultyId
             AND g.isOfficial = FALSE
+            AND g.isPrivate = FALSE
             ORDER BY g.popularityScore DESC
             """)
     List<StudyGroup> findPeerTrendingGroups(@Param("facultyId") Long facultyId);

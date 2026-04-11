@@ -4,12 +4,14 @@ import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.university.University;
 import com.majestor.api.modules.carpool.ride.Ride;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
+import com.majestor.api.modules.notification.Notification;
 import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.studyhub.document.like.Like;
 import com.majestor.api.modules.lostfound.founder.Founder;
 import com.majestor.api.modules.lostfound.lostitem.LostItem;
 import com.majestor.api.modules.studyhub.studygroup.rating.Rating;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
+import com.majestor.api.modules.studyhub.studygroup.studygroupinvite.StudyGroupInvite;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -76,6 +78,9 @@ public class User {
     @NotNull(message = "Storage limit is required")
     private Long storageLimit = 100L * 1024 * 1024;  // 100 MBs
 
+    @Column(name = "expo_push_token")
+    private String expoPushToken;
+
     @Builder.Default
     @NotEmpty(message = "At least one user role is required")
     @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
@@ -128,8 +133,20 @@ public class User {
     @OneToMany(mappedBy = "studyGroupMember")
     private List<StudyGroupMember>  joinedStudyGroups;
 
+    @OneToMany(mappedBy = "sender")
+    private List<Notification> sentNotifications;
+
+    @OneToMany(mappedBy = "recipient")
+    private List<Notification> receivedNotifications;
+
     @OneToMany(mappedBy = "ratedBy")
     private List<Rating> ratedStudyGroups;
+
+    @OneToMany(mappedBy = "inviter")
+    private List<StudyGroupInvite> groupInvites;
+
+    @OneToMany(mappedBy = "invitee")
+    private List<StudyGroupInvite> groupInvitesReceived;
 
     // For email-based verification
     private String verificationToken;

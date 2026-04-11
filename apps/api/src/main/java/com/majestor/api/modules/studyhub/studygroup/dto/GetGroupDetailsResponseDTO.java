@@ -20,6 +20,7 @@ public class GetGroupDetailsResponseDTO {
     private String courseName;
     private Integer memberCount;
     private Double popularityScore;
+    private Boolean isPrivate;
 
     private Boolean isCurrentUserMember;
     private Boolean isPreview;

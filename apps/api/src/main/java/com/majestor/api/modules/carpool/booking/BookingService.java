@@ -11,6 +11,8 @@ import com.majestor.api.modules.carpool.ride.RideRepository;
 import com.majestor.api.modules.carpool.ride.RideStatus;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
+import com.majestor.api.modules.notification.NotificationService;
+import com.majestor.api.modules.notification.NotificationType;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,7 @@ public class BookingService {
     private final RideRequestRepository rideRequestRepository;
     private final BookingMapper bookingMapper;
     private final WebSocketService webSocketService;
+    private final NotificationService notificationService;
 
 
     public CreateBookingResponseDTO createBooking(
@@ -58,6 +61,15 @@ public class BookingService {
             bookingRepository.save(booking);
             String topic = "/topic/ride-requests/" + ride.getId();
             webSocketService.sendMessage(topic, "NEW_BOOKING_REQUEST");
+
+            notificationService.sendNotification(
+                    ride.getRidePoster(),
+                    rideRequest.getRideRequester(),
+                    NotificationType.RIDE_BOOKED,
+                    "New Ride Booking",
+                    rideRequest.getRideRequester().getUsername() + " wants to join your ride!",
+                    ride.getId()
+            );
         } catch (Exception e) {
             log.error("Error while creating booking: {}", e.getMessage());
             throw new RuntimeException("Failed to create booking: " + e.getMessage(), e);
@@ -134,6 +146,15 @@ public class BookingService {
             // Broadcast booking status
             String topic = "/topic/booking-status/" + bookingId;
             webSocketService.sendMessage(topic, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    booking.getBookedRide().getRideRequester(),
+                    ride.getRidePoster(),
+                    NotificationType.RIDE_ACCEPTED,
+                    "Ride Accepted!",
+                    "Your ride booking has been accepted by " + ride.getRidePoster().getUsername(),
+                    ride.getId()
+            );
         } catch (Exception e) {
             log.error("Error while accepting booking: {}", e.getMessage());
             throw new RuntimeException("Failed to accept booking: " + e.getMessage(), e);
@@ -154,6 +175,15 @@ public class BookingService {
             // Broadcast booking status
             String topic = "/topic/booking-status/" + bookingId;
             webSocketService.sendMessage(topic, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    booking.getBookedRide().getRideRequester(),
+                    booking.getRide().getRidePoster(),
+                    NotificationType.RIDE_REJECTED,
+                    "Ride Rejected",
+                    "Your ride booking has been rejected by " + booking.getRide().getRidePoster().getUsername(),
+                    booking.getRide().getId()
+            );
         } catch (Exception e) {
             log.error("Error while rejecting booking: {}", e.getMessage());
             throw new RuntimeException("Failed to reject booking: " + e.getMessage(), e);

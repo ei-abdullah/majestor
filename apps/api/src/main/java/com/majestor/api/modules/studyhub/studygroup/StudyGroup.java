@@ -3,6 +3,7 @@ package com.majestor.api.modules.studyhub.studygroup;
 import com.majestor.api.modules.academia.course.Course;
 import com.majestor.api.modules.studyhub.document.Document;
 import com.majestor.api.modules.studyhub.studygroup.rating.Rating;
+import com.majestor.api.modules.studyhub.studygroup.studygroupinvite.StudyGroupInvite;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
 import com.majestor.api.modules.user.User;
 import jakarta.persistence.*;
@@ -47,6 +48,10 @@ public class StudyGroup {
     @NotNull(message = "Study group popularity score is required")
     private Double popularityScore = 0.0;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Boolean isPrivate = false;
+
     @OneToMany(mappedBy = "documentStudyGroup")
     private List<Document> studyGroupDocuments;
 
@@ -63,6 +68,9 @@ public class StudyGroup {
 
     @OneToMany(mappedBy = "ratedStudyGroup")
     private List<Rating> ratings;
+
+    @OneToMany(mappedBy = "inviteeStudyGroup")
+    private List<StudyGroupInvite> studyGroupInvites;
 
     private Instant createdAt;
     private Instant updatedAt;

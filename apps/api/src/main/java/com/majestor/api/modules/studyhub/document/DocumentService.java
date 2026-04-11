@@ -25,6 +25,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
@@ -43,6 +44,7 @@ import java.util.zip.ZipOutputStream;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class DocumentService {
 

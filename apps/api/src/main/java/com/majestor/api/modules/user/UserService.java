@@ -6,13 +6,13 @@ import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
 import com.majestor.api.modules.utils.Utils;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
@@ -22,6 +22,7 @@ import java.util.UUID;
 
 @Slf4j
 @Service
+@Validated
 @RequiredArgsConstructor
 public class UserService {
 
@@ -110,9 +111,18 @@ public class UserService {
     @Transactional
     public void markOnboarded(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with ID: " + userId));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
         user.setHasOnboarded(Boolean.TRUE);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    public void updatePushToken(Long userId, String token) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
+
+        user.setExpoPushToken(token);
         userRepository.save(user);
     }
 }

@@ -19,4 +19,6 @@ public class CreateStudyGroupDTO {
 
     @NotNull(message = "Course ID is required")
     private Long courseId;
+
+    private Boolean isPrivate = false;
 }
