@@ -192,6 +192,24 @@ export default function GroupChat() {
                             </Send>
                         );
                     }}
+                    textInputProps={{
+                        style: {
+                            backgroundColor: '#F0F4FF',
+                            borderRadius: 20,
+                            paddingHorizontal: 16,
+                            paddingTop: 10,
+                            paddingBottom: 10,
+                            // marginBottom: 50,
+                            color: '#121826',
+                            fontSize: 15,
+                            minHeight: 40,
+                            maxHeight: 150
+                        },
+                        placeholder: "Type a message...",
+                        placeholderTextColor: '#9E9E9E',
+                    }}
+                    minComposerHeight={40}
+                    maxComposerHeight={150}
                 />
             </KeyboardAvoidingView>
         </SafeAreaView>

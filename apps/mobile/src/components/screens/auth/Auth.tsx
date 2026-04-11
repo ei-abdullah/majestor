@@ -1,7 +1,8 @@
 import React, {useState} from "react";
-import {View, Text, ScrollView} from "react-native";
+import {View, Text} from "react-native";
 import {Image} from "expo-image";
 import {SafeAreaView} from "react-native-safe-area-context";
+import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 import AuthTabs from "@/src/components/screens/auth/AuthTabs";
 import LoginForm from "@/src/components/screens/auth/LoginForm";
@@ -27,7 +28,8 @@ function Auth() {
     return (
         <GradientView>
             <SafeAreaView className="flex-1 px-6 pt-8 justify-start">
-                <ScrollView
+                <KeyboardAwareScrollView
+                    bottomOffset={62}
                     nestedScrollEnabled={true}
                     showsVerticalScrollIndicator={false}
                 >
@@ -78,7 +80,7 @@ function Auth() {
                             }
                         </View>
                     </Card>
-                </ScrollView>
+                </KeyboardAwareScrollView>
             </SafeAreaView>
         </GradientView>
     );

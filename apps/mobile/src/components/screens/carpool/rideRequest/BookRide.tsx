@@ -280,6 +280,8 @@ export default function BookRide() {
                 enablePanDownToClose={false}
                 backgroundStyle={{backgroundColor: '#f9fafb'}}
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
+                keyboardBehavior="extend"
+                keyboardBlurBehavior="restore"
             >
                 <BottomSheetScrollView
                     contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
@@ -317,6 +319,7 @@ export default function BookRide() {
                                             placeholder={"0300-0000000"}
                                             icon={"phone"}
                                             onChangeText={onChange}
+                                            isInBottomSheet={true}
                                         />
                                     )}
                                 />

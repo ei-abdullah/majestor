@@ -308,6 +308,8 @@ export default function PostRide() {
                 enablePanDownToClose={false}
                 backgroundStyle={{backgroundColor: '#f9fafb'}}
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
+                keyboardBehavior="extend"
+                keyboardBlurBehavior="restore"
             >
                 <BottomSheetScrollView
                     contentContainerStyle={{
@@ -344,6 +346,7 @@ export default function PostRide() {
                                                 placeholder={"e.g, Black Honda Fit"}
                                                 icon={"key"}
                                                 onChangeText={onChange}
+                                                isInBottomSheet={true}
                                             />
                                         )}
                                     />
@@ -365,6 +368,7 @@ export default function PostRide() {
                                                 placeholder={"e.g, MG-841"}
                                                 icon={"info"}
                                                 onChangeText={onChange}
+                                                isInBottomSheet={true}
                                             />
                                         )}
                                     />
@@ -410,6 +414,7 @@ export default function PostRide() {
                                             placeholder={"0300-0000000"}
                                             icon={"phone"}
                                             onChangeText={onChange}
+                                            isInBottomSheet={true}
                                         />
                                     )}
                                 />

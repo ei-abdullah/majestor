@@ -18,7 +18,7 @@ export default function OfficialGroupScreen() {
 
     if (isPending) return <LoadingIndicator />;
 
-    const groups = feedData?.officialGroups || [];
+    const groups = (feedData?.officialGroups || []).filter(group => group.hostName !== user?.username);
 
     return (
         <GradientView>

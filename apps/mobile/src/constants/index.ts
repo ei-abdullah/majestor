@@ -40,11 +40,9 @@ export const years = generateYearList();
 const LOCAL_IP = "192.168.18.40";
 
 export const API_BASE_URL = __DEV__
-    // ? `http://${LOCAL_IP}:8080/api/v1`
-    ? "https://majestor-app-qy52j.ondigitalocean.app/api/v1"
+    ? `http://${LOCAL_IP}:8080/api/v1`
     : "https://majestor-app-qy52j.ondigitalocean.app/api/v1";
 
 export const WEBSOCKET_URL = __DEV__
-    // ? `http://${LOCAL_IP}:8080/ws`
-    ? "https://majestor-app-qy52j.ondigitalocean.app/ws"
+    ? `http://${LOCAL_IP}:8080/ws`
     : "https://majestor-app-qy52j.ondigitalocean.app/ws";

@@ -1,9 +1,10 @@
 import React from 'react';
 import { View, Platform } from 'react-native';
-import Animated, { LinearTransition } from 'react-native-reanimated';
+import Animated, { LinearTransition, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
+import { useKeyboardHandler } from 'react-native-keyboard-controller';
 import AnimatedPressable from './AnimatedPressable';
 
 interface CustomTabBarProps {
@@ -13,6 +14,30 @@ interface CustomTabBarProps {
 }
 
 export default function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
+  const isKeyboardVisible = useDerivedValue(() => 0);
+
+  useKeyboardHandler({
+    onStart: (e) => {
+      'worklet';
+      isKeyboardVisible.value = e.height > 0 ? 1 : 0;
+    },
+  });
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: withTiming(isKeyboardVisible.value === 1 ? 150 : 0, {
+            duration: 250,
+          }),
+        },
+      ],
+      opacity: withTiming(isKeyboardVisible.value === 1 ? 0 : 1, {
+        duration: 250,
+      }),
+    };
+  });
+
   const IconConfig: any = {
     index: 'home',
     carpool: 'car',
@@ -23,32 +48,35 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
   return (
     <Animated.View
       layout={LinearTransition}
-      style={{
-        flexDirection: 'row',
-        position: 'absolute',
-        bottom: Platform.OS === 'android' ? 50 : 40,
-        alignSelf: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
-        width: '85%',
-        maxWidth: 340,
-        minWidth: 280,
-        height: 70,
-        borderRadius: 16,
-        paddingHorizontal: 8,
-        paddingVertical: 8,
-        borderWidth: 1,
-        borderColor: 'rgba(0, 0, 0, 0.06)',
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 8,
+      style={[
+        {
+          flexDirection: 'row',
+          position: 'absolute',
+          bottom: Platform.OS === 'android' ? 50 : 40,
+          alignSelf: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)',
+          width: '85%',
+          maxWidth: 340,
+          minWidth: 280,
+          height: 70,
+          borderRadius: 16,
+          paddingHorizontal: 8,
+          paddingVertical: 8,
+          borderWidth: 1,
+          borderColor: 'rgba(0, 0, 0, 0.06)',
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 8,
+          },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 8,
+          backdropFilter: 'blur(20px)',
+          gap: 4,
         },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-        backdropFilter: 'blur(20px)',
-        gap: 4,
-      }}
+        animatedStyle,
+      ]}
     >
       {state.routes.map((route: any, index: number) => {
         const isFocused = state.index === index;
