@@ -48,6 +48,7 @@ export interface FeedResponse {
 export interface CreateStudyGroup {
     name: string;
     courseId: number;
+
 }
 
 export interface CreateStudyGroupResponse {

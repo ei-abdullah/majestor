@@ -60,6 +60,18 @@ public class UserController {
                 .build();
     }
 
+    @PatchMapping("/update-push-token/{userId}")
+    public ResponseEntity<?> updatePushToken(
+            @PathVariable @NotNull @Positive Long userId,
+            @RequestParam("pushToken") @NotNull String pushToken
+    ) {
+        userService.updatePushToken(userId, pushToken);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
+    }
+
     @Deprecated
     @PatchMapping("/markOnboarded/{userId}")
     public ResponseEntity<?> markOnboarded(
