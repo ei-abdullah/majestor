@@ -1,5 +1,5 @@
-import OfficialGroupScreen from "@/src/components/screens/studyhub/OfficialGroupScreen";
+import OfficialGroup from "@/src/components/screens/studyhub/OfficialGroupScreen";
 
-export default function Route() {
-    return <OfficialGroupScreen />
+export default function OfficialGroupScreen() {
+    return <OfficialGroup />
 }

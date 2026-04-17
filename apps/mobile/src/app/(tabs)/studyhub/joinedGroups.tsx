@@ -1,5 +1,5 @@
-import JoinedGroupsScreen from "@/src/components/screens/studyhub/JoinedGroupsScreen";
+import JoinedGroups from "@/src/components/screens/studyhub/JoinedGroupsScreen";
 
-export default function Route() {
-    return <JoinedGroupsScreen />
+export default function JoinedGroupsScreen() {
+    return <JoinedGroups />
 }

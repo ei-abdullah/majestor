@@ -6,7 +6,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import * as Sentry from "@sentry/react-native";
 import {SafeAreaView} from "react-native-safe-area-context";
 
-export function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
+export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
     React.useEffect(() => {
         Sentry.captureException(error);
     }, [error]);
