@@ -63,7 +63,6 @@ public class FeedResponseDTO {
         private Long id;
         private String name;
         private String hostName;
-        private String courseName;
         private Integer memberCount;
     }
 }

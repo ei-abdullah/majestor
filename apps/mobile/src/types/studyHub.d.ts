@@ -29,7 +29,7 @@ export interface StudyHubBase {
     id: number;
     name: string;
     hostName: string;
-    courseName: string;
+    courseName: string | null;
     memberCount: number;
 }
 
@@ -38,16 +38,23 @@ export interface OfficialGroup extends StudyHubBase {}
 export interface TrendingGroup extends StudyHubBase {
     popularityScore: number;
 }
+export interface UniversityGroup {
+    id: number;
+    name: string;
+    hostName: string;
+    memberCount: number;
+}
 
 export interface FeedResponse {
     joinedGroups: JoinedGroup[];
     officialGroups: OfficialGroup[];
     trendingGroups: TrendingGroup[];
+    universityGroups: UniversityGroup[];
 }
 
 export interface CreateStudyGroup {
     name: string;
-    courseId: number;
+    courseId?: number;
     isPrivate: boolean;
 }
 

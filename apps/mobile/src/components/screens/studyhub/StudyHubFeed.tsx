@@ -5,6 +5,7 @@ import {Feather} from "@expo/vector-icons";
 import {router} from "expo-router";
 import {BottomSheetModal, BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {Controller, useForm} from "react-hook-form";
+import {LinearGradient} from "expo-linear-gradient";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCreateStudyGroup, useStudyHubFeed} from "@/src/queries/studyhub.queries";
@@ -12,15 +13,13 @@ import {useCourse} from "@/src/queries/course.queries";
 
 import GradientView from "@/src/components/ui/GradientView";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
-
 import JoinedGroups from "./JoinedGroups";
 import OfficialGroup from "./OfficialGroup";
 import TrendingGroup from "./TrendingGroup";
-import Card from "@/src/components/ui/Card";
+import UniversityGroup from "./UniversityGroup";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
 import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
-import {LinearGradient} from "expo-linear-gradient";
 
 export default function StudyHubFeed() {
     const insets = useSafeAreaInsets();
@@ -50,7 +49,7 @@ export default function StudyHubFeed() {
     });
 
     const onSubmit = (data: any) => {
-        if (!data.name || !data.courseId) return;
+        if (!data.name) return;
         createGroup({
             userId: user!.id,
             payload: {
@@ -77,10 +76,7 @@ export default function StudyHubFeed() {
             <GradientView>
                 <ScrollView
                     showsVerticalScrollIndicator={false}
-                    contentContainerStyle={{
-                        paddingTop: insets.top + 70,
-                        paddingBottom: 140
-                    }}
+                    contentContainerStyle={{paddingTop: insets.top + 70, paddingBottom: 140}}
                     refreshControl={
                         <RefreshControl refreshing={loadingFeed} onRefresh={refetch} tintColor="#3A6FF8"/>
                     }
@@ -95,61 +91,67 @@ export default function StudyHubFeed() {
                             })}
                         >
                             <Feather name={"users"} size={20} color="#3A6FF8"/>
-                            <Feather name="plus" size={20} color="#3A6FF8"/>
+                            <Feather name={"plus"} size={20} color="#3A6FF8"/>
                         </Pressable>
                     </View>
 
-                    <TrendingGroup groups={feedData?.trendingGroups || []}/>
                     <JoinedGroups groups={feedData?.joinedGroups || []}/>
+                    <TrendingGroup groups={feedData?.trendingGroups || []}/>
                     <OfficialGroup groups={feedData?.officialGroups || []}/>
+                    <UniversityGroup groups={feedData?.universityGroups || []}/>
 
-                    <View className="px-6 mt-4 flex-row gap-4">
-                        <TouchableOpacity
-                            onPress={() => router.push("/(tabs)/studyhub/personalVault")}
-                            className="flex-1"
-                            activeOpacity={0.9}
-                        >
-                            <Card
-                                className="items-center py-8 bg-white shadow-sm rounded-[32px] border border-mj-bg-blue">
-                                <View className="bg-mj-blue-50 p-4 rounded-2xl mb-3">
-                                    <Feather name="folder" size={28} color="#3A6FF8"/>
-                                </View>
-                                <Text className="text-mj-text-main font-bold text-base">PERSONAL</Text>
-                                <Text
-                                    className="text-mj-text-secondary text-[10px] font-black tracking-widest uppercase mt-0.5">Private
-                                    Vault</Text>
-                            </Card>
-                        </TouchableOpacity>
+                    {/* Vault Section */}
+                    <View className="px-6 mt-2">
+                        <Text className="text-mj-text-secondary font-black text-[10px] uppercase tracking-[3px] mb-4 ml-1">
+                            Your Documents
+                        </Text>
+                        <View className="flex-row gap-4">
+                            <TouchableOpacity
+                                onPress={() => router.push("/(tabs)/studyhub/personalVault")}
+                                className="flex-1"
+                                activeOpacity={0.85}
+                            >
+                                <LinearGradient
+                                    colors={["#EEF3FF", "#D9E6FF"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{borderRadius: 28, padding: 22, alignItems: 'center', borderWidth: 1, borderColor: '#C7D7FD'}}
+                                >
+                                    <View style={{backgroundColor: '#3A6FF8', padding: 12, borderRadius: 18, marginBottom: 12}}>
+                                        <Feather name="folder" size={22} color="white"/>
+                                    </View>
+                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 13, letterSpacing: -0.3}}>Personal</Text>
+                                    <Text style={{color: '#5A6275', fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
+                                        Private Vault
+                                    </Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
 
-                        <TouchableOpacity
-                            onPress={() => router.push("/(tabs)/studyhub/publicVault")}
-                            className="flex-1"
-                            activeOpacity={0.9}
-                        >
-                            <Card
-                                className="items-center py-8 bg-white shadow-sm rounded-[32px] border border-mj-bg-blue">
-                                <View className="bg-mj-teal-50 p-4 rounded-2xl mb-3">
-                                    <Feather name="unlock" size={28} color="#6FD0C5"/>
-                                </View>
-                                <Text className="text-mj-text-main font-bold text-base">OPEN</Text>
-                                <Text
-                                    className="text-mj-text-secondary text-[10px] font-black tracking-widest uppercase mt-0.5">Public
-                                    Vault</Text>
-                            </Card>
-                        </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => router.push("/(tabs)/studyhub/publicVault")}
+                                className="flex-1"
+                                activeOpacity={0.85}
+                            >
+                                <LinearGradient
+                                    colors={["#E8F9F7", "#C8F0EC"]}
+                                    start={{x: 0, y: 0}}
+                                    end={{x: 1, y: 1}}
+                                    style={{borderRadius: 28, padding: 22, alignItems: 'center', borderWidth: 1, borderColor: '#AAEAE3'}}
+                                >
+                                    <View style={{backgroundColor: '#6FD0C5', padding: 12, borderRadius: 18, marginBottom: 12}}>
+                                        <Feather name="unlock" size={22} color="white"/>
+                                    </View>
+                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 13, letterSpacing: -0.3}}>Open</Text>
+                                    <Text style={{color: '#5A6275', fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
+                                        Public Vault
+                                    </Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </ScrollView>
 
-                {/* Top Right Create Button */}
-
-
-                {/* Floating Action Button positioned above tab bar */}
-                <View style={{
-                    position: 'absolute',
-                    bottom: 130,
-                    right: 30,
-                    zIndex: 1000
-                }}>
+                <View style={{position: 'absolute', bottom: 130, right: 30, zIndex: 1000}}>
                     <FloatingActionButton
                         href={{
                             pathname: "/(tabs)/studyhub/uploadDocument",
@@ -171,10 +173,8 @@ export default function StudyHubFeed() {
                 keyboardBlurBehavior={"restore"}
             >
                 <BottomSheetView className="p-8 pb-20">
-                    <Text className="text-mj-teal font-black text-[10px] uppercase tracking-[3px] mb-1">New
-                        Community</Text>
-                    <Text className="text-mj-text-main font-bold text-2xl mb-8 tracking-tight">Start a Study
-                        Group</Text>
+                    <Text className="text-mj-teal font-black text-[10px] uppercase tracking-[3px] mb-1">New Community</Text>
+                    <Text className="text-mj-text-main font-bold text-2xl mb-8 tracking-tight">Start a Study Group</Text>
 
                     <View className="mb-6">
                         <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group Name</Text>
@@ -194,7 +194,10 @@ export default function StudyHubFeed() {
                     </View>
 
                     <View className="mb-10">
-                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Associated Course</Text>
+                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">
+                            Associated Course{' '}
+                            <Text className="text-mj-text-secondary font-normal">(optional)</Text>
+                        </Text>
                         <Controller
                             control={control}
                             name="courseId"
@@ -209,16 +212,14 @@ export default function StudyHubFeed() {
                         />
                     </View>
 
-                    <View className={"mb-10"}>
-                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group visibility</Text>
+                    <View className="mb-10">
+                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group Visibility</Text>
                         <Controller
                             control={control}
                             name="isPrivate"
                             render={({field: {onChange, value}}) => (
                                 <View className="flex-row items-center gap-3">
-                                    <Pressable
-                                        onPress={() => onChange(!value)}
-                                    >
+                                    <Pressable onPress={() => onChange(!value)}>
                                         {value ? (
                                             <LinearGradient
                                                 colors={["#3A6FF8", "#8DDDD3"]}
@@ -232,7 +233,7 @@ export default function StudyHubFeed() {
                                             <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
                                         )}
                                     </Pressable>
-                                    <Text className="text-mj-text-main font-semibold">Is Group Private</Text>
+                                    <Text className="text-mj-text-main font-semibold">Make this group private</Text>
                                 </View>
                             )}
                         />
@@ -243,8 +244,10 @@ export default function StudyHubFeed() {
                         onPress={handleSubmit(onSubmit)}
                         disabled={isCreating}
                     >
-                        {isCreating ? <LoadingIndicator size={20}/> :
-                            <Text className="text-white font-bold text-lg">Launch Group</Text>}
+                        {isCreating
+                            ? <LoadingIndicator size={20}/>
+                            : <Text className="text-white font-bold text-lg">Launch Group</Text>
+                        }
                     </TouchableOpacity>
                 </BottomSheetView>
             </BottomSheetModal>

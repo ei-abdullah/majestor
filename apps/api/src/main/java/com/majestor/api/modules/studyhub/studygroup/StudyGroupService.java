@@ -63,8 +63,9 @@ public class StudyGroupService {
             }
         }
 
-        Course course = courseRepository.findById(createStudyGroupDTO.getCourseId())
-                .orElse(null);
+        Course course = createStudyGroupDTO.getCourseId() != null
+                ? courseRepository.findById(createStudyGroupDTO.getCourseId()).orElse(null)
+                : null;
 
         StudyGroup groupToSave = studyGroupMapper.toStudyGroup(createStudyGroupDTO, user, course);
         StudyGroup savedGroup = studyGroupRepository.save(groupToSave);

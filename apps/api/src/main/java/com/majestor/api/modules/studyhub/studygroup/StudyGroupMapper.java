@@ -15,13 +15,19 @@ import java.util.List;
 @Component
 public class StudyGroupMapper {
 
+    private String resolveCourseName(StudyGroup group) {
+        if (group.getStudyGroupCourse() == null) return null;
+        String name = group.getStudyGroupCourse().getName();
+        return (name != null && !name.isEmpty()) ? name : "General";
+    }
+
     public FeedResponseDTO.JoinedGroupDTO toJoinedGroupDTO(StudyGroup group) {
         return FeedResponseDTO.JoinedGroupDTO
                 .builder()
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
-                .courseName(group.getStudyGroupCourse().getName())
+                .courseName(resolveCourseName(group))
                 .memberCount(group.getStudyGroupMembers().size())
                 .build();
     }
@@ -32,7 +38,7 @@ public class StudyGroupMapper {
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
-                .courseName(group.getStudyGroupCourse().getName())
+                .courseName(resolveCourseName(group))
                 .memberCount(group.getStudyGroupMembers().size())
                 .build();
     }
@@ -43,7 +49,7 @@ public class StudyGroupMapper {
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
-                .courseName(group.getStudyGroupCourse().getName())
+                .courseName(resolveCourseName(group))
                 .memberCount(group.getStudyGroupMembers().size())
                 .popularityScore(group.getPopularityScore())
                 .build();
@@ -55,7 +61,6 @@ public class StudyGroupMapper {
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
-                .courseName(group.getStudyGroupCourse().getName())
                 .memberCount(group.getStudyGroupMembers().size())
                 .build();
     }
@@ -103,20 +108,11 @@ public class StudyGroupMapper {
                 .id(studyGroup.getId())
                 .name(studyGroup.getName())
                 .hostName(studyGroup.getStudyGroupHost().getUsername())
-                .courseId(
-                        studyGroup.getStudyGroupCourse().getId() != null
-                                ? studyGroup.getStudyGroupCourse().getId()
-                                : null
-                )
-                .courseName(
-                        studyGroup.getStudyGroupCourse().getName() != null && !studyGroup.getStudyGroupCourse().getName().isEmpty()
-                                ? studyGroup.getStudyGroupCourse().getName()
-                                : "General"
-                )
+                .courseId(studyGroup.getStudyGroupCourse() != null ? studyGroup.getStudyGroupCourse().getId() : null)
+                .courseName(resolveCourseName(studyGroup))
                 .memberCount(studyGroup.getStudyGroupMembers().size())
                 .popularityScore(studyGroup.getPopularityScore())
                 .isCurrentUserMember(isMember)
-                .isPreview(studyGroup.getIsPrivate())
                 .isOfficial(studyGroup.getIsOfficial())
                 .isPreview(isPreview)
                 .documents(documents)
