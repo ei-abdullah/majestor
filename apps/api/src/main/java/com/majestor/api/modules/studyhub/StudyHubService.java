@@ -31,12 +31,14 @@ public class StudyHubService {
         // Return joined groups, official groups & trending groups
 
         Long facultyId = user.getFaculty().getId();
+        Long universityId = user.getUniversity().getId();
 
         List<StudyGroup> joinedGroups = studyGroupMemberRepository.findActiveGroupsByUserId(user.getId());
         List<StudyGroup> officialGroups = studyGroupRepository.findOfficialGroupByFaculty(facultyId);
         List<StudyGroup> trendingGroups = studyGroupRepository.findPeerTrendingGroups(facultyId);
+        List<StudyGroup> universityGroups = studyGroupRepository.findUniversityLevelGroups(universityId);
 
 
-        return studyHubMapper.toFeedResponseDTO(joinedGroups, officialGroups, trendingGroups);
+        return studyHubMapper.toFeedResponseDTO(joinedGroups, officialGroups, trendingGroups, universityGroups);
     }
 }

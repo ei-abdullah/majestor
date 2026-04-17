@@ -6,7 +6,6 @@ import com.majestor.api.modules.studyhub.studygroup.dto.CreateStudyGroupDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.CreateStudyGroupResponseDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.GetGroupDetailsResponseDTO;
 import com.majestor.api.modules.studyhub.studygroup.dto.JoinStudyGroupResponseDTO;
-import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.User;
 import org.springframework.stereotype.Component;
 
@@ -17,7 +16,8 @@ import java.util.List;
 public class StudyGroupMapper {
 
     public FeedResponseDTO.JoinedGroupDTO toJoinedGroupDTO(StudyGroup group) {
-        return FeedResponseDTO.JoinedGroupDTO.builder()
+        return FeedResponseDTO.JoinedGroupDTO
+                .builder()
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
@@ -27,7 +27,8 @@ public class StudyGroupMapper {
     }
 
     public FeedResponseDTO.OfficialGroupDTO toOfficialGroupDTO(StudyGroup group) {
-        return FeedResponseDTO.OfficialGroupDTO.builder()
+        return FeedResponseDTO.OfficialGroupDTO
+                .builder()
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
@@ -37,13 +38,25 @@ public class StudyGroupMapper {
     }
 
     public FeedResponseDTO.TrendingGroupDTO toTrendingGroupDTO(StudyGroup group) {
-        return FeedResponseDTO.TrendingGroupDTO.builder()
+        return FeedResponseDTO.TrendingGroupDTO
+                .builder()
                 .id(group.getId())
                 .name(group.getName())
                 .hostName(group.getStudyGroupHost().getUsername())
                 .courseName(group.getStudyGroupCourse().getName())
                 .memberCount(group.getStudyGroupMembers().size())
                 .popularityScore(group.getPopularityScore())
+                .build();
+    }
+
+    public FeedResponseDTO.UniversityGroupDTO toUniversityGroupDTO(StudyGroup group) {
+        return FeedResponseDTO.UniversityGroupDTO
+                .builder()
+                .id(group.getId())
+                .name(group.getName())
+                .hostName(group.getStudyGroupHost().getUsername())
+                .courseName(group.getStudyGroupCourse().getName())
+                .memberCount(group.getStudyGroupMembers().size())
                 .build();
     }
 
@@ -90,8 +103,16 @@ public class StudyGroupMapper {
                 .id(studyGroup.getId())
                 .name(studyGroup.getName())
                 .hostName(studyGroup.getStudyGroupHost().getUsername())
-                .courseId(studyGroup.getStudyGroupCourse().getId())
-                .courseName(studyGroup.getStudyGroupCourse().getName())
+                .courseId(
+                        studyGroup.getStudyGroupCourse().getId() != null
+                                ? studyGroup.getStudyGroupCourse().getId()
+                                : null
+                )
+                .courseName(
+                        studyGroup.getStudyGroupCourse().getName() != null && !studyGroup.getStudyGroupCourse().getName().isEmpty()
+                                ? studyGroup.getStudyGroupCourse().getName()
+                                : "General"
+                )
                 .memberCount(studyGroup.getStudyGroupMembers().size())
                 .popularityScore(studyGroup.getPopularityScore())
                 .isCurrentUserMember(isMember)

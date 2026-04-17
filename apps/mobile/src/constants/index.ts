@@ -20,6 +20,11 @@ export const type = [
     {id: 'OTHER', name: 'Other'},
 ]
 
+export const visibility = [
+    {id: false, name: 'Public'},
+    {id: true, name: 'Private'},
+]
+
 export const filterByLike = [
     {id: 'true', name: 'Most'},
     {id: 'false', name: 'Least'}

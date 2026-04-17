@@ -29,6 +29,16 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Long> {
     List<StudyGroup> findPeerTrendingGroups(@Param("facultyId") Long facultyId);
 
     @Query("""
+            SELECT g
+            FROM StudyGroup g
+            WHERE g.studyGroupCourse IS NULL
+            AND g.studyGroupHost.university.id = :universityId
+            AND g.isPrivate = FALSE
+            ORDER BY g.popularityScore DESC
+            """)
+    List<StudyGroup> findUniversityLevelGroups(@Param("universityId") Long universityId);
+
+    @Query("""
             SELECT COUNT(g)
             FROM StudyGroup g
             WHERE g.studyGroupHost.id = :userId

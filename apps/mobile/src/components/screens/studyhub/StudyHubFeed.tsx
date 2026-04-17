@@ -20,6 +20,7 @@ import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
 import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
+import {LinearGradient} from "expo-linear-gradient";
 
 export default function StudyHubFeed() {
     const insets = useSafeAreaInsets();
@@ -29,10 +30,14 @@ export default function StudyHubFeed() {
     const {data: courses} = useCourse(user!.id);
 
     const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ["60%", "70%"], []);
+    const snapPoints = useMemo(() => ["70%", "75%"], []);
 
     const {control, handleSubmit, reset} = useForm({
-        defaultValues: {name: '', courseId: undefined}
+        defaultValues: {
+            name: '',
+            courseId: undefined,
+            isPrivate: false
+        }
     });
 
     const {mutate: createGroup, isPending: isCreating} = useCreateStudyGroup((data) => {
@@ -50,7 +55,8 @@ export default function StudyHubFeed() {
             userId: user!.id,
             payload: {
                 name: data.name,
-                courseId: data.courseId
+                courseId: data.courseId,
+                isPrivate: data.isPrivate
             }
         });
     };
@@ -199,6 +205,35 @@ export default function StudyHubFeed() {
                                     options={courses?.data.courses || []}
                                     placeholder="Select course"
                                 />
+                            )}
+                        />
+                    </View>
+
+                    <View className={"mb-10"}>
+                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group visibility</Text>
+                        <Controller
+                            control={control}
+                            name="isPrivate"
+                            render={({field: {onChange, value}}) => (
+                                <View className="flex-row items-center gap-3">
+                                    <Pressable
+                                        onPress={() => onChange(!value)}
+                                    >
+                                        {value ? (
+                                            <LinearGradient
+                                                colors={["#3A6FF8", "#8DDDD3"]}
+                                                start={{x: 0, y: 0}}
+                                                end={{x: 1, y: 1}}
+                                                className="w-6 h-6 rounded-md items-center justify-center"
+                                            >
+                                                <Feather name="check" size={16} color="white"/>
+                                            </LinearGradient>
+                                        ) : (
+                                            <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
+                                        )}
+                                    </Pressable>
+                                    <Text className="text-mj-text-main font-semibold">Is Group Private</Text>
+                                </View>
                             )}
                         />
                     </View>

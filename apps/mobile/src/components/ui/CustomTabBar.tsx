@@ -19,7 +19,7 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
   useKeyboardHandler({
     onStart: (e) => {
       'worklet';
-      isKeyboardVisible.value = e.height > 0 ? 1 : 0;
+      // isKeyboardVisible.value = e.height > 0 ? 1 : 0;
     },
   });
 

@@ -48,7 +48,7 @@ export interface FeedResponse {
 export interface CreateStudyGroup {
     name: string;
     courseId: number;
-
+    isPrivate: boolean;
 }
 
 export interface CreateStudyGroupResponse {
@@ -57,6 +57,7 @@ export interface CreateStudyGroupResponse {
     courseName: string;
     hostName: string;
     isOfficial: boolean;
+    isPrivate: boolean;
     createdAt: string;
 }
 
@@ -83,6 +84,7 @@ export interface GetGroupDetails {
     popularityScore: number,
     isPreview: boolean;
     isOfficial: boolean;
+    isPrivate: boolean;
     documents: StudyGroupDocuments[];
 }
 
