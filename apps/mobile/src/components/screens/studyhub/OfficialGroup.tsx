@@ -1,14 +1,14 @@
 import React from "react";
 import {View, Text, ScrollView, TouchableOpacity} from "react-native";
-import {router} from "expo-router";
-import Card from "@/src/components/ui/Card";
+import {Href, router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {useAuthStore} from "@/src/stores/authStore";
+import {LinearGradient} from "expo-linear-gradient";
 
 interface Group {
     id: number;
     name: string;
-    courseName: string;
+    courseName: string | null;
     hostName: string;
 }
 
@@ -20,62 +20,100 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
 
     return (
         <View className="px-6 mb-6">
-            <Card className="bg-white rounded-[32px] border-0 shadow-teal p-6">
-                <View className="flex-row justify-between items-center mb-6 px-1">
-                    <View>
-                        <Text className="text-mj-yellow-600 font-black text-[10px] uppercase tracking-[2px]">Verified</Text>
-                        <Text className="text-mj-text-main font-bold text-xl tracking-tight mt-1">Official Channels</Text>
-                    </View>
-                    <TouchableOpacity 
-                        onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
-                        className="bg-mj-yellow-50 px-4 py-2 rounded-xl"
-                    >
-                        <Text className="text-mj-yellow-900 font-bold text-xs uppercase tracking-tighter">View All</Text>
-                    </TouchableOpacity>
+            <View className="flex-row justify-between items-center mb-4 px-1">
+                <View>
+                    <Text style={{color: '#C6941F', fontSize: 10, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase'}}>
+                        Verified
+                    </Text>
+                    <Text style={{color: '#1A2340', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, marginTop: 2}}>
+                        Official Channels
+                    </Text>
                 </View>
-
-                <ScrollView 
-                    horizontal 
-                    showsHorizontalScrollIndicator={false}
-                    contentContainerStyle={{paddingLeft: 0, paddingRight: 8}}
+                <TouchableOpacity
+                    onPress={() => router.push("/(tabs)/studyhub/officialGroup" as Href)}
+                    style={{backgroundColor: '#FFF8E1', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: '#FFE082'}}
                 >
-                    {filteredGroups.map((group) => (
-                        <TouchableOpacity 
-                            key={group.id} 
-                            onPress={() => router.push({
-                                pathname: "/(tabs)/studyhub/studyGroupDetail",
-                                params: {id: group.id}
-                            })}
-                            activeOpacity={0.7}
-                            className="mr-4"
-                        >
-                            <View className="bg-mj-bg-light p-5 rounded-[28px] border border-mj-yellow-100 w-44 min-h-[160px] justify-between">
-                                <View className="bg-mj-yellow-500 w-10 h-10 rounded-xl items-center justify-center shadow-sm">
-                                    <Feather name="shield" size={20} color="white" />
+                    <Text style={{color: '#C6941F', fontWeight: '700', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5}}>
+                        View All
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
+            <ScrollView
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                contentContainerStyle={{paddingRight: 8}}
+            >
+                {filteredGroups.map((group) => (
+                    <TouchableOpacity
+                        key={group.id}
+                        onPress={() => router.push({
+                            pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
+                            params: {id: group.id}
+                        })}
+                        activeOpacity={0.75}
+                        style={{marginRight: 12}}
+                    >
+                        <View style={{
+                            borderRadius: 28,
+                            width: 158,
+                            minHeight: 172,
+                            overflow: 'hidden',
+                            shadowColor: '#C6941F',
+                            shadowOffset: {width: 0, height: 6},
+                            shadowOpacity: 0.12,
+                            shadowRadius: 14,
+                            elevation: 4,
+                        }}>
+                            <LinearGradient
+                                colors={["#FFFDF5", "#FFF8E1"]}
+                                start={{x: 0, y: 0}}
+                                end={{x: 1, y: 1}}
+                                style={{flex: 1, padding: 18, justifyContent: 'space-between', borderWidth: 1.5, borderColor: '#FFE082', borderRadius: 28}}
+                            >
+                                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+                                    <View style={{backgroundColor: '#FBCB43', width: 44, height: 44, borderRadius: 15, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Feather name="shield" size={22} color="white"/>
+                                    </View>
+                                    <View style={{backgroundColor: '#FFF3CD', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: '#FFE082'}}>
+                                        <Text style={{color: '#C6941F', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}}>
+                                            Official
+                                        </Text>
+                                    </View>
                                 </View>
-                                
+
                                 <View>
-                                    <Text className="text-mj-text-main font-bold text-sm leading-tight" numberOfLines={2}>
+                                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, lineHeight: 19, marginBottom: 6}} numberOfLines={2}>
                                         {group.name}
                                     </Text>
-                                    <Text className="text-mj-text-secondary text-[10px] font-bold mt-2 uppercase tracking-tighter" numberOfLines={1}>
-                                        {group.hostName} • {group.courseName}
+                                    <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', opacity: 0.7}} numberOfLines={1}>
+                                        {group.hostName}{group.courseName ? ` · ${group.courseName}` : ''}
                                     </Text>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-                    ))}
-                    
-                    <TouchableOpacity 
-                        onPress={() => router.push("/(tabs)/studyhub/officialGroup")}
-                        className="justify-center ml-2"
-                    >
-                        <View className="w-16 h-16 bg-mj-yellow-50 rounded-[24px] items-center justify-center border border-dashed border-mj-yellow-200">
-                            <Feather name="arrow-right" size={20} color="#C6941F" opacity={0.5} />
+                            </LinearGradient>
                         </View>
                     </TouchableOpacity>
-                </ScrollView>
-            </Card>
+                ))}
+
+                <TouchableOpacity
+                    onPress={() => router.push("/(tabs)/studyhub/officialGroup" as Href)}
+                    style={{justifyContent: 'center', marginLeft: 4}}
+                >
+                    <View style={{
+                        width: 52,
+                        height: 52,
+                        backgroundColor: '#FFF8E1',
+                        borderRadius: 20,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderWidth: 1.5,
+                        borderStyle: 'dashed',
+                        borderColor: '#FFE082',
+                    }}>
+                        <Feather name="arrow-right" size={18} color="#C6941F" opacity={0.7}/>
+                    </View>
+                </TouchableOpacity>
+            </ScrollView>
         </View>
     );
 }

@@ -41,7 +41,7 @@ export default function TrendingGroupScreen() {
                         renderItem={({item}) => (
                             <Pressable
                                 onPress={() => router.push({
-                                    pathname: "/(tabs)/studyhub/studyGroupDetail",
+                                    pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                                     params: {id: item.id}
                                 })}
                                 className="mb-5"

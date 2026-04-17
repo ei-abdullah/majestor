@@ -15,6 +15,7 @@ public class FeedResponseDTO {
     private List<JoinedGroupDTO> joinedGroups;
     private List<OfficialGroupDTO> officialGroups;
     private List<TrendingGroupDTO> trendingGroups;
+    private List<UniversityGroupDTO> universityGroups;
 
 
     @Data
@@ -52,5 +53,16 @@ public class FeedResponseDTO {
         private String courseName;
         private Integer memberCount;
         private Double popularityScore;
+    }
+
+    @Data
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UniversityGroupDTO {
+        private Long id;
+        private String name;
+        private String hostName;
+        private Integer memberCount;
     }
 }

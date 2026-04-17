@@ -22,7 +22,7 @@ import {useAuthStore} from "@/src/stores/authStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {useUploadRideRequest} from "@/src/queries/rideRequest.queries";
 import {UploadRideRequestResponse} from "@/src/types/rideRequest";
-import {router} from "expo-router";
+import {Href, router} from "expo-router";
 import {useIsFocused} from "@react-navigation/native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
@@ -57,7 +57,7 @@ export default function BookRide() {
         rideRequestState.setRideRequestDetails({
             ...data
         });
-        router.push("/(tabs)/carpool/rideRequest/availableRides")
+        router.push("/(tabs)/carpool/rideRequest/availableRides" as Href)
     });
 
     const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({

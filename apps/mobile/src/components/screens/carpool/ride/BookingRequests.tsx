@@ -1,7 +1,7 @@
 import React, {useEffect} from "react";
 import {View, Text, ActivityIndicator, Pressable} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 
 import {useRideStore} from "@/src/stores/rideStore";
 import {useGetBookings} from "@/src/queries/booking.queries";
@@ -36,7 +36,7 @@ export default function BookingRequests() {
 
     const {mutate: cancelPostedRide, isPending: isCancelling} = useCancelPostedRide(() => {
         clearRideDetails();
-        router.replace("/(tabs)/carpool");
+        router.replace("/(tabs)/carpool" as Href);
     });
 
     useEffect(() => {
@@ -57,7 +57,7 @@ export default function BookingRequests() {
 
     function handleBookingPress(booking: GetBookingsResponse) {
         setBooking(booking);
-        router.push("/(tabs)/carpool/ride/bookingDetails");
+        router.push("/(tabs)/carpool/ride/bookingDetails" as Href);
     }
 
     const vehicleIcon = vehicleType === "CAR" ? "car-sport-outline" : "bicycle-outline";

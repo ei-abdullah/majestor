@@ -17,12 +17,15 @@ public class StudyHubMapper {
     public FeedResponseDTO toFeedResponseDTO(
             List<StudyGroup> joinedGroups,
             List<StudyGroup> officialGroups,
-            List<StudyGroup> trendingGroups
+            List<StudyGroup> trendingGroups,
+            List<StudyGroup> universityGroups
+
     ) {
         return FeedResponseDTO.builder()
                 .joinedGroups(joinedGroups.stream().map(studyGroupMapper::toJoinedGroupDTO).toList())
                 .officialGroups(officialGroups.stream().map(studyGroupMapper::toOfficialGroupDTO).toList())
                 .trendingGroups(trendingGroups.stream().map(studyGroupMapper::toTrendingGroupDTO).toList())
+                .universityGroups(universityGroups.stream().map(studyGroupMapper::toUniversityGroupDTO).toList())
                 .build();
     }
 }

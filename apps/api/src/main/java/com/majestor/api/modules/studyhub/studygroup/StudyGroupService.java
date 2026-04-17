@@ -57,14 +57,15 @@ public class StudyGroupService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + userId));
 
-        Course course = courseRepository.findById(createStudyGroupDTO.getCourseId())
-                .orElseThrow(() -> new ResourceNotFoundException("Course not found with ID: " + createStudyGroupDTO.getCourseId()));
-
         if (!user.isElite() && !user.getIsFaculty()) {
             if (studyGroupRepository.countByStudyGroupHosts(userId) >= 1) {
                 throw new TierLimitExceededException("Elite tier allows only 1 study group creation. Upgrade to elite to create more.");
             }
         }
+
+        Course course = createStudyGroupDTO.getCourseId() != null
+                ? courseRepository.findById(createStudyGroupDTO.getCourseId()).orElse(null)
+                : null;
 
         StudyGroup groupToSave = studyGroupMapper.toStudyGroup(createStudyGroupDTO, user, course);
         StudyGroup savedGroup = studyGroupRepository.save(groupToSave);

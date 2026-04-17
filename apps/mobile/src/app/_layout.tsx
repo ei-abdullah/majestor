@@ -17,13 +17,20 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 import {KeyboardProvider} from "react-native-keyboard-controller";
 import PremiumModal from "@/src/components/ui/PremiumModal";
+import {useRegisterPushToken} from "@/src/queries/notification.queries";
+import {useNetworkErrorStore} from "@/src/stores/networkErrorStore";
+import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
 
 const client = new QueryClient({
     queryCache: new QueryCache({
         onError: (error: any, query) => {
             if (error?._sentryReported) return;
-            // Ignore 401/403 as they are handled by auth flow
             if (error?.response?.status === 401 || error?.response?.status === 403) return;
+
+            if (!error?.response || error?.response?.status >= 500) {
+                useNetworkErrorStore.getState().setNetworkError(true);
+                return;
+            }
 
             Sentry.captureException(error, {
                 extra: {
@@ -76,6 +83,19 @@ Sentry.init({
     // spotlight: __DEV__,
 });
 
+function PushTokenRegistrar() {
+    const user = useAuthStore((state) => state.user);
+    const {mutate: registerPushToken} = useRegisterPushToken();
+
+    useEffect(() => {
+        if (user?.id) {
+            registerPushToken(user.id);
+        }
+    }, [user?.id]);
+
+    return null;
+}
+
 function RootLayout() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
     const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
@@ -106,6 +126,8 @@ function RootLayout() {
             <KeyboardProvider>
                 <BottomSheetModalProvider>
                     <QueryClientProvider client={client}>
+                        <PushTokenRegistrar/>
+                        <NetworkErrorScreen queryClient={client}/>
                         <Stack>
                             <Stack.Protected guard={!isLoggedIn}>
                                 <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>

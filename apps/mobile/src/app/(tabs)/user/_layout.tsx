@@ -23,6 +23,12 @@ export default function Layout() {
                     title: "User Settings"
                 }}
             />
+            <Stack.Screen
+                name={"notifications"}
+                options={{
+                    title: "Notifications"
+                }}
+            />
         </Stack>
     )
 }

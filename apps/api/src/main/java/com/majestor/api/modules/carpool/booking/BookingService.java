@@ -35,6 +35,7 @@ public class BookingService {
     private final NotificationService notificationService;
 
 
+    @Transactional
     public CreateBookingResponseDTO createBooking(
             Long rideRequestId,
             Long rideId,

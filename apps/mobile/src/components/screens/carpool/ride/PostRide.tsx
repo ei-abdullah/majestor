@@ -21,7 +21,7 @@ import NumberStepper from "@/src/components/ui/NumberStepper";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import {useRideStore} from "@/src/stores/rideStore";
 import {UploadRideResponse} from "@/src/types/ride";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 import {useUploadRide} from "@/src/queries/ride.queries";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useIsFocused} from "@react-navigation/native";
@@ -61,7 +61,7 @@ export default function PostRide() {
         rideState.setRideDetails({
             ...data
         });
-        router.push('/(tabs)/carpool/ride/bookingRequests')
+        router.push('/(tabs)/carpool/ride/bookingRequests' as Href)
     })
 
     const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({

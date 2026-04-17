@@ -95,7 +95,7 @@ export default function StudyGroupDetail() {
                             {group.isCurrentUserMember ? (
                                 <Pressable
                                     onPress={() => router.push({
-                                        pathname: "/groupchat",
+                                        pathname: "/groupchat" as any,
                                         params: {
                                             groupId: group.id,
                                             groupName: group.name
@@ -238,7 +238,7 @@ export default function StudyGroupDetail() {
             }}>
                 <FloatingActionButton 
                     href={{
-                        pathname: "/(tabs)/studyhub/uploadDocument",
+                        pathname: "/(tabs)/studyhub/uploadDocument" as any,
                         params: { 
                             destination: 'STUDY_GROUP',
                             studyGroupId: String(groupId),

@@ -4,7 +4,7 @@ import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
 import {Ionicons} from "@expo/vector-icons";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 
 import {GetBookingsResponse} from "@/src/types/booking";
 import {useRideStore} from "@/src/stores/rideStore";
@@ -69,7 +69,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
         clearBooking();
-        router.replace("/(tabs)/carpool/ride/bookingRequests");
+        router.replace( "/(tabs)/carpool/ride/bookingRequests" as Href);
     });
 
     const {mutate: completeRide, isPending: isCompleting} = useCompleteRide(() => {
@@ -88,7 +88,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         if (current === "completed" || current === "cancelled") {
             clearRideDetails();
         }
-        router.replace("/(tabs)/carpool");
+        router.replace("/(tabs)/carpool" as Href);
     }
 
 
@@ -277,7 +277,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                         <Text>|</Text>
                                         <Pressable
                                             onPress={() => router.push({
-                                                pathname: "/chat",
+                                                pathname: "/chat" as any,
                                                 params: {
                                                     receiverEmail: booking.rideRequesterEmail,
                                                     receiverUsername: booking.rideRequesterUsername

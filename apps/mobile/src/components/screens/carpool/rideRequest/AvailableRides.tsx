@@ -1,6 +1,6 @@
 import React, {useEffect} from "react";
 import {View, Text, Pressable, ActivityIndicator} from "react-native";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
 
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
@@ -32,7 +32,7 @@ function AvailableRides() {
     const {data: recentRides, isPending: isLoadingRides, isError, refetch} = useRecentRides();
     const {mutate: cancelRideRequest, isPending: isCancelingRequest} = useCancelRideRequest(() => {
         clearRideRequestDetails();
-        router.replace("/(tabs)/carpool")
+        router.replace("/(tabs)/carpool" as Href)
     });
 
     useEffect(() => {
@@ -51,7 +51,7 @@ function AvailableRides() {
 
     function handleRidePress(ride: RecentRideResponse) {
         setRide(ride);
-        router.push("/(tabs)/carpool/rideRequest/rideDetails");
+        router.push("/(tabs)/carpool/rideRequest/rideDetails" as Href);
     }
 
     function handleCancelSearch() {

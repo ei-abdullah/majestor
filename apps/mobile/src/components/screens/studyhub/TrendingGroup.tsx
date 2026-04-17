@@ -1,78 +1,135 @@
 import React from "react";
 import {View, Text, TouchableOpacity} from "react-native";
-import {router} from "expo-router";
-import Card from "@/src/components/ui/Card";
+import {Href, router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 
 interface Group {
     id: number;
     name: string;
-    courseName: string;
+    courseName: string | null;
     hostName: string;
     memberCount: number;
     popularityScore: number;
 }
+
+const RANK_STYLES = [
+    {bg: '#FFF3CD', text: '#C6941F', label: '1st'},
+    {bg: '#F0F0F0', text: '#5A6275', label: '2nd'},
+    {bg: '#FDE8D8', text: '#B5511A', label: '3rd'},
+];
 
 export default function TrendingGroup({groups}: { groups: Group[] }) {
     if (groups.length === 0) return null;
 
     return (
         <View className="px-6 mb-6">
-            <Card className="bg-white rounded-[32px] border-0 shadow-blue p-6">
-                <View className="flex-row items-center mb-6 px-1">
-                    <View className="bg-orange-50 p-2.5 rounded-2xl mr-4 shadow-sm border border-orange-100">
-                        <Feather name="trending-up" size={18} color="#FF4500" />
-                    </View>
-                    <Text className="text-mj-text-main font-bold text-xl tracking-tighter uppercase">Trending Hubs</Text>
+            <View className="flex-row items-center mb-4 px-1">
+                <View style={{backgroundColor: '#FFF0EB', padding: 10, borderRadius: 16, marginRight: 12, borderWidth: 1, borderColor: '#FFD5C2'}}>
+                    <Feather name="trending-up" size={18} color="#FF4500"/>
                 </View>
+                <View>
+                    <Text style={{color: '#FF4500', fontSize: 10, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase'}}>
+                        Hot Right Now
+                    </Text>
+                    <Text style={{color: '#1A2340', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, marginTop: 1}}>
+                        Trending Hubs
+                    </Text>
+                </View>
+            </View>
 
-                {groups.map((group) => (
-                    <TouchableOpacity
-                        key={group.id}
-                        onPress={() => router.push({
-                            pathname: "/(tabs)/studyhub/studyGroupDetail",
-                            params: {id: group.id}
-                        })}
-                        className="mb-5"
-                        activeOpacity={0.7}
-                    >
-                        <View className="bg-mj-bg-light p-6 rounded-[28px] flex-row items-center justify-between border border-mj-bg-blue shadow-sm min-h-[110px]">
-                            <View className="flex-1 mr-4">
-                                <View className="bg-mj-blue-100 self-start px-2 py-0.5 rounded-md mb-2">
-                                    <Text className="text-mj-blue-700 text-[8px] font-black uppercase tracking-widest">
-                                        {group.courseName}
+            <View style={{backgroundColor: 'white', borderRadius: 32, padding: 6, shadowColor: '#3A6FF8', shadowOffset: {width: 0, height: 8}, shadowOpacity: 0.08, shadowRadius: 24, elevation: 4}}>
+                {groups.map((group, index) => {
+                    const rank = RANK_STYLES[index] ?? {bg: '#F5F7FF', text: '#5A6275', label: `${index + 1}th`};
+                    const isLast = index === groups.length - 1;
+                    return (
+                        <TouchableOpacity
+                            key={group.id}
+                            onPress={() => router.push({
+                                pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
+                                params: {id: group.id}
+                            })}
+                            activeOpacity={0.7}
+                        >
+                            <View style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                padding: 16,
+                                borderBottomWidth: isLast ? 0 : 1,
+                                borderBottomColor: '#F0F4FF',
+                            }}>
+                                {/* Rank badge */}
+                                <View style={{
+                                    backgroundColor: rank.bg,
+                                    width: 38,
+                                    height: 38,
+                                    borderRadius: 12,
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    marginRight: 14,
+                                    flexShrink: 0,
+                                }}>
+                                    <Text style={{color: rank.text, fontSize: 10, fontWeight: '900'}}>
+                                        {rank.label}
                                     </Text>
                                 </View>
-                                
-                                <Text className="text-mj-text-main font-bold text-base leading-tight mb-2" numberOfLines={1}>
-                                    {group.name}
-                                </Text>
-                                
-                                <View className="flex-row items-center">
-                                    <Feather name="users" size={10} color="#5A6275" />
-                                    <Text className="text-mj-text-secondary text-[10px] font-bold uppercase tracking-tighter ml-1.5 opacity-60">
-                                        {group.memberCount} Members • {group.hostName}
+
+                                {/* Info */}
+                                <View style={{flex: 1}}>
+                                    {group.courseName ? (
+                                        <View style={{backgroundColor: '#EEF3FF', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 4}}>
+                                            <Text style={{color: '#3A6FF8', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}} numberOfLines={1}>
+                                                {group.courseName}
+                                            </Text>
+                                        </View>
+                                    ) : (
+                                        <View style={{backgroundColor: '#E8F9F7', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 4}}>
+                                            <Text style={{color: '#22B5A6', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}}>
+                                                Global
+                                            </Text>
+                                        </View>
+                                    )}
+                                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, lineHeight: 18, marginBottom: 4}} numberOfLines={1}>
+                                        {group.name}
+                                    </Text>
+                                    <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                                        <Feather name="users" size={9} color="#5A6275"/>
+                                        <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', marginLeft: 4, opacity: 0.65}}>
+                                            {group.memberCount} members · {group.hostName}
+                                        </Text>
+                                    </View>
+                                </View>
+
+                                {/* Score */}
+                                <View style={{
+                                    backgroundColor: '#FFFBF0',
+                                    borderRadius: 16,
+                                    paddingHorizontal: 10,
+                                    paddingVertical: 8,
+                                    alignItems: 'center',
+                                    marginLeft: 10,
+                                    borderWidth: 1,
+                                    borderColor: '#FFE082',
+                                    minWidth: 50,
+                                }}>
+                                    <Feather name="star" size={12} color="#FBCB43"/>
+                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 12, marginTop: 2}}>
+                                        {group.popularityScore?.toFixed(1) ?? '0.0'}
                                     </Text>
                                 </View>
                             </View>
+                        </TouchableOpacity>
+                    );
+                })}
 
-                            <View className="bg-white p-3 rounded-[22px] shadow-sm border border-mj-yellow-100 items-center justify-center min-w-[55px]">
-                                <Feather name="star" size={14} color="#FBCB43" />
-                                <Text className="text-mj-text-main font-black text-xs mt-1">
-                                    {group.popularityScore?.toFixed(1) || "0.0"}
-                                </Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-                ))}
-
-                <TouchableOpacity 
-                    onPress={() => router.push("/(tabs)/studyhub/trendingGroup")}
-                    className="mt-2 py-3 items-center"
+                <TouchableOpacity
+                    onPress={() => router.push("/(tabs)/studyhub/trendingGroup" as Href)}
+                    style={{paddingVertical: 14, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F0F4FF'}}
                 >
-                    <Text className="text-mj-blue font-bold text-xs uppercase tracking-widest">Discover All Trending</Text>
+                    <Text style={{color: '#3A6FF8', fontWeight: '800', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5}}>
+                        Discover All Trending
+                    </Text>
                 </TouchableOpacity>
-            </Card>
+            </View>
         </View>
     );
 }

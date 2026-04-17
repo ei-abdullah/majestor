@@ -1,5 +1,5 @@
 import React from "react";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 import {Text, View} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {isAxiosError} from "axios";
@@ -45,7 +45,7 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
 
             await saveRefreshToken(refreshToken);
             useAuthStore.getState().setSession(user, accessToken);
-            router.replace("/(tabs)");
+            router.replace("/(tabs)" as Href);
         } catch (error: any) {
             if (isAxiosError(error)) {
                 if (error.response?.status == 401) {
