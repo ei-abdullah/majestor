@@ -5,7 +5,7 @@ import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Ionicons} from "@expo/vector-icons";
 import Card from "@/src/components/ui/Card";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
 import { DEFAULT_LOCATION } from "@/src/utils/location.utils";
@@ -132,9 +132,9 @@ export default function CarpoolHome() {
                                         <TouchableOpacity
                                             onPress={() => {
                                                 if (rideStore.bookingId) {
-                                                    router.push("/(tabs)/carpool/ride/bookingDetails");
+                                                    router.push("/(tabs)/carpool/ride/bookingDetails" as Href);
                                                 } else {
-                                                    router.push("/(tabs)/carpool/ride/bookingRequests");
+                                                    router.push("/(tabs)/carpool/ride/bookingRequests" as Href);
                                                 }
                                             }}
                                             activeOpacity={0.7}
@@ -190,9 +190,9 @@ export default function CarpoolHome() {
                                         <TouchableOpacity
                                             onPress={() => {
                                                 if (rideRequestStore.bookingId) {
-                                                    router.push("/(tabs)/carpool/rideRequest/rideDetails");
+                                                    router.push("/(tabs)/carpool/rideRequest/rideDetails" as Href);
                                                 } else {
-                                                    router.push("/(tabs)/carpool/rideRequest/availableRides");
+                                                    router.push("/(tabs)/carpool/rideRequest/availableRides" as Href);
                                                 }
                                             }}
                                             activeOpacity={0.7}
@@ -237,7 +237,7 @@ export default function CarpoolHome() {
                                     {/* Passenger Action */}
                                     <TouchableOpacity 
                                         activeOpacity={0.8}
-                                        onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide")}
+                                        onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide" as Href)}
                                         className="flex-1 shadow-xl elevation-5 rounded-[32px] overflow-hidden"
                                         style={{ aspectRatio: 1 }}
                                     >
@@ -258,7 +258,7 @@ export default function CarpoolHome() {
                                     {/* Driver Action */}
                                     <TouchableOpacity 
                                         activeOpacity={0.8}
-                                        onPress={() => router.push("/(tabs)/carpool/ride/postRide")}
+                                        onPress={() => router.push("/(tabs)/carpool/ride/postRide" as Href)}
                                         className="flex-1 bg-white rounded-[32px] items-center justify-center shadow-xl elevation-5 border border-mj-blue-50"
                                         style={{ aspectRatio: 1 }}
                                     >

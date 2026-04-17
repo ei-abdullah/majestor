@@ -193,7 +193,7 @@ export default function PersonalVault() {
             }}>
                 <FloatingActionButton 
                     href={{
-                        pathname: "/(tabs)/studyhub/uploadDocument",
+                        pathname: "/(tabs)/studyhub/uploadDocument" as any,
                         params: { destination: 'PERSONAL_VAULT' }
                     }} 
                     icon={"file-text"}

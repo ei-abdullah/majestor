@@ -79,8 +79,15 @@ public class NotificationService {
                 .stream()
                 .map(notification -> {
                     User sender = notification.getSender();
-                    String senderAvatar = avatarCache
-                            .computeIfAbsent(sender.getId(), id -> utils.DownloadUserAvatar(sender));
+                    String senderAvatar = null;
+                    Long senderId = null;
+                    String senderName = null;
+
+                    if (sender != null) {
+                        senderAvatar = avatarCache.computeIfAbsent(sender.getId(), id -> utils.DownloadUserAvatar(sender));
+                        senderId = sender.getId();
+                        senderName = sender.getUsername();
+                    }
 
                     return GetNotificationsResponseDTO
                             .builder()
@@ -89,8 +96,8 @@ public class NotificationService {
                             .message(notification.getMessage())
                             .relatedId(notification.getRelatedId())
                             .relatedType(notification.getNotificationType().name())
-                            .senderId(notification.getSender().getId())
-                            .senderName(notification.getSender().getUsername())
+                            .senderId(senderId)
+                            .senderName(senderName)
                             .senderAvatar(senderAvatar)
                             .notificationType(notification.getNotificationType().name())
                             .createdAt(notification.getCreatedAt())

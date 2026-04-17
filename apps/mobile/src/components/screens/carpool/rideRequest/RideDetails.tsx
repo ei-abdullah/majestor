@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {View, Text, Image, Pressable} from "react-native";
 import {useIsFocused} from "@react-navigation/native";
-import {useRouter} from "expo-router";
+import {Href, useRouter} from "expo-router";
 import {useQueryClient} from "@tanstack/react-query";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import MapViewDirections from "react-native-maps-directions";
@@ -104,7 +104,7 @@ export default function RideDetails({ride}: Props) {
                 autoHide: true,
                 position: "top"
             });
-            router.replace("/(tabs)/carpool");
+            router.replace("/(tabs)/carpool" as Href);
         } else if (bookingStatusData.status === "COMPLETED") {
             // Show modal first — store is cleared only when the user dismisses
             setOutcomeModal("completed");
@@ -137,7 +137,7 @@ export default function RideDetails({ride}: Props) {
         } else if (current === "cancelled") {
             rideRequest.clearRideRequestDetails();
         }
-        router.replace("/(tabs)/carpool");
+        router.replace("/(tabs)/carpool" as Href);
     }
 
     function onSubmit() {
@@ -369,7 +369,7 @@ export default function RideDetails({ride}: Props) {
                                         <Text>|</Text>
                                         <Pressable
                                             onPress={() => router.push({
-                                                pathname: "/chat",
+                                                pathname: "/chat" as any,
                                                 params: {
                                                     receiverEmail: ride.ridePosterEmail,
                                                     receiverUsername: ride.ridePosterUsername,

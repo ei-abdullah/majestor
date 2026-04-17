@@ -2,7 +2,7 @@ import React from "react";
 import {View, Text, ScrollView, Pressable, Platform, Button} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
-import {router} from "expo-router";
+import {Href, router} from "expo-router";
 import * as Sentry from "@sentry/react-native"
 
 import {useAuthStore} from "@/src/stores/authStore";
@@ -98,7 +98,7 @@ function Home() {
                                 )}
                             </View>
                         </View>
-                        <Pressable onPress={() => router.push("/(tabs)/user")} style={{marginLeft: 12}}>
+                        <Pressable onPress={() => router.push("/(tabs)/user" as Href)} style={{marginLeft: 12}}>
                             <UserAvatar
                                 avatarUrl={userDetails?.avatar || null}
                                 username={userDetails?.username || displayName}

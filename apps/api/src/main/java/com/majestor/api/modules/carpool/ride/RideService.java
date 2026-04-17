@@ -11,6 +11,8 @@ import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
 import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.carpool.rideRequest.RideRequestStatus;
+import com.majestor.api.modules.notification.NotificationService;
+import com.majestor.api.modules.notification.NotificationType;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +36,7 @@ public class RideService {
     private final BookingRepository bookingRepository;
     private final RideMapper rideMapper;
     private final WebSocketService webSocketService;
+    private final NotificationService notificationService;
 
     @Transactional
     public UploadRideResponseDTO uploadRide(
@@ -110,6 +113,15 @@ public class RideService {
             // Broadcast booking status
             String topic = "/topic/booking-status/" + bookingId;
             webSocketService.sendMessage(topic, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    booking.getBookedRide().getRideRequester(),
+                    ride.getRidePoster(),
+                    NotificationType.RIDE_COMPLETED,
+                    "Ride Completed",
+                    "Your ride with " + ride.getRidePoster().getUsername() + " has been completed.",
+                    ride.getId()
+            );
         } catch (Exception e) {
             log.error("Error while completing ride: {}", e.getMessage());
             throw new RuntimeException("Failed to complete ride: " + e.getMessage(), e);
@@ -134,9 +146,18 @@ public class RideService {
             // Broadcast booking status
             String topic = "/topic/booking-status/" + bookingId;
             webSocketService.sendMessage(topic, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    booking.getBookedRide().getRideRequester(),
+                    ride.getRidePoster(),
+                    NotificationType.RIDE_CANCELLED,
+                    "Ride Cancelled",
+                    "Your booking with " + ride.getRidePoster().getUsername() + " has been cancelled.",
+                    ride.getId()
+            );
         } catch (Exception e) {
             log.error("Error while cancelling booking: {}", e.getMessage());
-            throw new RuntimeException("Failed to cancelling booking: " + e.getMessage(), e);
+            throw new RuntimeException("Failed to cancel booking: " + e.getMessage(), e);
         }
     }
 
@@ -165,6 +186,15 @@ public class RideService {
 
             String topic = "/topic/booking-status/" + booking.getId();
             webSocketService.sendMessage(topic, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    booking.getBookedRide().getRideRequester(),
+                    ride.getRidePoster(),
+                    NotificationType.RIDE_CANCELLED,
+                    "Ride Cancelled",
+                    ride.getRidePoster().getUsername() + " cancelled the ride you had booked.",
+                    ride.getId()
+            );
         }
 
         bookingRepository.saveAll(pendingBookings);

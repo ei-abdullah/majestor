@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, ScrollView, TouchableOpacity} from "react-native";
-import {router} from "expo-router";
+import {Href, router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 
 interface Group {
@@ -38,7 +38,7 @@ export default function JoinedGroups({groups}: { groups: Group[] }) {
                     </Text>
                 </View>
                 <TouchableOpacity
-                    onPress={() => router.push("/(tabs)/studyhub/joinedGroups")}
+                    onPress={() => router.push("/(tabs)/studyhub/joinedGroups" as Href)}
                     style={{backgroundColor: '#EEF3FF', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12}}
                 >
                     <Text style={{color: '#3A6FF8', fontWeight: '700', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5}}>
@@ -58,7 +58,7 @@ export default function JoinedGroups({groups}: { groups: Group[] }) {
                         <TouchableOpacity
                             key={group.id}
                             onPress={() => router.push({
-                                pathname: "/(tabs)/studyhub/studyGroupDetail",
+                                pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                                 params: {id: group.id}
                             })}
                             activeOpacity={0.75}
@@ -124,7 +124,7 @@ export default function JoinedGroups({groups}: { groups: Group[] }) {
                 })}
 
                 <TouchableOpacity
-                    onPress={() => router.push("/(tabs)/studyhub/joinedGroups")}
+                    onPress={() => router.push("/(tabs)/studyhub/joinedGroups" as Href)}
                     style={{justifyContent: 'center', marginLeft: 4}}
                 >
                     <View style={{

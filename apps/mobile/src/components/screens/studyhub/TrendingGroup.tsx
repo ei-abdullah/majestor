@@ -1,6 +1,6 @@
 import React from "react";
 import {View, Text, TouchableOpacity} from "react-native";
-import {router} from "expo-router";
+import {Href, router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 
 interface Group {
@@ -45,7 +45,7 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                         <TouchableOpacity
                             key={group.id}
                             onPress={() => router.push({
-                                pathname: "/(tabs)/studyhub/studyGroupDetail",
+                                pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                                 params: {id: group.id}
                             })}
                             activeOpacity={0.7}
@@ -122,7 +122,7 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                 })}
 
                 <TouchableOpacity
-                    onPress={() => router.push("/(tabs)/studyhub/trendingGroup")}
+                    onPress={() => router.push("/(tabs)/studyhub/trendingGroup" as Href)}
                     style={{paddingVertical: 14, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F0F4FF'}}
                 >
                     <Text style={{color: '#3A6FF8', fontWeight: '800', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5}}>

@@ -160,7 +160,7 @@ export default function PublicVault() {
             }}>
                 <FloatingActionButton 
                     href={{
-                        pathname: "/studyhub/uploadDocument",
+                        pathname: "/studyhub/uploadDocument" as any,
                         params: { destination: 'PUBLIC_VAULT' }
                     }} 
                     icon={"file-text"}

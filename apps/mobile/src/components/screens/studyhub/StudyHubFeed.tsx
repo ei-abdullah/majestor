@@ -2,7 +2,7 @@ import React, {useRef, useMemo, useCallback} from "react";
 import {View, Text, ScrollView, RefreshControl, TouchableOpacity, Pressable} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
-import {router} from "expo-router";
+import {Href, router} from "expo-router";
 import {BottomSheetModal, BottomSheetView, BottomSheetBackdrop} from '@gorhom/bottom-sheet';
 import {Controller, useForm} from "react-hook-form";
 import {LinearGradient} from "expo-linear-gradient";
@@ -43,7 +43,7 @@ export default function StudyHubFeed() {
         reset();
         bottomSheetModalRef.current?.dismiss();
         router.push({
-            pathname: "/(tabs)/studyhub/studyGroupDetail",
+            pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
             params: {id: data.id}
         });
     });
@@ -107,7 +107,7 @@ export default function StudyHubFeed() {
                         </Text>
                         <View className="flex-row gap-4">
                             <TouchableOpacity
-                                onPress={() => router.push("/(tabs)/studyhub/personalVault")}
+                                onPress={() => router.push("/(tabs)/studyhub/personalVault" as Href)}
                                 className="flex-1"
                                 activeOpacity={0.85}
                             >
@@ -128,7 +128,7 @@ export default function StudyHubFeed() {
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                onPress={() => router.push("/(tabs)/studyhub/publicVault")}
+                                onPress={() => router.push("/(tabs)/studyhub/publicVault" as Href)}
                                 className="flex-1"
                                 activeOpacity={0.85}
                             >
@@ -154,7 +154,7 @@ export default function StudyHubFeed() {
                 <View style={{position: 'absolute', bottom: 130, right: 30, zIndex: 1000}}>
                     <FloatingActionButton
                         href={{
-                            pathname: "/(tabs)/studyhub/uploadDocument",
+                            pathname: "/(tabs)/studyhub/uploadDocument" as any,
                             params: {destination: 'PERSONAL_VAULT'}
                         }}
                         icon={"file-text"}

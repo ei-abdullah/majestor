@@ -42,7 +42,7 @@ export default function UniversityGroup({groups}: { groups: Group[] }) {
                         <TouchableOpacity
                             key={group.id}
                             onPress={() => router.push({
-                                pathname: "/(tabs)/studyhub/studyGroupDetail",
+                                pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                                 params: {id: group.id}
                             })}
                             activeOpacity={0.7}
