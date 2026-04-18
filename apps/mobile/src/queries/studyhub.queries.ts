@@ -6,7 +6,12 @@ import {
     getStudyHubFeedApi,
     joinStudyGroupApi,
     rateStudyGroupApi,
-    createStudyGroupApi
+    createStudyGroupApi,
+    sendInviteApi,
+    getPendingInvitesApi,
+    acceptInviteApi,
+    rejectInviteApi,
+    searchUsersApi,
 } from "@/src/services/studyhub.api";
 import Toast from "react-native-toast-message";
 import {CreateStudyGroup, CreateStudyGroupResponse, DocumentDestination, Filters} from "@/src/types/studyHub";
@@ -153,6 +158,69 @@ export const useUploadDocument = (onCallback?: () => void) => {
         }
     })
 }
+
+export const useSendInvite = (onSuccess?: () => void) => {
+    return useMutation({
+        mutationFn: ({groupId, inviterId, inviteeId}: {groupId: number, inviterId: number, inviteeId: number}) =>
+            sendInviteApi(groupId, inviterId, inviteeId),
+        onSuccess: () => {
+            Toast.show({type: 'success', text1: 'Invite Sent'});
+            onSuccess?.();
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({type: 'error', text1: 'Failed to send invite', position: 'top'});
+        }
+    });
+};
+
+export const usePendingInvites = (userId: number) => {
+    return useQuery({
+        queryKey: ['invites', 'pending', userId],
+        queryFn: () => getPendingInvitesApi(userId),
+        enabled: !!userId,
+    });
+};
+
+export const useAcceptInvite = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (inviteId: number) => acceptInviteApi(inviteId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['invites']});
+            await queryClient.invalidateQueries({queryKey: ['studyhub']});
+            Toast.show({type: 'success', text1: 'Invite Accepted'});
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({type: 'error', text1: 'Failed to accept invite', position: 'top'});
+        }
+    });
+};
+
+export const useRejectInvite = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (inviteId: number) => rejectInviteApi(inviteId),
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ['invites']});
+            Toast.show({type: 'success', text1: 'Invite Declined'});
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({type: 'error', text1: 'Failed to decline invite', position: 'top'});
+        }
+    });
+};
+
+export const useUserSearch = (query: string, requestingUserId: number) => {
+    return useQuery({
+        queryKey: ['users', 'search', query, requestingUserId],
+        queryFn: () => searchUsersApi(query, requestingUserId),
+        enabled: query.length >= 2 && !!requestingUserId,
+        staleTime: 1000 * 30,
+    });
+};
 
 export const useLikeDocument = () => {
     const queryClient = useQueryClient()

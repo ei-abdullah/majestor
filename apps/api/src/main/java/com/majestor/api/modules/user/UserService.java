@@ -5,12 +5,14 @@ import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
+import com.majestor.api.modules.user.dto.UserSearchDTO;
 import com.majestor.api.modules.utils.Utils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +21,7 @@ import software.amazon.awssdk.core.exception.SdkClientException;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -115,6 +118,23 @@ public class UserService {
 
         user.setHasOnboarded(Boolean.TRUE);
         userRepository.save(user);
+    }
+
+    @Transactional
+    public List<UserSearchDTO> searchUsers(String query, Long requestingUserId) {
+        User requestingUser = userRepository.findById(requestingUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + requestingUserId));
+
+        Long universityId = requestingUser.getUniversity().getId();
+
+        return userRepository.searchByEmailInUniversity(query, universityId, PageRequest.of(0, 10))
+                .stream()
+                .filter(u -> !u.getId().equals(requestingUserId))
+                .map(u -> UserSearchDTO.builder()
+                        .id(u.getId())
+                        .username(u.getUsername())
+                        .build())
+                .collect(Collectors.toList());
     }
 
     @Transactional

@@ -4,8 +4,9 @@ global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
 
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, View} from "react-native";
+import {ActivityIndicator, View, Platform} from "react-native";
 import {Stack, usePathname} from "expo-router";
+import * as Notifications from "expo-notifications";
 import Toast from "react-native-toast-message";
 import {QueryClientProvider, QueryClient, QueryCache, MutationCache} from "@tanstack/react-query";
 import * as Sentry from "@sentry/react-native"
@@ -20,6 +21,23 @@ import PremiumModal from "@/src/components/ui/PremiumModal";
 import {useRegisterPushToken} from "@/src/queries/notification.queries";
 import {useNetworkErrorStore} from "@/src/stores/networkErrorStore";
 import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+    }),
+});
+
+if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+        name: 'Default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#3A6FF8',
+    });
+}
 
 const client = new QueryClient({
     queryCache: new QueryCache({

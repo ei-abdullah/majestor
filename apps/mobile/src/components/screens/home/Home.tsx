@@ -100,7 +100,7 @@ function Home() {
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 12}}>
                         <Pressable
-                            onPress={() => router.push("/(tabs)/user/notifications" as any)}
+                            onPress={() => router.push("/(tabs)/user/notifications" as Href)}
                             style={{
                                 backgroundColor: 'rgba(255,255,255,0.2)',
                                 width: 42,

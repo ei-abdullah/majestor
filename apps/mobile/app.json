@@ -69,6 +69,14 @@
       ],
       "expo-secure-store",
       [
+        "expo-notifications",
+        {
+          "color": "#3A6FF8",
+          "defaultChannel": "default",
+          "androidMode": "default"
+        }
+      ],
+      [
         "expo-image-picker",
         {
           "photosPermission": "Allow Majestor to access gallery."
