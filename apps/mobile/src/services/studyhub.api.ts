@@ -4,7 +4,9 @@ import {
     CreateStudyGroupResponse,
     FeedResponse,
     GetGroupDetails,
-    JoinStudyGroupResponse
+    JoinStudyGroupResponse,
+    PendingInvite,
+    UserSearchResult
 } from "@/src/types/studyHub";
 import {AxiosResponse} from "axios";
 import {DocumentDestination, Filters, GetDocumentResponse} from "@/src/types/studyHub";
@@ -77,4 +79,28 @@ export const downloadDocument = async (documentId: number): Promise<void> => {
 export const getDownloadUrl = (userId: number, documentId: number): string => {
     const baseUrl = api.defaults.baseURL
     return `${baseUrl}/document/downloadDocument/${userId}/${documentId}`
+}
+
+export const sendInviteApi = async (groupId: number, inviterId: number, inviteeId: number): Promise<void> => {
+    await api.post(`/study-group/invites/send/${groupId}/${inviterId}/${inviteeId}`);
+}
+
+export const getPendingInvitesApi = async (userId: number): Promise<PendingInvite[]> => {
+    const res: AxiosResponse<PendingInvite[]> = await api.get(`/study-group/invites/pending/${userId}`);
+    return res.data;
+}
+
+export const acceptInviteApi = async (inviteId: number): Promise<void> => {
+    await api.patch(`/study-group/invites/accept/${inviteId}`);
+}
+
+export const rejectInviteApi = async (inviteId: number): Promise<void> => {
+    await api.patch(`/study-group/invites/reject/${inviteId}`);
+}
+
+export const searchUsersApi = async (query: string, requestingUserId: number): Promise<UserSearchResult[]> => {
+    const res: AxiosResponse<UserSearchResult[]> = await api.get(`/user/search`, {
+        params: {query, requestingUserId}
+    });
+    return res.data;
 }

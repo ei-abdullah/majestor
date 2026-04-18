@@ -1,5 +1,6 @@
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, useRef} from "react";
 import {View, Text, ScrollView, TouchableOpacity, RefreshControl, Pressable} from "react-native";
+import {BottomSheetModal} from "@gorhom/bottom-sheet";
 import {router, useLocalSearchParams} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
@@ -7,6 +8,7 @@ import {LinearGradient} from "expo-linear-gradient";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useGroupDetails, useJoinGroup, useRateGroup} from "@/src/queries/studyhub.queries";
 import {type, years, filterByLike} from "@/src/constants";
+import InviteModal from "./InviteModal";
 
 import GradientView from "@/src/components/ui/GradientView";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
@@ -23,6 +25,9 @@ export default function StudyGroupDetail() {
     const {data: group, isPending, refetch} = useGroupDetails(groupId, user!.id);
     const {mutate: joinGroup, isPending: isJoining} = useJoinGroup();
     const {mutate: rateGroup} = useRateGroup();
+
+    const inviteSheetRef = useRef<BottomSheetModal>(null);
+    const isHost = group?.hostName === user?.username;
 
     // Local filter state for the Vault Card
     const [filters, setFilters] = useState({
@@ -119,6 +124,15 @@ export default function StudyGroupDetail() {
                                 </TouchableOpacity>
                             )}
 
+                            {isHost && (
+                                <TouchableOpacity
+                                    onPress={() => inviteSheetRef.current?.present()}
+                                    className="bg-white w-16 h-16 rounded-[28px] items-center justify-center shadow-sm border border-mj-bg-blue"
+                                >
+                                    <Feather name="user-plus" size={22} color="#3A6FF8"/>
+                                </TouchableOpacity>
+                            )}
+
                             <TouchableOpacity
                                 onPress={() => rateGroup({groupId, userId: user!.id})}
                                 className="bg-white w-16 h-16 rounded-[28px] items-center justify-center shadow-sm border border-mj-bg-blue"
@@ -127,6 +141,8 @@ export default function StudyGroupDetail() {
                             </TouchableOpacity>
                         </View>
                     </Card>
+
+                    <InviteModal ref={inviteSheetRef} groupId={groupId} inviterId={user!.id}/>
 
 
                 </View>

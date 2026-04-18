@@ -1,10 +1,11 @@
 import React from "react";
-import {View, Text, ScrollView, RefreshControl, Image} from "react-native";
+import {View, Text, ScrollView, RefreshControl, Image, TouchableOpacity} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {useNotifications} from "@/src/queries/notification.queries";
+import {useAcceptInvite, useRejectInvite} from "@/src/queries/studyhub.queries";
 import {Notification, NotificationType} from "@/src/types/notifications";
 import GradientView from "@/src/components/ui/GradientView";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
@@ -44,47 +45,95 @@ function timeAgo(isoString: string): string {
 
 function NotificationItem({notification}: { notification: Notification }) {
     const meta = getNotificationMeta(notification.notificationType);
+    const {mutate: acceptInvite, isPending: isAccepting} = useAcceptInvite();
+    const {mutate: rejectInvite, isPending: isRejecting} = useRejectInvite();
+    const isInvite = notification.notificationType === 'STUDY_GROUP_INVITE';
 
     return (
         <View style={{
-            flexDirection: 'row',
-            alignItems: 'flex-start',
             paddingHorizontal: 20,
             paddingVertical: 14,
             borderBottomWidth: 1,
             borderBottomColor: '#F0F4FF',
         }}>
-            <View style={{
-                backgroundColor: meta.bg,
-                width: 44,
-                height: 44,
-                borderRadius: 14,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginRight: 14,
-                flexShrink: 0,
-            }}>
-                <Feather name={meta.icon} size={20} color={meta.iconColor}/>
+            <View style={{flexDirection: 'row', alignItems: 'flex-start'}}>
+                <View style={{
+                    backgroundColor: meta.bg,
+                    width: 44,
+                    height: 44,
+                    borderRadius: 14,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginRight: 14,
+                    flexShrink: 0,
+                }}>
+                    <Feather name={meta.icon} size={20} color={meta.iconColor}/>
+                </View>
+
+                <View style={{flex: 1}}>
+                    <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3}}>
+                        <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, flex: 1, marginRight: 8}} numberOfLines={1}>
+                            {notification.title}
+                        </Text>
+                        <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', opacity: 0.6, flexShrink: 0}}>
+                            {timeAgo(notification.createdAt)}
+                        </Text>
+                    </View>
+                    <Text style={{color: '#5A6275', fontSize: 13, lineHeight: 18}} numberOfLines={2}>
+                        {notification.message}
+                    </Text>
+                    {notification.senderName ? (
+                        <Text style={{color: '#3A6FF8', fontSize: 11, fontWeight: '600', marginTop: 4}}>
+                            from {notification.senderName}
+                        </Text>
+                    ) : null}
+                </View>
             </View>
 
-            <View style={{flex: 1}}>
-                <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3}}>
-                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, flex: 1, marginRight: 8}} numberOfLines={1}>
-                        {notification.title}
-                    </Text>
-                    <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', opacity: 0.6, flexShrink: 0}}>
-                        {timeAgo(notification.createdAt)}
-                    </Text>
+            {isInvite && notification.relatedId && (
+                <View style={{flexDirection: 'row', gap: 10, marginTop: 12, marginLeft: 58}}>
+                    <View style={{flex: 1}}>
+                        <TouchableOpacity
+                            onPress={() => acceptInvite(notification.relatedId!)}
+                            disabled={isAccepting || isRejecting}
+                            style={{
+                                backgroundColor: '#E8F5E9',
+                                borderRadius: 12,
+                                paddingVertical: 9,
+                                alignItems: 'center',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                gap: 6,
+                                borderWidth: 1,
+                                borderColor: '#A5D6A7',
+                            }}
+                        >
+                            <Feather name="check" size={14} color="#2E7D32"/>
+                            <Text style={{color: '#2E7D32', fontWeight: '700', fontSize: 12}}>Accept</Text>
+                        </TouchableOpacity>
+                    </View>
+                    <View style={{flex: 1}}>
+                        <TouchableOpacity
+                            onPress={() => rejectInvite(notification.relatedId!)}
+                            disabled={isAccepting || isRejecting}
+                            style={{
+                                backgroundColor: '#FFEBEE',
+                                borderRadius: 12,
+                                paddingVertical: 9,
+                                alignItems: 'center',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                gap: 6,
+                                borderWidth: 1,
+                                borderColor: '#FFCDD2',
+                            }}
+                        >
+                            <Feather name="x" size={14} color="#C62828"/>
+                            <Text style={{color: '#C62828', fontWeight: '700', fontSize: 12}}>Decline</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <Text style={{color: '#5A6275', fontSize: 13, lineHeight: 18}} numberOfLines={2}>
-                    {notification.message}
-                </Text>
-                {notification.senderName ? (
-                    <Text style={{color: '#3A6FF8', fontSize: 11, fontWeight: '600', marginTop: 4}}>
-                        from {notification.senderName}
-                    </Text>
-                ) : null}
-            </View>
+            )}
         </View>
     );
 }

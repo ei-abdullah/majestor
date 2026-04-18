@@ -2,6 +2,7 @@ package com.majestor.api.modules.user;
 
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
+import com.majestor.api.modules.user.dto.UserSearchDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,6 +13,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Map;
 
 @Validated
@@ -70,6 +72,14 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserSearchDTO>> searchUsers(
+            @RequestParam String query,
+            @RequestParam @NotNull @Positive Long requestingUserId
+    ) {
+        return ResponseEntity.ok(userService.searchUsers(query, requestingUserId));
     }
 
     @Deprecated

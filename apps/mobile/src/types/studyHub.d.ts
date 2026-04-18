@@ -98,3 +98,16 @@ export interface GetGroupDetails {
 export interface JoinStudyGroupResponse {
     id: number;
 }
+
+export interface PendingInvite {
+    inviteId: number;
+    groupId: number;
+    groupName: string;
+    inviterUsername: string;
+    createdAt: string;
+}
+
+export interface UserSearchResult {
+    id: number;
+    username: string;
+}

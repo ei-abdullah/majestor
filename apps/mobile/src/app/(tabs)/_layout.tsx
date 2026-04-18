@@ -2,7 +2,6 @@ import React from "react";
 import {Tabs} from "expo-router";
 import {StatusBar} from "expo-status-bar";
 import CustomTabBar from "@/src/components/ui/CustomTabBar";
-import {NavigationContainer} from "@react-navigation/native";
 
 export default function TabsLayout() {
     return (

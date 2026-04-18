@@ -7,6 +7,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/study-group/invites")
 @RequiredArgsConstructor
@@ -47,5 +49,12 @@ public class StudyGroupInviteController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    @GetMapping("/pending/{userId}")
+    public ResponseEntity<List<PendingInviteDTO>> getPendingInvites(
+            @PathVariable @NotNull @Positive Long userId
+    ) {
+        return ResponseEntity.ok(studyGroupInviteService.getPendingInvites(userId));
     }
 }

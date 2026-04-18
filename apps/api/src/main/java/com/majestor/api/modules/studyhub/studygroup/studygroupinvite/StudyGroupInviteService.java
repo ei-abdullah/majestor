@@ -5,6 +5,8 @@ import com.majestor.api.modules.notification.NotificationService;
 import com.majestor.api.modules.notification.NotificationType;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroupRepository;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.User;
 import com.majestor.api.modules.user.UserRepository;
 import jakarta.transaction.Transactional;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import java.time.Instant;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,6 +28,7 @@ public class StudyGroupInviteService {
     private final StudyGroupInviteRepository studyGroupInviteRepository;
     private final UserRepository userRepository;
     private final StudyGroupRepository studyGroupRepository;
+    private final StudyGroupMemberRepository studyGroupMemberRepository;
     private final NotificationService notificationService;
 
     @Transactional
@@ -36,6 +41,12 @@ public class StudyGroupInviteService {
 
         StudyGroup studyGroup = studyGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ResourceNotFoundException("Study Group not found with id: " + groupId));
+
+        boolean alreadyPending = studyGroupInviteRepository
+                .existsByInviteeIdAndInviteeStudyGroupIdAndStatus(inviteeId, groupId, StudyGroupInviteStatus.PENDING);
+        if (alreadyPending) {
+            return;
+        }
 
         StudyGroupInvite invite = StudyGroupInvite
                 .builder()
@@ -54,7 +65,7 @@ public class StudyGroupInviteService {
                 NotificationType.STUDY_GROUP_INVITE,
                 "Group Invitation",
                 inviter.getUsername() + " invited you to join " + studyGroup.getName(),
-                groupId
+                invite.getId()
         );
     }
 
@@ -65,6 +76,22 @@ public class StudyGroupInviteService {
 
         invite.setStatus(StudyGroupInviteStatus.ACCEPTED);
         studyGroupInviteRepository.save(invite);
+
+        StudyGroup group = invite.getInviteeStudyGroup();
+        User invitee = invite.getInvitee();
+
+        boolean alreadyMember = studyGroupMemberRepository
+                .findActiveMembership(invitee.getId(), group.getId()).isPresent();
+
+        if (!alreadyMember) {
+            studyGroupMemberRepository.save(
+                    StudyGroupMember.builder()
+                            .studyGroup(group)
+                            .studyGroupMember(invitee)
+                            .joinedAt(Instant.now())
+                            .build()
+            );
+        }
     }
 
     @Transactional
@@ -74,5 +101,20 @@ public class StudyGroupInviteService {
 
         invite.setStatus(StudyGroupInviteStatus.REJECTED);
         studyGroupInviteRepository.save(invite);
+    }
+
+    @Transactional
+    public List<PendingInviteDTO> getPendingInvites(Long userId) {
+        return studyGroupInviteRepository
+                .findAllByInviteeIdAndStatus(userId, StudyGroupInviteStatus.PENDING)
+                .stream()
+                .map(invite -> PendingInviteDTO.builder()
+                        .inviteId(invite.getId())
+                        .groupId(invite.getInviteeStudyGroup().getId())
+                        .groupName(invite.getInviteeStudyGroup().getName())
+                        .inviterUsername(invite.getInviter().getUsername())
+                        .createdAt(invite.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }
