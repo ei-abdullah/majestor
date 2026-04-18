@@ -128,7 +128,7 @@ function RootLayout() {
                     <QueryClientProvider client={client}>
                         <PushTokenRegistrar/>
                         <NetworkErrorScreen queryClient={client}/>
-                        <Stack>
+                        <Stack screenOptions={{animation: 'fade'}}>
                             <Stack.Protected guard={!isLoggedIn}>
                                 <Stack.Screen name={"(auth)"} options={{headerShown: false}}/>
                             </Stack.Protected>

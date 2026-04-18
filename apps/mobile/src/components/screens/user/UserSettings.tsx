@@ -4,6 +4,7 @@ import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
+import {router} from "expo-router";
 import {useAuthStore} from "@/src/stores/authStore";
 import {validateEmail, validatePhone} from "@/src/utils/validation";
 
@@ -237,6 +238,22 @@ function UserSettings() {
                                 <Text className="text-gray-500 text-sm">No roles assigned</Text>
                             )}
                         </View>
+                    </Card>
+
+                    {/* Notifications */}
+                    <Card className="px-5 py-5 mb-6 mx-4">
+                        <Pressable
+                            onPress={() => router.push("/(tabs)/user/notifications" as any)}
+                            className="flex-row items-center justify-between active:opacity-60"
+                        >
+                            <View className="flex-row items-center gap-3">
+                                <View className="bg-purple-100 rounded-xl p-2">
+                                    <Feather name="bell" size={18} color="#7B1FA2"/>
+                                </View>
+                                <Text className="text-gray-700 font-medium">Notifications</Text>
+                            </View>
+                            <Feather name="chevron-right" size={18} color="#9CA3AF"/>
+                        </Pressable>
                     </Card>
 
                     {/* Legal */}

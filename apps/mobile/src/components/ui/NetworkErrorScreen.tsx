@@ -32,7 +32,7 @@ export default function NetworkErrorScreen({queryClient}: Props) {
 
                 <Text style={styles.title}>Can't reach the server</Text>
                 <Text style={styles.subtitle}>
-                    Check your internet connection and make sure the server is reachable, then try again.
+                    Check your internet connection and try again.
                 </Text>
 
                 <TouchableOpacity onPress={handleRetry} activeOpacity={0.85} style={styles.button}>

@@ -98,7 +98,23 @@ function Home() {
                                 )}
                             </View>
                         </View>
-                        <Pressable onPress={() => router.push("/(tabs)/user" as Href)} style={{marginLeft: 12}}>
+                        <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 12}}>
+                        <Pressable
+                            onPress={() => router.push("/(tabs)/user/notifications" as any)}
+                            style={{
+                                backgroundColor: 'rgba(255,255,255,0.2)',
+                                width: 42,
+                                height: 42,
+                                borderRadius: 14,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                borderWidth: 1,
+                                borderColor: 'rgba(255,255,255,0.3)',
+                            }}
+                        >
+                            <Feather name="bell" size={20} color="white"/>
+                        </Pressable>
+                        <Pressable onPress={() => router.push("/(tabs)/user" as Href)}>
                             <UserAvatar
                                 avatarUrl={userDetails?.avatar || null}
                                 username={userDetails?.username || displayName}
@@ -108,6 +124,7 @@ function Home() {
                                 editable={false}
                             />
                         </Pressable>
+                        </View>
                     </View>
 
                     {/* University pill */}
