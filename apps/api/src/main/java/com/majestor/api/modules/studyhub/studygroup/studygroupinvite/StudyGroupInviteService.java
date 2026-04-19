@@ -1,6 +1,7 @@
 package com.majestor.api.modules.studyhub.studygroup.studygroupinvite;
 
 import com.majestor.api.infra.exception.ResourceNotFoundException;
+import com.majestor.api.modules.notification.NotificationRepository;
 import com.majestor.api.modules.notification.NotificationService;
 import com.majestor.api.modules.notification.NotificationType;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
@@ -30,6 +31,7 @@ public class StudyGroupInviteService {
     private final StudyGroupRepository studyGroupRepository;
     private final StudyGroupMemberRepository studyGroupMemberRepository;
     private final NotificationService notificationService;
+    private final NotificationRepository notificationRepository;
 
     @Transactional
     public void sendInvite(Long groupId, Long inviterId, Long inviteeId) {
@@ -44,6 +46,7 @@ public class StudyGroupInviteService {
 
         boolean alreadyPending = studyGroupInviteRepository
                 .existsByInviteeIdAndInviteeStudyGroupIdAndStatus(inviteeId, groupId, StudyGroupInviteStatus.PENDING);
+
         if (alreadyPending) {
             return;
         }
@@ -92,6 +95,9 @@ public class StudyGroupInviteService {
                             .build()
             );
         }
+
+        notificationRepository.findByRelatedIdAndNotificationType(invite.getId(), NotificationType.STUDY_GROUP_INVITE)
+                .ifPresent(n -> { n.setResponse("ACCEPTED"); notificationRepository.save(n); });
     }
 
     @Transactional
@@ -101,6 +107,9 @@ public class StudyGroupInviteService {
 
         invite.setStatus(StudyGroupInviteStatus.REJECTED);
         studyGroupInviteRepository.save(invite);
+
+        notificationRepository.findByRelatedIdAndNotificationType(invite.getId(), NotificationType.STUDY_GROUP_INVITE)
+                .ifPresent(n -> { n.setResponse("REJECTED"); notificationRepository.save(n); });
     }
 
     @Transactional

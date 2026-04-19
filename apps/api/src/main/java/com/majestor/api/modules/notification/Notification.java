@@ -36,5 +36,8 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private NotificationType notificationType;
 
+    private boolean isRead = false;
+    private String response; // ACCEPTED or REJECTED
+
     private Instant createdAt;
 }

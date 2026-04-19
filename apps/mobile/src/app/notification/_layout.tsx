@@ -9,7 +9,7 @@ export default function Layout() {
                 headerTransparent: true,
                 header: ({options, navigation}) => (
                     <CustomHeader
-                        title={options.title ?? "Studyhub"}
+                        title={options.title ?? "Notifications"}
                         leftIcon={navigation.canGoBack() ? "arrow-left" : undefined}
                         onLeftPress={() => navigation.canGoBack() ? navigation.goBack() : undefined}
                         rightIcon={navigation.getState().index > 0 ? "home" : undefined}
@@ -21,7 +21,7 @@ export default function Layout() {
             <Stack.Screen
                 name={"index"}
                 options={{
-                    title: "User Settings"
+                    title: "Notifications"
                 }}
             />
         </Stack>

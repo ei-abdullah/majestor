@@ -7,6 +7,7 @@ import * as Sentry from "@sentry/react-native"
 
 import {useAuthStore} from "@/src/stores/authStore";
 import {useUserDetails} from "@/src/queries/user.queries";
+import {useHasUnread} from "@/src/queries/notification.queries";
 import GradientView from "@/src/components/ui/GradientView";
 import UserAvatar from "@/src/components/ui/UserAvatar";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
@@ -14,6 +15,7 @@ import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 function Home() {
     const {user, clearSession} = useAuthStore();
     const {data: userDetails, isPending, isError, refetch} = useUserDetails(user!.id);
+    const {data: hasUnread} = useHasUnread(user!.id);
 
     const displayName = userDetails?.username?.split(' ')[0]
         ?? user?.username?.split(' ')[0]
@@ -100,7 +102,7 @@ function Home() {
                         </View>
                         <View style={{flexDirection: 'row', alignItems: 'center', gap: 10, marginLeft: 12}}>
                         <Pressable
-                            onPress={() => router.push("/(tabs)/user/notifications" as Href)}
+                            onPress={() => router.push("/notification" as Href)}
                             style={{
                                 backgroundColor: 'rgba(255,255,255,0.2)',
                                 width: 42,
@@ -113,6 +115,19 @@ function Home() {
                             }}
                         >
                             <Feather name="bell" size={20} color="white"/>
+                            {hasUnread && (
+                                <View style={{
+                                    position: 'absolute',
+                                    top: 7,
+                                    right: 7,
+                                    width: 8,
+                                    height: 8,
+                                    borderRadius: 4,
+                                    backgroundColor: '#FF4444',
+                                    borderWidth: 1.5,
+                                    borderColor: '#3A6FF8',
+                                }}/>
+                            )}
                         </Pressable>
                         <Pressable onPress={() => router.push("/(tabs)/user" as Href)}>
                             <UserAvatar

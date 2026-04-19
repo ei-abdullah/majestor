@@ -12,3 +12,12 @@ export const updatePushTokenApi = async (userId: number, pushToken: string): Pro
         params: {pushToken}
     });
 };
+
+export const markNotificationsReadApi = async (userId: number): Promise<void> => {
+    await api.patch(`/notifications/mark-read/${userId}`);
+};
+
+export const hasUnreadNotificationsApi = async (userId: number): Promise<boolean> => {
+    const res = await api.get(`/notifications/has-unread/${userId}`);
+    return res.data.hasUnread;
+};
