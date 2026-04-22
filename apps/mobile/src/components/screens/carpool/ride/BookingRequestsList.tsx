@@ -7,10 +7,12 @@ import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import EmptyState from "@/src/components/ui/EmptyState";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import {VehicleType} from "@/src/utils/fare.utils";
 
 interface BookingRequestsListProps {
     bookings: GetBookingsResponse[];
     rideDistanceKm: number;
+    vehicleType: VehicleType;
     isPending: boolean;
     isError: boolean;
     onRefetch: () => void;
@@ -22,6 +24,7 @@ function BookingRequestsList(
     {
         bookings,
         rideDistanceKm,
+        vehicleType,
         isPending,
         isError,
         onRefetch,
@@ -67,6 +70,7 @@ function BookingRequestsList(
                 <BookingRequestCard
                     booking={item}
                     rideDistanceKm={rideDistanceKm}
+                    vehicleType={vehicleType}
                     className="mb-4"
                     onPress={() => onBookingPress?.(item)}
                 />

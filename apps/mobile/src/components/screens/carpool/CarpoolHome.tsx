@@ -6,7 +6,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {Ionicons} from "@expo/vector-icons";
 import Card from "@/src/components/ui/Card";
 import {Href, useRouter} from "expo-router";
-import { useLocationPermissions } from "@/src/hooks/useLocationPermissions";
+import { useLocationStore } from "@/src/stores/locationStore";
 import { useMapLocation } from "@/src/hooks/useMapLocation";
 import { DEFAULT_LOCATION } from "@/src/utils/location.utils";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
@@ -21,7 +21,7 @@ export default function CarpoolHome() {
     const bottomSheetRef = useRef<BottomSheet>(null);
 
     // Use custom hooks
-    const { hasLocationPermission } = useLocationPermissions();
+    const { hasLocationPermission } = useLocationStore();
     const { centerOnUserLocation, animateToLocation } = useMapLocation(mapRef);
     const { getCurrentLocation } = useCurrentLocation();
     const insets = useSafeAreaInsets();

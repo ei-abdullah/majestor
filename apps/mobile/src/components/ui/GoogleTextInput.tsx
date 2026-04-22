@@ -12,6 +12,7 @@ type GoogleInputProps = {
     icon?: keyof typeof Feather.glyphMap;
     initialLocation?: string;
     containerStyle?: string;
+    autoFocus?: boolean;
     handlePress: (location: { latitude: number, longitude: number, address: string }) => void;
 }
 
@@ -21,6 +22,7 @@ function GoogleTextInput(
         icon,
         initialLocation,
         containerStyle,
+        autoFocus,
         handlePress
     }: GoogleInputProps) {
     const [focused, setFocused] = useState(false);
@@ -65,6 +67,7 @@ function GoogleTextInput(
             textInputProps={{
                 placeholderTextColor: '#9CA3AF',
                 placeholder: initialLocation ?? placeholderString ?? "Where do you want to go?",
+                autoFocus: autoFocus,
                 onFocus: () => {
                     setFocused(true);
                 },

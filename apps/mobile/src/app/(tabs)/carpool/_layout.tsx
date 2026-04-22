@@ -1,7 +1,10 @@
 import {Stack} from "expo-router";
 import CustomHeader from "@/src/components/ui/CustomHeader";
+import {useLocationPermissions} from "@/src/hooks/useLocationPermissions";
 
 export default function Layout() {
+    useLocationPermissions();
+
     return (
         <Stack
             screenOptions={{

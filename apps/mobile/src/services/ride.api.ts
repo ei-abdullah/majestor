@@ -2,6 +2,7 @@ import {AxiosResponse} from "axios";
 
 import api from "@/src/services/index";
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
+import {FareConfig} from "@/src/utils/fare.utils";
 
 
 export const uploadRideApi = async (
@@ -27,4 +28,9 @@ export const cancelBookedRideApi = async (rideId: number, bookingId: number): Pr
 
 export const cancelPostedRideApi = async (rideId: number): Promise<void> => {
     await api.patch(`/ride/cancelPostedRide/${rideId}`);
+}
+
+export const getFareConfigApi = async (): Promise<FareConfig> => {
+    const res: AxiosResponse<FareConfig> = await api.get('/ride/fare-config');
+    return res.data;
 }

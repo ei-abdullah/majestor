@@ -4,16 +4,21 @@ import {Ionicons} from "@expo/vector-icons";
 
 import Card from "@/src/components/ui/Card";
 import {GetBookingsResponse} from "@/src/types/booking";
+import {useFareConfig} from "@/src/queries/ride.queries";
+import {calculateFare, VehicleType} from "@/src/utils/fare.utils";
 
 interface BookingRequestCardProps {
     booking: GetBookingsResponse;
     rideDistanceKm: number;
+    vehicleType: VehicleType;
     className?: string;
     onPress?: () => void;
 }
 
-function BookingRequestCard({booking, rideDistanceKm, className = "", onPress}: BookingRequestCardProps) {
+function BookingRequestCard({booking, rideDistanceKm, vehicleType, className = "", onPress}: BookingRequestCardProps) {
     const deviationKm = Math.abs(booking.routeDistanceKm - rideDistanceKm);
+    const {data: fareConfig} = useFareConfig();
+    const estimatedFare = fareConfig ? calculateFare(deviationKm, vehicleType, fareConfig) : null;
 
     return (
         <Card className={`px-5 py-4 ${className}`}>
@@ -65,20 +70,30 @@ function BookingRequestCard({booking, rideDistanceKm, className = "", onPress}: 
                 {/* Divider */}
                 <View className="border-t border-gray-100 mb-3"/>
 
-                {/* Passengers & Deviation Row */}
+                {/* Passengers Row */}
+                <View className="flex-row items-center mb-2">
+                    <Ionicons name="people-outline" size={16} color="#5A6275"/>
+                    <Text className="text-xs font-medium text-mj-text-secondary ml-1.5">
+                        {booking.numberOfPassengers} {booking.numberOfPassengers === 1 ? "passenger" : "passengers"}
+                    </Text>
+                </View>
+
+                {/* Deviation + Fare Row */}
                 <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                        <Ionicons name="people-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1.5">
-                            {booking.numberOfPassengers} {booking.numberOfPassengers === 1 ? "passenger" : "passengers"}
-                        </Text>
-                    </View>
                     <View className="flex-row items-center">
                         <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
                         <Text className="text-xs font-medium text-mj-text-secondary ml-1">
-                            {deviationKm.toFixed(2)} km deviation
+                            +{deviationKm.toFixed(2)} km deviation
                         </Text>
                     </View>
+                    {estimatedFare != null && (
+                        <View className="flex-row items-center">
+                            <Ionicons name="cash-outline" size={16} color="#4CB8AD"/>
+                            <Text className="text-xs font-semibold text-mj-blue ml-1">
+                                ~Rs {estimatedFare}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </Pressable>
         </Card>

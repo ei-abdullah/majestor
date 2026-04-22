@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {View, Text, Pressable, ActivityIndicator} from "react-native";
 import {Href, useRouter} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
@@ -14,6 +14,7 @@ import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
 import {useQueryClient} from "@tanstack/react-query";
 import {stompService} from "@/src/services/stompService";
 import {useCancelRideRequest} from "@/src/queries/rideRequest.queries";
+import ConfirmModal from "@/src/components/ui/ConfirmModal";
 
 function AvailableRides() {
     const router = useRouter();
@@ -34,6 +35,7 @@ function AvailableRides() {
         clearRideRequestDetails();
         router.replace("/(tabs)/carpool" as Href)
     });
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     useEffect(() => {
         stompService.connect();
@@ -55,7 +57,7 @@ function AvailableRides() {
     }
 
     function handleCancelSearch() {
-        cancelRideRequest(id);
+        setShowCancelConfirm(true);
     }
 
     const searchHeader = (
@@ -119,6 +121,18 @@ function AvailableRides() {
                 onRefetch={refetch}
                 header={searchHeader}
                 onRidePress={handleRidePress}
+            />
+            <ConfirmModal
+                visible={showCancelConfirm}
+                title="Cancel Search"
+                message="Are you sure you want to cancel your ride search?"
+                confirmLabel="Cancel Search"
+                cancelLabel="Keep Searching"
+                onConfirm={() => {
+                    setShowCancelConfirm(false);
+                    cancelRideRequest(id);
+                }}
+                onCancel={() => setShowCancelConfirm(false)}
             />
         </GradientView>
     );

@@ -1,5 +1,9 @@
 package com.majestor.api.modules.carpool.ride;
 
+import com.majestor.api.modules.carpool.fare.FareConfigService;
+import com.majestor.api.modules.carpool.fare.dto.FareConfigDTO;
+import com.majestor.api.modules.carpool.fare.dto.UpdateFareConfigDTO;
+import com.majestor.api.modules.carpool.ride.VehicleType;
 import com.majestor.api.modules.carpool.ride.dto.GetRecentRidesDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideDTO;
 import com.majestor.api.modules.carpool.ride.dto.UploadRideResponseDTO;
@@ -22,6 +26,28 @@ import java.util.List;
 public class RideController {
 
     private final RideService rideService;
+    private final FareConfigService fareConfigService;
+
+    @GetMapping("/fare-config")
+    public ResponseEntity<FareConfigDTO> getFareConfig() {
+        FareConfigDTO response = fareConfigService.getFareConfig();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @PatchMapping("/fare-config/{vehicleType}")
+    public ResponseEntity<FareConfigDTO> updateFareConfig(
+            @PathVariable VehicleType vehicleType,
+            @RequestBody @Valid UpdateFareConfigDTO dto
+    ) {
+        FareConfigDTO response = fareConfigService.updateFareConfig(vehicleType, dto);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
+    }
 
     /**
      * Upload a new ride

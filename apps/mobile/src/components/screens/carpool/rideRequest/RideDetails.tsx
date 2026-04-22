@@ -12,7 +12,8 @@ import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons";
 
 import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
-import {useCancelRide} from "@/src/queries/ride.queries";
+import {useCancelRide, useFareConfig} from "@/src/queries/ride.queries";
+import {calculateFare} from "@/src/utils/fare.utils";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {stompService} from "@/src/services/stompService";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
@@ -26,6 +27,7 @@ import CustomMarker from "@/src/components/ui/CustomMarker";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+import ConfirmModal from "@/src/components/ui/ConfirmModal";
 
 interface Props {
     ride: RecentRideResponse;
@@ -45,10 +47,19 @@ export default function RideDetails({ride}: Props) {
     const isNavigating = useRef(false);
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const rideRequest = useRideRequestStore();
     const bookingId = useRideRequestStore((state) => state.bookingId);
     const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
+
+    const {data: fareConfig} = useFareConfig();
+    const deviationKm = (rideRequest.routeDistanceKm != null && ride.routeDistanceKm != null)
+        ? Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm)
+        : null;
+    const estimatedFare = (fareConfig && deviationKm != null)
+        ? calculateFare(deviationKm, ride.vehicleType, fareConfig)
+        : null;
 
     const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
 
@@ -143,7 +154,7 @@ export default function RideDetails({ride}: Props) {
     function onSubmit() {
 
         const createBookingDetails: CreateBookingDetails = {
-            deviationKm: parseFloat(Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm).toFixed(2))
+            deviationKm: parseFloat(Math.abs((rideRequest.routeDistanceKm ?? 0) - (ride.routeDistanceKm ?? 0)).toFixed(2))
         }
         createBooking({
             createBookingDetails,
@@ -494,12 +505,19 @@ export default function RideDetails({ride}: Props) {
 
                             <View className="h-px bg-gray-200 mb-3"/>
 
-                            <View className="flex-row justify-between">
+                            <View className="flex-row justify-between mb-3">
                                 <Text className="text-sm text-mj-text-secondary">Driver's detour</Text>
                                 <Text className="text-sm font-semibold text-mj-blue">
-                                    {ride.routeDistanceKm != null && rideRequest.routeDistanceKm != null
-                                        ? `+${Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm).toFixed(2)} km`
-                                        : "—"}
+                                    {deviationKm != null ? `+${deviationKm.toFixed(2)} km` : "—"}
+                                </Text>
+                            </View>
+
+                            <View className="h-px bg-gray-200 mb-3"/>
+
+                            <View className="flex-row justify-between">
+                                <Text className="text-sm text-mj-text-secondary">Estimated fare</Text>
+                                <Text className="text-sm font-semibold text-mj-blue">
+                                    {estimatedFare != null ? `~Rs ${estimatedFare}` : "—"}
                                 </Text>
                             </View>
                         </Card>
@@ -520,7 +538,7 @@ export default function RideDetails({ride}: Props) {
                                 variant="destructive"
                                 className="flex-1"
                                 disabled={isCancelling}
-                                onPress={() => cancelRide({rideId: ride.id!, bookingId: bookingId!})}
+                                onPress={() => setShowCancelConfirm(true)}
                             />
                         )}
                     </View>
@@ -534,6 +552,18 @@ export default function RideDetails({ride}: Props) {
                     onDismiss={handleOutcomeDismiss}
                 />
             )}
+            <ConfirmModal
+                visible={showCancelConfirm}
+                title="Cancel Ride"
+                message="Are you sure you want to cancel this ride? The driver will be notified."
+                confirmLabel="Cancel Ride"
+                cancelLabel="Keep Ride"
+                onConfirm={() => {
+                    setShowCancelConfirm(false);
+                    cancelRide({rideId: ride.id!, bookingId: bookingId!});
+                }}
+                onCancel={() => setShowCancelConfirm(false)}
+            />
         </GestureHandlerRootView>
     )
 }

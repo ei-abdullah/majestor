@@ -4,6 +4,8 @@ import {Ionicons} from "@expo/vector-icons";
 import Card from "@/src/components/ui/Card";
 import {RecentRideResponse} from "@/src/types/ride";
 import {timeAgo} from "@/src/utils/time.utils";
+import {useFareConfig} from "@/src/queries/ride.queries";
+import {calculateFare} from "@/src/utils/fare.utils";
 
 interface AvailableRidesCardProps {
     recentRide: RecentRideResponse;
@@ -15,6 +17,8 @@ interface AvailableRidesCardProps {
 function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}: AvailableRidesCardProps) {
     const vehicleIcon = recentRide.vehicleType === "CAR" ? "car-sport-outline" : "bicycle-outline";
     const deviationKm = recentRide.routeDistanceKm - rideDistance!;
+    const {data: fareConfig} = useFareConfig();
+    const estimatedFare = fareConfig ? calculateFare(deviationKm, recentRide.vehicleType, fareConfig) : null;
 
     return (
         <Card className={`px-5 py-4 ${className}`}>
@@ -87,12 +91,22 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                     </View>
                 </View>
 
-                {/* Deviation */}
-                <View className="flex-row items-center">
-                    <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
-                    <Text className="text-xs font-medium text-mj-text-secondary ml-1">
-                        +{deviationKm.toFixed(2)} km deviation
-                    </Text>
+                {/* Deviation + Fare */}
+                <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center">
+                        <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
+                        <Text className="text-xs font-medium text-mj-text-secondary ml-1">
+                            +{deviationKm.toFixed(2)} km deviation
+                        </Text>
+                    </View>
+                    {estimatedFare != null && (
+                        <View className="flex-row items-center">
+                            <Ionicons name="cash-outline" size={16} color="#4CB8AD"/>
+                            <Text className="text-xs font-semibold text-mj-blue ml-1">
+                                ~Rs {estimatedFare}
+                            </Text>
+                        </View>
+                    )}
                 </View>
             </Pressable>
         </Card>

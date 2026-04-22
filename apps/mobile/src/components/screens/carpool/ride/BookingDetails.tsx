@@ -17,8 +17,10 @@ import Card from "@/src/components/ui/Card";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
-import {useCancelRide, useCompleteRide} from "@/src/queries/ride.queries";
+import {useCancelRide, useCompleteRide, useFareConfig} from "@/src/queries/ride.queries";
+import {calculateFare} from "@/src/utils/fare.utils";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
+import ConfirmModal from "@/src/components/ui/ConfirmModal";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
 interface BookingDetailsProps {
@@ -42,6 +44,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const {
         id: rideId,
@@ -57,11 +60,15 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         routeDistanceKm,
     } = useRideStore();
 
-    const deviationKm = Math.abs(booking.routeDistanceKm - routeDistanceKm);
+    const deviationKm = (booking.routeDistanceKm != null && routeDistanceKm != null)
+        ? Math.abs(booking.routeDistanceKm - routeDistanceKm)
+        : null;
     const headerOffset = insets.top + 72;
 
-    // Rough fare estimate: base 50 + 20/km
-    const estimatedFare = Math.round(50 + booking.routeDistanceKm * 20);
+    const {data: fareConfig} = useFareConfig();
+    const estimatedFare = (fareConfig && deviationKm != null)
+        ? calculateFare(deviationKm, vehicleType as 'CAR' | 'BIKE', fareConfig)
+        : null;
 
     const {mutate: accept, isPending: isAccepting} = useAcceptBooking(() => {
         setAcceptedBooking(booking.bookingId, "ACCEPTED");
@@ -310,8 +317,8 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="cash-outline" size={22} color="#6FD0C5"/>
-                                    <Text className="text-sm font-semibold text-mj-text-main">
-                                        ~Rs {estimatedFare}
+                                    <Text className="text-sm font-semibold text-mj-blue">
+                                        {estimatedFare != null ? `~Rs ${estimatedFare}` : "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Estimated fare</Text>
                                 </View>
@@ -406,7 +413,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <View className="flex-row justify-between">
                                 <Text className="text-sm text-mj-text-secondary">Extra distance</Text>
                                 <Text className="text-sm font-semibold text-mj-blue">
-                                    +{deviationKm.toFixed(2)} km
+                                    {deviationKm != null ? `+${deviationKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>
                         </Card>
@@ -419,7 +426,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     variant="destructive"
                                     className="flex-1"
                                     disabled={isPending}
-                                    onPress={() => cancelRide({rideId, bookingId: booking.bookingId})}
+                                    onPress={() => setShowCancelConfirm(true)}
                                 />
                                 <PrimaryButton
                                     title={isCompleting ? "Completing Ride" : "Complete Ride"}
@@ -456,6 +463,18 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                     onDismiss={handleOutcomeDismiss}
                 />
             )}
+            <ConfirmModal
+                visible={showCancelConfirm}
+                title="Cancel Ride"
+                message="Are you sure you want to cancel this ride? The passenger will be notified."
+                confirmLabel="Cancel Ride"
+                cancelLabel="Keep Ride"
+                onConfirm={() => {
+                    setShowCancelConfirm(false);
+                    cancelRide({rideId, bookingId: booking.bookingId});
+                }}
+                onCancel={() => setShowCancelConfirm(false)}
+            />
         </GestureHandlerRootView>
     );
 }

@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {View, Text, ActivityIndicator, Pressable} from "react-native";
 import {Ionicons} from "@expo/vector-icons";
 import {Href, useRouter} from "expo-router";
@@ -14,11 +14,12 @@ import BookingRequestsList from "@/src/components/screens/carpool/ride/BookingRe
 import {useQueryClient} from "@tanstack/react-query";
 import {stompService} from "@/src/services/stompService";
 import {useCancelPostedRide} from "@/src/queries/ride.queries";
-import OutlineButton from "@/src/components/ui/OutlineButton";
+import ConfirmModal from "@/src/components/ui/ConfirmModal";
 
 export default function BookingRequests() {
     const router = useRouter();
     const queryClient = useQueryClient();
+    const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
     const {
         id,
@@ -68,7 +69,7 @@ export default function BookingRequests() {
                 <View className="relative flex-row items-center justify-center pb-3 mb-3 border-b border-gray-200">
                     <Text className="text-sm font-bold text-mj-text-main">Your Ride</Text>
                     <Pressable
-                        onPress={() => cancelPostedRide(id)}
+                        onPress={() => setShowCancelConfirm(true)}
                         className="absolute -right-2 -top-2"
                         hitSlop={20}
                         disabled={isCancelling}
@@ -127,11 +128,24 @@ export default function BookingRequests() {
             <BookingRequestsList
                 bookings={bookings!}
                 rideDistanceKm={routeDistanceKm}
+                vehicleType={vehicleType as "CAR" | "BIKE"}
                 isPending={isPending}
                 isError={isError}
                 onRefetch={refetch}
                 header={rideHeader}
                 onBookingPress={handleBookingPress}
+            />
+            <ConfirmModal
+                visible={showCancelConfirm}
+                title="Cancel Ride"
+                message="Are you sure you want to cancel your posted ride? All pending booking requests will be dismissed."
+                confirmLabel="Cancel Ride"
+                cancelLabel="Keep Ride"
+                onConfirm={() => {
+                    setShowCancelConfirm(false);
+                    cancelPostedRide(id);
+                }}
+                onCancel={() => setShowCancelConfirm(false)}
             />
         </GradientView>
     );

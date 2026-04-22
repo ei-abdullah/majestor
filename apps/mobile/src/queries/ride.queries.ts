@@ -3,10 +3,12 @@ import Toast from "react-native-toast-message";
 import * as Sentry from "@sentry/react-native";
 
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
+import {FareConfig} from "@/src/utils/fare.utils";
 import {
     cancelBookedRideApi,
     cancelPostedRideApi,
     completeRideApi,
+    getFareConfigApi,
     recentRidesApi,
     uploadRideApi
 } from "@/src/services/ride.api";
@@ -104,6 +106,14 @@ export const useCancelRide = (onCallback?: () => void) => {
             })
         }
     })
+}
+
+export const useFareConfig = () => {
+    return useQuery<FareConfig>({
+        queryKey: ['fareConfig'],
+        queryFn: getFareConfigApi,
+        staleTime: 60 * 60 * 1000,
+    });
 }
 
 export const useCancelPostedRide = (onCallback?: () => void) => {

@@ -2,13 +2,9 @@ import { useEffect } from 'react';
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useLocationStore } from '@/src/stores/locationStore';
-import { DEFAULT_LOCATION, formatShortAddress, formatAddress } from '@/src/utils/location.utils';
+import { DEFAULT_LOCATION, formatShortAddress } from '@/src/utils/location.utils';
 import * as Sentry from "@sentry/react-native";
 
-/**
- * Custom hook to handle location permissions and initial location fetch
- * Automatically requests permissions and updates global store
- */
 export const useLocationPermissions = () => {
     const {
         setUserLocation,
@@ -16,29 +12,34 @@ export const useLocationPermissions = () => {
         hasLocationPermission
     } = useLocationStore();
 
+    const [permission, requestPermission] = Location.useForegroundPermissions();
+
     useEffect(() => {
-        requestLocationPermission();
+        if (permission === null) return;
+
+        if (permission.granted) {
+            setHasLocationPermission(true);
+            fetchAndSetLocation().catch(handleLocationError);
+        } else if (!permission.granted && permission.status !== 'undetermined') {
+            handlePermissionDenied();
+        }
+    }, [permission?.granted]);
+
+    useEffect(() => {
+        Location.hasServicesEnabledAsync().then((enabled) => {
+            if (!enabled) handleLocationDisabled();
+            else requestPermission();
+        });
     }, []);
 
     const requestLocationPermission = async () => {
         try {
-            // Check if location services are enabled
             const isLocationEnabled = await Location.hasServicesEnabledAsync();
             if (!isLocationEnabled) {
                 handleLocationDisabled();
                 return;
             }
-
-            // Request permission
-            const { status } = await Location.requestForegroundPermissionsAsync();
-            if (status !== 'granted') {
-                handlePermissionDenied();
-                return;
-            }
-
-            // Permission granted - fetch location
-            setHasLocationPermission(true);
-            await fetchAndSetLocation();
+            await requestPermission();
         } catch (error: any) {
             Sentry.captureException(error);
             handleLocationError(error);

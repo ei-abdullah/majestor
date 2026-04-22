@@ -28,7 +28,6 @@ export const useRegisterPushToken = () => {
             }
 
             if (finalStatus !== 'granted') {
-                console.warn('[PushToken] Permission not granted:', finalStatus);
                 return;
             }
 
@@ -36,15 +35,11 @@ export const useRegisterPushToken = () => {
                 Constants.easConfig?.projectId ??
                 Constants.expoConfig?.extra?.eas?.projectId;
 
-            console.log('[PushToken] Registering with projectId:', projectId);
             const tokenData = await Notifications.getExpoPushTokenAsync({projectId});
-            console.log('[PushToken] Got token:', tokenData.data);
 
             await updatePushTokenApi(userId, tokenData.data);
-            console.log('[PushToken] Token saved to backend for userId:', userId);
         },
         onError: (error: any) => {
-            console.error('[PushToken] Registration failed:', error?.message ?? error);
             Sentry.captureException(error);
         }
     });
