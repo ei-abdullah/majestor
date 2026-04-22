@@ -1,4 +1,4 @@
-package com.majestor.api.modules.studyhub.studygroup.studygroupinvite;
+package com.majestor.api.modules.studyhub.studygroup.studygroupinvite.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

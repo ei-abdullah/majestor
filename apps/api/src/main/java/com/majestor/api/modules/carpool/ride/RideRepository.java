@@ -11,6 +11,13 @@ import java.util.List;
 public interface RideRepository extends JpaRepository<Ride, Long> {
     List<Ride> findByCreatedAtAfter(Instant createdAtAfter);
 
+    long countByRidePosterId(Long ridePosterId);
+
+    long countByRidePosterIdAndRideStatus(Long ridePosterId, RideStatus rideStatus);
+
+    @Query("SELECT r.createdAt FROM Ride r WHERE r.ridePoster.id = :userId AND r.createdAt >= :since")
+    List<Instant> findCreatedAtByRidePosterId(@Param("userId") Long userId, @Param("since") Instant since);
+
     @Modifying
     @Query("""
                 UPDATE Ride r

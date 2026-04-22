@@ -24,3 +24,14 @@ export const updateUserDetailsApi = async (userId: number, details: {
 
 export const markOnboarded = async (userId: number): Promise<void> =>
     api.patch(`/user/markOnboarded/${userId}`)
+
+export const getUserStatsApi = async (userId: number) => {
+    const res = await api.get(`/user/stats/${userId}`);
+    return res.data as {
+        documentsUploaded: number;
+        groupsJoined: number;
+        ridesPosted: number;
+        ridesCompleted: number;
+        activityLast7Days: number[];
+    };
+}

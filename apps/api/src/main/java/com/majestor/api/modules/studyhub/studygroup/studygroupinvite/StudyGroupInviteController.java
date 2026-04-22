@@ -1,5 +1,6 @@
 package com.majestor.api.modules.studyhub.studygroup.studygroupinvite;
 
+import com.majestor.api.modules.studyhub.studygroup.studygroupinvite.dto.PendingInviteDTO;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,8 @@ public class StudyGroupInviteController {
     public ResponseEntity<List<PendingInviteDTO>> getPendingInvites(
             @PathVariable @NotNull @Positive Long userId
     ) {
-        return ResponseEntity.ok(studyGroupInviteService.getPendingInvites(userId));
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(studyGroupInviteService.getPendingInvites(userId));
     }
 }

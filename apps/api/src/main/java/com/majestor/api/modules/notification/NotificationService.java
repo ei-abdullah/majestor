@@ -90,11 +90,19 @@ public class NotificationService {
 
     @Transactional
     public void markAllRead(Long userId) {
-        notificationRepository.markAllReadByRecipientId(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + userId)
+        );
+
+        notificationRepository.markAllReadByRecipientId(user.getId());
     }
 
     public boolean hasUnread(Long userId) {
-        return notificationRepository.existsByRecipientIdAndIsReadFalse(userId);
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + userId)
+        );
+
+        return notificationRepository.existsByRecipientIdAndIsReadFalse(user.getId());
     }
 
     public List<GetNotificationsResponseDTO> getNotifications(Long userId) {

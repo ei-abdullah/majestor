@@ -2,6 +2,7 @@ package com.majestor.api.modules.notification;
 
 import com.majestor.api.modules.notification.dto.GetNotificationsResponseDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,17 +18,28 @@ public class NotificationController {
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<GetNotificationsResponseDTO>> getNotifications(@PathVariable Long userId) {
-        return ResponseEntity.ok(notificationService.getNotifications(userId));
+        List<GetNotificationsResponseDTO> response = notificationService.getNotifications(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @PatchMapping("/mark-read/{userId}")
     public ResponseEntity<Void> markAllRead(@PathVariable Long userId) {
         notificationService.markAllRead(userId);
-        return ResponseEntity.ok().build();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .build();
     }
 
     @GetMapping("/has-unread/{userId}")
     public ResponseEntity<Map<String, Boolean>> hasUnread(@PathVariable Long userId) {
-        return ResponseEntity.ok(Map.of("hasUnread", notificationService.hasUnread(userId)));
+        notificationService.markAllRead(userId);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(Map.of("hasUnread", notificationService.hasUnread(userId)));
     }
 }

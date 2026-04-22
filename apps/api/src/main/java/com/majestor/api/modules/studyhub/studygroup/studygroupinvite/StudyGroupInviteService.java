@@ -6,6 +6,7 @@ import com.majestor.api.modules.notification.NotificationService;
 import com.majestor.api.modules.notification.NotificationType;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroup;
 import com.majestor.api.modules.studyhub.studygroup.StudyGroupRepository;
+import com.majestor.api.modules.studyhub.studygroup.studygroupinvite.dto.PendingInviteDTO;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMember;
 import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.User;

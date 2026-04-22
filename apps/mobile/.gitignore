@@ -47,6 +47,5 @@ app-example
 .env.local
 
 # google-services.json
-google-services.json
-
-# Generate a firebase private key and paste it in the eas credentials. This is required for the app to work with firebase.
+# also
+# Generate a firebase private key and paste it in the eas credentials FCM V1. This is required for the app to work with firebase.
