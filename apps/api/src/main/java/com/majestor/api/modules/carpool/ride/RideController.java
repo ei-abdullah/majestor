@@ -30,7 +30,11 @@ public class RideController {
 
     @GetMapping("/fare-config")
     public ResponseEntity<FareConfigDTO> getFareConfig() {
-        return ResponseEntity.ok(fareConfigService.getFareConfig());
+        FareConfigDTO response = fareConfigService.getFareConfig();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     @PatchMapping("/fare-config/{vehicleType}")
@@ -38,7 +42,11 @@ public class RideController {
             @PathVariable VehicleType vehicleType,
             @RequestBody @Valid UpdateFareConfigDTO dto
     ) {
-        return ResponseEntity.ok(fareConfigService.updateFareConfig(vehicleType, dto));
+        FareConfigDTO response = fareConfigService.updateFareConfig(vehicleType, dto);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(response);
     }
 
     /**
