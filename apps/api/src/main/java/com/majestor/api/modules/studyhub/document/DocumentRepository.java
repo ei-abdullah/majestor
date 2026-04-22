@@ -4,9 +4,20 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.Instant;
 import java.util.List;
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+
+    long countByUploaderId(Long uploaderId);
+
+    @Query("""
+            SELECT d.createdAt
+            FROM Document d
+            WHERE d.uploader.id = :userId
+            AND d.createdAt >= :since
+            """)
+    List<Instant> findCreatedAtByUploaderId(@Param("userId") Long userId, @Param("since") Instant since);
 
     @Query("""
             SELECT d.id, COUNT(l)

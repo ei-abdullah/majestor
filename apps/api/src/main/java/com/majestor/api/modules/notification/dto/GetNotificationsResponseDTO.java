@@ -1,6 +1,5 @@
 package com.majestor.api.modules.notification.dto;
 
-import com.majestor.api.modules.notification.NotificationType;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,6 +21,8 @@ public class GetNotificationsResponseDTO {
     private String senderAvatar;
 
     private String notificationType;
+    private boolean read;
+    private String response;
 
     private Instant createdAt;
 }

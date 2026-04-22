@@ -3,9 +3,14 @@ package com.majestor.api.modules.user;
 import com.majestor.api.infra.exception.ResourceNotFoundException;
 import com.majestor.api.infra.s3.S3Buckets;
 import com.majestor.api.infra.s3.S3Service;
+import com.majestor.api.modules.carpool.ride.RideRepository;
+import com.majestor.api.modules.carpool.ride.RideStatus;
+import com.majestor.api.modules.studyhub.document.DocumentRepository;
+import com.majestor.api.modules.studyhub.studygroup.studygroupmember.StudyGroupMemberRepository;
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
 import com.majestor.api.modules.user.dto.UserSearchDTO;
+import com.majestor.api.modules.user.dto.UserStatsDTO;
 import com.majestor.api.modules.utils.Utils;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
@@ -19,6 +24,10 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkClientException;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -34,11 +43,14 @@ public class UserService {
     private final S3Service s3Service;
     private final S3Buckets s3Buckets;
     private final Utils utils;
+    private final DocumentRepository documentRepository;
+    private final RideRepository rideRepository;
+    private final StudyGroupMemberRepository studyGroupMemberRepository;
 
     public GetUserDetailsResponseDTO getUserDetails(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
-        
+
         String avatarUri = utils.DownloadUserAvatar(user);
 
         return userMapper.toGetUserDetailsResponseDTO(user, avatarUri);
@@ -127,7 +139,12 @@ public class UserService {
 
         Long universityId = requestingUser.getUniversity().getId();
 
-        return userRepository.searchByEmailInUniversity(query, universityId, PageRequest.of(0, 10))
+        return userRepository
+                .searchByEmailInUniversity(
+                        query,
+                        universityId,
+                        PageRequest.of(0, 10)
+                )
                 .stream()
                 .filter(u -> !u.getId().equals(requestingUserId))
                 .map(u -> UserSearchDTO.builder()
@@ -135,6 +152,40 @@ public class UserService {
                         .username(u.getUsername())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    public UserStatsDTO getUserStats(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+        long documentsUploaded = documentRepository.countByUploaderId(userId);
+        long groupsJoined = studyGroupMemberRepository.countActiveMemberships(userId);
+        long ridesPosted = rideRepository.countByRidePosterId(userId);
+        long ridesCompleted = rideRepository.countByRidePosterIdAndRideStatus(userId, RideStatus.COMPLETED);
+
+        Instant sevenDaysAgo = Instant.now().minus(7, ChronoUnit.DAYS);
+        List<Instant> uploadTimes = documentRepository.findCreatedAtByUploaderId(userId, sevenDaysAgo);
+        List<Instant> rideTimes = rideRepository.findCreatedAtByRidePosterId(userId, sevenDaysAgo);
+
+        int[] activity = new int[7];
+        LocalDate today = LocalDate.now(ZoneOffset.UTC);
+
+        for (Instant ts : uploadTimes) {
+            long daysAgo = ChronoUnit.DAYS.between(ts.atZone(ZoneOffset.UTC).toLocalDate(), today);
+            if (daysAgo >= 0 && daysAgo < 7) activity[6 - (int) daysAgo]++;
+        }
+        for (Instant ts : rideTimes) {
+            long daysAgo = ChronoUnit.DAYS.between(ts.atZone(ZoneOffset.UTC).toLocalDate(), today);
+            if (daysAgo >= 0 && daysAgo < 7) activity[6 - (int) daysAgo]++;
+        }
+
+        return UserStatsDTO.builder()
+                .documentsUploaded(documentsUploaded)
+                .groupsJoined(groupsJoined)
+                .ridesPosted(ridesPosted)
+                .ridesCompleted(ridesCompleted)
+                .activityLast7Days(activity)
+                .build();
     }
 
     @Transactional

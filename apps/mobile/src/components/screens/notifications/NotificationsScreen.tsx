@@ -1,10 +1,12 @@
-import React from "react";
-import {View, Text, ScrollView, RefreshControl, Image, TouchableOpacity} from "react-native";
+import React, {useEffect} from "react";
+import {View, Text, ScrollView, RefreshControl, TouchableOpacity} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
+import {router} from "expo-router";
+import CustomHeader from "@/src/components/ui/CustomHeader";
 
 import {useAuthStore} from "@/src/stores/authStore";
-import {useNotifications} from "@/src/queries/notification.queries";
+import {useMarkNotificationsRead, useNotifications} from "@/src/queries/notification.queries";
 import {useAcceptInvite, useRejectInvite} from "@/src/queries/studyhub.queries";
 import {Notification, NotificationType} from "@/src/types/notifications";
 import GradientView from "@/src/components/ui/GradientView";
@@ -91,48 +93,45 @@ function NotificationItem({notification}: { notification: Notification }) {
             </View>
 
             {isInvite && notification.relatedId && (
-                <View style={{flexDirection: 'row', gap: 10, marginTop: 12, marginLeft: 58}}>
-                    <View style={{flex: 1}}>
-                        <TouchableOpacity
-                            onPress={() => acceptInvite(notification.relatedId!)}
-                            disabled={isAccepting || isRejecting}
-                            style={{
-                                backgroundColor: '#E8F5E9',
-                                borderRadius: 12,
-                                paddingVertical: 9,
-                                alignItems: 'center',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                gap: 6,
-                                borderWidth: 1,
-                                borderColor: '#A5D6A7',
-                            }}
-                        >
-                            <Feather name="check" size={14} color="#2E7D32"/>
-                            <Text style={{color: '#2E7D32', fontWeight: '700', fontSize: 12}}>Accept</Text>
-                        </TouchableOpacity>
+                notification.response ? (
+                    <View style={{flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10, marginLeft: 58}}>
+                        <Feather
+                            name={notification.response === 'ACCEPTED' ? 'check-circle' : 'x-circle'}
+                            size={14}
+                            color={notification.response === 'ACCEPTED' ? '#2E7D32' : '#C62828'}
+                        />
+                        <Text style={{
+                            fontSize: 12,
+                            fontWeight: '600',
+                            color: notification.response === 'ACCEPTED' ? '#2E7D32' : '#C62828',
+                        }}>
+                            {notification.response === 'ACCEPTED' ? 'You accepted this invite' : 'You declined this invite'}
+                        </Text>
                     </View>
-                    <View style={{flex: 1}}>
-                        <TouchableOpacity
-                            onPress={() => rejectInvite(notification.relatedId!)}
-                            disabled={isAccepting || isRejecting}
-                            style={{
-                                backgroundColor: '#FFEBEE',
-                                borderRadius: 12,
-                                paddingVertical: 9,
-                                alignItems: 'center',
-                                flexDirection: 'row',
-                                justifyContent: 'center',
-                                gap: 6,
-                                borderWidth: 1,
-                                borderColor: '#FFCDD2',
-                            }}
-                        >
-                            <Feather name="x" size={14} color="#C62828"/>
-                            <Text style={{color: '#C62828', fontWeight: '700', fontSize: 12}}>Decline</Text>
-                        </TouchableOpacity>
+                ) : (
+                    <View style={{flexDirection: 'row', gap: 10, marginTop: 12, marginLeft: 58}}>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity
+                                onPress={() => acceptInvite(notification.relatedId!)}
+                                disabled={isAccepting || isRejecting}
+                                style={{backgroundColor: '#E8F5E9', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#A5D6A7'}}
+                            >
+                                <Feather name="check" size={14} color="#2E7D32"/>
+                                <Text style={{color: '#2E7D32', fontWeight: '700', fontSize: 12}}>Accept</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <View style={{flex: 1}}>
+                            <TouchableOpacity
+                                onPress={() => rejectInvite(notification.relatedId!)}
+                                disabled={isAccepting || isRejecting}
+                                style={{backgroundColor: '#FFEBEE', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#FFCDD2'}}
+                            >
+                                <Feather name="x" size={14} color="#C62828"/>
+                                <Text style={{color: '#C62828', fontWeight: '700', fontSize: 12}}>Decline</Text>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+                )
             )}
         </View>
     );
@@ -142,11 +141,21 @@ export default function NotificationsScreen() {
     const insets = useSafeAreaInsets();
     const {user} = useAuthStore();
     const {data: notifications, isPending, refetch} = useNotifications(user!.id);
+    const {mutate: markRead} = useMarkNotificationsRead();
+
+    useEffect(() => {
+        markRead(user!.id);
+    }, []);
 
     if (isPending) return <LoadingIndicator/>;
 
     return (
         <GradientView>
+            <CustomHeader
+                title="Notifications"
+                leftIcon="arrow-left"
+                onLeftPress={() => router.back()}
+            />
             <ScrollView
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{paddingTop: insets.top + 70, paddingBottom: 40}}

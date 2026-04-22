@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "607405241429",
+    "project_id": "majestor-eceeb",
+    "storage_bucket": "majestor-eceeb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:607405241429:android:7e608625cb66880ac310dc",
+        "android_client_info": {
+          "package_name": "com.majestor.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAORdAu8o3pg9JywafQDr3Pe9cwtIEtC_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

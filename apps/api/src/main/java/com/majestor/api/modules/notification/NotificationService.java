@@ -7,8 +7,13 @@ import com.majestor.api.modules.user.UserRepository;
 import com.majestor.api.modules.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.Instant;
@@ -42,27 +47,62 @@ public class NotificationService {
 
         notificationRepository.save(notification);
 
-        if (recipient.getExpoPushToken() != null && !recipient.getExpoPushToken().isEmpty()) {
-            sendExpoPush(recipient.getExpoPushToken(), title, message, type, relatedId);
+        String pushToken = userRepository.findById(recipient.getId())
+                .map(User::getExpoPushToken)
+                .orElse(null);
+
+        log.info("sendNotification: recipientId={}, pushToken={}", recipient.getId(), pushToken);
+
+        if (pushToken != null && !pushToken.isEmpty()) {
+            sendExpoPush(pushToken, title, message, type, relatedId);
+        } else {
+            log.warn("No push token for recipientId={}, skipping Expo push", recipient.getId());
         }
     }
 
     private void sendExpoPush(String token, String title, String body, NotificationType type, Long relatedId) {
         String expoUrl = "https://exp.host/--/api/v2/push/send";
 
-        Map<String, Object> payload = Map.of(
-                "to", token,
-                "title", title,
-                "body", body,
-                "data", Map.of("type", type.name(), "id", relatedId),
-                "sound", "default"
-        );
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Accept", "application/json");
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("to", token);
+        payload.put("title", title);
+        payload.put("body", body);
+        payload.put("sound", "default");
+        payload.put("channelId", "default");
+        Map<String, Object> data = new HashMap<>();
+        data.put("type", type.name());
+        if (relatedId != null) data.put("id", relatedId);
+        payload.put("data", data);
+
+        HttpEntity<Map<String, Object>> request = new HttpEntity<>(payload, headers);
 
         try {
-            restTemplate.postForEntity(expoUrl, payload, String.class);
+            ResponseEntity<String> response = restTemplate.postForEntity(expoUrl, request, String.class);
+            log.info("Expo push sent to token={} | status={} | response={}", token, response.getStatusCode(), response.getBody());
         } catch (Exception e) {
-            log.error("Failed to send Expo push notification: {}", e.getMessage());
+            log.error("Failed to send Expo push notification to token={}: {}", token, e.getMessage());
         }
+    }
+
+    @Transactional
+    public void markAllRead(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + userId)
+        );
+
+        notificationRepository.markAllReadByRecipientId(user.getId());
+    }
+
+    public boolean hasUnread(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not found with id: " + userId)
+        );
+
+        return notificationRepository.existsByRecipientIdAndIsReadFalse(user.getId());
     }
 
     public List<GetNotificationsResponseDTO> getNotifications(Long userId) {
@@ -100,6 +140,8 @@ public class NotificationService {
                             .senderName(senderName)
                             .senderAvatar(senderAvatar)
                             .notificationType(notification.getNotificationType().name())
+                            .read(notification.isRead())
+                            .response(notification.getResponse())
                             .createdAt(notification.getCreatedAt())
                             .build();
                 })

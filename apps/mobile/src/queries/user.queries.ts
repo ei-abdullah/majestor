@@ -1,6 +1,5 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {getUserDetailsApi, updateProfileImageApi, updateUserDetailsApi} from "@/src/services/user.api";
-import {useEffect} from "react";
+import {getUserDetailsApi, getUserStatsApi, updateProfileImageApi, updateUserDetailsApi} from "@/src/services/user.api";
 import {useAuthStore} from "@/src/stores/authStore";
 
 export const useUserDetails = (userId: number) => {
@@ -30,6 +29,15 @@ export const useUpdateProfileImage = () => {
             await queryClient.invalidateQueries({queryKey: ["user"]})
         }
     })
+}
+
+export const useUserStats = (userId: number) => {
+    return useQuery({
+        queryKey: ["user", "stats", userId],
+        queryFn: () => getUserStatsApi(userId),
+        enabled: Boolean(userId),
+        staleTime: 1000 * 60 * 5,
+    });
 }
 
 export const useUpdateUserDetails = () => {

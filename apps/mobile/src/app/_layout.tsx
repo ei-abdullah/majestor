@@ -23,11 +23,14 @@ import {useNetworkErrorStore} from "@/src/stores/networkErrorStore";
 import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
 
 Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true,
-    }),
+    handleNotification: async () => {
+        return ({
+            shouldShowBanner: true,
+            shouldShowList: true,
+            shouldPlaySound: true,
+            shouldSetBadge: true,
+        });
+    },
 });
 
 if (Platform.OS === 'android') {
@@ -155,6 +158,7 @@ function RootLayout() {
                                 <Stack.Screen name={"(tabs)"} options={{headerShown: false}}/>
                                 <Stack.Screen name={"chat"} options={{headerShown: false}}/>
                                 <Stack.Screen name={"groupchat"} options={{headerShown: false}}/>
+                                <Stack.Screen name={"notification"} options={{headerShown: false}}/>
                             </Stack.Protected>
 
                         </Stack>

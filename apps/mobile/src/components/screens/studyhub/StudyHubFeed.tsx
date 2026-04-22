@@ -198,6 +198,9 @@ export default function StudyHubFeed() {
                             Associated Course{' '}
                             <Text className="text-mj-text-secondary font-normal">(optional)</Text>
                         </Text>
+                        <Text className={"text-mj-text-secondary text-xs font-medium mb-2 ml-1"}>
+                            Or leave blank for global community not tied to any specific course
+                        </Text>
                         <Controller
                             control={control}
                             name="courseId"

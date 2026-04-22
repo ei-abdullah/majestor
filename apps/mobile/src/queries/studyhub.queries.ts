@@ -189,6 +189,7 @@ export const useAcceptInvite = () => {
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['invites']});
             await queryClient.invalidateQueries({queryKey: ['studyhub']});
+            await queryClient.invalidateQueries({queryKey: ['notifications']});
             Toast.show({type: 'success', text1: 'Invite Accepted'});
         },
         onError: (error: any) => {
@@ -204,6 +205,7 @@ export const useRejectInvite = () => {
         mutationFn: (inviteId: number) => rejectInviteApi(inviteId),
         onSuccess: async () => {
             await queryClient.invalidateQueries({queryKey: ['invites']});
+            await queryClient.invalidateQueries({queryKey: ['notifications']});
             Toast.show({type: 'success', text1: 'Invite Declined'});
         },
         onError: (error: any) => {

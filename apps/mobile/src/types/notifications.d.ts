@@ -17,5 +17,7 @@ export interface Notification {
     senderName: string;
     senderAvatar: string | null;
     notificationType: NotificationType;
+    read: boolean;
+    response: 'ACCEPTED' | 'REJECTED' | null;
     createdAt: string;
 }

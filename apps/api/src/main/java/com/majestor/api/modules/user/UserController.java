@@ -3,6 +3,7 @@ package com.majestor.api.modules.user;
 import com.majestor.api.modules.user.dto.GetUserDetailsResponseDTO;
 import com.majestor.api.modules.user.dto.UpdateUserDetailsRequestDTO;
 import com.majestor.api.modules.user.dto.UserSearchDTO;
+import com.majestor.api.modules.user.dto.UserStatsDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -80,6 +81,11 @@ public class UserController {
             @RequestParam @NotNull @Positive Long requestingUserId
     ) {
         return ResponseEntity.ok(userService.searchUsers(query, requestingUserId));
+    }
+
+    @GetMapping("/stats/{userId}")
+    public ResponseEntity<UserStatsDTO> getUserStats(@PathVariable @NotNull @Positive Long userId) {
+        return ResponseEntity.ok(userService.getUserStats(userId));
     }
 
     @Deprecated

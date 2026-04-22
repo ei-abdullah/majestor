@@ -4,7 +4,6 @@ import Animated, { LinearTransition, useAnimatedStyle, useDerivedValue, withTimi
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
-import { useKeyboardHandler } from 'react-native-keyboard-controller';
 import AnimatedPressable from './AnimatedPressable';
 
 interface CustomTabBarProps {
@@ -15,13 +14,6 @@ interface CustomTabBarProps {
 
 export default function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
   const isKeyboardVisible = useDerivedValue(() => 0);
-
-  useKeyboardHandler({
-    onStart: (e) => {
-      'worklet';
-      // isKeyboardVisible.value = e.height > 0 ? 1 : 0;
-    },
-  });
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -86,14 +78,14 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
           if (Platform.OS !== 'web') {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }
-          
+
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
           });
 
-          if (!isFocused && !event.defaultPrevented) {
+          if (!event.defaultPrevented) {
             navigation.navigate(route.name);
           }
         };

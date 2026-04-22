@@ -243,7 +243,7 @@ function UserSettings() {
                     {/* Notifications */}
                     <Card className="px-5 py-5 mb-6 mx-4">
                         <Pressable
-                            onPress={() => router.push("/(tabs)/user/notifications" as any)}
+                            onPress={() => router.push("/notification" as any)}
                             className="flex-row items-center justify-between active:opacity-60"
                         >
                             <View className="flex-row items-center gap-3">
