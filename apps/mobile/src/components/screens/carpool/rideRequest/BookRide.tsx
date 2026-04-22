@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {Text, View, Pressable, TouchableOpacity} from "react-native";
+import {Text, View, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -8,8 +8,7 @@ import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import {Controller, useForm} from "react-hook-form";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
-import GoogleTextInput from "@/src/components/ui/GoogleTextInput";
-import {Ionicons} from "@expo/vector-icons";
+import {Ionicons, Feather} from "@expo/vector-icons";
 import CustomMarker from "@/src/components/ui/CustomMarker";
 import MapViewDirections from "react-native-maps-directions";
 import Toast from "react-native-toast-message";
@@ -25,6 +24,7 @@ import {UploadRideRequestResponse} from "@/src/types/rideRequest";
 import {Href, router} from "expo-router";
 import {useIsFocused} from "@react-navigation/native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import LocationSearchModal from "@/src/components/ui/LocationSearchModal";
 
 interface FormData {
     pickupLocation: {
@@ -70,10 +70,10 @@ export default function BookRide() {
 
     const [numberOfPassengers, setNumberOfPassengers] = useState(1);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [modalField, setModalField] = useState<'pickup' | 'dropoff' | null>(null);
     const headerOffset = insets.top + 72;
 
-    const snapPoints = useMemo(() => ["25%", "73%"], []);
+    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
 
     // Get current form values safely
     let pickupLocation = watch('pickupLocation');
@@ -88,9 +88,6 @@ export default function BookRide() {
         }
         : DEFAULT_LOCATION;
 
-    /**
-     * Fetches current location and sets it as pickupLocation
-     */
     const handleUseMyLocation = async () => {
         const location = await getCurrentLocation();
         if (location) {
@@ -98,7 +95,6 @@ export default function BookRide() {
             animateToLocation(location.latitude, location.longitude);
         }
     };
-
 
     const onSubmit = (data: FormData) => {
         if (!data.pickupLocation || !data.dropOffLocation || !user) return;
@@ -146,7 +142,6 @@ export default function BookRide() {
                     style={{flex: 1}}
                     mapPadding={{top: headerOffset + 8, right: 10, bottom: 10, left: 10}}
                 >
-                    {/* Show markers only when locations are selected */}
                     {pickupLocation && (
                         <Marker
                             coordinate={{
@@ -201,76 +196,6 @@ export default function BookRide() {
                         </>
                     )}
                 </MapView>
-
-
-                {/* Location Card */}
-                {!isExpanded ? (
-                    <Pressable
-                        onPress={() => setIsExpanded(true)}
-                        className="absolute right-4 bg-white rounded-2xl p-3 shadow-lg"
-                        style={{top: headerOffset}}
-                    >
-                        <View className="items-center gap-2">
-                            <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
-                                <Ionicons name="location" size={20} color="#3A6FF8"/>
-                            </View>
-                            <View className="w-0.5 h-3 bg-gray-300"/>
-                            <View className="w-10 h-10 rounded-full bg-mj-teal-50 items-center justify-center">
-                                <Ionicons name="flag" size={20} color="#6FD0C5"/>
-                            </View>
-                        </View>
-                    </Pressable>
-                ) : (
-                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg"
-                          style={{top: headerOffset}}>
-                        <View className="flex-row items-center justify-between mb-3">
-                            <Text className="text-base font-semibold">Select Locations</Text>
-                            <Pressable onPress={() => setIsExpanded(false)} className="p-1">
-                                <Ionicons name="close" size={20} color="#5A6275"/>
-                            </Pressable>
-                        </View>
-
-                        <View className="flex-row items-center justify-between mb-2">
-                            <Text className="text-xs text-gray-500">From</Text>
-                            <TouchableOpacity
-                                onPress={handleUseMyLocation}
-                                className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
-                            >
-                                <Ionicons name="locate" size={14} color="#3A6FF8"/>
-                                <Text className="text-xs text-mj-blue font-medium">Use My Location</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <Controller
-                            control={control}
-                            name="pickupLocation"
-                            render={({field: {onChange, value}}) => (
-                                <GoogleTextInput
-                                    placeholderString={"Enter pickup location"}
-                                    icon="map-pin"
-                                    initialLocation={value?.address}
-                                    handlePress={(location) => {
-                                        onChange(location);
-                                        animateToLocation(location.latitude, location.longitude);
-                                    }}
-                                />
-                            )}
-                        />
-
-                        <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
-                        <Controller
-                            control={control}
-                            name="dropOffLocation"
-                            render={({field: {onChange, value}}) => (
-                                <GoogleTextInput
-                                    placeholderString={"Enter drop-off location"}
-                                    icon="flag"
-                                    initialLocation={value?.address}
-                                    handlePress={(location) => onChange(location)}
-                                />
-                            )}
-                        />
-                    </View>
-                )}
             </View>
 
             <BottomSheet
@@ -288,16 +213,88 @@ export default function BookRide() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>
+                        {/* Location Selection */}
+                        <View className="bg-white rounded-2xl p-4">
+                            <View className="flex-row items-center justify-between mb-3">
+                                <Text className="text-base font-semibold">Select Locations</Text>
+                            </View>
+
+                            <View className="flex-row items-center justify-between mb-2">
+                                <Text className="text-xs text-gray-500">From</Text>
+                                <Pressable
+                                    onPress={handleUseMyLocation}
+                                    className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
+                                >
+                                    <Ionicons name="locate" size={14} color="#3A6FF8"/>
+                                    <Text className="text-xs text-mj-blue font-medium">Use My Location</Text>
+                                </Pressable>
+                            </View>
+                            <Pressable
+                                onPress={() => setModalField('pickup')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    borderRadius: 12,
+                                    borderWidth: 1,
+                                    borderColor: '#f3f4f6',
+                                    backgroundColor: 'white',
+                                    height: 72,
+                                    paddingHorizontal: 16,
+                                    gap: 12,
+                                    elevation: 1,
+                                    shadowColor: '#000',
+                                    shadowOffset: {width: 0, height: 1},
+                                    shadowOpacity: 0.05,
+                                    shadowRadius: 2,
+                                }}
+                            >
+                                <Feather name="map-pin" size={18} color={pickupLocation ? '#4CB8AD' : '#9CA3AF'}/>
+                                <Text
+                                    numberOfLines={1}
+                                    style={{flex: 1, fontSize: 15, color: pickupLocation ? '#111827' : '#9CA3AF'}}
+                                >
+                                    {pickupLocation?.address ?? 'Enter pickup location'}
+                                </Text>
+                            </Pressable>
+
+                            <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
+                            <Pressable
+                                onPress={() => setModalField('dropoff')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    borderRadius: 12,
+                                    borderWidth: 1,
+                                    borderColor: '#f3f4f6',
+                                    backgroundColor: 'white',
+                                    height: 72,
+                                    paddingHorizontal: 16,
+                                    gap: 12,
+                                    elevation: 1,
+                                    shadowColor: '#000',
+                                    shadowOffset: {width: 0, height: 1},
+                                    shadowOpacity: 0.05,
+                                    shadowRadius: 2,
+                                }}
+                            >
+                                <Feather name="flag" size={18} color={dropOffLocation ? '#4CB8AD' : '#9CA3AF'}/>
+                                <Text
+                                    numberOfLines={1}
+                                    style={{flex: 1, fontSize: 15, color: dropOffLocation ? '#111827' : '#9CA3AF'}}
+                                >
+                                    {dropOffLocation?.address ?? 'Enter drop-off location'}
+                                </Text>
+                            </Pressable>
+                        </View>
+
                         {/* Number of Passengers */}
-                        {
-                            <NumberStepper
-                                label="Number of Passengers"
-                                value={numberOfPassengers}
-                                onValueChange={setNumberOfPassengers}
-                                minValue={1}
-                                maxValue={6}
-                            />
-                        }
+                        <NumberStepper
+                            label="Number of Passengers"
+                            value={numberOfPassengers}
+                            onValueChange={setNumberOfPassengers}
+                            minValue={1}
+                            maxValue={6}
+                        />
 
                         {/* Phone number */}
                         <View className="z-0">
@@ -340,7 +337,20 @@ export default function BookRide() {
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>
+
+            <LocationSearchModal
+                visible={modalField !== null}
+                title={modalField === 'pickup' ? 'Select Pickup Location' : 'Select Drop-off Location'}
+                onClose={() => setModalField(null)}
+                onSelect={(location) => {
+                    if (modalField === 'pickup') {
+                        setValue('pickupLocation', location);
+                        animateToLocation(location.latitude, location.longitude);
+                    } else {
+                        setValue('dropOffLocation', location);
+                    }
+                }}
+            />
         </GestureHandlerRootView>
     )
 }
-

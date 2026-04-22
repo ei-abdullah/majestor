@@ -12,8 +12,8 @@ import {GestureHandlerRootView} from "react-native-gesture-handler";
 import CustomMarker from "@/src/components/ui/CustomMarker";
 import MapViewDirections from "react-native-maps-directions";
 import {GOOGLE_API_KEY} from "@/src/constants";
-import {Ionicons} from "@expo/vector-icons";
-import GoogleTextInput from "@/src/components/ui/GoogleTextInput";
+import {Ionicons, Feather} from "@expo/vector-icons";
+import LocationSearchModal from "@/src/components/ui/LocationSearchModal";
 import ToggleButton from "@/src/components/ui/ToggleButton";
 import Card from "@/src/components/ui/Card";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
@@ -76,7 +76,7 @@ export default function PostRide() {
 
     const [numberOfPassengers, setNumberOfPassengers] = React.useState(1);
     const [vehicleType, setVehicleType] = React.useState<'CAR' | 'BIKE'>('CAR');
-    const [isExpanded, setIsExpanded] = useState(false);
+    const [modalField, setModalField] = useState<'start' | 'end' | null>(null);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const headerOffset = insets.top + 72;
 
@@ -231,74 +231,6 @@ export default function PostRide() {
                         </>
                     )}
                 </MapView>
-
-                {/* Location Card */}
-                {!isExpanded ? (
-                    <Pressable
-                        onPress={() => setIsExpanded(true)}
-                        className="absolute right-4 bg-white rounded-2xl p-3 shadow-lg"
-                        style={{top: headerOffset}}
-                    >
-                        <View className="items-center gap-2">
-                            <View className="w-10 h-10 rounded-full bg-mj-blue-50 items-center justify-center">
-                                <Ionicons name="location" size={20} color="#3A6FF8"/>
-                            </View>
-                            <View className="w-0.5 h-3 bg-gray-300"/>
-                            <View className="w-10 h-10 rounded-full bg-mj-teal-50 items-center justify-center">
-                                <Ionicons name="flag" size={20} color="#6FD0C5"/>
-                            </View>
-                        </View>
-                    </Pressable>
-                ) : (
-                    <View className="absolute left-4 right-4 bg-white rounded-2xl p-4 shadow-lg" style={{top: headerOffset}}>
-                        <View className="flex-row items-center justify-between mb-3">
-                            <Text className="text-base font-semibold">Select Locations</Text>
-                            <Pressable onPress={() => setIsExpanded(false)} className="p-1">
-                                <Ionicons name="close" size={20} color="#5A6275"/>
-                            </Pressable>
-                        </View>
-
-                        <View className="flex-row items-center justify-between mb-2">
-                            <Text className="text-xs text-gray-500">From</Text>
-                            <TouchableOpacity
-                                onPress={handleUseMyLocation}
-                                className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
-                            >
-                                <Ionicons name="locate" size={14} color="#3A6FF8"/>
-                                <Text className="text-xs text-mj-blue font-medium">Use My Location</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <Controller
-                            control={control}
-                            name="startLocation"
-                            render={({field: {onChange, value}}) => (
-                                <GoogleTextInput
-                                    placeholderString={"Enter origin"}
-                                    icon="map-pin"
-                                    initialLocation={value?.address}
-                                    handlePress={(location) => {
-                                        onChange(location);
-                                        animateToLocation(location.latitude, location.longitude);
-                                    }}
-                                />
-                            )}
-                        />
-
-                        <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
-                        <Controller
-                            control={control}
-                            name="endLocation"
-                            render={({field: {onChange, value}}) => (
-                                <GoogleTextInput
-                                    placeholderString={"Enter destination"}
-                                    icon="flag"
-                                    initialLocation={value?.address}
-                                    handlePress={(location) => onChange(location)}
-                                />
-                            )}
-                        />
-                    </View>
-                )}
             </View>
 
             <BottomSheet
@@ -320,6 +252,80 @@ export default function PostRide() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>
+                        {/* Location Selection */}
+                        <View className="bg-white rounded-2xl p-4">
+                            <View className="flex-row items-center justify-between mb-3">
+                                <Text className="text-base font-semibold">Select Locations</Text>
+                            </View>
+
+                            <View className="flex-row items-center justify-between mb-2">
+                                <Text className="text-xs text-gray-500">From</Text>
+                                <TouchableOpacity
+                                    onPress={handleUseMyLocation}
+                                    className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
+                                >
+                                    <Ionicons name="locate" size={14} color="#3A6FF8"/>
+                                    <Text className="text-xs text-mj-blue font-medium">Use My Location</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <Pressable
+                                onPress={() => setModalField('start')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    borderRadius: 12,
+                                    borderWidth: 1,
+                                    borderColor: '#f3f4f6',
+                                    backgroundColor: 'white',
+                                    height: 72,
+                                    paddingHorizontal: 16,
+                                    gap: 12,
+                                    elevation: 1,
+                                    shadowColor: '#000',
+                                    shadowOffset: {width: 0, height: 1},
+                                    shadowOpacity: 0.05,
+                                    shadowRadius: 2,
+                                }}
+                            >
+                                <Feather name="map-pin" size={18} color={startLocation ? '#4CB8AD' : '#9CA3AF'}/>
+                                <Text
+                                    numberOfLines={1}
+                                    style={{flex: 1, fontSize: 15, color: startLocation ? '#111827' : '#9CA3AF'}}
+                                >
+                                    {startLocation?.address ?? 'Enter origin'}
+                                </Text>
+                            </Pressable>
+
+                            <Text className="text-xs text-gray-500 mb-2 mt-3">To</Text>
+                            <Pressable
+                                onPress={() => setModalField('end')}
+                                style={{
+                                    flexDirection: 'row',
+                                    alignItems: 'center',
+                                    borderRadius: 12,
+                                    borderWidth: 1,
+                                    borderColor: '#f3f4f6',
+                                    backgroundColor: 'white',
+                                    height: 72,
+                                    paddingHorizontal: 16,
+                                    gap: 12,
+                                    elevation: 1,
+                                    shadowColor: '#000',
+                                    shadowOffset: {width: 0, height: 1},
+                                    shadowOpacity: 0.05,
+                                    shadowRadius: 2,
+                                }}
+                            >
+                                <Feather name="flag" size={18} color={endLocation ? '#4CB8AD' : '#9CA3AF'}/>
+                                <Text
+                                    numberOfLines={1}
+                                    style={{flex: 1, fontSize: 15, color: endLocation ? '#111827' : '#9CA3AF'}}
+                                >
+                                    {endLocation?.address ?? 'Enter destination'}
+                                </Text>
+                            </Pressable>
+                        </View>
+
                         {/* Vehicle Type Toggle */}
                         <ToggleButton
                             label="Vehicle Type"
@@ -437,6 +443,20 @@ export default function PostRide() {
                     </View>
                 </BottomSheetScrollView>
             </BottomSheet>
+
+        <LocationSearchModal
+            visible={modalField !== null}
+            title={modalField === 'start' ? 'Select Origin' : 'Select Destination'}
+            onClose={() => setModalField(null)}
+            onSelect={(location) => {
+                if (modalField === 'start') {
+                    setValue('startLocation', location);
+                    animateToLocation(location.latitude, location.longitude);
+                } else {
+                    setValue('endLocation', location);
+                }
+            }}
+        />
         </GestureHandlerRootView>
     )
 }
