@@ -12,7 +12,7 @@ import {Ionicons, Feather} from "@expo/vector-icons";
 import CustomMarker from "@/src/components/ui/CustomMarker";
 import MapViewDirections from "react-native-maps-directions";
 import Toast from "react-native-toast-message";
-import {useLocationPermissions} from "@/src/hooks/useLocationPermissions";
+import {useLocationStore} from "@/src/stores/locationStore";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {GOOGLE_API_KEY} from "@/src/constants";
@@ -45,7 +45,7 @@ export default function BookRide() {
     const bottomSheetRef = useRef<BottomSheet>(null);
 
     // Use custom hooks
-    const {hasLocationPermission} = useLocationPermissions();
+    const {hasLocationPermission} = useLocationStore();
     const {animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
     const isFocused = useIsFocused();
@@ -98,6 +98,17 @@ export default function BookRide() {
 
     const onSubmit = (data: FormData) => {
         if (!data.pickupLocation || !data.dropOffLocation || !user) return;
+
+        if (routeDistanceKm === 0) {
+            Toast.show({
+                type: 'error',
+                text1: 'Route not ready',
+                text2: 'Wait for the route to finish loading on the map',
+                position: 'top',
+                visibilityTime: 3000,
+            });
+            return;
+        }
 
         uploadRideRequest({
             uploadRideRequestDetails: {

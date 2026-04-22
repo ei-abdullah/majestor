@@ -1,7 +1,8 @@
-import React from "react";
-import {Text, View, Alert, Pressable, Linking} from "react-native";
+import React, {useState} from "react";
+import {Text, View, Pressable, Linking} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
+import Toast from "react-native-toast-message";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
 import {router} from "expo-router";
@@ -17,6 +18,7 @@ import ErrorNotLoad from "@/src/components/ui/ErrorNotLoad";
 import UserAvatar from "@/src/components/ui/UserAvatar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import ErrorText from "@/src/components/ui/ErrorText";
+import ConfirmModal from "@/src/components/ui/ConfirmModal";
 import {Feather} from "@expo/vector-icons";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 
@@ -24,6 +26,7 @@ function UserSettings() {
     const insets = useSafeAreaInsets();
     const headerOffset = insets.top + 76;
     const {user, clearSession} = useAuthStore();
+    const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
 
     const {
         data: userDetails,
@@ -54,9 +57,9 @@ function UserSettings() {
     const handleAvatarUpdate = (formData: FormData) => {
         const userId = user!.id;
         uploadProfileImage({userId, formData}, {
-            onError: (error: any) => {
-                Sentry.captureException(new Error('Profile image upload failed'))
-                Alert.alert('Error', 'Failed to upload profile image');
+            onError: () => {
+                Sentry.captureException(new Error('Profile image upload failed'));
+                Toast.show({type: 'error', text1: 'Failed to upload profile image', position: 'top'});
             }
         });
     };
@@ -65,12 +68,12 @@ function UserSettings() {
         const userId = user!.id;
         updateUserDetails({userId, details: data}, {
             onSuccess: () => {
-                Alert.alert('Success', 'Personal information updated successfully');
+                Toast.show({type: 'success', text1: 'Personal information updated', position: 'top'});
                 reset(data);
             },
-            onError: (error: any) => {
+            onError: () => {
                 Sentry.captureException(new Error('Failed to update personal information'));
-                Alert.alert('Error', 'Failed to update personal information');
+                Toast.show({type: 'error', text1: 'Failed to update personal information', position: 'top'});
             }
         });
     };
@@ -293,16 +296,7 @@ function UserSettings() {
                     {/* Logout */}
                     <Card className="py-5 mx-4 mb-2 px-5 overflow-hidden">
                         <Pressable
-                            onPress={() =>
-                                Alert.alert(
-                                    'Sign out',
-                                    'Are you sure you want to sign out?',
-                                    [
-                                        {text: 'Cancel', style: 'cancel'},
-                                        {text: 'Sign out', style: 'destructive', onPress: clearSession},
-                                    ]
-                                )
-                            }
+                            onPress={() => setShowSignOutConfirm(true)}
                             className="flex-row items-center gap-4 active:opacity-60"
                         >
                             <View className="bg-red-100 rounded-xl p-2">
@@ -315,6 +309,16 @@ function UserSettings() {
                     </Card>
                 </View>
             </KeyboardAwareScrollView>
+
+            <ConfirmModal
+                visible={showSignOutConfirm}
+                title="Sign Out"
+                message="Are you sure you want to sign out of your account?"
+                confirmLabel="Sign Out"
+                cancelLabel="Cancel"
+                onConfirm={clearSession}
+                onCancel={() => setShowSignOutConfirm(false)}
+            />
         </GradientView>
     );
 

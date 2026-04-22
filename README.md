@@ -422,6 +422,61 @@ GET    /api/academia/universities     # List universities
 GET    /api/academia/courses          # List courses
 ```
 
+#### Carpool — Fare Config
+```
+GET    /api/v1/ride/fare-config                    # Get current fare rates (CAR + BIKE)
+PATCH  /api/v1/ride/fare-config/{vehicleType}      # Update fare rates (admin)
+```
+
+---
+
+## 🚗 Carpool Fare System
+
+Fares are calculated based on **deviation km** — the extra distance the driver travels to pick up and drop off the passenger, not the full trip length. This keeps fares fair: the passenger only pays for the detour they impose on the driver.
+
+### Formula
+
+```
+fare = pricePerKm × |deviationKm|
+
+deviationKm = |passenger's route distance − driver's route distance|
+```
+
+### Default Rates
+
+| Vehicle | Price per Km | Example (3.1 km detour) |
+|---------|-------------|--------------------------|
+| CAR     | Rs 24/km    | 24 × 3.1 = **Rs 74**    |
+| BIKE    | Rs 13/km    | 13 × 3.1 = **Rs 40**    |
+
+### How rates are derived
+
+`pricePerKm` is the fuel cost per km, calculated from Pakistan petrol prices (~Rs 270/liter) divided by average vehicle mileage:
+
+**CAR — Rs 24/km**
+- Petrol ≈ Rs 270/liter
+- Average car mileage ≈ 13 km/liter
+- 270 ÷ 13 ≈ Rs 20/km (base fuel cost) + Rs 4/km (driver margin) = **Rs 24/km**
+
+**BIKE — Rs 13/km**
+- Petrol ≈ Rs 270/liter
+- Average bike mileage ≈ 45 km/liter
+- 270 ÷ 45 ≈ Rs 6/km (base fuel cost) + Rs 7/km (driver margin) = **Rs 13/km**
+
+These are rough estimates based on average mileage. Actual cost varies by vehicle model. Since petrol prices change frequently in Pakistan, rates are stored in the DB and updatable via the admin endpoint without touching code.
+
+### Updating rates
+
+Rates are stored in the `fare_configs` DB table and can be updated without touching code:
+
+```bash
+curl -X PATCH http://localhost:8080/api/v1/ride/fare-config/CAR \
+  -H "Content-Type: application/json" \
+  -d '{ "pricePerKm": 22 }'
+```
+
+The response always returns the full config for both vehicle types so the caller always sees current state.
+
 ---
 
 ## ✅ Validation Rules

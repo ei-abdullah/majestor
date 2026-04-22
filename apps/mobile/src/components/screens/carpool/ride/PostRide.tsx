@@ -2,7 +2,7 @@ import React, {useEffect, useMemo, useRef, useState} from "react";
 import {View, Text, TouchableOpacity, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
-import {useLocationPermissions} from "@/src/hooks/useLocationPermissions";
+import {useLocationStore} from "@/src/stores/locationStore";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {Controller, useForm} from "react-hook-form";
@@ -49,7 +49,7 @@ export default function PostRide() {
     const bottomSheetRef = useRef<BottomSheet>(null);
 
     // Use custom hooks
-    const {hasLocationPermission} = useLocationPermissions();
+    const {hasLocationPermission} = useLocationStore();
     const {animateToLocation} = useMapLocation(mapRef);
     const {getCurrentLocation} = useCurrentLocation();
     const isFocused = useIsFocused();
