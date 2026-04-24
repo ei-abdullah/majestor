@@ -41,25 +41,41 @@ public class DataInitializer implements CommandLineRunner {
         log.info("=== DataInitializer starting ===");
 
         try {
-            log.info("Initializing universities and faculties...");
-            initializeUniversitiesAndFaculties();
-            log.info("Universities and faculties initialized successfully.");
+            if (universityRepository.count() == 0 && facultyRepository.count() == 0) {
+                log.info("Initializing universities and faculties...");
+                initializeUniversitiesAndFaculties();
+            } else {
+                log.info("Universities and faculties already exist. Deleting and re-initializing...");
+                facultyRepository.deleteAll();
+                universityRepository.deleteAll();
+                initializeUniversitiesAndFaculties();
+            }
         } catch (Exception e) {
             log.error("Failed to initialize universities and faculties: {}", e.getMessage(), e);
         }
 
         try {
-            log.info("Initializing admin user...");
-            initializeAdminUser();
-            log.info("Admin user created successfully.");
+            if (userRepository.count() == 0) {
+                log.info("Initializing admin user...");
+                initializeAdminUser();
+            } else {
+                log.info("Admin user already exists. Deleting and re-initializing...");
+                userRepository.deleteAll();
+                initializeAdminUser();
+            }
         } catch (Exception e) {
             log.error("Failed to initialize admin user: {}", e.getMessage(), e);
         }
 
         try {
-            log.info("Initializing courses...");
-            initializeCourses();
-            log.info("Courses initialized successfully.");
+            if (courseRepository.count() == 0) {
+                log.info("Initializing courses...");
+                initializeCourses();
+            } else {
+                log.info("Courses already exist. Deleting and re-initializing...");
+                courseRepository.deleteAll();
+                initializeCourses();
+            }
         } catch (Exception e) {
             log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
