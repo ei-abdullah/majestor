@@ -41,41 +41,25 @@ public class DataInitializer implements CommandLineRunner {
         log.info("=== DataInitializer starting ===");
 
         try {
-            if (universityRepository.count() == 0 && facultyRepository.count() == 0) {
-                log.info("Initializing universities and faculties...");
-                initializeUniversitiesAndFaculties();
-            } else {
-                log.info("Universities and faculties already exist. Deleting and re-initializing...");
-                facultyRepository.deleteAll();
-                universityRepository.deleteAll();
-                initializeUniversitiesAndFaculties();
-            }
+            log.info("Initializing universities and faculties...");
+            initializeUniversitiesAndFaculties();
+            log.info("Universities and faculties initialized successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize universities and faculties: {}", e.getMessage(), e);
         }
 
         try {
-            if (userRepository.count() == 0) {
-                log.info("Initializing admin user...");
-                initializeAdminUser();
-            } else {
-                log.info("Admin user already exists. Deleting and re-initializing...");
-                userRepository.deleteAll();
-                initializeAdminUser();
-            }
+            log.info("Initializing admin user...");
+            initializeAdminUser();
+            log.info("Admin user created successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize admin user: {}", e.getMessage(), e);
         }
 
         try {
-            if (courseRepository.count() == 0) {
-                log.info("Initializing courses...");
-                initializeCourses();
-            } else {
-                log.info("Courses already exist. Deleting and re-initializing...");
-                courseRepository.deleteAll();
-                initializeCourses();
-            }
+            log.info("Initializing courses...");
+            initializeCourses();
+            log.info("Courses initialized successfully.");
         } catch (Exception e) {
             log.error("Failed to initialize courses: {}", e.getMessage(), e);
         }
