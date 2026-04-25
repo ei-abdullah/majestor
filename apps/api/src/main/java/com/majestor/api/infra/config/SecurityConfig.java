@@ -67,9 +67,6 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/api/v1/s3/**"
                                 ).permitAll();
-                        config = config
-                                .requestMatchers("/api/v1/**")
-                                .permitAll();
                     }
 
                     config.anyRequest().authenticated();

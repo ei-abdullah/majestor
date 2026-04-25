@@ -17,6 +17,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.Map;
 
+// TODO: IDOR vulnerability — all endpoints accept userId as a path param with no ownership check.
+// Any authenticated user can read/modify any other user's data by guessing their ID.
+// Fix: extract the authenticated user's ID from the JWT principal in SecurityContextHolder
+// and verify it matches the requested userId before proceeding.
 @Validated
 @RestController
 @RequestMapping("/api/v1/user")
