@@ -43,7 +43,7 @@ logging:
     org.springframework.web: INFO
 
 ---
-# 🛠️ LOCAL DEVELOPMENT (Docker)
+# LOCAL DEVELOPMENT (Docker)
 spring:
   config:
     activate:
@@ -59,13 +59,21 @@ spring:
     show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
     properties:
       hibernate:
         format_sql: true
+  flyway:
+    enabled: false
+    clean-disabled: false
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    schemas: public
+    validate-on-migrate: true
+
 
 ---
-# 🚀 PRODUCTION (Digital Ocean)
+# PRODUCTION
 spring:
   config:
     activate:
@@ -77,7 +85,14 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: ${DDL_AUTO:update}
+      ddl-auto: ${DDL_AUTO}
     show-sql: false
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    schemas: public
+    validate-on-migrate: true
