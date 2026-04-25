@@ -102,7 +102,7 @@ export default function StudyHubFeed() {
 
                     {/* Vault Section */}
                     <View className="px-6 mt-2">
-                        <Text className="text-mj-text-secondary font-black text-[10px] uppercase tracking-[3px] mb-4 ml-1">
+                        <Text className="text-mj-text-secondary font-sans-extrabold text-[10px] uppercase tracking-[3px] mb-4 ml-1">
                             Your Documents
                         </Text>
                         <View className="flex-row gap-4">
@@ -120,8 +120,8 @@ export default function StudyHubFeed() {
                                     <View style={{backgroundColor: '#3A6FF8', padding: 12, borderRadius: 18, marginBottom: 12}}>
                                         <Feather name="folder" size={22} color="white"/>
                                     </View>
-                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 13, letterSpacing: -0.3}}>Personal</Text>
-                                    <Text style={{color: '#5A6275', fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 13, letterSpacing: -0.3}}>Personal</Text>
+                                    <Text style={{color: '#5A6275', fontSize: 9, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
                                         Private Vault
                                     </Text>
                                 </LinearGradient>
@@ -141,8 +141,8 @@ export default function StudyHubFeed() {
                                     <View style={{backgroundColor: '#6FD0C5', padding: 12, borderRadius: 18, marginBottom: 12}}>
                                         <Feather name="unlock" size={22} color="white"/>
                                     </View>
-                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 13, letterSpacing: -0.3}}>Open</Text>
-                                    <Text style={{color: '#5A6275', fontSize: 9, fontWeight: '700', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 13, letterSpacing: -0.3}}>Open</Text>
+                                    <Text style={{color: '#5A6275', fontSize: 9, fontFamily: 'Inter_700Bold', textTransform: 'uppercase', letterSpacing: 1.5, marginTop: 3}}>
                                         Public Vault
                                     </Text>
                                 </LinearGradient>
@@ -173,11 +173,11 @@ export default function StudyHubFeed() {
                 keyboardBlurBehavior={"restore"}
             >
                 <BottomSheetView className="p-8 pb-20">
-                    <Text className="text-mj-teal font-black text-[10px] uppercase tracking-[3px] mb-1">New Community</Text>
-                    <Text className="text-mj-text-main font-bold text-2xl mb-8 tracking-tight">Start a Study Group</Text>
+                    <Text className="text-mj-teal font-sans-extrabold text-[10px] uppercase tracking-[3px] mb-1">New Community</Text>
+                    <Text className="text-mj-text-main font-sans-bold text-2xl mb-8 tracking-tight">Start a Study Group</Text>
 
                     <View className="mb-6">
-                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group Name</Text>
+                        <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Group Name</Text>
                         <Controller
                             control={control}
                             name="name"
@@ -194,11 +194,11 @@ export default function StudyHubFeed() {
                     </View>
 
                     <View className="mb-10">
-                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">
+                        <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">
                             Associated Course{' '}
-                            <Text className="text-mj-text-secondary font-normal">(optional)</Text>
+                            <Text className="text-mj-text-secondary font-sans">(optional)</Text>
                         </Text>
-                        <Text className={"text-mj-text-secondary text-xs font-medium mb-2 ml-1"}>
+                        <Text className={"text-mj-text-secondary text-xs font-sans-medium mb-2 ml-1"}>
                             Or leave blank for global community not tied to any specific course
                         </Text>
                         <Controller
@@ -216,7 +216,7 @@ export default function StudyHubFeed() {
                     </View>
 
                     <View className="mb-10">
-                        <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Group Visibility</Text>
+                        <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Group Visibility</Text>
                         <Controller
                             control={control}
                             name="isPrivate"
@@ -236,7 +236,7 @@ export default function StudyHubFeed() {
                                             <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
                                         )}
                                     </Pressable>
-                                    <Text className="text-mj-text-main font-semibold">Make this group private</Text>
+                                    <Text className="text-mj-text-main font-sans-semibold">Make this group private</Text>
                                 </View>
                             )}
                         />
@@ -249,7 +249,7 @@ export default function StudyHubFeed() {
                     >
                         {isCreating
                             ? <LoadingIndicator size={20}/>
-                            : <Text className="text-white font-bold text-lg">Launch Group</Text>
+                            : <Text className="text-white font-sans-bold text-lg">Launch Group</Text>
                         }
                     </TouchableOpacity>
                 </BottomSheetView>

@@ -43,7 +43,7 @@ function NumberStepper(
     return (
         <Card className={"p-6"}>
             {label && (
-                <Text className="text-base font-semibold">
+                <Text className="text-base font-sans-semibold">
                     {label}
                 </Text>
             )}
@@ -68,7 +68,7 @@ function NumberStepper(
 
                     {/* Value Display */}
                     <View className="items-center">
-                        <Text className="text-2xl font-bold text-mj-text-main">
+                        <Text className="text-2xl font-sans-bold text-mj-text-main">
                             {value}
                         </Text>
                     </View>

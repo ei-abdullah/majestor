@@ -164,7 +164,7 @@ const StyledDropDown = <T extends Record<string, any>>(
                                                 <Text
                                                     className={[
                                                         "text-sm text-center",
-                                                        active ? "text-gray-900 font-semibold" : "text-gray-900",
+                                                        active ? "text-gray-900 font-sans-semibold" : "text-gray-900",
                                                     ].join(" ")}
                                                 >
                                                     {option[labelField]}

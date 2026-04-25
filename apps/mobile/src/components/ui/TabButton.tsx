@@ -16,7 +16,7 @@ const TabButton = memo(function TabButton({label, active, disabled, onPress}: Pr
             className={active ? "flex-1 py-3 rounded-xl items-center bg-white" : "flex-1 py-3 rounded-xl items-center bg-transparent"}
         >
             <Text
-                className={active ? "font-semibold text-mj-text-main" : "font-medium text-mj-text-secondary"}
+                className={active ? "font-sans-semibold text-mj-text-main" : "font-sans-medium text-mj-text-secondary"}
             >
                 {label}
             </Text>

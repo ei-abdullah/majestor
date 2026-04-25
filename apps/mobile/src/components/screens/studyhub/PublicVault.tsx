@@ -74,8 +74,8 @@ export default function PublicVault() {
                             {/* Header Label Section */}
                             <View className="mb-8 flex-row justify-between items-center">
                                 <View>
-                                    <Text className="text-mj-teal font-black text-[10px] uppercase tracking-widest">Public Vault</Text>
-                                    <Text className="text-mj-text-main font-bold text-3xl mt-1">Resources</Text>
+                                    <Text className="text-mj-teal font-sans-extrabold text-[10px] uppercase tracking-widest">Public Vault</Text>
+                                    <Text className="text-mj-text-main font-sans-bold text-3xl mt-1">Resources</Text>
                                 </View>
                                 <View className="bg-mj-teal-50 p-4 rounded-2xl shadow-sm border border-mj-teal-100">
                                     <Feather name="globe" size={24} color="#6FD0C5" />

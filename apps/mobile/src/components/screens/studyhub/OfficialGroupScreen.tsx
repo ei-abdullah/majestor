@@ -53,9 +53,9 @@ export default function OfficialGroupScreen() {
                                         </View>
                                         <View className="flex-1">
                                             <View className="bg-mj-yellow-100 self-start px-2 py-0.5 rounded-md mb-1.5 border border-mj-yellow-200">
-                                                <Text className="text-mj-yellow-900 text-[8px] font-black uppercase tracking-widest">Official Faculty Channel</Text>
+                                                <Text className="text-mj-yellow-900 text-[8px] font-sans-extrabold uppercase tracking-widest">Official Faculty Channel</Text>
                                             </View>
-                                            <Text className="text-mj-text-main font-bold text-lg leading-tight">
+                                            <Text className="text-mj-text-main font-sans-bold text-lg leading-tight">
                                                 {item.name}
                                             </Text>
                                         </View>
@@ -67,11 +67,11 @@ export default function OfficialGroupScreen() {
                                         <View className="flex-row gap-4">
                                             <View className="flex-row items-center">
                                                 <Feather name="user-check" size={12} color="#C6941F" />
-                                                <Text className="text-mj-text-secondary text-[10px] font-bold uppercase ml-1.5">{item.hostName}</Text>
+                                                <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase ml-1.5">{item.hostName}</Text>
                                             </View>
                                             <View className="flex-row items-center">
                                                 <Feather name="book" size={12} color="#C6941F" />
-                                                <Text className="text-mj-text-secondary text-[10px] font-bold uppercase ml-1.5">{item.courseName}</Text>
+                                                <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase ml-1.5">{item.courseName}</Text>
                                             </View>
                                         </View>
                                         <View className="bg-mj-yellow-500 p-2 rounded-xl shadow-sm">
@@ -84,7 +84,7 @@ export default function OfficialGroupScreen() {
                         ListEmptyComponent={
                             <View className="items-center justify-center py-24 opacity-30">
                                 <Feather name="shield" size={48} color="#121826" />
-                                <Text className="text-mj-text-main font-bold mt-4 uppercase tracking-[2px] text-[10px]">No official groups</Text>
+                                <Text className="text-mj-text-main font-sans-bold mt-4 uppercase tracking-[2px] text-[10px]">No official groups</Text>
                             </View>
                         }
                     />

@@ -74,10 +74,10 @@ function NotificationItem({notification}: { notification: Notification }) {
 
                 <View style={{flex: 1}}>
                     <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 3}}>
-                        <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, flex: 1, marginRight: 8}} numberOfLines={1}>
+                        <Text style={{color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14, flex: 1, marginRight: 8}} numberOfLines={1}>
                             {notification.title}
                         </Text>
-                        <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', opacity: 0.6, flexShrink: 0}}>
+                        <Text style={{color: '#5A6275', fontSize: 10, fontFamily: 'Inter_600SemiBold', opacity: 0.6, flexShrink: 0}}>
                             {timeAgo(notification.createdAt)}
                         </Text>
                     </View>
@@ -85,7 +85,7 @@ function NotificationItem({notification}: { notification: Notification }) {
                         {notification.message}
                     </Text>
                     {notification.senderName ? (
-                        <Text style={{color: '#3A6FF8', fontSize: 11, fontWeight: '600', marginTop: 4}}>
+                        <Text style={{color: '#3A6FF8', fontSize: 11, fontFamily: 'Inter_600SemiBold', marginTop: 4}}>
                             from {notification.senderName}
                         </Text>
                     ) : null}
@@ -102,7 +102,7 @@ function NotificationItem({notification}: { notification: Notification }) {
                         />
                         <Text style={{
                             fontSize: 12,
-                            fontWeight: '600',
+                            fontFamily: 'Inter_600SemiBold',
                             color: notification.response === 'ACCEPTED' ? '#2E7D32' : '#C62828',
                         }}>
                             {notification.response === 'ACCEPTED' ? 'You accepted this invite' : 'You declined this invite'}
@@ -117,7 +117,7 @@ function NotificationItem({notification}: { notification: Notification }) {
                                 style={{backgroundColor: '#E8F5E9', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#A5D6A7'}}
                             >
                                 <Feather name="check" size={14} color="#2E7D32"/>
-                                <Text style={{color: '#2E7D32', fontWeight: '700', fontSize: 12}}>Accept</Text>
+                                <Text style={{color: '#2E7D32', fontFamily: 'Inter_700Bold', fontSize: 12}}>Accept</Text>
                             </TouchableOpacity>
                         </View>
                         <View style={{flex: 1}}>
@@ -127,7 +127,7 @@ function NotificationItem({notification}: { notification: Notification }) {
                                 style={{backgroundColor: '#FFEBEE', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#FFCDD2'}}
                             >
                                 <Feather name="x" size={14} color="#C62828"/>
-                                <Text style={{color: '#C62828', fontWeight: '700', fontSize: 12}}>Decline</Text>
+                                <Text style={{color: '#C62828', fontFamily: 'Inter_700Bold', fontSize: 12}}>Decline</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -168,7 +168,7 @@ export default function NotificationsScreen() {
                         <View style={{backgroundColor: '#EEF3FF', padding: 24, borderRadius: 32, marginBottom: 20}}>
                             <Feather name="bell-off" size={40} color="#3A6FF8" opacity={0.4}/>
                         </View>
-                        <Text style={{color: '#1A2340', fontWeight: '800', fontSize: 18, marginBottom: 8}}>
+                        <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 18, marginBottom: 8}}>
                             All Caught Up
                         </Text>
                         <Text style={{color: '#5A6275', fontSize: 14, textAlign: 'center', lineHeight: 20}}>

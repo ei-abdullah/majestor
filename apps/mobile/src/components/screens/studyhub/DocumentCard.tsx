@@ -94,13 +94,13 @@ function DocumentCard({document}: { document: any }) {
                                 <View className="flex-row justify-between items-start">
                                     <View className="flex-1 mr-3">
                                         <Text 
-                                            className="text-lg font-bold text-white leading-tight" 
+                                            className="text-lg font-sans-bold text-white leading-tight" 
                                             numberOfLines={2}
                                         >
                                             {document.title}
                                         </Text>
                                         <View className="bg-mj-teal/30 self-start px-2 py-0.5 rounded-md mt-2 border border-mj-teal/20">
-                                            <Text className="text-[10px] text-mj-teal-50 font-black uppercase tracking-widest">
+                                            <Text className="text-[10px] text-mj-teal-50 font-sans-extrabold uppercase tracking-widest">
                                                 {document.documentType.toLowerCase().replace("_", " ")}
                                             </Text>
                                         </View>
@@ -114,7 +114,7 @@ function DocumentCard({document}: { document: any }) {
                                         >
                                             <View className="items-center">
                                                 <Text className="text-white text-[10px]">❤️</Text>
-                                                <Text className="text-white text-[9px] font-black">
+                                                <Text className="text-white text-[9px] font-sans-extrabold">
                                                     {document.likesCount || 0}
                                                 </Text>
                                             </View>
@@ -146,11 +146,11 @@ function DocumentCard({document}: { document: any }) {
                                 {/* Bottom row - Metadata */}
                                 <View className="flex-row justify-between items-end">
                                     <View className="flex-1">
-                                        <Text className="text-white/70 text-[10px] font-bold uppercase tracking-tighter">
+                                        <Text className="text-white/70 text-[10px] font-sans-bold uppercase tracking-tighter">
                                             {document.year} • {document.semesterType}
                                         </Text >
                                         <Text 
-                                            className="text-white text-sm font-bold mt-0.5"
+                                            className="text-white text-sm font-sans-bold mt-0.5"
                                             numberOfLines={1}
                                         >
                                             {document.course}
@@ -160,7 +160,7 @@ function DocumentCard({document}: { document: any }) {
                                     {isLocked && (
                                         <View className="bg-mj-yellow-500 px-3 py-1.5 rounded-xl flex-row items-center">
                                             <Feather name="lock" size={12} color="#121826" />
-                                            <Text className="text-mj-text-main text-[10px] font-black ml-1 uppercase">ELITE</Text>
+                                            <Text className="text-mj-text-main text-[10px] font-sans-extrabold ml-1 uppercase">ELITE</Text>
                                         </View>
                                     )}
                                 </View>

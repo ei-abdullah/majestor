@@ -40,7 +40,7 @@ export default function RideOutcomeModal({visible, outcome, onDismiss}: Props) {
                             />
                         </View>
 
-                        <Text className="text-xl font-bold text-mj-text-main mb-2 text-center">
+                        <Text className="text-xl font-sans-bold text-mj-text-main mb-2 text-center">
                             {isCompleted ? "Ride Completed" : "Ride Cancelled"}
                         </Text>
 
@@ -62,7 +62,7 @@ export default function RideOutcomeModal({visible, outcome, onDismiss}: Props) {
                             style={({pressed}) => ({opacity: pressed ? 0.82 : 1})}
                         >
                             <Ionicons name="home" size={18} color="#fff"/>
-                            <Text className="text-white text-base font-bold ml-2">
+                            <Text className="text-white text-base font-sans-bold ml-2">
                                 Back to Home
                             </Text>
                         </Pressable>

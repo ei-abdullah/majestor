@@ -240,7 +240,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <Card className="bg-green-50 border border-green-200 px-5 py-4">
                                 <View className="flex-row items-center justify-center gap-2">
                                     <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
-                                    <Text className="text-sm font-semibold text-green-700">
+                                    <Text className="text-sm font-sans-semibold text-green-700">
                                         Booking Accepted
                                     </Text>
                                 </View>
@@ -265,7 +265,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                         <Ionicons name="person-outline" size={28} color="#3A6FF8"/>
                                     </View>
                                 )}
-                                <Text className="text-base font-bold text-mj-text-main" numberOfLines={1}>
+                                <Text className="text-base font-sans-bold text-mj-text-main" numberOfLines={1}>
                                     {booking.rideRequesterUsername}
                                 </Text>
                                 <Text className="text-xs text-mj-text-secondary mt-0.5" numberOfLines={1}>
@@ -278,7 +278,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     <View className="h-px bg-gray-100 mb-4"/>
                                     <View className="flex-row items-center justify-center gap-2 mb-4">
                                         <Ionicons name="call-outline" size={18} color="#3A6FF8"/>
-                                        <Text className="text-base font-semibold text-mj-blue">
+                                        <Text className="text-base font-sans-semibold text-mj-blue">
                                             {booking.rideRequesterPhone}
                                         </Text>
                                         <Text>|</Text>
@@ -293,7 +293,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                             className={"flex-row items-center gap-1"}
                                         >
                                             <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
-                                            <Text className="text-base font-semibold text-mj-blue">
+                                            <Text className="text-base font-sans-semibold text-mj-blue">
                                                 Chat with Booker
                                             </Text>
                                         </Pressable>
@@ -307,7 +307,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <View className="flex-row mb-4">
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="people-outline" size={22} color="#6FD0C5"/>
-                                    <Text className="text-sm font-semibold text-mj-text-main">
+                                    <Text className="text-sm font-sans-semibold text-mj-text-main">
                                         {booking.numberOfPassengers}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Passengers</Text>
@@ -317,7 +317,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="cash-outline" size={22} color="#6FD0C5"/>
-                                    <Text className="text-sm font-semibold text-mj-blue">
+                                    <Text className="text-sm font-sans-semibold text-mj-blue">
                                         {estimatedFare != null ? `~Rs ${estimatedFare}` : "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Estimated fare</Text>
@@ -345,7 +345,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                         {/* Card 2 — Your ride info */}
                         <Card className="px-5 py-6">
-                            <Text className="text-sm font-bold text-mj-text-main text-center mb-3">
+                            <Text className="text-sm font-sans-bold text-mj-text-main text-center mb-3">
                                 Your Ride
                             </Text>
 
@@ -373,13 +373,13 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <View className="flex-row">
                                 <View className="flex-1 flex-row items-center gap-2">
                                     <Ionicons name={vehicleIcon as any} size={18} color="#6FD0C5"/>
-                                    <Text className="text-sm font-medium text-mj-text-main" numberOfLines={1}>
+                                    <Text className="text-sm font-sans-medium text-mj-text-main" numberOfLines={1}>
                                         {vehicleModal}
                                     </Text>
                                 </View>
                                 <View className="flex-row items-center gap-2">
                                     <Ionicons name="people-outline" size={18} color="#6FD0C5"/>
-                                    <Text className="text-sm font-medium text-mj-text-main">
+                                    <Text className="text-sm font-sans-medium text-mj-text-main">
                                         {availableSeats} {availableSeats === 1 ? "seat" : "seats"}
                                     </Text>
                                 </View>
@@ -388,20 +388,20 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                         {/* Card 3 — Route analysis */}
                         <Card className="px-5 py-5">
-                            <Text className="text-sm font-bold text-mj-text-main mb-3">Route Analysis</Text>
+                            <Text className="text-sm font-sans-bold text-mj-text-main mb-3">Route Analysis</Text>
 
                             <View className="h-px bg-gray-200 mb-3"/>
 
                             <View className="flex-row justify-between mb-2">
                                 <Text className="text-sm text-mj-text-secondary">Original route</Text>
-                                <Text className="text-sm font-medium text-mj-text-main">
+                                <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {routeDistanceKm != null ? `${routeDistanceKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>
 
                             <View className="flex-row justify-between mb-3">
                                 <Text className="text-sm text-mj-text-secondary">Rider's route</Text>
-                                <Text className="text-sm font-medium text-mj-text-main">
+                                <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {booking.routeDistanceKm != null
                                         ? `${booking.routeDistanceKm.toFixed(2)} km`
                                         : "—"}
@@ -412,7 +412,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                             <View className="flex-row justify-between">
                                 <Text className="text-sm text-mj-text-secondary">Extra distance</Text>
-                                <Text className="text-sm font-semibold text-mj-blue">
+                                <Text className="text-sm font-sans-semibold text-mj-blue">
                                     {deviationKm != null ? `+${deviationKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>

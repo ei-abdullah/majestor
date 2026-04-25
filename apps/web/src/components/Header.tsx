@@ -44,7 +44,7 @@ export default function Header() {
               About
             </Link>
             <a
-              href="https://play.google.com"
+              href="https://play.google.com/store/apps/details?id=com.majestor.app"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sm font-medium bg-[#121826] text-white px-5 py-2.5 rounded-full hover:bg-[#2a3441] transition-colors"
@@ -100,7 +100,7 @@ export default function Header() {
                 About
               </Link>
               <a
-                href="https://play.google.com"
+                href="https://play.google.com/store/apps/details?id=com.majestor.app"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-medium bg-[#121826] text-white px-5 py-2.5 rounded-full text-center mt-2"

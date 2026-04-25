@@ -29,7 +29,7 @@ export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
                     <Feather name="alert-triangle" size={36} color="#C62828"/>
                 </View>
 
-                <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 24, letterSpacing: -0.5, marginBottom: 10, textAlign: 'center'}}>
+                <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 24, letterSpacing: -0.5, marginBottom: 10, textAlign: 'center'}}>
                     Something went wrong
                 </Text>
                 <Text style={{color: '#5A6275', fontSize: 14, lineHeight: 22, textAlign: 'center', marginBottom: 32}}>
@@ -46,7 +46,7 @@ export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
                         borderWidth: 1,
                         borderColor: '#FFE082',
                     }}>
-                        <Text style={{color: '#C6941F', fontWeight: '700', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6}}>
+                        <Text style={{color: '#C6941F', fontFamily: 'Inter_700Bold', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6}}>
                             Error (dev only)
                         </Text>
                         <Text style={{color: '#5A6275', fontSize: 12, lineHeight: 18, fontFamily: 'monospace'}} numberOfLines={6}>
@@ -68,7 +68,7 @@ export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
                     >
                         <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
                             <Feather name="refresh-cw" size={16} color="white"/>
-                            <Text style={{color: 'white', fontWeight: '800', fontSize: 15}}>
+                            <Text style={{color: 'white', fontFamily: 'Inter_800ExtraBold', fontSize: 15}}>
                                 Try Again
                             </Text>
                         </View>

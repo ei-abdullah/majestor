@@ -80,7 +80,7 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
         <View className={"flex flex-col gap-8 w-full"}>
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
-                    <Text className={"font-semibold"}>University Email</Text>
+                    <Text className={"font-sans-semibold"}>University Email</Text>
                     {
                         errors.email &&
                         <ErrorText message={errors.email.message as string}/>
@@ -107,7 +107,7 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
 
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
-                    <Text className={"font-semibold"}>Password</Text>
+                    <Text className={"font-sans-semibold"}>Password</Text>
                     {
                         errors.password &&
                         <ErrorText message={errors.password.message as string}/>

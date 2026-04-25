@@ -42,7 +42,7 @@ const ListItem = React.memo(({
         className="py-4 border-b border-gray-50 flex-row justify-between items-center"
     >
         <Text
-            className={`text-base flex-1 ${isSelected ? "text-mj-primary font-bold" : "text-gray-900"}`}>
+            className={`text-base flex-1 ${isSelected ? "text-mj-primary font-sans-bold" : "text-gray-900"}`}>
             {item.name}
         </Text>
         {isSelected && (
@@ -138,7 +138,7 @@ const StyledModalWithSearch = (
                         {/* Header */}
                         <View className="px-6 py-4 border-b border-gray-100 bg-white">
                             <View className="flex-row justify-between items-center mb-4">
-                                <Text className="text-xl font-bold text-gray-900">
+                                <Text className="text-xl font-sans-bold text-gray-900">
                                     {label || placeholder}
                                 </Text>
                                 <TouchableOpacity onPress={() => setIsVisible(false)}>

@@ -48,7 +48,7 @@ function PrimaryButton(
                     <Feather name={icon} size={iconSize ? iconSize : 18} color={"#fff"}/>
                 }
                 {title !== "" &&
-                    <Text className="text-white font-semibold text-base text-center">
+                    <Text className="text-white font-sans-semibold text-base text-center">
                         {title}
                     </Text>
                 }

@@ -34,8 +34,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
 
   /* Custom Majestor colors */
   --color-mj-blue: var(--mj-blue);
@@ -66,8 +66,13 @@
 body {
   background: linear-gradient(180deg, #EFF3FA 0%, #E6EBF5 100%);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Inter, system-ui, -apple-system, sans-serif;
   min-height: 100vh;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display), var(--font-sans), Inter, system-ui, sans-serif;
+  letter-spacing: -0.02em;
 }
 
 /* Gradient backgrounds inspired by mobile app */
@@ -113,4 +118,19 @@ body {
 
 .btn-outline:hover {
   background: #F0F4FF;
+}
+
+/* Animated gradient text shimmer */
+@keyframes shimmer {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+
+/* Reduced motion respect */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

@@ -103,7 +103,7 @@ export default function GroupChat() {
                     </View>
 
                     <View className="flex-1">
-                        <Text className="text-lg font-bold text-white" numberOfLines={1}>
+                        <Text className="text-lg font-sans-bold text-white" numberOfLines={1}>
                             {groupName || "Group Chat"}
                         </Text>
                         <View className="flex-row items-center gap-1.5">

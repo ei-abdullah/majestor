@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { usePremiumModalStore } from '@/src/stores/premiumModalStore';
 import Card from './Card';
@@ -16,13 +16,13 @@ const PremiumModal = () => {
                         <View className="bg-white/30 p-4 rounded-full">
                             <Feather name="award" size={40} color="#7D5C13" />
                         </View>
-                        <Text className="text-2xl font-black text-mj-yellow-900 mt-2 tracking-tighter">
+                        <Text className="text-2xl font-sans-extrabold text-mj-yellow-900 mt-2 tracking-tighter">
                             MAJESTOR ELITE
                         </Text>
                     </LinearGradient>
 
                     <View className="p-8 items-center">
-                        <Text className="text-center text-mj-text-main text-lg font-bold mb-4 leading-6">
+                        <Text className="text-center text-mj-text-main text-lg font-sans-bold mb-4 leading-6">
                             {message}
                         </Text>
                         
@@ -30,15 +30,18 @@ const PremiumModal = () => {
                             Join the Elite tier to unlock unlimited study groups, increased storage, and premium resources.
                         </Text>
 
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             className="w-full bg-mj-blue-600 py-4 rounded-2xl items-center shadow-blue mb-3"
-                            onPress={() => { /* TODO: Link to payment/stripe */ }}
+                            onPress={() => {
+                                close();
+                                Linking.openURL('https://www.majestor.org/pricing');
+                            }}
                         >
-                            <Text className="text-white font-black text-base uppercase">Upgrade Now</Text>
+                            <Text className="text-white font-sans-extrabold text-base uppercase">Upgrade Now</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={close} className="py-2">
-                            <Text className="text-mj-text-muted font-bold text-xs uppercase tracking-widest">Maybe Later</Text>
+                            <Text className="text-mj-text-muted font-sans-bold text-xs uppercase tracking-widest">Maybe Later</Text>
                         </TouchableOpacity>
                     </View>
                 </Card>

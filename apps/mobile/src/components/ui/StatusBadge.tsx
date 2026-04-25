@@ -44,7 +44,7 @@ function StatusBadge({status, className = ""}: Props) {
             <Text className={`text-lg ${config.textColor} mr-2`}>
                 {config.icon}
             </Text>
-            <Text className={`text-base font-bold ${config.textColor}`}>
+            <Text className={`text-base font-sans-bold ${config.textColor}`}>
                 {config.label}
             </Text>
         </View>

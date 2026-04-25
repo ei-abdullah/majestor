@@ -21,10 +21,10 @@ export default function UniversityGroup({groups}: { groups: Group[] }) {
                     <Feather name="globe" size={18} color="#6FD0C5"/>
                 </View>
                 <View>
-                    <Text style={{color: '#22B5A6', fontSize: 10, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase'}}>
+                    <Text style={{color: '#22B5A6', fontSize: 10, fontFamily: 'Inter_800ExtraBold', letterSpacing: 2, textTransform: 'uppercase'}}>
                         Campus Wide
                     </Text>
-                    <Text style={{color: '#1A2340', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, marginTop: 1}}>
+                    <Text style={{color: '#1A2340', fontSize: 20, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5, marginTop: 1}}>
                         University Groups
                     </Text>
                 </View>
@@ -64,18 +64,18 @@ export default function UniversityGroup({groups}: { groups: Group[] }) {
                                     marginRight: 14,
                                     flexShrink: 0,
                                 }}>
-                                    <Text style={{color: 'white', fontSize: 18, fontWeight: '900'}}>
+                                    <Text style={{color: 'white', fontSize: 18, fontFamily: 'Inter_800ExtraBold'}}>
                                         {group.name.charAt(0).toUpperCase()}
                                     </Text>
                                 </View>
 
                                 <View style={{flex: 1}}>
-                                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, lineHeight: 18, marginBottom: 3}} numberOfLines={1}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14, lineHeight: 18, marginBottom: 3}} numberOfLines={1}>
                                         {group.name}
                                     </Text>
                                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                         <Feather name="users" size={9} color="#5A6275"/>
-                                        <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', marginLeft: 4, opacity: 0.65}}>
+                                        <Text style={{color: '#5A6275', fontSize: 10, fontFamily: 'Inter_600SemiBold', marginLeft: 4, opacity: 0.65}}>
                                             {group.memberCount} members · {group.hostName}
                                         </Text>
                                     </View>

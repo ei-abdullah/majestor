@@ -41,8 +41,8 @@ function Auth() {
                             />
                         </View>
                         <View>
-                            <Text className={"font-bold text-2xl"}>Majestor</Text>
-                            <Text className={"font-normal text-sm text-mj-text-secondary"}>Your campus life,
+                            <Text className={"font-sans-bold text-2xl"}>Majestor</Text>
+                            <Text className={"font-sans text-sm text-mj-text-secondary"}>Your campus life,
                                 unified</Text>
                         </View>
                     </View>
@@ -50,7 +50,7 @@ function Auth() {
                         <Card className={"bg-red-50 border border-red-200 mb-4 p-8"}>
                             <View>
                                 <Text
-                                    className={`text-center font-medium ${message.name === "error" ? "text-red-600" : "text-green-600"}`}
+                                    className={`text-center font-sans-medium ${message.name === "error" ? "text-red-600" : "text-green-600"}`}
                                 >
                                     {message.message}
                                 </Text>

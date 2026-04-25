@@ -86,8 +86,8 @@ export default function PersonalVault() {
                             <View className="mb-8">
                                 <View className="flex-row justify-between items-start mb-5">
                                     <View>
-                                        <Text className="text-mj-text-secondary text-[10px] font-black uppercase tracking-widest">Storage Status</Text>
-                                        <Text className="text-mj-text-main font-bold text-3xl mt-1">
+                                        <Text className="text-mj-text-secondary text-[10px] font-sans-extrabold uppercase tracking-widest">Storage Status</Text>
+                                        <Text className="text-mj-text-main font-sans-bold text-3xl mt-1">
                                             {usagePercentage.toFixed(0)}%
                                         </Text>
                                     </View>
@@ -104,11 +104,11 @@ export default function PersonalVault() {
                                 </View>
                                 
                                 <View className="flex-row justify-between mt-4">
-                                    <Text className="text-mj-text-secondary text-xs font-bold">
-                                        {storageUsedMB.toFixed(1)} MB <Text className="font-medium opacity-50">Used</Text>
+                                    <Text className="text-mj-text-secondary text-xs font-sans-bold">
+                                        {storageUsedMB.toFixed(1)} MB <Text className="font-sans-medium opacity-50">Used</Text>
                                     </Text>
-                                    <Text className="text-mj-text-secondary text-xs font-bold">
-                                        {storageLimitMB.toFixed(0)} MB <Text className="font-medium opacity-50">Limit</Text>
+                                    <Text className="text-mj-text-secondary text-xs font-sans-bold">
+                                        {storageLimitMB.toFixed(0)} MB <Text className="font-sans-medium opacity-50">Limit</Text>
                                     </Text>
                                 </View>
                             </View>

@@ -325,7 +325,7 @@ export default function RideDetails({ride}: Props) {
                             <Card className="bg-green-50 border border-green-200 px-5 py-4">
                                 <View className="flex-row items-center justify-center gap-2">
                                     <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
-                                    <Text className="text-sm font-semibold text-green-700">
+                                    <Text className="text-sm font-sans-semibold text-green-700">
                                         Ride Confirmed
                                     </Text>
                                 </View>
@@ -336,7 +336,7 @@ export default function RideDetails({ride}: Props) {
                             <Card className="bg-amber-50 border border-amber-200 px-5 py-4">
                                 <View className="flex-row items-center justify-center gap-2">
                                     <Ionicons name="time-outline" size={20} color="#d97706"/>
-                                    <Text className="text-sm font-semibold text-amber-700">
+                                    <Text className="text-sm font-sans-semibold text-amber-700">
                                         Waiting for Driver's Response...
                                     </Text>
                                 </View>
@@ -361,7 +361,7 @@ export default function RideDetails({ride}: Props) {
                                         <Ionicons name="person-outline" size={28} color="#3A6FF8"/>
                                     </View>
                                 )}
-                                <Text className="text-base font-bold text-mj-text-main" numberOfLines={1}>
+                                <Text className="text-base font-sans-bold text-mj-text-main" numberOfLines={1}>
                                     {ride.ridePosterUsername ?? "—"}
                                 </Text>
                                 <Text className="text-xs text-mj-text-secondary mt-0.5" numberOfLines={1}>
@@ -374,7 +374,7 @@ export default function RideDetails({ride}: Props) {
                                     <View className="h-px bg-gray-100 mb-4"/>
                                     <View className="flex-row items-center justify-center gap-2 mb-4">
                                         <Ionicons name="call-outline" size={18} color="#3A6FF8"/>
-                                        <Text className="text-base font-semibold text-mj-blue">
+                                        <Text className="text-base font-sans-semibold text-mj-blue">
                                             {ride.phone ?? "—"}
                                         </Text>
                                         <Text>|</Text>
@@ -389,7 +389,7 @@ export default function RideDetails({ride}: Props) {
                                             className={"flex-row items-center gap-1"}
                                         >
                                             <Ionicons name="chatbubble-outline" size={18} color="#3A6FF8"/>
-                                            <Text className="text-base font-semibold text-mj-blue">
+                                            <Text className="text-base font-sans-semibold text-mj-blue">
                                                 Chat with Rider
                                             </Text>
                                         </Pressable>
@@ -425,7 +425,7 @@ export default function RideDetails({ride}: Props) {
                                         size={22}
                                         color="#6FD0C5"
                                     />
-                                    <Text className="text-sm font-semibold text-mj-text-main text-center"
+                                    <Text className="text-sm font-sans-semibold text-mj-text-main text-center"
                                           numberOfLines={1}>
                                         {ride.vehicleModal ?? "—"}
                                     </Text>
@@ -438,7 +438,7 @@ export default function RideDetails({ride}: Props) {
 
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="people-outline" size={22} color="#6FD0C5"/>
-                                    <Text className="text-sm font-semibold text-mj-text-main">
+                                    <Text className="text-sm font-sans-semibold text-mj-text-main">
                                         {ride.availableSeats ?? "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Available seats</Text>
@@ -449,7 +449,7 @@ export default function RideDetails({ride}: Props) {
                         {/* Card 3 - Booker's request */}
                         {hasBooked && (
                             <Card className="px-5 py-6">
-                                <Text className="text-sm font-bold text-mj-text-main text-center mb-3">Your
+                                <Text className="text-sm font-sans-bold text-mj-text-main text-center mb-3">Your
                                     Request</Text>
 
                                 <View className="h-px bg-gray-100 mb-4"/>
@@ -473,7 +473,7 @@ export default function RideDetails({ride}: Props) {
 
                                 <View className="flex-row items-center gap-2">
                                     <Ionicons name="people-outline" size={18} color="#6FD0C5"/>
-                                    <Text className="text-sm font-semibold text-mj-text-main">
+                                    <Text className="text-sm font-sans-semibold text-mj-text-main">
                                         {rideRequest.numberOfPassengers ?? "—"}
                                     </Text>
                                     <Text className="text-sm text-mj-text-secondary">Passengers</Text>
@@ -483,20 +483,20 @@ export default function RideDetails({ride}: Props) {
 
                         {/* Card 4 — Route analysis */}
                         <Card className="px-5 py-5">
-                            <Text className="text-sm font-bold text-mj-text-main mb-3">Route Analysis</Text>
+                            <Text className="text-sm font-sans-bold text-mj-text-main mb-3">Route Analysis</Text>
 
                             <View className="h-px bg-gray-200 mb-3"/>
 
                             <View className="flex-row justify-between mb-2">
                                 <Text className="text-sm text-mj-text-secondary">Driver's route</Text>
-                                <Text className="text-sm font-medium text-mj-text-main">
+                                <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {ride.routeDistanceKm != null ? `${ride.routeDistanceKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>
 
                             <View className="flex-row justify-between mb-3">
                                 <Text className="text-sm text-mj-text-secondary">Your route</Text>
-                                <Text className="text-sm font-medium text-mj-text-main">
+                                <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {rideRequest.routeDistanceKm != null
                                         ? `${rideRequest.routeDistanceKm.toFixed(2)} km`
                                         : "—"}
@@ -507,7 +507,7 @@ export default function RideDetails({ride}: Props) {
 
                             <View className="flex-row justify-between mb-3">
                                 <Text className="text-sm text-mj-text-secondary">Driver's detour</Text>
-                                <Text className="text-sm font-semibold text-mj-blue">
+                                <Text className="text-sm font-sans-semibold text-mj-blue">
                                     {deviationKm != null ? `+${deviationKm.toFixed(2)} km` : "—"}
                                 </Text>
                             </View>
@@ -516,7 +516,7 @@ export default function RideDetails({ride}: Props) {
 
                             <View className="flex-row justify-between">
                                 <Text className="text-sm text-mj-text-secondary">Estimated fare</Text>
-                                <Text className="text-sm font-semibold text-mj-blue">
+                                <Text className="text-sm font-sans-semibold text-mj-blue">
                                     {estimatedFare != null ? `~Rs ${estimatedFare}` : "—"}
                                 </Text>
                             </View>

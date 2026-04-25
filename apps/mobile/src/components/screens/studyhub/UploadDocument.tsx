@@ -20,6 +20,7 @@ import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import Card from "@/src/components/ui/Card";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 const DESTINATIONS = [
     {label: "Private Vault", value: "PERSONAL_VAULT", icon: "lock"},
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderColor: '#FFFFFF',
         shadowColor: '#3A6FF8',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 5,
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     },
     destinationText: {
         fontSize: 8,
-        fontWeight: '900',
+        fontFamily: 'Inter_800ExtraBold',
         textTransform: 'uppercase',
         marginTop: 4,
         letterSpacing: 0.5,
@@ -120,7 +121,14 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
     const joinedGroups = feedData?.joinedGroups || [];
 
     const onSubmit = async (data: any) => {
-        if (images.length === 0) return;
+        if (images.length === 0) {
+            Toast.show({
+                type: 'error',
+                text1: 'No Images Selected',
+                text2: 'Please add at least one image of the document to upload.'
+            })
+            return;
+        }
 
         const formData = new FormData();
         formData.append('title', data.title);
@@ -194,7 +202,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                     {/* Step 2: Image Selection */}
                     <Card className="p-4 bg-white rounded-3xl shadow-blue border-0 mb-6">
                         <Text
-                            className="text-mj-text-secondary text-[10px] font-bold uppercase tracking-wider mb-4 px-2">Document
+                            className="text-mj-text-secondary text-[10px] font-sans-bold uppercase tracking-wider mb-4 px-2">Document
                             Images</Text>
                         {images.length > 0 ? (
                             <ImageCarousel images={images} onImagesChange={setImages} height={250}/>
@@ -205,12 +213,12 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
 
                     {/* Step 3: Metadata */}
                     <Card className="p-6 bg-white rounded-3xl shadow-blue border-0">
-                        <Text className="text-mj-text-secondary text-[10px] font-bold uppercase tracking-wider mb-6">Document
+                        <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase tracking-wider mb-6">Document
                             Details</Text>
 
                         {/* Title */}
                         <View className="mb-6">
-                            <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Title</Text>
+                            <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Title</Text>
                             <Controller
                                 control={control}
                                 name="title"
@@ -225,7 +233,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                         {/* Course (Optional for Personal) */}
                         <View className="mb-6">
                             <Text
-                                className="text-mj-text-main text-sm font-bold mb-2 ml-1">Course {selectedDestination === 'PERSONAL_VAULT' ? '(Optional)' : '*'}</Text>
+                                className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Course {selectedDestination === 'PERSONAL_VAULT' ? '(Optional)' : '*'}</Text>
                             <Controller
                                 control={control}
                                 name="courseId"
@@ -244,7 +252,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                         {/* Study Group (Only for Study Group destination) */}
                         {selectedDestination === 'STUDY_GROUP' && (
                             <View className="mb-6">
-                                <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Study Group *</Text>
+                                <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Study Group *</Text>
                                 <Controller
                                     control={control}
                                     name="studyGroupId"
@@ -264,7 +272,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                         {/* Type & Semester Row */}
                         <View className="flex-row gap-4 mb-6">
                             <View className="flex-1">
-                                <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Type</Text>
+                                <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Type</Text>
                                 <Controller
                                     control={control}
                                     name="documentType"
@@ -276,7 +284,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                                 />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-mj-text-main text-sm font-bold mb-2 ml-1">Semester</Text>
+                                <Text className="text-mj-text-main text-sm font-sans-bold mb-2 ml-1">Semester</Text>
                                 <Controller
                                     control={control}
                                     name="semesterType"
@@ -293,7 +301,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                         <View
                             className="flex-row items-center justify-between bg-mj-blue-50 p-4 rounded-2xl border border-mj-blue-100">
                             <View className="flex-1 mr-4">
-                                <Text className="text-mj-blue-900 font-bold text-sm">Premium Content</Text>
+                                <Text className="text-mj-blue-900 font-sans-bold text-sm">Premium Content</Text>
                                 <Text className="text-mj-blue-700 text-[10px]">Restricts access to Elite members
                                     only.</Text>
                             </View>
@@ -319,7 +327,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                             onPress={handleReset}
                             className="flex-1 py-5 rounded-3xl bg-mj-bg-light items-center justify-center border border-mj-bg-blue"
                         >
-                            <Text className="text-mj-text-secondary font-bold">Reset</Text>
+                            <Text className="text-mj-text-secondary font-sans-bold">Reset</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             onPress={handleSubmit(onSubmit)}
@@ -331,7 +339,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                             ) : (
                                 <View className="flex-row items-center">
                                     <Feather name="upload-cloud" size={20} color="white"/>
-                                    <Text className="text-white font-bold ml-2 text-lg">Confirm Upload</Text>
+                                    <Text className="text-white font-sans-bold ml-2 text-lg">Confirm Upload</Text>
                                 </View>
                             )}
                         </TouchableOpacity>

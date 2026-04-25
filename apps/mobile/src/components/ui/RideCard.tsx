@@ -51,7 +51,7 @@ function RideCard({
                     </View>
 
                     {/* Name */}
-                    <Text className="text-base font-semibold text-mj-text-main">
+                    <Text className="text-base font-sans-semibold text-mj-text-main">
                         {driverName}
                     </Text>
                 </View>
@@ -91,7 +91,7 @@ function RideCard({
                     </View>
 
                     {deviation !== undefined && (
-                        <Text className="text-xs font-medium text-mj-teal">
+                        <Text className="text-xs font-sans-medium text-mj-teal">
                             +{deviation.toFixed(1)} km
                         </Text>
                     )}

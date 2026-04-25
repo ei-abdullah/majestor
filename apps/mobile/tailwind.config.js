@@ -84,6 +84,17 @@ module.exports = {
                 "3xl": 24,
             },
 
+            fontFamily: {
+                sans: ["Inter_400Regular"],
+                "sans-medium": ["Inter_500Medium"],
+                "sans-semibold": ["Inter_600SemiBold"],
+                "sans-bold": ["Inter_700Bold"],
+                "sans-extrabold": ["Inter_800ExtraBold"],
+                display: ["PlusJakartaSans_700Bold"],
+                "display-semibold": ["PlusJakartaSans_600SemiBold"],
+                "display-extrabold": ["PlusJakartaSans_800ExtraBold"],
+            },
+
             fontWeight: {
                 normal: "400",
                 medium: "500",

@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     markerLabel: {
         color: 'white',
         fontSize: 12,
-        fontWeight: '600',
+        fontFamily: 'Inter_600SemiBold',
     },
     markerArrow: {
         width: 0,
