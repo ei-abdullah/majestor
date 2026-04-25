@@ -44,7 +44,7 @@ export default function ConfirmModal({
                             <Ionicons name="warning-outline" size={36} color="#E94F37"/>
                         </View>
 
-                        <Text className="text-xl font-bold text-mj-text-main mb-2 text-center">
+                        <Text className="text-xl font-sans-bold text-mj-text-main mb-2 text-center">
                             {title}
                         </Text>
 
@@ -61,14 +61,14 @@ export default function ConfirmModal({
                             className="flex-1 h-14 rounded-2xl border border-gray-200 items-center justify-center"
                             style={({pressed}) => ({opacity: pressed ? 0.7 : 1})}
                         >
-                            <Text className="text-mj-text-main font-semibold text-base">{cancelLabel}</Text>
+                            <Text className="text-mj-text-main font-sans-semibold text-base">{cancelLabel}</Text>
                         </Pressable>
                         <Pressable
                             onPress={onConfirm}
                             className="flex-1 h-14 rounded-2xl bg-mj-error items-center justify-center"
                             style={({pressed}) => ({opacity: pressed ? 0.82 : 1})}
                         >
-                            <Text className="text-white font-bold text-base">{confirmLabel}</Text>
+                            <Text className="text-white font-sans-bold text-base">{confirmLabel}</Text>
                         </Pressable>
                     </View>
                 </View>

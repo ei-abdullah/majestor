@@ -13,6 +13,19 @@ import {queryClient as client} from "@/src/lib/queryClient";
 import * as Sentry from "@sentry/react-native"
 
 import "./global.css"
+import {
+    useFonts as useInter,
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+} from "@expo-google-fonts/inter";
+import {
+    PlusJakartaSans_600SemiBold,
+    PlusJakartaSans_700Bold,
+    PlusJakartaSans_800ExtraBold,
+} from "@expo-google-fonts/plus-jakarta-sans";
 import {useAuthStore} from "@/src/stores/authStore";
 import {isRunningInExpoGo} from "expo";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -71,6 +84,17 @@ function RootLayout() {
     const [hydrated, setHydrated] = useState(useAuthStore.persist.hasHydrated());
     const pathname = usePathname();
 
+    const [fontsLoaded] = useInter({
+        Inter_400Regular,
+        Inter_500Medium,
+        Inter_600SemiBold,
+        Inter_700Bold,
+        Inter_800ExtraBold,
+        PlusJakartaSans_600SemiBold,
+        PlusJakartaSans_700Bold,
+        PlusJakartaSans_800ExtraBold,
+    });
+
     useEffect(() => {
         Sentry.addBreadcrumb({
             category: "navigation",
@@ -83,7 +107,7 @@ function RootLayout() {
         return useAuthStore.persist.onFinishHydration(() => setHydrated(true));
     }, []);
 
-    if (!hydrated) {
+    if (!hydrated || !fontsLoaded) {
         return (
             <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
                 <ActivityIndicator size="large"/>

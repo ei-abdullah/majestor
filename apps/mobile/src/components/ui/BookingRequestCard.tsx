@@ -39,7 +39,7 @@ function BookingRequestCard({booking, rideDistanceKm, vehicleType, className = "
                         </View>
                     )}
                     <View className="flex-1">
-                        <Text className="text-sm font-semibold text-mj-text-main" numberOfLines={1}>
+                        <Text className="text-sm font-sans-semibold text-mj-text-main" numberOfLines={1}>
                             {booking.rideRequesterUsername}
                         </Text>
                         <Text className="text-xs text-mj-text-secondary" numberOfLines={1}>
@@ -73,7 +73,7 @@ function BookingRequestCard({booking, rideDistanceKm, vehicleType, className = "
                 {/* Passengers Row */}
                 <View className="flex-row items-center mb-2">
                     <Ionicons name="people-outline" size={16} color="#5A6275"/>
-                    <Text className="text-xs font-medium text-mj-text-secondary ml-1.5">
+                    <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1.5">
                         {booking.numberOfPassengers} {booking.numberOfPassengers === 1 ? "passenger" : "passengers"}
                     </Text>
                 </View>
@@ -82,14 +82,14 @@ function BookingRequestCard({booking, rideDistanceKm, vehicleType, className = "
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
                             +{deviationKm.toFixed(2)} km deviation
                         </Text>
                     </View>
                     {estimatedFare != null && (
                         <View className="flex-row items-center">
                             <Ionicons name="cash-outline" size={16} color="#4CB8AD"/>
-                            <Text className="text-xs font-semibold text-mj-blue ml-1">
+                            <Text className="text-xs font-sans-semibold text-mj-blue ml-1">
                                 ~Rs {estimatedFare}
                             </Text>
                         </View>

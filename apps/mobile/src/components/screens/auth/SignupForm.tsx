@@ -130,7 +130,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* Username */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
-                    <Text className={"font-semibold text-mj-text-main"}>Username</Text>
+                    <Text className={"font-sans-semibold text-mj-text-main"}>Username</Text>
                     {
                         errors.username &&
                         <ErrorText message={errors.username.message as string}/>
@@ -156,7 +156,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* University Email */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-center"}>
-                    <Text className={"font-semibold text-mj-text-main"}>University Email</Text>
+                    <Text className={"font-sans-semibold text-mj-text-main"}>University Email</Text>
                     {
                         errors.email &&
                         <ErrorText message={errors.email.message as string}/>
@@ -191,7 +191,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* Password */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
-                    <Text className={"font-semibold text-mj-text-main"}>Password</Text>
+                    <Text className={"font-sans-semibold text-mj-text-main"}>Password</Text>
                     {
                         errors.password &&
                         <ErrorText message={errors.password.message as string}/>
@@ -219,7 +219,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
             {/* University */}
             <View className={"flex flex-col gap-2"}>
                 <View className={"flex flex-row justify-between items-end"}>
-                    <Text className={"font-semibold text-mj-text-main"}>University</Text>
+                    <Text className={"font-sans-semibold text-mj-text-main"}>University</Text>
                     {
                         errors.university &&
                         <ErrorText message={errors.university.message as string}/>
@@ -251,7 +251,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                 selectedUniversity && (
                     <View className={"flex flex-col gap-2"}>
                         <View className={"flex flex-row justify-between items-end"}>
-                            <Text className={"font-semibold text-mj-text-main"}>Faculty</Text>
+                            <Text className={"font-sans-semibold text-mj-text-main"}>Faculty</Text>
                             {
                                 errors.faculty &&
                                 <ErrorText message={errors.faculty.message as string}/>
@@ -301,7 +301,7 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                                     <View className="w-6 h-6 rounded-md border-2 border-gray-400 bg-white"/>
                                 )}
                             </Pressable>
-                            <Text className="text-mj-text-main font-semibold">Sign up as Faculty?</Text>
+                            <Text className="text-mj-text-main font-sans-semibold">Sign up as Faculty?</Text>
                         </View>
                     )}
                 />
@@ -337,14 +337,14 @@ function SignupForm({loading, setLoading, setMessage, setTab}: Props) {
                                     I agree to the{" "}
                                     <Text
                                         onPress={() => Linking.openURL('https://www.majestor.org/terms')}
-                                        className="text-mj-blue font-semibold"
+                                        className="text-mj-blue font-sans-semibold"
                                     >
                                         Terms of Service
                                     </Text>
                                     {" "}and{" "}
                                     <Text
                                         onPress={() => Linking.openURL('https://www.majestor.org/privacy')}
-                                        className="text-mj-blue font-semibold"
+                                        className="text-mj-blue font-sans-semibold"
                                     >
                                         Privacy Policy
                                     </Text>

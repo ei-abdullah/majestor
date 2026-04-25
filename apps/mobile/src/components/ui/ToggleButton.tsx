@@ -31,7 +31,7 @@ function ToggleButton<T extends string | number>({
             <View className={`${className} w-full`}>
                 {/* Label - Match NumberStepper style */}
                 {label && (
-                    <Text className="text-base font-semibold text-mj-text-main">
+                    <Text className="text-base font-sans-semibold text-mj-text-main">
                         {label}
                     </Text>
                 )}

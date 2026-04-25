@@ -120,10 +120,10 @@ export default function CarpoolHome() {
                             {isDriverActive ? (
                                 <View>
                                     <View className="flex-row items-center justify-between mb-3">
-                                        <Text className="text-lg font-bold text-mj-text-main">Current Ride</Text>
+                                        <Text className="text-lg font-sans-bold text-mj-text-main">Current Ride</Text>
                                         <View className={`px-2 py-1 rounded-full flex-row items-center ${rideStore.bookingId ? 'bg-mj-teal-100' : 'bg-green-100'}`}>
                                             <View className={`w-2 h-2 rounded-full mr-1.5 ${rideStore.bookingId ? 'bg-mj-teal-600' : 'bg-green-500'}`} />
-                                            <Text className={`text-xs font-medium ${rideStore.bookingId ? 'text-mj-teal-800' : 'text-green-700'}`}>
+                                            <Text className={`text-xs font-sans-medium ${rideStore.bookingId ? 'text-mj-teal-800' : 'text-green-700'}`}>
                                                 {rideStore.bookingId ? "Booked" : "Active"}
                                             </Text>
                                         </View>
@@ -149,7 +149,7 @@ export default function CarpoolHome() {
                                                         />
                                                     </View>
                                                     <View className="flex-1">
-                                                        <Text className={`font-semibold text-base ${rideStore.bookingId ? 'text-mj-teal-900' : 'text-mj-blue-800'}`}>
+                                                        <Text className={`font-sans-semibold text-base ${rideStore.bookingId ? 'text-mj-teal-900' : 'text-mj-blue-800'}`}>
                                                             {rideStore.bookingId ? "Passenger Confirmed" : "Your Ride is Live"}
                                                         </Text>
                                                         <Text className={`text-xs mt-0.5 ${rideStore.bookingId ? 'text-mj-teal-700' : 'text-mj-blue-600'}`} numberOfLines={1}>
@@ -167,7 +167,7 @@ export default function CarpoolHome() {
                                                 <View className="flex-row items-center">
                                                     <Ionicons name="location" size={16} color="#9CA3AF" />
                                                     <Text className="text-gray-600 text-sm ml-2 flex-1" numberOfLines={1}>
-                                                        To: <Text className="text-gray-900 font-medium">{rideStore.endLocationAddress}</Text>
+                                                        To: <Text className="text-gray-900 font-sans-medium">{rideStore.endLocationAddress}</Text>
                                                     </Text>
                                                 </View>
                                             </View>
@@ -177,10 +177,10 @@ export default function CarpoolHome() {
                             ) : isPassengerActive ? (
                                 <View>
                                     <View className="flex-row items-center justify-between mb-3">
-                                        <Text className="text-lg font-bold text-mj-text-main">Current Request</Text>
+                                        <Text className="text-lg font-sans-bold text-mj-text-main">Current Request</Text>
                                         <View className={`px-2 py-1 rounded-full flex-row items-center ${rideRequestStore.bookingId ? 'bg-mj-teal-100' : 'bg-mj-yellow-100'}`}>
                                             <View className={`w-2 h-2 rounded-full mr-1.5 ${rideRequestStore.bookingId ? 'bg-mj-teal-600' : 'bg-mj-yellow-600'}`} />
-                                            <Text className={`text-xs font-medium ${rideRequestStore.bookingId ? 'text-mj-teal-800' : 'text-mj-yellow-800'}`}>
+                                            <Text className={`text-xs font-sans-medium ${rideRequestStore.bookingId ? 'text-mj-teal-800' : 'text-mj-yellow-800'}`}>
                                                 {rideRequestStore.bookingId ? "Pending" : "Searching"}
                                             </Text>
                                         </View>
@@ -207,7 +207,7 @@ export default function CarpoolHome() {
                                                         />
                                                     </View>
                                                     <View className="flex-1">
-                                                        <Text className={`font-semibold text-base ${rideRequestStore.bookingId ? 'text-mj-teal-900' : 'text-mj-yellow-900'}`}>
+                                                        <Text className={`font-sans-semibold text-base ${rideRequestStore.bookingId ? 'text-mj-teal-900' : 'text-mj-yellow-900'}`}>
                                                             {rideRequestStore.bookingId ? "Booking Requested" : "Looking for a Ride"}
                                                         </Text>
                                                         <Text className={`text-xs mt-0.5 ${rideRequestStore.bookingId ? 'text-mj-teal-700' : 'text-mj-yellow-800'}`} numberOfLines={1}>
@@ -225,7 +225,7 @@ export default function CarpoolHome() {
                                                 <View className="flex-row items-center">
                                                     <Ionicons name="location" size={16} color="#9CA3AF" />
                                                     <Text className="text-gray-600 text-sm ml-2 flex-1" numberOfLines={1}>
-                                                        To: <Text className="text-gray-900 font-medium">{rideRequestStore.dropoffLocationAddress}</Text>
+                                                        To: <Text className="text-gray-900 font-sans-medium">{rideRequestStore.dropoffLocationAddress}</Text>
                                                     </Text>
                                                 </View>
                                             </View>
@@ -250,8 +250,8 @@ export default function CarpoolHome() {
                                             <View className="bg-white/20 p-3 rounded-full mb-2">
                                                 <Ionicons name="search" size={28} color="white" />
                                             </View>
-                                            <Text className="text-white font-bold text-base text-center">Find a Ride</Text>
-                                            <Text className="text-white/80 text-[10px] font-bold uppercase tracking-widest mt-0.5">Passenger</Text>
+                                            <Text className="text-white font-sans-bold text-base text-center">Find a Ride</Text>
+                                            <Text className="text-white/80 text-[10px] font-sans-bold uppercase tracking-widest mt-0.5">Passenger</Text>
                                         </LinearGradient>
                                     </TouchableOpacity>
 
@@ -265,15 +265,15 @@ export default function CarpoolHome() {
                                         <View className="bg-mj-blue-50 p-3 rounded-full mb-2">
                                             <Ionicons name="car-sport" size={28} color="#3A6FF8" />
                                         </View>
-                                        <Text className="text-mj-blue-600 font-bold text-base text-center">Offer a Ride</Text>
-                                        <Text className="text-mj-blue-400 text-[10px] font-bold uppercase tracking-widest mt-0.5">Driver</Text>
+                                        <Text className="text-mj-blue-600 font-sans-bold text-base text-center">Offer a Ride</Text>
+                                        <Text className="text-mj-blue-400 text-[10px] font-sans-bold uppercase tracking-widest mt-0.5">Driver</Text>
                                     </TouchableOpacity>
                                 </View>
                             ) : (
                                 <>
                                     <Card className={"bg-red-50 border border-red-200 mb-4 p-2"}>
                                         <View>
-                                            <Text className={`text-center font-medium text-red-600`}>
+                                            <Text className={`text-center font-sans-medium text-red-600`}>
                                                 Please enable location permission to use this feature.
                                             </Text>
                                         </View>

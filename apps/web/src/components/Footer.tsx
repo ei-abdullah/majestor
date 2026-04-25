@@ -43,7 +43,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <a
-                    href="https://play.google.com"
+                    href="https://play.google.com/store/apps/details?id=com.majestor.app"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sm text-[#5A6275] hover:text-[#121826] transition-colors"

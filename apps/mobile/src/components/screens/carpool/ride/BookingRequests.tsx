@@ -67,7 +67,7 @@ export default function BookingRequests() {
         <View className="mb-4">
             <Card className="px-5 py-5 mb-4">
                 <View className="relative flex-row items-center justify-center pb-3 mb-3 border-b border-gray-200">
-                    <Text className="text-sm font-bold text-mj-text-main">Your Ride</Text>
+                    <Text className="text-sm font-sans-bold text-mj-text-main">Your Ride</Text>
                     <Pressable
                         onPress={() => setShowCancelConfirm(true)}
                         className="absolute -right-2 -top-2"
@@ -86,7 +86,7 @@ export default function BookingRequests() {
                 <View className="mb-4">
                     <View className="flex-row items-center">
                         <View className="w-2 h-2 rounded-full bg-mj-blue mr-2"/>
-                        <Text className="text-sm text-mj-text-main font-medium flex-1" numberOfLines={1}>
+                        <Text className="text-sm text-mj-text-main font-sans-medium flex-1" numberOfLines={1}>
                             {startLocationAddress}
                         </Text>
                     </View>
@@ -95,7 +95,7 @@ export default function BookingRequests() {
                     </View>
                     <View className="flex-row items-center">
                         <View className="w-2 h-2 rounded-full bg-mj-teal mr-2"/>
-                        <Text className="text-sm text-mj-text-main font-medium flex-1" numberOfLines={1}>
+                        <Text className="text-sm text-mj-text-main font-sans-medium flex-1" numberOfLines={1}>
                             {endLocationAddress}
                         </Text>
                     </View>
@@ -108,13 +108,13 @@ export default function BookingRequests() {
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <Ionicons name={vehicleIcon as any} size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1.5">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1.5">
                             {vehicleModal}
                         </Text>
                     </View>
                     <View className="flex-row items-center">
                         <Ionicons name="people-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
                             {availableSeats} {availableSeats === 1 ? "seat" : "seats"}
                         </Text>
                     </View>

@@ -30,13 +30,13 @@ function RideSummaryCard({
 
             {/* Route */}
             <View className="mb-4">
-                <Text className="text-base text-mj-text-main font-medium mb-1">
+                <Text className="text-base text-mj-text-main font-sans-medium mb-1">
                     {startLocation}
                 </Text>
                 <View className="flex-row items-center my-2">
                     <View className="w-0.5 h-4 bg-mj-blue" />
                 </View>
-                <Text className="text-base text-mj-text-main font-medium">
+                <Text className="text-base text-mj-text-main font-sans-medium">
                     {endLocation}
                 </Text>
             </View>

@@ -48,7 +48,7 @@ function CustomHeader(
 
                 {/* Centered Title */}
                 <View className={"w-3/5 items-center"}>
-                    <Text className="text-base font-bold text-gray-800">{title}</Text>
+                    <Text className="text-base font-sans-bold text-gray-800">{title}</Text>
                 </View>
 
                 {/* Right Action Area */}

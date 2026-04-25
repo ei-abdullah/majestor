@@ -132,7 +132,7 @@ const ImageCarousel = ({images, onImagesChange, className = "", height = 300, sh
             {/* Image Counter */}
             {images.length > 1 && (
                 <View className="absolute bottom-3 left-3 bg-black/60 rounded-full px-3 py-1">
-                    <Text className="text-white text-xs font-semibold">
+                    <Text className="text-white text-xs font-sans-semibold">
                         {activeIndex + 1} / {images.length}
                     </Text>
                 </View>

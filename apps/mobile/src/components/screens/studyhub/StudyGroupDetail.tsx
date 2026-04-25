@@ -67,32 +67,32 @@ export default function StudyGroupDetail() {
                         <View className="flex-row justify-between items-end mb-6">
                             {group.isOfficial && (
                                 <View className="bg-mj-yellow-500 px-3 py-1.5 rounded-xl shadow-sm">
-                                    <Text className="text-mj-text-main text-[10px] font-black uppercase tracking-widest">Faculty Official</Text>
+                                    <Text className="text-mj-text-main text-[10px] font-sans-extrabold uppercase tracking-widest">Faculty Official</Text>
                                 </View>
                             )}
                         </View>
 
-                        <Text className="text-mj-text-main font-bold text-3xl leading-tight mb-4">{group.name}</Text>
+                        <Text className="text-mj-text-main font-sans-bold text-3xl leading-tight mb-4">{group.name}</Text>
                         
                         <View className="flex-row items-center bg-mj-bg-light p-4 rounded-2xl border border-mj-bg-blue mb-6">
                             <View className="bg-white p-2 rounded-xl shadow-sm mr-3">
                                 <Feather name="user" size={16} color="#3A6FF8" />
                             </View>
                             <View>
-                                <Text className="text-mj-text-secondary text-[10px] font-bold uppercase tracking-wider">Host & Course</Text>
-                                <Text className="text-mj-text-main font-bold text-sm">{group.hostName} • {group.courseName}</Text>
+                                <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase tracking-wider">Host & Course</Text>
+                                <Text className="text-mj-text-main font-sans-bold text-sm">{group.hostName} • {group.courseName}</Text>
                             </View>
                         </View>
 
                         {/* Stats Row */}
                         <View className="flex-row gap-4 mb-6">
                             <View className="flex-1 items-center py-4 bg-mj-blue-50 rounded-2xl border border-mj-blue-100">
-                                <Text className="text-mj-blue-700 font-bold text-xl">{group.memberCount}</Text>
-                                <Text className="text-mj-blue-400 text-[9px] font-black uppercase tracking-widest mt-1">Students</Text>
+                                <Text className="text-mj-blue-700 font-sans-bold text-xl">{group.memberCount}</Text>
+                                <Text className="text-mj-blue-400 text-[9px] font-sans-extrabold uppercase tracking-widest mt-1">Students</Text>
                             </View>
                             <View className="flex-1 items-center py-4 bg-mj-teal-50 rounded-2xl border border-mj-teal-100">
-                                <Text className="text-mj-teal-700 font-bold text-xl">{group.documents?.length || 0}</Text>
-                                <Text className="text-mj-teal-400 text-[9px] font-black uppercase tracking-widest mt-1">Resources</Text>
+                                <Text className="text-mj-teal-700 font-sans-bold text-xl">{group.documents?.length || 0}</Text>
+                                <Text className="text-mj-teal-400 text-[9px] font-sans-extrabold uppercase tracking-widest mt-1">Resources</Text>
                             </View>
                         </View>
 
@@ -109,7 +109,7 @@ export default function StudyGroupDetail() {
                                     className="flex-1 bg-mj-blue-600 py-5 rounded-[28px] flex-row items-center justify-center shadow-blue"
                                 >
                                     <Feather name="message-square" size={20} color="white" />
-                                    <Text className="text-white font-bold ml-2 text-base">Open Chat</Text>
+                                    <Text className="text-white font-sans-bold ml-2 text-base">Open Chat</Text>
                                 </Pressable>
                             ) : (
                                 <TouchableOpacity
@@ -118,7 +118,7 @@ export default function StudyGroupDetail() {
                                     className="flex-1 bg-mj-blue-600 py-5 rounded-[28px] flex-row items-center justify-center shadow-blue"
                                 >
                                     <Feather name={isJoining ? "loader" : "user-plus"} size={20} color="white" />
-                                    <Text className="text-white font-bold ml-2 text-base">
+                                    <Text className="text-white font-sans-bold ml-2 text-base">
                                         {isJoining ? "Joining..." : "Join Group"}
                                     </Text>
                                 </TouchableOpacity>
@@ -159,8 +159,8 @@ export default function StudyGroupDetail() {
                                     <Feather name="file-text" size={18} color="#6FD0C5" />
                                 </View>
                                 <View>
-                                    <Text className="text-mj-text-main font-bold text-xl tracking-tighter uppercase">Vault</Text>
-                                    <Text className="text-mj-text-secondary text-[10px] font-bold opacity-50 uppercase">{group.documents?.length} Resources Available</Text>
+                                    <Text className="text-mj-text-main font-sans-bold text-xl tracking-tighter uppercase">Vault</Text>
+                                    <Text className="text-mj-text-secondary text-[10px] font-sans-bold opacity-50 uppercase">{group.documents?.length} Resources Available</Text>
                                 </View>
                             </View>
                         </View>
@@ -204,7 +204,7 @@ export default function StudyGroupDetail() {
                                         onPress={() => setFilters({docType: '', year: '', sortByLikes: ''})}
                                         className="bg-mj-blue-50 px-4 items-center justify-center rounded-xl border border-mj-blue-100"
                                     >
-                                        <Text className="text-mj-blue font-black text-[10px] uppercase tracking-widest">Reset</Text>
+                                        <Text className="text-mj-blue font-sans-extrabold text-[10px] uppercase tracking-widest">Reset</Text>
                                     </TouchableOpacity>
                                 )}
                             </ScrollView>
@@ -217,7 +217,7 @@ export default function StudyGroupDetail() {
                         ) : (
                             <View className="items-center py-10 opacity-30">
                                 <Feather name="slash" size={40} color="#121826" />
-                                <Text className="text-mj-text-main font-bold mt-2 uppercase tracking-widest text-xs text-center">No matches found</Text>
+                                <Text className="text-mj-text-main font-sans-bold mt-2 uppercase tracking-widest text-xs text-center">No matches found</Text>
                             </View>
                         )}
 
@@ -231,12 +231,12 @@ export default function StudyGroupDetail() {
                                     <View className="bg-mj-blue-50 p-5 rounded-full mb-4 border border-mj-blue-100 shadow-sm">
                                         <Feather name="lock" size={32} color="#3A6FF8" />
                                     </View>
-                                    <Text className="text-mj-text-main font-bold text-lg text-center px-10">Join group to unlock all resources</Text>
+                                    <Text className="text-mj-text-main font-sans-bold text-lg text-center px-10">Join group to unlock all resources</Text>
                                     <TouchableOpacity 
                                         onPress={() => joinGroup({groupId, userId: user!.id})}
                                         className="bg-mj-blue-600 px-12 py-4 rounded-[22px] mt-6 shadow-blue"
                                     >
-                                        <Text className="text-white font-bold text-base uppercase">Unlock Vault</Text>
+                                        <Text className="text-white font-sans-bold text-base uppercase">Unlock Vault</Text>
                                     </TouchableOpacity>
                                 </LinearGradient>
                             </View>

@@ -22,10 +22,10 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
         <View className="px-6 mb-6">
             <View className="flex-row justify-between items-center mb-4 px-1">
                 <View>
-                    <Text style={{color: '#C6941F', fontSize: 10, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase'}}>
+                    <Text style={{color: '#C6941F', fontSize: 10, fontFamily: 'Inter_800ExtraBold', letterSpacing: 2, textTransform: 'uppercase'}}>
                         Verified
                     </Text>
-                    <Text style={{color: '#1A2340', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, marginTop: 2}}>
+                    <Text style={{color: '#1A2340', fontSize: 20, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5, marginTop: 2}}>
                         Official Channels
                     </Text>
                 </View>
@@ -33,7 +33,7 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                     onPress={() => router.push("/(tabs)/studyhub/officialGroup" as Href)}
                     style={{backgroundColor: '#FFF8E1', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: '#FFE082'}}
                 >
-                    <Text style={{color: '#C6941F', fontWeight: '700', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5}}>
+                    <Text style={{color: '#C6941F', fontFamily: 'Inter_700Bold', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5}}>
                         View All
                     </Text>
                 </TouchableOpacity>
@@ -76,17 +76,17 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                                         <Feather name="shield" size={22} color="white"/>
                                     </View>
                                     <View style={{backgroundColor: '#FFF3CD', paddingHorizontal: 7, paddingVertical: 3, borderRadius: 8, borderWidth: 1, borderColor: '#FFE082'}}>
-                                        <Text style={{color: '#C6941F', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}}>
+                                        <Text style={{color: '#C6941F', fontSize: 8, fontFamily: 'Inter_800ExtraBold', textTransform: 'uppercase', letterSpacing: 1}}>
                                             Official
                                         </Text>
                                     </View>
                                 </View>
 
                                 <View>
-                                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, lineHeight: 19, marginBottom: 6}} numberOfLines={2}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14, lineHeight: 19, marginBottom: 6}} numberOfLines={2}>
                                         {group.name}
                                     </Text>
-                                    <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', opacity: 0.7}} numberOfLines={1}>
+                                    <Text style={{color: '#5A6275', fontSize: 10, fontFamily: 'Inter_600SemiBold', opacity: 0.7}} numberOfLines={1}>
                                         {group.hostName}{group.courseName ? ` · ${group.courseName}` : ''}
                                     </Text>
                                 </View>

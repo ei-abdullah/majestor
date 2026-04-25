@@ -53,9 +53,9 @@ export default function JoinedGroupsScreen() {
                                         </View>
                                         <View className="flex-1">
                                             <View className="bg-mj-blue-50 self-start px-2 py-0.5 rounded-md mb-1.5">
-                                                <Text className="text-mj-blue-700 text-[8px] font-black uppercase tracking-widest">{item.courseName}</Text>
+                                                <Text className="text-mj-blue-700 text-[8px] font-sans-extrabold uppercase tracking-widest">{item.courseName}</Text>
                                             </View>
-                                            <Text className="text-mj-text-main font-bold text-lg leading-tight">
+                                            <Text className="text-mj-text-main font-sans-bold text-lg leading-tight">
                                                 {item.name}
                                             </Text>
                                         </View>
@@ -67,11 +67,11 @@ export default function JoinedGroupsScreen() {
                                         <View className="flex-row gap-4">
                                             <View className="flex-row items-center">
                                                 <Feather name="user" size={12} color="#5A6275" />
-                                                <Text className="text-mj-text-secondary text-[10px] font-bold uppercase ml-1.5">{item.hostName}</Text>
+                                                <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase ml-1.5">{item.hostName}</Text>
                                             </View>
                                             <View className="flex-row items-center">
                                                 <Feather name="users" size={12} color="#5A6275" />
-                                                <Text className="text-mj-text-secondary text-[10px] font-bold uppercase ml-1.5">{item.memberCount} Joined</Text>
+                                                <Text className="text-mj-text-secondary text-[10px] font-sans-bold uppercase ml-1.5">{item.memberCount} Joined</Text>
                                             </View>
                                         </View>
                                         <View className="bg-mj-blue-600 p-2 rounded-xl shadow-blue">
@@ -84,7 +84,7 @@ export default function JoinedGroupsScreen() {
                         ListEmptyComponent={
                             <View className="items-center justify-center py-24 opacity-30">
                                 <Feather name="users" size={48} color="#121826" />
-                                <Text className="text-mj-text-main font-bold mt-4 uppercase tracking-[2px] text-[10px]">No active groups</Text>
+                                <Text className="text-mj-text-main font-sans-bold mt-4 uppercase tracking-[2px] text-[10px]">No active groups</Text>
                             </View>
                         }
                     />

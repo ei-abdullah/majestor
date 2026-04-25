@@ -71,7 +71,7 @@ function DocumentList(
                 !isPending ? (
                     <View className="items-center justify-center py-20 bg-white/5 rounded-3xl border border-dashed border-white/10 mt-4">
                         <Feather name="file-text" size={48} color="rgba(255,255,255,0.2)" />
-                        <Text className="text-white/40 font-bold mt-4">No documents found</Text>
+                        <Text className="text-white/40 font-sans-bold mt-4">No documents found</Text>
                         <Text className="text-white/20 text-xs mt-1">Try changing your filters</Text>
                     </View>
                 ) : null

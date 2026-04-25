@@ -39,7 +39,7 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                         </View>
                     )}
                     <View className="flex-1">
-                        <Text className="text-sm font-semibold text-mj-text-main" numberOfLines={1}>
+                        <Text className="text-sm font-sans-semibold text-mj-text-main" numberOfLines={1}>
                             {recentRide.ridePosterUsername}
                         </Text>
                         <Text className="text-xs text-mj-text-secondary" numberOfLines={1}>
@@ -47,7 +47,7 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                         </Text>
                     </View>
                     <View className="bg-mj-blue-50 rounded-full px-2.5 py-1">
-                        <Text className="text-xs font-medium text-mj-blue">
+                        <Text className="text-xs font-sans-medium text-mj-blue">
                             {timeAgo(recentRide.createdAt)}
                         </Text>
                     </View>
@@ -79,13 +79,13 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                 <View className="flex-row items-center justify-between mb-3">
                     <View className="flex-row items-center">
                         <Ionicons name={vehicleIcon} size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1.5">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1.5">
                             {recentRide.vehicleModal} | {recentRide.licensePlate}
                         </Text>
                     </View>
                     <View className="flex-row items-center">
                         <Ionicons name="people-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
                             {recentRide.availableSeats} seats
                         </Text>
                     </View>
@@ -95,14 +95,14 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                 <View className="flex-row items-center justify-between">
                     <View className="flex-row items-center">
                         <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-medium text-mj-text-secondary ml-1">
+                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
                             +{deviationKm.toFixed(2)} km deviation
                         </Text>
                     </View>
                     {estimatedFare != null && (
                         <View className="flex-row items-center">
                             <Ionicons name="cash-outline" size={16} color="#4CB8AD"/>
-                            <Text className="text-xs font-semibold text-mj-blue ml-1">
+                            <Text className="text-xs font-sans-semibold text-mj-blue ml-1">
                                 ~Rs {estimatedFare}
                             </Text>
                         </View>

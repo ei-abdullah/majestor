@@ -95,7 +95,7 @@ function GoogleTextInput(
                 textInput: {
                     backgroundColor: 'transparent',
                     fontSize: 16,
-                    fontWeight: '400',
+                    fontFamily: 'Inter_400Regular',
                     color: '#111827',
                     flex: 1,
                     height: '100%',

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     },
     title: {
         color: '#1A2340',
-        fontWeight: '900',
+        fontFamily: 'Inter_800ExtraBold',
         fontSize: 22,
         letterSpacing: -0.5,
         marginBottom: 10,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: 'white',
-        fontWeight: '800',
+        fontFamily: 'Inter_800ExtraBold',
         fontSize: 15,
     },
 });

@@ -108,7 +108,7 @@ function UserSettings() {
 
                     {/* Academic Profile */}
                     <Card className="px-5 py-6 mb-6 mx-4">
-                        <Text className="text-base font-semibold text-gray-700 mb-4">Academic Profile</Text>
+                        <Text className="text-base font-sans-semibold text-gray-700 mb-4">Academic Profile</Text>
 
                         {/* University Name */}
                         <View className="mb-4">
@@ -155,7 +155,7 @@ function UserSettings() {
 
                     {/* Personal Information */}
                     <Card className="px-5 py-6 mb-6 mx-4">
-                        <Text className="text-base font-semibold text-gray-700 mb-4">Personal Information</Text>
+                        <Text className="text-base font-sans-semibold text-gray-700 mb-4">Personal Information</Text>
                         {/* Personal Email */}
                         <View className="mb-4">
                             <Text className="text-sm text-gray-500 mb-2">Personal Email</Text>
@@ -226,13 +226,13 @@ function UserSettings() {
 
                     {/* Your Roles */}
                     <Card className="px-5 py-5 mb-6 mx-4">
-                        <Text className="text-base font-semibold text-gray-700 mb-4">Roles</Text>
+                        <Text className="text-base font-sans-semibold text-gray-700 mb-4">Roles</Text>
                         <View className="flex-row flex-wrap gap-2">
                             {userDetails.roles && userDetails.roles.length > 0 ? (
                                 userDetails.roles.map((role, index) => (
                                     <View key={index}
                                           className="bg-blue-50 px-4 py-2 rounded-full border border-blue-200">
-                                        <Text className="text-blue-600 font-medium text-sm">
+                                        <Text className="text-blue-600 font-sans-medium text-sm">
                                             {role}
                                         </Text>
                                     </View>
@@ -253,7 +253,7 @@ function UserSettings() {
                                 <View className="bg-purple-100 rounded-xl p-2">
                                     <Feather name="bell" size={18} color="#7B1FA2"/>
                                 </View>
-                                <Text className="text-gray-700 font-medium">Notifications</Text>
+                                <Text className="text-gray-700 font-sans-medium">Notifications</Text>
                             </View>
                             <Feather name="chevron-right" size={18} color="#9CA3AF"/>
                         </Pressable>
@@ -261,7 +261,7 @@ function UserSettings() {
 
                     {/* Legal */}
                     <Card className="px-5 py-5 mb-6 mx-4">
-                        <Text className="text-base font-semibold text-gray-700 mb-4">Legal</Text>
+                        <Text className="text-base font-sans-semibold text-gray-700 mb-4">Legal</Text>
                         <View className="gap-4">
                             <Pressable
                                 onPress={() => Linking.openURL('https://www.majestor.org/terms')}
@@ -271,7 +271,7 @@ function UserSettings() {
                                     <View className="bg-blue-100 rounded-lg p-2">
                                         <Feather name="file-text" size={18} color="#2563EB"/>
                                     </View>
-                                    <Text className="text-gray-700 font-medium">Terms of Service</Text>
+                                    <Text className="text-gray-700 font-sans-medium">Terms of Service</Text>
                                 </View>
                                 <Feather name="chevron-right" size={18} color="#9CA3AF"/>
                             </Pressable>
@@ -286,7 +286,7 @@ function UserSettings() {
                                     <View className="bg-green-100 rounded-lg p-2">
                                         <Feather name="shield" size={18} color="#059669"/>
                                     </View>
-                                    <Text className="text-gray-700 font-medium">Privacy Policy</Text>
+                                    <Text className="text-gray-700 font-sans-medium">Privacy Policy</Text>
                                 </View>
                                 <Feather name="chevron-right" size={18} color="#9CA3AF"/>
                             </Pressable>
@@ -302,7 +302,7 @@ function UserSettings() {
                             <View className="bg-red-100 rounded-xl p-2">
                                 <Feather name="log-out" size={18} color="#DC2626"/>
                             </View>
-                            <Text className="text-red-600 font-semibold text-base">
+                            <Text className="text-red-600 font-sans-semibold text-base">
                                 Sign out
                             </Text>
                         </Pressable>

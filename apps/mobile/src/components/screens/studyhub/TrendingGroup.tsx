@@ -28,10 +28,10 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                     <Feather name="trending-up" size={18} color="#FF4500"/>
                 </View>
                 <View>
-                    <Text style={{color: '#FF4500', fontSize: 10, fontWeight: '900', letterSpacing: 2, textTransform: 'uppercase'}}>
+                    <Text style={{color: '#FF4500', fontSize: 10, fontFamily: 'Inter_800ExtraBold', letterSpacing: 2, textTransform: 'uppercase'}}>
                         Hot Right Now
                     </Text>
-                    <Text style={{color: '#1A2340', fontSize: 20, fontWeight: '800', letterSpacing: -0.5, marginTop: 1}}>
+                    <Text style={{color: '#1A2340', fontSize: 20, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5, marginTop: 1}}>
                         Trending Hubs
                     </Text>
                 </View>
@@ -68,7 +68,7 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                                     marginRight: 14,
                                     flexShrink: 0,
                                 }}>
-                                    <Text style={{color: rank.text, fontSize: 10, fontWeight: '900'}}>
+                                    <Text style={{color: rank.text, fontSize: 10, fontFamily: 'Inter_800ExtraBold'}}>
                                         {rank.label}
                                     </Text>
                                 </View>
@@ -77,23 +77,23 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                                 <View style={{flex: 1}}>
                                     {group.courseName ? (
                                         <View style={{backgroundColor: '#EEF3FF', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 4}}>
-                                            <Text style={{color: '#3A6FF8', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}} numberOfLines={1}>
+                                            <Text style={{color: '#3A6FF8', fontSize: 8, fontFamily: 'Inter_800ExtraBold', textTransform: 'uppercase', letterSpacing: 1}} numberOfLines={1}>
                                                 {group.courseName}
                                             </Text>
                                         </View>
                                     ) : (
                                         <View style={{backgroundColor: '#E8F9F7', paddingHorizontal: 7, paddingVertical: 2, borderRadius: 6, alignSelf: 'flex-start', marginBottom: 4}}>
-                                            <Text style={{color: '#22B5A6', fontSize: 8, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 1}}>
+                                            <Text style={{color: '#22B5A6', fontSize: 8, fontFamily: 'Inter_800ExtraBold', textTransform: 'uppercase', letterSpacing: 1}}>
                                                 Global
                                             </Text>
                                         </View>
                                     )}
-                                    <Text style={{color: '#1A2340', fontWeight: '700', fontSize: 14, lineHeight: 18, marginBottom: 4}} numberOfLines={1}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14, lineHeight: 18, marginBottom: 4}} numberOfLines={1}>
                                         {group.name}
                                     </Text>
                                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                                         <Feather name="users" size={9} color="#5A6275"/>
-                                        <Text style={{color: '#5A6275', fontSize: 10, fontWeight: '600', marginLeft: 4, opacity: 0.65}}>
+                                        <Text style={{color: '#5A6275', fontSize: 10, fontFamily: 'Inter_600SemiBold', marginLeft: 4, opacity: 0.65}}>
                                             {group.memberCount} members · {group.hostName}
                                         </Text>
                                     </View>
@@ -112,7 +112,7 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                                     minWidth: 50,
                                 }}>
                                     <Feather name="star" size={12} color="#FBCB43"/>
-                                    <Text style={{color: '#1A2340', fontWeight: '900', fontSize: 12, marginTop: 2}}>
+                                    <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 12, marginTop: 2}}>
                                         {group.popularityScore?.toFixed(1) ?? '0.0'}
                                     </Text>
                                 </View>
@@ -125,7 +125,7 @@ export default function TrendingGroup({groups}: { groups: Group[] }) {
                     onPress={() => router.push("/(tabs)/studyhub/trendingGroup" as Href)}
                     style={{paddingVertical: 14, alignItems: 'center', borderTopWidth: 1, borderTopColor: '#F0F4FF'}}
                 >
-                    <Text style={{color: '#3A6FF8', fontWeight: '800', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5}}>
+                    <Text style={{color: '#3A6FF8', fontFamily: 'Inter_800ExtraBold', fontSize: 11, textTransform: 'uppercase', letterSpacing: 1.5}}>
                         Discover All Trending
                     </Text>
                 </TouchableOpacity>

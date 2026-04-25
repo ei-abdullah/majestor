@@ -227,7 +227,7 @@ export default function BookRide() {
                         {/* Location Selection */}
                         <View className="bg-white rounded-2xl p-4">
                             <View className="flex-row items-center justify-between mb-3">
-                                <Text className="text-base font-semibold">Select Locations</Text>
+                                <Text className="text-base font-sans-semibold">Select Locations</Text>
                             </View>
 
                             <View className="flex-row items-center justify-between mb-2">
@@ -237,7 +237,7 @@ export default function BookRide() {
                                     className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
                                 >
                                     <Ionicons name="locate" size={14} color="#3A6FF8"/>
-                                    <Text className="text-xs text-mj-blue font-medium">Use My Location</Text>
+                                    <Text className="text-xs text-mj-blue font-sans-medium">Use My Location</Text>
                                 </Pressable>
                             </View>
                             <Pressable
@@ -310,7 +310,7 @@ export default function BookRide() {
                         {/* Phone number */}
                         <View className="z-0">
                             <Card className={"p-6"}>
-                                <Text className="text-base font-semibold mb-2">Phone Number</Text>
+                                <Text className="text-base font-sans-semibold mb-2">Phone Number</Text>
                                 <Controller
                                     control={control}
                                     name="phone"

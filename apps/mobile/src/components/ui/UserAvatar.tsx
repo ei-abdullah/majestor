@@ -106,7 +106,7 @@ const UserAvatar = ({
                     style={{width: size, height: size}}
                 >
                     <Text
-                        className="text-white font-bold"
+                        className="text-white font-sans-bold"
                         style={{fontSize: size / 3.2}}
                     >
                         {getInitials()}

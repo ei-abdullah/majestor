@@ -64,7 +64,7 @@ function AvailableRides() {
         <View className="mb-4">
             <Card className="px-5 py-5 mb-4">
                 <View className="relative flex-row items-center justify-center border-b border-gray-200 pb-3 mb-3">
-                    <Text className="text-sm font-bold text-mj-text-main">Your Search</Text>
+                    <Text className="text-sm font-sans-bold text-mj-text-main">Your Search</Text>
                     <Pressable
                         onPress={handleCancelSearch}
                         className="absolute -right-2 -top-2"
@@ -80,7 +80,7 @@ function AvailableRides() {
                 </View>
 
                 <View className="mb-4 py-3">
-                    <Text className="text-sm text-center text-mj-text-main font-medium mb-1" numberOfLines={1}>
+                    <Text className="text-sm text-center text-mj-text-main font-sans-medium mb-1" numberOfLines={1}>
                         {pickupLocationAddress}
                     </Text>
                     {dropoffLocationAddress ? (
@@ -88,7 +88,7 @@ function AvailableRides() {
                             <View className="flex-row items-center justify-center my-2">
                                 <View className="w-0.5 h-4 bg-mj-teal"/>
                             </View>
-                            <Text className="text-sm text-center text-mj-text-main font-medium" numberOfLines={1}>
+                            <Text className="text-sm text-center text-mj-text-main font-sans-medium" numberOfLines={1}>
                                 {dropoffLocationAddress}
                             </Text>
                         </>
@@ -104,7 +104,7 @@ function AvailableRides() {
             </Card>
 
             {!isLoadingRides && !isError && (
-                <Text className="text-xs font-semibold text-mj-text-secondary mb-2 uppercase tracking-wide">
+                <Text className="text-xs font-sans-semibold text-mj-text-secondary mb-2 uppercase tracking-wide">
                     {recentRides.length > 0 ? `${recentRides.length} ride${recentRides.length === 1 ? "" : "s"} found` : "Available Rides"}
                 </Text>
             )}

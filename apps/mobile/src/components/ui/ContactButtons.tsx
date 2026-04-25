@@ -52,7 +52,7 @@ function ContactButtons({phoneNumber, className = ""}: Props) {
                 })}
             >
                 <Ionicons name="call" size={20} color="#FFFFFF" />
-                <Text className="text-white font-semibold text-base ml-2">
+                <Text className="text-white font-sans-semibold text-base ml-2">
                     CALL
                 </Text>
             </Pressable>
@@ -66,7 +66,7 @@ function ContactButtons({phoneNumber, className = ""}: Props) {
                 })}
             >
                 <Ionicons name="logo-whatsapp" size={20} color="#FFFFFF" />
-                <Text className="text-white font-semibold text-base ml-2">
+                <Text className="text-white font-sans-semibold text-base ml-2">
                     WHATSAPP
                 </Text>
             </Pressable>

@@ -106,7 +106,7 @@ function Chat() {
                     </View>
 
                     <View className="flex-1">
-                        <Text className="text-lg font-bold text-white" numberOfLines={1}>
+                        <Text className="text-lg font-sans-bold text-white" numberOfLines={1}>
                             {receiverUsername || receiverEmail}
                         </Text>
                         <View className="flex-row items-center gap-1.5">

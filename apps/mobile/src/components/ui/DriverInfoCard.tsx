@@ -35,7 +35,7 @@ function DriverInfoCard({
 
                 {/* Info */}
                 <View className="flex-1">
-                    <Text className="text-base font-semibold text-mj-text-main mb-1">
+                    <Text className="text-base font-sans-semibold text-mj-text-main mb-1">
                         {driverName}
                     </Text>
 

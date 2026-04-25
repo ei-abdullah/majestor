@@ -47,7 +47,7 @@ function OutlineButton(
             })}
             disabled={disabled}
         >
-            <Text className={`text-base font-semibold text-center ${styles.text}`}>
+            <Text className={`text-base font-sans-semibold text-center ${styles.text}`}>
                 {title}
             </Text>
         </Pressable>

@@ -1,21 +1,32 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const jakarta = Plus_Jakarta_Sans({
+  variable: "--font-display",
   subsets: ["latin"],
+  display: "swap",
+  weight: ["500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
   title: "Majestor - Your Campus Life, Unified",
-  description: "A comprehensive academic resource sharing and carpooling platform for universities. Share documents, find rides, and connect with your academic community.",
-  keywords: ["university", "academic", "document sharing", "carpooling", "students", "education"],
+  description:
+    "A comprehensive academic resource sharing and carpooling platform for universities. Share documents, find rides, and connect with your academic community.",
+  keywords: [
+    "university",
+    "academic",
+    "document sharing",
+    "carpooling",
+    "students",
+    "education",
+  ],
   icons: {
     icon: "/majestor-logo.png",
     shortcut: "/majestor-logo.png",
@@ -31,7 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${inter.variable} ${jakarta.variable} antialiased`}
       >
         {children}
       </body>

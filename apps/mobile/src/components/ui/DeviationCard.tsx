@@ -29,7 +29,7 @@ function DeviationCard({
                     <Text className="text-sm text-mj-text-secondary">
                         Driver's route
                     </Text>
-                    <Text className="text-sm font-medium text-mj-text-main">
+                    <Text className="text-sm font-sans-medium text-mj-text-main">
                         {originalDistance.toFixed(1)} {unit}
                     </Text>
                 </View>
@@ -38,7 +38,7 @@ function DeviationCard({
                     <Text className="text-sm text-mj-text-secondary">
                         With your stops
                     </Text>
-                    <Text className="text-sm font-medium text-mj-text-main">
+                    <Text className="text-sm font-sans-medium text-mj-text-main">
                         {newDistance.toFixed(1)} {unit}
                     </Text>
                 </View>
@@ -48,10 +48,10 @@ function DeviationCard({
 
                 {/* Deviation Highlight */}
                 <View className="flex-row justify-between items-center">
-                    <Text className="text-sm font-medium text-mj-text-secondary">
+                    <Text className="text-sm font-sans-medium text-mj-text-secondary">
                         Driver detours
                     </Text>
-                    <Text className="text-base font-bold text-mj-teal">
+                    <Text className="text-base font-sans-bold text-mj-teal">
                         +{deviation.toFixed(1)} {unit}
                     </Text>
                 </View>

@@ -63,10 +63,10 @@ function StatCard({icon, label, value, iconBg, iconColor}: StatCardProps) {
             }}>
                 <Feather name={icon} size={18} color={iconColor}/>
             </View>
-            <Text style={{color: '#1A2340', fontWeight: '800', fontSize: 22, letterSpacing: -0.5}}>
+            <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 22, letterSpacing: -0.5}}>
                 {value ?? '—'}
             </Text>
-            <Text style={{color: '#9CA3AF', fontSize: 11, fontWeight: '600', marginTop: 2}}>
+            <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_600SemiBold', marginTop: 2}}>
                 {label}
             </Text>
         </View>
@@ -98,7 +98,7 @@ function ActivityChart({data}: { data: number[] | undefined }) {
                         </View>
                         <Text style={{
                             fontSize: 9,
-                            fontWeight: '700',
+                            fontFamily: 'Inter_700Bold',
                             color: isToday ? '#3A6FF8' : '#9CA3AF',
                             marginTop: 5,
                         }}>
@@ -129,13 +129,13 @@ export default function Home() {
             <GradientView>
                 <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', gap: 16, paddingHorizontal: 24}}>
                     <Feather name="wifi-off" size={48} color="#9CA3AF"/>
-                    <Text style={{fontSize: 18, fontWeight: '600', color: '#111827'}}>Couldn't load your profile</Text>
+                    <Text style={{fontSize: 18, fontFamily: 'Inter_600SemiBold', color: '#111827'}}>Couldn't load your profile</Text>
                     <Text style={{fontSize: 14, color: '#6B7280', textAlign: 'center'}}>Check your connection and try again.</Text>
                     <Pressable onPress={() => refetch()} style={{backgroundColor: '#3A6FF8', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 12, width: '100%', alignItems: 'center'}}>
-                        <Text style={{color: 'white', fontWeight: '600', fontSize: 15}}>Retry</Text>
+                        <Text style={{color: 'white', fontFamily: 'Inter_600SemiBold', fontSize: 15}}>Retry</Text>
                     </Pressable>
                     <Pressable onPress={clearSession} style={{borderWidth: 1, borderColor: '#E5E7EB', paddingHorizontal: 32, paddingVertical: 14, borderRadius: 12, width: '100%', alignItems: 'center'}}>
-                        <Text style={{color: '#6B7280', fontWeight: '600', fontSize: 15}}>Logout</Text>
+                        <Text style={{color: '#6B7280', fontFamily: 'Inter_600SemiBold', fontSize: 15}}>Logout</Text>
                     </Pressable>
                 </View>
             </GradientView>
@@ -159,22 +159,22 @@ export default function Home() {
                 >
                     <View style={{flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between'}}>
                         <View style={{flex: 1}}>
-                            <Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontWeight: '500', marginBottom: 4}}>
+                            <Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontFamily: 'Inter_500Medium', marginBottom: 4}}>
                                 {getGreeting()}
                             </Text>
-                            <Text style={{color: 'white', fontSize: 28, fontWeight: '800', letterSpacing: -0.5}}>
+                            <Text style={{color: 'white', fontSize: 28, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5}}>
                                 {displayName}
                             </Text>
                             <View style={{flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10}}>
                                 <View style={{backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 5}}>
                                     <Feather name="award" size={11} color="rgba(255,255,255,0.8)"/>
-                                    <Text style={{color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '600'}}>
+                                    <Text style={{color: 'rgba(255,255,255,0.8)', fontSize: 11, fontFamily: 'Inter_600SemiBold'}}>
                                         {userDetails?.university ?? 'University'}
                                     </Text>
                                 </View>
                                 {userDetails?.roles?.includes('FACULTY') && (
                                     <View style={{backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20}}>
-                                        <Text style={{color: 'white', fontSize: 10, fontWeight: '800'}}>FACULTY</Text>
+                                        <Text style={{color: 'white', fontSize: 10, fontFamily: 'Inter_800ExtraBold'}}>FACULTY</Text>
                                     </View>
                                 )}
                             </View>
@@ -208,7 +208,7 @@ export default function Home() {
 
                     {/* ── Stats Row ─────────────────────────────────────── */}
                     <View>
-                        <Text style={{fontSize: 12, fontWeight: '700', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 14}}>
+                        <Text style={{fontSize: 12, fontFamily: 'Inter_700Bold', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 14}}>
                             Your Activity
                         </Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingRight: 20}}>
@@ -221,8 +221,8 @@ export default function Home() {
 
                     <View style={{backgroundColor: 'white', borderRadius: 24, padding: 20}}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
-                            <Text style={{color: '#1A2340', fontWeight: '800', fontSize: 15}}>This week</Text>
-                            <Text style={{color: '#9CA3AF', fontSize: 11, fontWeight: '600'}}>
+                            <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 15}}>This week</Text>
+                            <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_600SemiBold'}}>
                                 {(stats?.activityLast7Days ?? []).reduce((a, b) => a + b, 0)} actions
                             </Text>
                         </View>

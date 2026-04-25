@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 17,
-        fontWeight: '600',
+        fontFamily: 'Inter_600SemiBold',
         color: '#111827',
     },
     searchContainer: {

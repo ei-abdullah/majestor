@@ -52,10 +52,10 @@ function InviteModal({groupId, inviterId, ref}: Props) {
             onDismiss={handleDismiss}
         >
             <BottomSheetView style={{flex: 1, paddingHorizontal: 24, paddingTop: 8, paddingBottom: 40}}>
-                <Text style={{color: '#3A6FF8', fontWeight: '900', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 4}}>
+                <Text style={{color: '#3A6FF8', fontFamily: 'Inter_800ExtraBold', fontSize: 10, letterSpacing: 3, textTransform: 'uppercase', marginBottom: 4}}>
                     Members
                 </Text>
-                <Text style={{color: '#1A2340', fontWeight: '800', fontSize: 22, letterSpacing: -0.5, marginBottom: 20}}>
+                <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 22, letterSpacing: -0.5, marginBottom: 20}}>
                     Invite to Group
                 </Text>
 
@@ -88,7 +88,7 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                 {debouncedQuery.length < 2 ? (
                     <View style={{alignItems: 'center', paddingVertical: 40, opacity: 0.35}}>
                         <Feather name="mail" size={38} color="#5A6275"/>
-                        <Text style={{color: '#5A6275', fontSize: 13, fontWeight: '600', marginTop: 12}}>
+                        <Text style={{color: '#5A6275', fontSize: 13, fontFamily: 'Inter_600SemiBold', marginTop: 12}}>
                             Type part of their university email
                         </Text>
                     </View>
@@ -102,7 +102,7 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                             !isFetching ? (
                                 <View style={{alignItems: 'center', paddingVertical: 40, opacity: 0.35}}>
                                     <Feather name="user-x" size={38} color="#5A6275"/>
-                                    <Text style={{color: '#5A6275', fontSize: 13, fontWeight: '600', marginTop: 12}}>
+                                    <Text style={{color: '#5A6275', fontSize: 13, fontFamily: 'Inter_600SemiBold', marginTop: 12}}>
                                         No users found
                                     </Text>
                                 </View>
@@ -122,11 +122,11 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                                     alignItems: 'center', justifyContent: 'center',
                                     marginRight: 12, borderWidth: 1, borderColor: '#C7D7FD',
                                 }}>
-                                    <Text style={{color: '#3A6FF8', fontWeight: '800', fontSize: 17}}>
+                                    <Text style={{color: '#3A6FF8', fontFamily: 'Inter_800ExtraBold', fontSize: 17}}>
                                         {item.username.charAt(0).toUpperCase()}
                                     </Text>
                                 </View>
-                                <Text style={{flex: 1, color: '#1A2340', fontWeight: '700', fontSize: 14}}>
+                                <Text style={{flex: 1, color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14}}>
                                     {item.username}
                                 </Text>
                                 <TouchableOpacity
@@ -139,7 +139,7 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                                         borderRadius: 14,
                                     }}
                                 >
-                                    <Text style={{color: 'white', fontWeight: '700', fontSize: 12}}>Invite</Text>
+                                    <Text style={{color: 'white', fontFamily: 'Inter_700Bold', fontSize: 12}}>Invite</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
