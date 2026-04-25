@@ -182,7 +182,7 @@ export default function Home() {
 
                         <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
                             <Pressable
-                                onPress={() => router.push("/notifications" as Href)}
+                                onPress={() => router.push("/notification" as Href)}
                                 style={{backgroundColor: 'rgba(255,255,255,0.15)', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)'}}
                             >
                                 <Feather name="bell" size={19} color="white"/>

@@ -8,7 +8,8 @@ import {ActivityIndicator, View, Platform} from "react-native";
 import {Stack, usePathname} from "expo-router";
 import * as Notifications from "expo-notifications";
 import Toast from "react-native-toast-message";
-import {QueryClientProvider, QueryClient, QueryCache, MutationCache} from "@tanstack/react-query";
+import {QueryClientProvider} from "@tanstack/react-query";
+import {queryClient as client} from "@/src/lib/queryClient";
 import * as Sentry from "@sentry/react-native"
 
 import "./global.css"
@@ -19,7 +20,6 @@ import {BottomSheetModalProvider} from "@gorhom/bottom-sheet";
 import {KeyboardProvider} from "react-native-keyboard-controller";
 import PremiumModal from "@/src/components/ui/PremiumModal";
 import {useRegisterPushToken} from "@/src/queries/notification.queries";
-import {useNetworkErrorStore} from "@/src/stores/networkErrorStore";
 import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
 
 Notifications.setNotificationHandler({
@@ -42,43 +42,6 @@ if (Platform.OS === 'android') {
     });
 }
 
-const client = new QueryClient({
-    queryCache: new QueryCache({
-        onError: (error: any, query) => {
-            if (error?._sentryReported) return;
-            if (error?.response?.status === 401 || error?.response?.status === 403) return;
-
-            if (!error?.response || error?.response?.status >= 500) {
-                useNetworkErrorStore.getState().setNetworkError(true);
-                return;
-            }
-
-            Sentry.captureException(error, {
-                extra: {
-                    queryKey: query.queryKey,
-                }
-            });
-        },
-    }),
-    mutationCache: new MutationCache({
-        onError: (error: any, _variables, _context, mutation) => {
-            if (error?._sentryReported) return;
-            if (error?.response?.status === 401 || error?.response?.status === 403) return;
-
-            Sentry.captureException(error, {
-                extra: {
-                    mutationKey: mutation.options.mutationKey,
-                }
-            });
-        },
-    }),
-    defaultOptions: {
-        queries: {
-            retry: 2,
-            staleTime: 1000 * 60,
-        }
-    }
-});
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
     enableTimeToInitialDisplay: !isRunningInExpoGo()
@@ -86,22 +49,8 @@ const navigationIntegration = Sentry.reactNavigationIntegration({
 
 Sentry.init({
     dsn: 'https://955f5849bf09988aeed526b5b587d901@o4511044632903680.ingest.de.sentry.io/4511044954423376',
-
-    // Adds more context data to events (IP address, cookies, user, etc.)
-    // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-    sendDefaultPii: true,
-
-    // Enable Logs
-    // enableLogs: __DEV__,
-    enableLogs: true,
-
-    // Configure Session Replay
-    replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1,
-    integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
-
-    // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-    // spotlight: __DEV__,
+    sendDefaultPii: false,
+    integrations: [navigationIntegration, Sentry.feedbackIntegration()],
 });
 
 function PushTokenRegistrar() {

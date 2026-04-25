@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, View, Text, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, TouchableOpacity, Linking } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { usePremiumModalStore } from '@/src/stores/premiumModalStore';
 import Card from './Card';
@@ -30,9 +30,12 @@ const PremiumModal = () => {
                             Join the Elite tier to unlock unlimited study groups, increased storage, and premium resources.
                         </Text>
 
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             className="w-full bg-mj-blue-600 py-4 rounded-2xl items-center shadow-blue mb-3"
-                            onPress={() => { /* TODO: Link to payment/stripe */ }}
+                            onPress={() => {
+                                close();
+                                Linking.openURL('https://www.majestor.org/pricing');
+                            }}
                         >
                             <Text className="text-white font-black text-base uppercase">Upgrade Now</Text>
                         </TouchableOpacity>

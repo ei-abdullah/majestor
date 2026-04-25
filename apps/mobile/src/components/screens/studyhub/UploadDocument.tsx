@@ -20,6 +20,7 @@ import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import Card from "@/src/components/ui/Card";
 import LoadingIndicator from "@/src/components/ui/LoadingIndicator";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 
 const DESTINATIONS = [
     {label: "Private Vault", value: "PERSONAL_VAULT", icon: "lock"},
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderColor: '#FFFFFF',
         shadowColor: '#3A6FF8',
-        shadowOffset: { width: 0, height: 4 },
+        shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.3,
         shadowRadius: 8,
         elevation: 5,
@@ -120,7 +121,14 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
     const joinedGroups = feedData?.joinedGroups || [];
 
     const onSubmit = async (data: any) => {
-        if (images.length === 0) return;
+        if (images.length === 0) {
+            Toast.show({
+                type: 'error',
+                text1: 'No Images Selected',
+                text2: 'Please add at least one image of the document to upload.'
+            })
+            return;
+        }
 
         const formData = new FormData();
         formData.append('title', data.title);

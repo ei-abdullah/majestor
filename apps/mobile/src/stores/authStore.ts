@@ -3,6 +3,8 @@ import {createJSONStorage, persist} from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Sentry from "@sentry/react-native";
 import {AuthState} from "@/src/types/auth";
+import {deleteRefreshToken} from "@/src/stores/secureStore";
+import {queryClient} from "@/src/lib/queryClient";
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -24,8 +26,10 @@ export const useAuthStore = create<AuthState>()(
                 });
                 set({user, accessToken, isLoggedIn: true});
             },
-            clearSession: () => {
+            clearSession: async () => {
                 Sentry.setUser(null);
+                await deleteRefreshToken();
+                queryClient.clear();
                 set({user: null, accessToken: null, isLoggedIn: false});
             },
         }),
