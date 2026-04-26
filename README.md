@@ -196,6 +196,67 @@ All other routes require `Authorization: Bearer <token>`.
 
 ---
 
+## Roadmap
+
+Prioritized post-v1.0 plan. Order is by impact-per-effort, not chronology.
+
+### 🔴 Critical hardening (this week)
+
+These are pre-existing risks now amplified by being live in production.
+
+- [ ] **Fix IDOR vulnerability** in `UserController` and audit all controllers that take an `{id}` path param. Pull authenticated user from `SecurityContextHolder` and verify ownership before allowing reads/writes. (See `UserController.java:20`.)
+- [ ] **Restrict Google Maps API key** in Google Cloud Console — Android package + SHA-1 restriction, API restrictions to Maps/Places/Directions only, daily quota cap. Key is currently in source (`apps/mobile/src/constants/index.ts`).
+- [ ] **Move admin credentials out of source.** `DataInitializer.java` hardcodes admin email + password. Read from `ADMIN_EMAIL` / `ADMIN_PASSWORD` env vars; fail to boot if missing.
+- [ ] **Implement `forgetPassword`.** Endpoint exists and is documented as public, but `AuthService.forgetPassword()` has an empty body. Live users who forget their password are permanently locked out.
+- [ ] **Make `DataInitializer` idempotent.** Currently runs unconditionally on every startup. Wrap each init method with a `count() == 0` guard, or move seed data into a Flyway `V2__seed_data.sql` migration.
+
+### 🟡 v1.1 — biggest product unlocks (next 2 weeks)
+
+The four features most likely to materially improve retention and adoption.
+
+- [ ] **Ride ratings + driver profile.** After a completed ride, prompt both sides for a 1–5 star rating and optional one-line review. Surface average rating + total rides on driver profiles and on every ride listing. Single biggest trust unlock for Carpool.
+- [ ] **Women-only rides toggle.** Flag on ride posts and ride requests. "Female passengers only" rides are visible only to female users. Requires verified `gender` on signup. Important for the Pakistani university context.
+- [ ] **New-document push notifications by course.** When a user uploads a document tagged with a course another user has enrolled in, push them. Push infra already exists — only need course-to-user matching logic. Daily engagement driver.
+- [ ] **Class timetable.** Users add their classes (course + day + time + location). Home screen shows "Next class: SE-201 in 23 mins." Pairs with carpool ("ride to your 9am") and study groups. The feature most likely to turn the app into a daily habit.
+
+### 🟢 v1.2 — growth & engagement (month 2)
+
+- [ ] **Recurring rides.** "Repeat: Mon/Wed/Fri at 8am for 16 weeks." Auto-generates daily instances; passengers book individual ones. Removes the friction of posting the same commute every day.
+- [ ] **Document bookmarks ("Save for later").** Private save action, separate from public Like. Most study hub usage is "I'll need this for finals" — bookmarks are the right primitive.
+- [ ] **Referral system.** "Invite a friend with university email → both get 1 month of Elite when they sign up." Track via referral code on signup payload. Per-university leaderboard. Word-of-mouth is the dominant acquisition channel for campus apps; make it explicit.
+- [ ] **Define what Elite unlocks, concretely.** Replace vague "premium resources" copy in `PremiumModal` with a concrete table: free vs. Elite limits on study groups, storage, document uploads, etc.
+
+### 🛡️ Trust & safety (Carpool)
+
+- [ ] **SOS button during a ride.** Held-down emergency button on the live ride screen — shares location + ride details with a pre-set emergency contact and `support@majestor.org`. Table-stakes for ride-sharing.
+- [ ] **One-time vehicle verification.** First ride post requires uploading vehicle registration + license. Manual admin review. "Verified vehicle" badge on listings.
+
+### 📊 Observability & quality (background work)
+
+- [ ] **Add product analytics** (PostHog or Mixpanel). Track ~10 events: signup_completed, ride_posted, ride_booked, group_joined, document_uploaded, message_sent, etc. Don't over-instrument.
+- [ ] **Watch Play Console Vitals weekly** once installs cross a few hundred. ANR rate, crash rate, slow rendering, slow startup.
+- [ ] **API monitoring beyond Sentry.** Alert on 5xx rate > 1% over 10 minutes. Digital Ocean's built-in app metrics is enough for v1.
+- [ ] **Pragmatic test coverage.** Backend integration tests for the 5 most-used endpoints (Spring Boot + Testcontainers). Mobile: skip unit tests, add a single Maestro/Detox end-to-end smoke test in CI.
+
+### 🔭 Future bets — only if user data validates them
+
+These are natural extensions but should not be built without seeing demand in analytics first.
+
+- [ ] **Campus marketplace** — used textbooks, calculators, lab coats.
+- [ ] **Lost & found board.**
+- [ ] **Tutor matching** — Elite-only feature pairing seniors with juniors.
+- [ ] **Faculty/admin announcements** — official university news pushed to enrolled students.
+- [ ] **Study sessions calendar** — "Group SE-201 meeting at library, 7pm Thursday" with RSVP.
+- [ ] **Multi-university scaling.** Move single-university seed data into per-university SQL migrations or a tiny admin UI. Currently `DataInitializer` hardcodes one university.
+
+### Philosophy
+
+- **Build trust features (ratings, SOS, verification) before growth features.** A carpool app with one bad story is dead.
+- **Ship v1.1 with analytics enabled.** Solo developers waste the most time building features users don't want; analytics is the cheapest insurance against that.
+- **Don't promote betas to production while testing tracks have older non-compliant builds active.** Google reviews the union of all tracks (learned this the hard way during the v1.0 launch).
+
+---
+
 ## License
 
 MIT
