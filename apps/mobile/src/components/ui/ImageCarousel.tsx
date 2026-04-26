@@ -8,7 +8,6 @@ import {
     NativeScrollEvent,
     Pressable,
     Text,
-    Alert,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import {LinearGradient} from 'expo-linear-gradient';
@@ -34,13 +33,6 @@ const ImageCarousel = ({images, onImagesChange, className = "", height = 300, sh
     const scrollViewRef = useRef<ScrollView>(null);
 
     const handleImageUpload = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (!permissionResult.granted) {
-            Alert.alert('Permission required', 'Permission to access the media library is required.');
-            return;
-        }
-
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             allowsMultipleSelection: true,

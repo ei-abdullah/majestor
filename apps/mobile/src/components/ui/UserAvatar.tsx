@@ -46,13 +46,6 @@ const UserAvatar = ({
     const handleAvatarUpload = async () => {
         if (!editable) return;
 
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (!permissionResult.granted) {
-            Alert.alert('Permission required', 'Permission to access the media library is required.');
-            return;
-        }
-
         try {
             let result = await ImagePicker.launchImageLibraryAsync({
                 mediaTypes: ["images"],

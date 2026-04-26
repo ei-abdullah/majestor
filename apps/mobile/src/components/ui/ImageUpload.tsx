@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, Pressable, Alert} from 'react-native';
+import {View, Pressable} from 'react-native';
 import {Feather} from '@expo/vector-icons';
 import {LinearGradient} from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
@@ -17,13 +17,6 @@ cssInterop(LinearGradient, {
 
 const ImageUpload = ({onImagesChange, className = "", disabled = false}: Props) => {
     const handleImageUpload = async () => {
-        const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-        if (!permissionResult.granted) {
-            Alert.alert('Permission required', 'Permission to access the media library is required.');
-            return;
-        }
-
         let result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ["images"],
             allowsMultipleSelection: true,
