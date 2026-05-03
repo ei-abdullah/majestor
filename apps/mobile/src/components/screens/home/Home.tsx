@@ -4,7 +4,6 @@ import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 import {Href, router} from "expo-router";
 
-
 import {useAuthStore} from "@/src/stores/authStore";
 import {useUserDetails, useUserStats} from "@/src/queries/user.queries";
 import {useHasUnread} from "@/src/queries/notification.queries";
@@ -39,31 +38,33 @@ interface StatCardProps {
     icon: keyof typeof Feather.glyphMap;
     label: string;
     value: number | undefined;
-    iconBg: string;
-    iconColor: string;
+    gradientColors: [string, string];
 }
 
-function StatCard({icon, label, value, iconBg, iconColor}: StatCardProps) {
+function StatCard({icon, label, value, gradientColors}: StatCardProps) {
     return (
         <View style={{
             backgroundColor: 'white',
-            borderRadius: 20,
+            borderRadius: 22,
             padding: 18,
             marginRight: 12,
-            width: 110,
+            width: 120,
         }}>
-            <View style={{
-                backgroundColor: iconBg,
-                width: 38,
-                height: 38,
-                borderRadius: 12,
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: 12,
-            }}>
-                <Feather name={icon} size={18} color={iconColor}/>
-            </View>
-            <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 22, letterSpacing: -0.5}}>
+            <LinearGradient
+                colors={gradientColors}
+                start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                style={{
+                    width: 42,
+                    height: 42,
+                    borderRadius: 14,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 14,
+                }}
+            >
+                <Feather name={icon} size={19} color="white"/>
+            </LinearGradient>
+            <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 24, letterSpacing: -0.5}}>
                 {value ?? '—'}
             </Text>
             <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_600SemiBold', marginTop: 2}}>
@@ -79,13 +80,13 @@ function ActivityChart({data}: { data: number[] | undefined }) {
     const labels = getDayLabels();
 
     return (
-        <View style={{flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 90}}>
+        <View style={{flexDirection: 'row', alignItems: 'flex-end', gap: 8, height: 100}}>
             {values.map((v, i) => {
                 const isToday = i === 6;
-                const barH = Math.max((v / max) * 64, v > 0 ? 10 : 4);
+                const barH = Math.max((v / max) * 72, v > 0 ? 12 : 6);
                 return (
                     <View key={i} style={{flex: 1, alignItems: 'center', justifyContent: 'flex-end'}}>
-                        <View style={{width: '100%', height: barH, borderRadius: 6, overflow: 'hidden'}}>
+                        <View style={{width: '100%', height: barH, borderRadius: 8, overflow: 'hidden'}}>
                             {isToday || v > 0 ? (
                                 <LinearGradient
                                     colors={isToday ? ['#3A6FF8', '#8DDDD3'] : ['#C7D7FD', '#EEF3FF']}
@@ -93,14 +94,14 @@ function ActivityChart({data}: { data: number[] | undefined }) {
                                     style={{flex: 1}}
                                 />
                             ) : (
-                                <View style={{flex: 1, backgroundColor: '#F0F4FF'}}/>
+                                <View style={{flex: 1, backgroundColor: '#F3F4F6'}}/>
                             )}
                         </View>
                         <Text style={{
                             fontSize: 9,
                             fontFamily: 'Inter_700Bold',
                             color: isToday ? '#3A6FF8' : '#9CA3AF',
-                            marginTop: 5,
+                            marginTop: 6,
                         }}>
                             {labels[i]}
                         </Text>
@@ -121,6 +122,21 @@ export default function Home() {
     const displayName = userDetails?.username?.split(' ')[0]
         ?? user?.username?.split(' ')[0]
         ?? 'Student';
+
+    const isPremium = userDetails?.premiumUntil
+        ? new Date(userDetails.premiumUntil) > new Date()
+        : false;
+
+    const totalActions = (stats?.activityLast7Days ?? []).reduce((a, b) => a + b, 0);
+
+    const storageUsed = userDetails?.storageUsed ?? 0;
+    const storageLimit = userDetails?.storageLimit ?? 1;
+    const storagePct = Math.min(storageUsed / storageLimit, 1);
+    const formatStorage = (bytes: number) => {
+        if (bytes >= 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+        if (bytes >= 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(0)} MB`;
+        return `${(bytes / 1024).toFixed(0)} KB`;
+    };
 
     if (isPending) return <LoadingIndicator/>;
 
@@ -146,35 +162,48 @@ export default function Home() {
         <GradientView>
             <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{paddingBottom: 130}}>
 
+                {/* ── Hero Header ──────────────────────────────────────────── */}
                 <LinearGradient
-                    colors={['#1A3A8A', '#3A6FF8']}
+                    colors={isPremium ? ['#1A1A2E', '#2D1B69', '#3A6FF8'] : ['#1A3A8A', '#3A6FF8']}
                     start={{x: 0, y: 0}} end={{x: 1, y: 1}}
                     style={{
                         paddingTop: Platform.OS === 'android' ? 52 : 64,
-                        paddingBottom: 36,
+                        paddingBottom: 44,
                         paddingHorizontal: 24,
-                        borderBottomLeftRadius: 32,
-                        borderBottomRightRadius: 32,
+                        borderBottomLeftRadius: 36,
+                        borderBottomRightRadius: 36,
+                        overflow: 'hidden',
                     }}
                 >
+                    {/* Decorative background circles */}
+                    <View style={{position: 'absolute', top: -50, right: -40, width: 200, height: 200, borderRadius: 100, backgroundColor: 'rgba(255,255,255,0.05)'}}/>
+                    <View style={{position: 'absolute', top: 30, right: 70, width: 90, height: 90, borderRadius: 45, backgroundColor: 'rgba(255,255,255,0.04)'}}/>
+                    <View style={{position: 'absolute', bottom: -30, left: -30, width: 140, height: 140, borderRadius: 70, backgroundColor: 'rgba(255,255,255,0.04)'}}/>
+
                     <View style={{flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between'}}>
                         <View style={{flex: 1}}>
-                            <Text style={{color: 'rgba(255,255,255,0.6)', fontSize: 13, fontFamily: 'Inter_500Medium', marginBottom: 4}}>
+                            <Text style={{color: 'rgba(255,255,255,0.55)', fontSize: 14, fontFamily: 'Inter_500Medium', marginBottom: 6, letterSpacing: 0.2}}>
                                 {getGreeting()}
                             </Text>
-                            <Text style={{color: 'white', fontSize: 28, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5}}>
+                            <Text style={{color: 'white', fontSize: 30, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.8, lineHeight: 36}}>
                                 {displayName}
                             </Text>
-                            <View style={{flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 10}}>
-                                <View style={{backgroundColor: 'rgba(255,255,255,0.15)', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 5}}>
-                                    <Feather name="award" size={11} color="rgba(255,255,255,0.8)"/>
-                                    <Text style={{color: 'rgba(255,255,255,0.8)', fontSize: 11, fontFamily: 'Inter_600SemiBold'}}>
+                            <View style={{flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, flexWrap: 'wrap'}}>
+                                <View style={{backgroundColor: 'rgba(255,255,255,0.12)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderColor: 'rgba(255,255,255,0.1)'}}>
+                                    <Feather name="award" size={11} color="rgba(255,255,255,0.75)"/>
+                                    <Text style={{color: 'rgba(255,255,255,0.75)', fontSize: 11, fontFamily: 'Inter_600SemiBold'}}>
                                         {userDetails?.university ?? 'University'}
                                     </Text>
                                 </View>
                                 {userDetails?.roles?.includes('FACULTY') && (
-                                    <View style={{backgroundColor: 'rgba(255,255,255,0.25)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 20}}>
-                                        <Text style={{color: 'white', fontSize: 10, fontFamily: 'Inter_800ExtraBold'}}>FACULTY</Text>
+                                    <View style={{backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 9, paddingVertical: 5, borderRadius: 20, borderWidth: 1, borderColor: 'rgba(255,255,255,0.15)'}}>
+                                        <Text style={{color: 'white', fontSize: 10, fontFamily: 'Inter_800ExtraBold', letterSpacing: 0.5}}>FACULTY</Text>
+                                    </View>
+                                )}
+                                {isPremium && (
+                                    <View style={{backgroundColor: 'rgba(251,191,36,0.2)', paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 5, borderWidth: 1, borderColor: 'rgba(251,191,36,0.45)'}}>
+                                        <Feather name="star" size={11} color="#FCD34D"/>
+                                        <Text style={{color: '#FCD34D', fontSize: 11, fontFamily: 'Inter_700Bold'}}>Elite</Text>
                                     </View>
                                 )}
                             </View>
@@ -183,52 +212,95 @@ export default function Home() {
                         <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
                             <Pressable
                                 onPress={() => router.push("/notification" as Href)}
-                                style={{backgroundColor: 'rgba(255,255,255,0.15)', width: 42, height: 42, borderRadius: 14, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.25)'}}
+                                style={{backgroundColor: 'rgba(255,255,255,0.12)', width: 44, height: 44, borderRadius: 15, alignItems: 'center', justifyContent: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.18)'}}
                             >
                                 <Feather name="bell" size={19} color="white"/>
                                 {hasUnread && (
-                                    <View style={{position: 'absolute', top: 8, right: 8, width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF4444', borderWidth: 1.5, borderColor: '#3A6FF8'}}/>
+                                    <View style={{position: 'absolute', top: 9, right: 9, width: 8, height: 8, borderRadius: 4, backgroundColor: '#FF4444', borderWidth: 1.5, borderColor: 'rgba(26,58,138,0.8)'}}/>
                                 )}
                             </Pressable>
                             <Pressable onPress={() => router.push("/(tabs)/user" as Href)}>
-                                <UserAvatar
-                                    avatarUrl={userDetails?.avatar || null}
-                                    username={userDetails?.username || displayName}
-                                    onAvatarUpdate={() => {}}
-                                    size={48}
-                                    showCamera={false}
-                                    editable={false}
-                                />
+                                <View style={isPremium ? {padding: 2.5, borderRadius: 50, borderWidth: 2, borderColor: '#FCD34D'} : undefined}>
+                                    <UserAvatar
+                                        avatarUrl={userDetails?.avatar || null}
+                                        username={userDetails?.username || displayName}
+                                        onAvatarUpdate={() => {}}
+                                        size={48}
+                                        showCamera={false}
+                                        editable={false}
+                                    />
+                                </View>
                             </Pressable>
                         </View>
                     </View>
                 </LinearGradient>
 
-                <View style={{paddingHorizontal: 20, marginTop: 24, gap: 20}}>
+                <View style={{paddingHorizontal: 20, marginTop: 28, gap: 24}}>
 
-                    {/* ── Stats Row ─────────────────────────────────────── */}
+
+                    {/* ── Stats Row ─────────────────────────────────────────── */}
                     <View>
                         <Text style={{fontSize: 12, fontFamily: 'Inter_700Bold', color: '#9CA3AF', textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 14}}>
                             Your Activity
                         </Text>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{paddingRight: 20}}>
-                            <StatCard icon="upload-cloud" label="Uploads"   value={stats?.documentsUploaded} iconBg="#EEF3FF" iconColor="#3A6FF8"/>
-                            <StatCard icon="users"        label="Groups"    value={stats?.groupsJoined}      iconBg="#F3E5F5" iconColor="#7B1FA2"/>
-                            <StatCard icon="navigation"   label="Rides"     value={stats?.ridesPosted}       iconBg="#FFF3E0" iconColor="#E65100"/>
-                            <StatCard icon="check-circle" label="Completed" value={stats?.ridesCompleted}    iconBg="#E8F5E9" iconColor="#2E7D32"/>
+                            <StatCard icon="upload-cloud" label="Uploads"   value={stats?.documentsUploaded} gradientColors={['#3A6FF8', '#6B93FF']}/>
+                            <StatCard icon="users"        label="Groups"    value={stats?.groupsJoined}      gradientColors={['#7B1FA2', '#AB47BC']}/>
+                            <StatCard icon="navigation"   label="Rides"     value={stats?.ridesPosted}       gradientColors={['#E65100', '#FF7043']}/>
+                            <StatCard icon="check-circle" label="Completed" value={stats?.ridesCompleted}    gradientColors={['#2E7D32', '#43A047']}/>
                         </ScrollView>
                     </View>
 
-                    <View style={{backgroundColor: 'white', borderRadius: 24, padding: 20}}>
-                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20}}>
-                            <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 15}}>This week</Text>
-                            <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_600SemiBold'}}>
-                                {(stats?.activityLast7Days ?? []).reduce((a, b) => a + b, 0)} actions
-                            </Text>
+                    {/* ── Activity Chart ────────────────────────────────────── */}
+                    <View style={{backgroundColor: 'white', borderRadius: 24, padding: 22}}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 22}}>
+                            <View>
+                                <Text style={{color: '#1A2340', fontFamily: 'Inter_800ExtraBold', fontSize: 16}}>This week</Text>
+                                <Text style={{color: '#9CA3AF', fontSize: 12, fontFamily: 'Inter_500Medium', marginTop: 2}}>
+                                    {totalActions} total actions
+                                </Text>
+                            </View>
+                            <View style={{backgroundColor: '#EEF3FF', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12}}>
+                                <Text style={{color: '#3A6FF8', fontSize: 12, fontFamily: 'Inter_700Bold'}}>7 days</Text>
+                            </View>
                         </View>
                         <ActivityChart data={stats?.activityLast7Days}/>
                     </View>
 
+                    {/* ── Storage (Premium only) ────────────────────────────── */}
+                    {isPremium && userDetails?.storageLimit != null && (
+                        <View style={{backgroundColor: 'white', borderRadius: 24, padding: 22}}>
+                            <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16}}>
+                                <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                                    <View style={{backgroundColor: '#FEF3C7', width: 38, height: 38, borderRadius: 12, alignItems: 'center', justifyContent: 'center'}}>
+                                        <Feather name="database" size={17} color="#D97706"/>
+                                    </View>
+                                    <View>
+                                        <Text style={{color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14}}>Storage</Text>
+                                        <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_500Medium', marginTop: 1}}>Elite cloud storage</Text>
+                                    </View>
+                                </View>
+                                <Text style={{color: '#D97706', fontFamily: 'Inter_700Bold', fontSize: 13}}>
+                                    {Math.round(storagePct * 100)}%
+                                </Text>
+                            </View>
+                            <View style={{height: 8, backgroundColor: '#F3F4F6', borderRadius: 8, overflow: 'hidden'}}>
+                                <LinearGradient
+                                    colors={['#F59E0B', '#FCD34D']}
+                                    start={{x: 0, y: 0}} end={{x: 1, y: 0}}
+                                    style={{height: '100%', width: `${storagePct * 100}%`, borderRadius: 8}}
+                                />
+                            </View>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-between', marginTop: 8}}>
+                                <Text style={{color: '#6B7280', fontSize: 11, fontFamily: 'Inter_500Medium'}}>
+                                    {formatStorage(storageUsed)} used
+                                </Text>
+                                <Text style={{color: '#9CA3AF', fontSize: 11, fontFamily: 'Inter_500Medium'}}>
+                                    {formatStorage(storageLimit)} total
+                                </Text>
+                            </View>
+                        </View>
+                    )}
 
                 </View>
             </ScrollView>
