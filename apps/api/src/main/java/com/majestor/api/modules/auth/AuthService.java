@@ -14,6 +14,7 @@ import com.majestor.api.modules.user.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +22,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
@@ -36,6 +39,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final EmailService emailService;
 
+    @Value("${app.free-trial:false}")
+    private boolean freeTrial;
 
     @Transactional
     public void signup(
@@ -71,6 +76,10 @@ public class AuthService {
         String verificationToken = generateVerificationToken();
         user.setVerificationToken(verificationToken);
         user.setIsVerified(false);
+
+        if (freeTrial) {
+            user.setPremiumUntil(Instant.now().plus(60, ChronoUnit.DAYS));
+        }
 
         userRepository.save(user);
 
