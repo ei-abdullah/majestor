@@ -37,6 +37,9 @@ spring:
             enable: true
             required: true
 
+app:
+  free-trial: ${FREE_TRIAL:false}
+
 logging:
   level:
     com.majestor.api: INFO
