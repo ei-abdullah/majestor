@@ -20,6 +20,7 @@ import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import NumberStepper from "@/src/components/ui/NumberStepper";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import {useRideStore} from "@/src/stores/rideStore";
+import {useCarpoolDraftStore} from "@/src/stores/carpoolDraftStore";
 import {UploadRideResponse} from "@/src/types/ride";
 import {Href, useRouter} from "expo-router";
 import {useUploadRide} from "@/src/queries/ride.queries";
@@ -57,25 +58,24 @@ export default function PostRide() {
 
     const {user} = useAuthStore();
     const rideState = useRideStore();
+    const {postRide: draft, savePostRide} = useCarpoolDraftStore();
     const {mutate: uploadRide, isPending} = useUploadRide((data: UploadRideResponse) => {
-        rideState.setRideDetails({
-            ...data
-        });
+        rideState.setRideDetails({...data});
         router.push('/(tabs)/carpool/ride/bookingRequests' as Href)
     })
 
     const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            startLocation: null,
-            endLocation: null,
-            vehicleModel: '',
-            LicensePlate: '',
-            phone: user!.phone || ''
+            startLocation: draft.startLocation,
+            endLocation: draft.endLocation,
+            vehicleModel: draft.vehicleModel,
+            LicensePlate: draft.licensePlate,
+            phone: draft.phone || user!.phone || '',
         }
     });
 
-    const [numberOfPassengers, setNumberOfPassengers] = React.useState(1);
-    const [vehicleType, setVehicleType] = React.useState<'CAR' | 'BIKE'>('CAR');
+    const [numberOfPassengers, setNumberOfPassengers] = React.useState(draft.numberOfPassengers);
+    const [vehicleType, setVehicleType] = React.useState<'CAR' | 'BIKE'>(draft.vehicleType);
     const [modalField, setModalField] = useState<'start' | 'end' | null>(null);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const headerOffset = insets.top + 72;
@@ -120,6 +120,16 @@ export default function PostRide() {
             });
             return;
         }
+
+        savePostRide({
+            startLocation: data.startLocation,
+            endLocation: data.endLocation,
+            vehicleModel: data.vehicleModel,
+            licensePlate: data.LicensePlate,
+            phone: data.phone,
+            numberOfPassengers,
+            vehicleType,
+        });
 
         uploadRide({
             uploadRideDetails: {
@@ -247,7 +257,7 @@ export default function PostRide() {
                     contentContainerStyle={{
                         paddingHorizontal: 24,
                         paddingTop: 16,
-                        paddingBottom: 130,
+                        paddingBottom: 36,
                     }}
                     showsVerticalScrollIndicator={false}
                 >

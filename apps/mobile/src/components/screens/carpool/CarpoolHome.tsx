@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from "react";
-import {View, TouchableOpacity, Text} from "react-native";
+import React, {useEffect, useMemo, useRef, useState} from "react";
+import {View, TouchableOpacity, Text, Platform} from "react-native";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -36,7 +36,7 @@ export default function CarpoolHome() {
     const headerOffset = insets.top + 72;
 
     // Bottom sheet snap points - starts above tab bar but can scroll down
-    const snapPoints = ["40%"]
+    const snapPoints = useMemo(() => ["40%"], []);
 
 
     useEffect(() => {
@@ -78,7 +78,7 @@ export default function CarpoolHome() {
                     mapPadding={{top: headerOffset + 8, right: 10, bottom: 130, left: 10}}
                 />
 
-                {/* Custom Map Controls - Locator button beneath header */}
+                {/* Custom Map Controls - Locator button beneath the header */}
                 <View style={{
                     position: 'absolute',
                     right: 16,
@@ -91,7 +91,11 @@ export default function CarpoolHome() {
                         style={{
                             backgroundColor: 'white',
                             borderRadius: 50,
-                            padding: 12,
+                            width: 52,
+                            height: 52,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            overflow: 'hidden',
                             shadowColor: '#000',
                             shadowOffset: {width: 0, height: 4},
                             shadowOpacity: 0.15,
@@ -112,11 +116,12 @@ export default function CarpoolHome() {
                     index={0}
                     snapPoints={snapPoints}
                     enablePanDownToClose={false}
+                    enableDynamicSizing={false}
                     backgroundStyle={{backgroundColor: '#f9fafb'}}
                     handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
                 >
                     <BottomSheetView>
-                        <View className={"px-6 pb-32 pt-4 flex justify-center"}>
+                        <View style={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: (Platform.OS === 'android' ? 120 : 110) + insets.bottom}} className={"flex justify-center"}>
                             {isDriverActive ? (
                                 <View>
                                     <View className="flex-row items-center justify-between mb-3">

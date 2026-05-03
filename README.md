@@ -115,6 +115,156 @@ Scan the QR code with Expo Go. Before running on a physical device, set your mac
 | Email | Gmail SMTP |
 | Error tracking | Sentry (both apps) |
 | Push notifications | Expo Push API |
+| Subscriptions | RevenueCat + react-native-purchases |
+
+---
+
+## In-App Subscriptions (Majestor Elite)
+
+Subscriptions are powered by [RevenueCat](https://revenuecat.com). RevenueCat sits between the app and the stores — it normalises Apple and Google purchase receipts into a single entitlement check, and drives the paywall UI remotely without app updates.
+
+### How it works in code
+
+| File | Role |
+|------|------|
+| `src/services/purchases.service.ts` | All RevenueCat calls (`configure`, `logIn`, `getCustomerInfo`, etc.) |
+| `src/stores/purchasesStore.ts` | Zustand store — holds `customerInfo` and reactive `isElite` boolean |
+| `src/app/_layout.tsx` → `PurchasesInitializer` | Configures SDK at startup, syncs RevenueCat user ID with auth, listens for live entitlement updates |
+| `src/components/ui/PremiumModal.tsx` | Shown on 402 API responses — presents the RevenueCat paywall |
+| `src/components/screens/user/UserSettings.tsx` | Subscription card — "Upgrade to Elite" (paywall) or "Manage your subscription" (Customer Center) |
+
+The entitlement identifier in RevenueCat is **`Majestor Pro`** (identifier) / **`Majestor Elite`** (display name). The constant is `ENTITLEMENT_ID` in `purchases.service.ts`.
+
+---
+
+### One-time dashboard setup
+
+Complete this before testing purchases. All steps are in the [RevenueCat dashboard](https://app.revenuecat.com).
+
+#### 1. Create the app entries
+
+Go to **Project Settings → Apps** and add:
+- An **Apple App Store** app (needs App Store Connect API key)
+- A **Google Play** app (needs Google Play service account JSON)
+
+#### 2. Create products in each store
+
+**App Store Connect** (Monetization → Subscriptions):
+1. Create a **Subscription Group** (e.g. "Majestor Elite")
+2. Add two auto-renewable subscriptions:
+   - Product ID: `monthly` — 1 month duration
+   - Product ID: `yearly` — 1 year duration
+3. Fill in display name, price, and localisation for each
+
+**Google Play Console** (Monetization → Subscriptions):
+1. Create two subscriptions:
+   - Product ID: `monthly`
+   - Product ID: `yearly`
+2. Add a base plan and price for each, then **activate** them
+
+#### 3. Add products to RevenueCat
+
+In RevenueCat → **Products**, import or manually add the four products (2 iOS + 2 Android).
+
+#### 4. Verify the entitlement
+
+Go to **Entitlements** and confirm `Majestor Pro` has all four products attached (iOS monthly, iOS yearly, Android monthly, Android yearly).
+
+#### 5. Create an Offering with a Paywall
+
+Go to **Offerings** → create (or edit) the **`default`** offering:
+- Add a **Package** for monthly and one for yearly
+- Click **Paywalls** → design your paywall in the visual editor
+- **Attach** the paywall to the offering
+
+This is what `RevenueCatUI.presentPaywall()` renders. Without an attached paywall the modal will show an error.
+
+---
+
+### Testing on Android
+
+> Purchases require a **native build** — they will not work in Expo Go.
+
+#### Step 1 — Add a licence tester (no real charges)
+
+In **Google Play Console → Setup → Licence Testing**, add the Google account email you'll use on the test device. Licence testers can make purchases that go through the full flow without being charged.
+
+#### Step 2 — Build and install a development APK
+
+```bash
+cd apps/mobile
+npx expo run:android
+```
+
+Or with EAS:
+
+```bash
+eas build --platform android --profile development
+# install the downloaded .apk on your device
+```
+
+#### Step 3 — Sign in with the licence tester account
+
+On the Android device go to **Settings → Accounts** and make sure the licence tester Google account is added.
+
+#### Step 4 — Make a test purchase
+
+Open the app → Settings → **Upgrade to Elite** (or trigger a 402 from a premium-gated screen). The Google Play purchase sheet appears. Complete the purchase — no real charge occurs for licence testers.
+
+#### Step 5 — Verify in RevenueCat
+
+Go to **RevenueCat dashboard → Customers**, search for your user ID or email, and confirm the `Majestor Pro` entitlement shows as **Active**.
+
+---
+
+### Testing on iOS
+
+#### Step 1 — Create a Sandbox Tester
+
+In **App Store Connect → Users & Access → Sandbox → Testers**, create a new tester with a fresh Apple ID (use an email address not already registered with Apple).
+
+#### Step 2 — Build a development build
+
+```bash
+cd apps/mobile
+npx expo run:ios
+```
+
+Or with EAS:
+
+```bash
+eas build --platform ios --profile development
+# install via TestFlight or direct device install
+```
+
+#### Step 3 — Sign out of your real Apple ID on the device
+
+On the device go to **Settings → App Store** and sign out. Do **not** sign out of iCloud — only the App Store account.
+
+#### Step 4 — Make a test purchase
+
+Trigger the paywall in the app. When prompted to sign in to the App Store, enter the **sandbox tester** credentials (not your real Apple ID). The purchase completes in the sandbox — no real charge.
+
+#### Step 5 — Verify in RevenueCat
+
+Same as Android — check the customer record in the RevenueCat dashboard for an active `Majestor Pro` entitlement.
+
+---
+
+### Verifying the entitlement in-app
+
+After a successful test purchase, the `isElite` flag in `purchasesStore` should flip to `true`. You can confirm this by:
+
+1. Going to **Settings** — the Subscription card should now show **"Majestor Elite"** with a manage option instead of "Upgrade to Elite"
+2. Accessing a premium-gated document in Study Hub — it should no longer show the lock/blur
+3. Checking the RevenueCat dashboard → Customer → Entitlements
+
+---
+
+### Resetting test purchases
+
+- **Android**: In Google Play → Licence Testing you can revoke purchases, or simply use a fresh licence tester account
+- **iOS**: In App Store Connect → Sandbox Testers, click the tester and use **Clear Purchase History** to reset subscriptions for that sandbox account
 
 ---
 

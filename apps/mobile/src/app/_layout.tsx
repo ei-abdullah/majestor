@@ -1,10 +1,6 @@
-import {TextEncoder, TextDecoder} from "text-encoding";
-
-global.TextEncoder = TextEncoder;
-global.TextDecoder = TextDecoder;
-
+import {TextDecoder, TextEncoder} from "text-encoding";
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, View, Platform} from "react-native";
+import {ActivityIndicator, Platform, View} from "react-native";
 import {Stack, usePathname} from "expo-router";
 import * as Notifications from "expo-notifications";
 import Toast from "react-native-toast-message";
@@ -14,12 +10,12 @@ import * as Sentry from "@sentry/react-native"
 
 import "./global.css"
 import {
-    useFonts as useInter,
     Inter_400Regular,
     Inter_500Medium,
     Inter_600SemiBold,
     Inter_700Bold,
     Inter_800ExtraBold,
+    useFonts as useInter,
 } from "@expo-google-fonts/inter";
 import {
     PlusJakartaSans_600SemiBold,
@@ -34,6 +30,17 @@ import {KeyboardProvider} from "react-native-keyboard-controller";
 import PremiumModal from "@/src/components/ui/PremiumModal";
 import {useRegisterPushToken} from "@/src/queries/notification.queries";
 import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
+import {
+    configurePurchases,
+    addCustomerInfoListener,
+    getCustomerInfo,
+    loginUser,
+    logoutUser,
+} from "@/src/services/purchases.service";
+import {usePurchasesStore} from "@/src/stores/purchasesStore";
+
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
 Notifications.setNotificationHandler({
     handleNotification: async () => {
@@ -55,6 +62,8 @@ if (Platform.OS === 'android') {
     });
 }
 
+configurePurchases();
+
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
     enableTimeToInitialDisplay: !isRunningInExpoGo()
@@ -73,6 +82,28 @@ function PushTokenRegistrar() {
     useEffect(() => {
         if (user?.id) {
             registerPushToken(user.id);
+        }
+    }, [user?.id]);
+
+    return null;
+}
+
+function PurchasesInitializer() {
+    const user = useAuthStore((state) => state.user);
+    const setCustomerInfo = usePurchasesStore((state) => state.setCustomerInfo);
+
+    useEffect(() => {
+        return addCustomerInfoListener(setCustomerInfo);
+    }, []);
+
+    useEffect(() => {
+        if (user?.id) {
+            loginUser(String(user.id))
+                .then(() => getCustomerInfo())
+                .then(setCustomerInfo)
+                .catch(() => {});
+        } else {
+            logoutUser().catch(() => {});
         }
     }, [user?.id]);
 
@@ -107,6 +138,7 @@ function RootLayout() {
         return useAuthStore.persist.onFinishHydration(() => setHydrated(true));
     }, []);
 
+
     if (!hydrated || !fontsLoaded) {
         return (
             <View style={{flex: 1, justifyContent: "center", alignItems: "center"}}>
@@ -121,6 +153,7 @@ function RootLayout() {
                 <BottomSheetModalProvider>
                     <QueryClientProvider client={client}>
                         <PushTokenRegistrar/>
+                        <PurchasesInitializer/>
                         <NetworkErrorScreen queryClient={client}/>
                         <Stack screenOptions={{animation: 'fade'}}>
                             <Stack.Protected guard={!isLoggedIn}>

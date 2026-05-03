@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Platform } from 'react-native';
-import Animated, { LinearTransition, useAnimatedStyle, useDerivedValue, withTiming } from 'react-native-reanimated';
+import Animated, { LinearTransition, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Feather, AntDesign } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
@@ -14,19 +14,34 @@ interface CustomTabBarProps {
 
 export default function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
   const isKeyboardVisible = useDerivedValue(() => 0);
+  const isHidden = useSharedValue(0);
+
+  const activeTabRoute = state.routes[state.index];
+  const nestedState = activeTabRoute?.state;
+  const activeNestedName = nestedState?.routes?.[nestedState.index ?? 0]?.name;
+  const shouldHide =
+    activeTabRoute?.name === 'carpool' &&
+    activeNestedName != null &&
+    activeNestedName !== 'index';
+
+  useEffect(() => {
+    isHidden.value = shouldHide ? 1 : 0;
+  }, [shouldHide]);
 
   const animatedStyle = useAnimatedStyle(() => {
+    const hide = isKeyboardVisible.value === 1 || isHidden.value === 1;
     return {
       transform: [
         {
-          translateY: withTiming(isKeyboardVisible.value === 1 ? 150 : 0, {
+          translateY: withTiming(hide ? 150 : 0, {
             duration: 250,
           }),
         },
       ],
-      opacity: withTiming(isKeyboardVisible.value === 1 ? 0 : 1, {
+      opacity: withTiming(hide ? 0 : 1, {
         duration: 250,
       }),
+      pointerEvents: hide ? 'none' : 'auto',
     };
   });
 

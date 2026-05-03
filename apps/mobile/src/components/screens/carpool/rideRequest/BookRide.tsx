@@ -19,6 +19,7 @@ import {GOOGLE_API_KEY} from "@/src/constants";
 import {DEFAULT_LOCATION} from "@/src/utils/location.utils";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {useCarpoolDraftStore} from "@/src/stores/carpoolDraftStore";
 import {useUploadRideRequest} from "@/src/queries/rideRequest.queries";
 import {UploadRideRequestResponse} from "@/src/types/rideRequest";
 import {Href, router} from "expo-router";
@@ -53,6 +54,7 @@ export default function BookRide() {
 
     const {user} = useAuthStore();
     const rideRequestState = useRideRequestStore();
+    const {bookRide: draft, saveBookRide} = useCarpoolDraftStore();
     const {mutate: uploadRideRequest, isPending} = useUploadRideRequest((data: UploadRideRequestResponse) => {
         rideRequestState.setRideRequestDetails({
             ...data
@@ -62,18 +64,18 @@ export default function BookRide() {
 
     const {control, watch, handleSubmit, setValue, formState: {errors}} = useForm<FormData>({
         defaultValues: {
-            pickupLocation: null,
-            dropOffLocation: null,
-            phone: user!.phone || ''
+            pickupLocation: draft.pickupLocation,
+            dropOffLocation: draft.dropOffLocation,
+            phone: draft.phone || user!.phone || '',
         }
     });
 
-    const [numberOfPassengers, setNumberOfPassengers] = useState(1);
+    const [numberOfPassengers, setNumberOfPassengers] = useState(draft.numberOfPassengers);
     const [routeDistanceKm, setRouteDistanceKm] = useState(0);
     const [modalField, setModalField] = useState<'pickup' | 'dropoff' | null>(null);
     const headerOffset = insets.top + 72;
 
-    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
+    const snapPoints = useMemo(() => ["25%", "60%", "80%"], []);
 
     // Get current form values safely
     let pickupLocation = watch('pickupLocation');
@@ -109,6 +111,13 @@ export default function BookRide() {
             });
             return;
         }
+
+        saveBookRide({
+            pickupLocation: data.pickupLocation,
+            dropOffLocation: data.dropOffLocation,
+            phone: data.phone,
+            numberOfPassengers,
+        });
 
         uploadRideRequest({
             uploadRideRequestDetails: {
@@ -220,7 +229,11 @@ export default function BookRide() {
                 keyboardBlurBehavior="restore"
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
+                    contentContainerStyle={{
+                        paddingHorizontal: 24,
+                        paddingTop: 16,
+                        paddingBottom: 36,
+                    }}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className={"flex gap-4"}>
