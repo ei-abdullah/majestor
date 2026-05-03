@@ -1,5 +1,8 @@
 import React, {useState} from "react";
 import {Text, View, Pressable, Linking} from "react-native";
+import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
+import {getCustomerInfo} from "@/src/services/purchases.service";
+import {usePurchasesStore} from "@/src/stores/purchasesStore";
 import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
 import Toast from "react-native-toast-message";
@@ -27,6 +30,31 @@ function UserSettings() {
     const headerOffset = insets.top + 76;
     const {user, clearSession} = useAuthStore();
     const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
+    const isElite = usePurchasesStore((state) => state.isElite);
+    const setCustomerInfo = usePurchasesStore((state) => state.setCustomerInfo);
+
+    const handleUpgradePress = async () => {
+        try {
+            const result = await RevenueCatUI.presentPaywall();
+            if (result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED) {
+                const info = await getCustomerInfo();
+                setCustomerInfo(info);
+            }
+        } catch {
+            // Dismissed or failed — safe to ignore
+        }
+    };
+
+    const handleManageSubscription = async () => {
+        try {
+            await RevenueCatUI.presentCustomerCenter();
+            // Refresh in case the user downgraded or canceled
+            const info = await getCustomerInfo();
+            setCustomerInfo(info);
+        } catch {
+            // Dismissed or failed — safe to ignore
+        }
+    };
 
     const {
         data: userDetails,
@@ -254,6 +282,31 @@ function UserSettings() {
                                     <Feather name="bell" size={18} color="#7B1FA2"/>
                                 </View>
                                 <Text className="text-gray-700 font-sans-medium">Notifications</Text>
+                            </View>
+                            <Feather name="chevron-right" size={18} color="#9CA3AF"/>
+                        </Pressable>
+                    </Card>
+
+                    {/* Subscription */}
+                    <Card className="px-5 py-5 mb-6 mx-4">
+                        <Text className="text-base font-sans-semibold text-gray-700 mb-4">Subscription</Text>
+                        <Pressable
+                            onPress={isElite ? handleManageSubscription : handleUpgradePress}
+                            className="flex-row items-center justify-between active:opacity-60"
+                        >
+                            <View className="flex-row items-center gap-3">
+                                <View className={`rounded-xl p-2 ${isElite ? 'bg-yellow-100' : 'bg-blue-100'}`}>
+                                    <Feather name={isElite ? "award" : "star"} size={18}
+                                             color={isElite ? "#D97706" : "#2563EB"}/>
+                                </View>
+                                <View>
+                                    <Text className="text-gray-700 font-sans-medium">
+                                        {isElite ? 'Majestor Elite' : 'Upgrade to Elite'}
+                                    </Text>
+                                    <Text className="text-gray-500 text-xs mt-0.5">
+                                        {isElite ? 'Manage your subscription' : 'Unlock premium features'}
+                                    </Text>
+                                </View>
                             </View>
                             <Feather name="chevron-right" size={18} color="#9CA3AF"/>
                         </Pressable>

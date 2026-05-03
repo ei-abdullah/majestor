@@ -11,9 +11,9 @@
     "lint": "expo lint"
   },
   "dependencies": {
-    "@expo/vector-icons": "^15.0.3",
     "@expo-google-fonts/inter": "^0.4.1",
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.1",
+    "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.8",
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-navigation/bottom-tabs": "^7.4.0",
@@ -37,7 +37,6 @@
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.11",
     "expo-location": "~19.0.8",
-    "expo-media-library": "~18.2.1",
     "expo-notifications": "~0.32.16",
     "expo-router": "~6.0.23",
     "expo-secure-store": "~15.0.8",
@@ -59,6 +58,8 @@
     "react-native-keyboard-controller": "^1.20.7",
     "react-native-maps": "^1.26.20",
     "react-native-maps-directions": "^1.9.0",
+    "react-native-purchases": "^10.0.1",
+    "react-native-purchases-ui": "^10.0.1",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
     "react-native-screens": "~4.16.0",

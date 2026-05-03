@@ -11,9 +11,7 @@ export default function Layout() {
                     <CustomHeader
                         title={options.title ?? "Ride Request"}
                         leftIcon={navigation.canGoBack() ? "arrow-left" : undefined}
-                        onLeftPress={() => navigation.canGoBack() ? navigation.goBack() : undefined}
-                        rightIcon={navigation.getState().index > 1 ? "home" : undefined}
-                        onRightPress={() => navigation.canGoBack() ? navigation.popToTop() : undefined}
+                        onLeftPress={() => navigation.popToTop()}
                     />
                 )
             }}
