@@ -36,6 +36,7 @@ import {
     getCustomerInfo,
     loginUser,
     logoutUser,
+    PURCHASES_ENABLED,
 } from "@/src/services/purchases.service";
 import {usePurchasesStore} from "@/src/stores/purchasesStore";
 
@@ -97,6 +98,7 @@ function PurchasesInitializer() {
     }, []);
 
     useEffect(() => {
+        if (!PURCHASES_ENABLED) return;
         if (user?.id) {
             loginUser(String(user.id))
                 .then(() => getCustomerInfo())
