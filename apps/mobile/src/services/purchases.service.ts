@@ -8,10 +8,14 @@ import { Platform } from 'react-native';
 
 export const ENTITLEMENT_ID = 'Majestor Pro';
 
+// Set to true once RevenueCat is legally cleared and production keys are ready
+export const PURCHASES_ENABLED = false;
+
 const IOS_API_KEY = 'test_MdcxsKqkHBeuZfRPxoKdyyBRRei';
 const ANDROID_API_KEY = 'test_MdcxsKqkHBeuZfRPxoKdyyBRRei';
 
 export function configurePurchases(): void {
+    if (!PURCHASES_ENABLED) return;
     Purchases.setLogLevel(__DEV__ ? LOG_LEVEL.DEBUG : LOG_LEVEL.ERROR);
     if (Platform.OS === 'ios') {
         Purchases.configure({ apiKey: IOS_API_KEY });
@@ -20,15 +24,18 @@ export function configurePurchases(): void {
     }
 }
 
+// While purchases are disabled, everyone is treated as elite
 export function hasEliteEntitlement(customerInfo: CustomerInfo): boolean {
+    if (!PURCHASES_ENABLED) return true;
     return typeof customerInfo.entitlements.active[ENTITLEMENT_ID] !== 'undefined';
 }
 
 export function addCustomerInfoListener(
-    callback: (info: CustomerInfo) => void
+    _callback: (info: CustomerInfo) => void
 ): () => void {
-    Purchases.addCustomerInfoUpdateListener(callback);
-    return () => Purchases.removeCustomerInfoUpdateListener(callback);
+    if (!PURCHASES_ENABLED) return () => {};
+    Purchases.addCustomerInfoUpdateListener(_callback);
+    return () => Purchases.removeCustomerInfoUpdateListener(_callback);
 }
 
 export async function getCustomerInfo(): Promise<CustomerInfo> {
@@ -36,6 +43,7 @@ export async function getCustomerInfo(): Promise<CustomerInfo> {
 }
 
 export async function getCurrentOffering(): Promise<PurchasesOffering | null> {
+    if (!PURCHASES_ENABLED) return null;
     const offerings = await Purchases.getOfferings();
     return offerings.current;
 }
@@ -50,10 +58,12 @@ export async function restorePurchases(): Promise<CustomerInfo> {
 }
 
 export async function loginUser(userId: string): Promise<void> {
+    if (!PURCHASES_ENABLED) return;
     await Purchases.logIn(userId);
 }
 
 export async function logoutUser(): Promise<void> {
+    if (!PURCHASES_ENABLED) return;
     try {
         await Purchases.logOut();
     } catch {

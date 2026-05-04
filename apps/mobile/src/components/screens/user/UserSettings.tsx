@@ -266,7 +266,11 @@ function UserSettings() {
 
                     {/* Subscription */}
                     {isPremium ? (
-                        <Pressable onPress={handleManageSubscription} style={{borderRadius: 20, overflow: 'hidden'}}>
+                        <Pressable
+                            onPress={handleManageSubscription}
+                            style={{borderRadius: 20, overflow: 'hidden'}}
+                            disabled={true}
+                        >
                             <LinearGradient
                                 colors={['#FFFBEB', '#FEF3C7']}
                                 start={{x: 0, y: 0}} end={{x: 1, y: 1}}
@@ -292,7 +296,11 @@ function UserSettings() {
                             </LinearGradient>
                         </Pressable>
                     ) : (
-                        <Pressable onPress={handleUpgradePress} style={{borderRadius: 20, overflow: 'hidden'}}>
+                        <Pressable
+                            onPress={handleUpgradePress}
+                            style={{borderRadius: 20, overflow: 'hidden'}}
+                            disabled={true}
+                        >
                             <LinearGradient
                                 colors={['#2D5FE8', '#3A6FF8']}
                                 start={{x: 0, y: 0}} end={{x: 1, y: 1}}
@@ -366,7 +374,6 @@ function UserSettings() {
                             </View>
                         </Pressable>
                     </View>
-
                 </View>
             </KeyboardAwareScrollView>
 
