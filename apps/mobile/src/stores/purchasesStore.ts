@@ -1,11 +1,9 @@
 import { create } from 'zustand';
-import { CustomerInfo } from 'react-native-purchases';
-import { hasEliteEntitlement } from '@/src/services/purchases.service';
-import {PurchasesState} from "@/src/types/purchase";
+import { PurchasesState } from '@/src/types/purchase';
 
-export const usePurchasesStore = create<PurchasesState>((set) => ({
+// RevenueCat removed pending legal clearance — everyone is elite until re-enabled.
+export const usePurchasesStore = create<PurchasesState>(() => ({
     customerInfo: null,
-    isElite: false,
-    setCustomerInfo: (info) =>
-        set({ customerInfo: info, isElite: hasEliteEntitlement(info) }),
+    isElite: true,
+    setCustomerInfo: () => {},
 }));
