@@ -1,7 +1,5 @@
 import React, {useState} from "react";
 import {Text, View, Pressable, Linking} from "react-native";
-import RevenueCatUI, {PAYWALL_RESULT} from "react-native-purchases-ui";
-import {getCustomerInfo} from "@/src/services/purchases.service";
 import {usePurchasesStore} from "@/src/stores/purchasesStore";
 import {Controller, useForm} from "react-hook-form";
 import * as Sentry from "@sentry/react-native";
@@ -70,25 +68,10 @@ function UserSettings() {
     const {user, clearSession} = useAuthStore();
     const [showSignOutConfirm, setShowSignOutConfirm] = useState(false);
     const isElite = usePurchasesStore((state) => state.isElite);
-    const setCustomerInfo = usePurchasesStore((state) => state.setCustomerInfo);
 
-    const handleUpgradePress = async () => {
-        try {
-            const result = await RevenueCatUI.presentPaywall();
-            if (result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED) {
-                const info = await getCustomerInfo();
-                setCustomerInfo(info);
-            }
-        } catch {}
-    };
+    const handleUpgradePress = async () => {};
 
-    const handleManageSubscription = async () => {
-        try {
-            await RevenueCatUI.presentCustomerCenter();
-            const info = await getCustomerInfo();
-            setCustomerInfo(info);
-        } catch {}
-    };
+    const handleManageSubscription = async () => {};
 
     const {data: userDetails, isPending: loadingUserDetails, error} = useUserDetails(user!.id);
 

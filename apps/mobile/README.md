@@ -373,3 +373,63 @@ Topics used:
 - **`as any` for typed routes with params** — Expo Router v3 requires `pathname: "..." as any` when using `router.push({ pathname, params })`.
 - **`@Transactional` note** — lazy-loaded JPA fields are fetched on the backend; the mobile app always receives full DTOs.
 - **402 = premium gate** — the Axios interceptor catches 402 and shows the premium modal automatically, no per-screen handling needed.
+
+---
+
+## RevenueCat Re-integration
+
+RevenueCat was removed pending legal clearance. While disabled, `isElite` is hardcoded to `true` (everyone has full access) and the paywall UI is inert.
+
+### Packages to re-add
+
+```bash
+npx expo install react-native-purchases react-native-purchases-ui
+```
+
+### Files to restore
+
+| File | What to do |
+|------|------------|
+| `src/services/purchases.service.ts` | Restore full RC implementation (see git history) |
+| `src/stores/purchasesStore.ts` | Restore RC-backed store (see git history) |
+| `src/types/purchase.d.ts` | Restore `CustomerInfo` type from `react-native-purchases` |
+| `src/components/ui/PremiumModal.tsx` | Restore `RevenueCatUI.presentPaywall()` in `handleUpgrade` |
+| `src/components/screens/user/UserSettings.tsx` | Restore `RevenueCatUI.presentPaywall()` and `presentCustomerCenter()` handlers |
+| `src/app/_layout.tsx` | Uncomment RC imports, `configurePurchases()`, and `<PurchasesInitializer/>` |
+
+### RevenueCat dashboard setup (before re-enabling)
+
+1. Create a project at [app.revenuecat.com](https://app.revenuecat.com)
+2. Add iOS app (Bundle ID: `com.majestor.app`) and Android app (Package: `com.majestor.app`)
+3. Connect App Store Connect / Google Play in the RC dashboard
+4. Create an entitlement with identifier `Majestor Pro`
+5. Create a product and attach it to the entitlement
+6. Copy the **Live** API keys (iOS: `appl_...`, Android: `goog_...`)
+7. Set them as EAS environment variables: `EXPO_PUBLIC_RC_IOS_KEY` and `EXPO_PUBLIC_RC_ANDROID_KEY`
+8. In `purchases.service.ts`, read keys from `process.env.EXPO_PUBLIC_RC_IOS_KEY` / `process.env.EXPO_PUBLIC_RC_ANDROID_KEY`
+
+### Backend sync (RevenueCat → `premiumUntil`)
+
+Premium status on the backend is driven by `User.premiumUntil` (`Instant`). The sync is done **client-side** — after any purchase or restore the mobile app already has the expiration date from RC and pushes it to the backend directly. No webhooks needed.
+
+**How it works:**
+1. After `Purchases.purchasePackage()` or `Purchases.restorePurchases()` succeeds, read `customerInfo.entitlements.active['Majestor Pro'].expirationDate`
+2. Call `PATCH /api/v1/user/sync-premium` (authenticated) with that timestamp
+3. Backend sets `user.premiumUntil` from the value received
+4. Also call sync on app open inside `PurchasesInitializer` after `getCustomerInfo()` — this handles renewals automatically
+
+**Why this is enough:**
+- Purchase → synced immediately
+- Renewal → synced next app open
+- Cancellation → `premiumUntil` is already set to end of paid period; `isElite()` returns false naturally once it passes
+
+**Implementation checklist:**
+
+*Backend (`apps/api`):*
+- [ ] Add `PATCH /api/v1/user/sync-premium/{userId}` to `UserController` — accepts `{ premiumUntil: long }` (epoch ms)
+- [ ] Add `syncPremium(Long userId, Instant premiumUntil)` to `UserService` — sets and saves `user.premiumUntil`
+
+*Mobile (`apps/mobile`):*
+- [ ] Add `syncPremium(userId, expirationMs)` to `src/services/user.api.ts`
+- [ ] In `PurchasesInitializer` (`_layout.tsx`), call sync after `getCustomerInfo()` on login
+- [ ] In `PremiumModal` and `UserSettings`, call sync after a successful `PURCHASED` or `RESTORED` paywall result

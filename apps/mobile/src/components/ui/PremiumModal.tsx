@@ -4,25 +4,12 @@ import {Feather} from '@expo/vector-icons';
 import {usePremiumModalStore} from '@/src/stores/premiumModalStore';
 import Card from './Card';
 import {LinearGradient} from 'expo-linear-gradient';
-import RevenueCatUI, {PAYWALL_RESULT} from 'react-native-purchases-ui';
-import {getCustomerInfo} from '@/src/services/purchases.service';
-import {usePurchasesStore} from '@/src/stores/purchasesStore';
 
 const PremiumModal = () => {
     const {isVisible, message, close} = usePremiumModalStore();
-    const setCustomerInfo = usePurchasesStore((s) => s.setCustomerInfo);
 
     const handleUpgrade = async () => {
         close();
-        try {
-            const result = await RevenueCatUI.presentPaywall();
-            if (result === PAYWALL_RESULT.PURCHASED || result === PAYWALL_RESULT.RESTORED) {
-                const info = await getCustomerInfo();
-                setCustomerInfo(info);
-            }
-        } catch {
-            // Paywall dismissed or failed — safe to ignore
-        }
     };
 
     return (

@@ -30,15 +30,16 @@ import {KeyboardProvider} from "react-native-keyboard-controller";
 import PremiumModal from "@/src/components/ui/PremiumModal";
 import {useRegisterPushToken} from "@/src/queries/notification.queries";
 import NetworkErrorScreen from "@/src/components/ui/NetworkErrorScreen";
-import {
-    configurePurchases,
-    addCustomerInfoListener,
-    getCustomerInfo,
-    loginUser,
-    logoutUser,
-    PURCHASES_ENABLED,
-} from "@/src/services/purchases.service";
-import {usePurchasesStore} from "@/src/stores/purchasesStore";
+
+// RevenueCat disabled until legal is finalized
+// import {
+//     configurePurchases,
+//     addCustomerInfoListener,
+//     getCustomerInfo,
+//     loginUser,
+//     logoutUser,
+// } from "@/src/services/purchases.service";
+// import {usePurchasesStore} from "@/src/stores/purchasesStore";
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
@@ -63,7 +64,7 @@ if (Platform.OS === 'android') {
     });
 }
 
-configurePurchases();
+// configurePurchases();
 
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -89,28 +90,27 @@ function PushTokenRegistrar() {
     return null;
 }
 
-function PurchasesInitializer() {
-    const user = useAuthStore((state) => state.user);
-    const setCustomerInfo = usePurchasesStore((state) => state.setCustomerInfo);
-
-    useEffect(() => {
-        return addCustomerInfoListener(setCustomerInfo);
-    }, []);
-
-    useEffect(() => {
-        if (!PURCHASES_ENABLED) return;
-        if (user?.id) {
-            loginUser(String(user.id))
-                .then(() => getCustomerInfo())
-                .then(setCustomerInfo)
-                .catch(() => {});
-        } else {
-            logoutUser().catch(() => {});
-        }
-    }, [user?.id]);
-
-    return null;
-}
+// function PurchasesInitializer() {
+//     const user = useAuthStore((state) => state.user);
+//     const setCustomerInfo = usePurchasesStore((state) => state.setCustomerInfo);
+//
+//     useEffect(() => {
+//         return addCustomerInfoListener(setCustomerInfo);
+//     }, []);
+//
+//     useEffect(() => {
+//         if (user?.id) {
+//             loginUser(String(user.id))
+//                 .then(() => getCustomerInfo())
+//                 .then(setCustomerInfo)
+//                 .catch(() => {});
+//         } else {
+//             logoutUser().catch(() => {});
+//         }
+//     }, [user?.id]);
+//
+//     return null;
+// }
 
 function RootLayout() {
     const isLoggedIn = useAuthStore((state) => state.isLoggedIn);
@@ -155,7 +155,7 @@ function RootLayout() {
                 <BottomSheetModalProvider>
                     <QueryClientProvider client={client}>
                         <PushTokenRegistrar/>
-                        <PurchasesInitializer/>
+                        {/* <PurchasesInitializer/> */}
                         <NetworkErrorScreen queryClient={client}/>
                         <Stack screenOptions={{animation: 'fade'}}>
                             <Stack.Protected guard={!isLoggedIn}>

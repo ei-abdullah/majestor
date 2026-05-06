@@ -1,7 +1,5 @@
-import {create} from "zustand";
-
 export interface PurchasesState {
-    customerInfo: CustomerInfo | null;
+    customerInfo: any;
     isElite: boolean;
-    setCustomerInfo: (info: CustomerInfo) => void;
+    setCustomerInfo: (info: any) => void;
 }
