@@ -22,7 +22,7 @@ export default function TermsOfService() {
                 Service
               </span>
             </h1>
-            <p className="text-[#5A6275]">Last updated: March 21, 2026</p>
+            <p className="text-[#5A6275]">Last updated: May 7, 2026</p>
           </div>
 
           {/* Content */}
@@ -119,18 +119,91 @@ export default function TermsOfService() {
             </section>
 
             {/* Carpooling Services */}
-            <section>
+            <section className="space-y-6">
               <h2 className="text-2xl font-bold text-[#121826] mb-4">7. Carpooling Services</h2>
-              <p className="text-[#5A6275] leading-relaxed mb-4">
-                Majestor facilitates connections between drivers and passengers. You acknowledge that:
-              </p>
-              <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
-                <li>Majestor is not a transportation provider</li>
-                <li>Drivers must have valid licenses and insurance</li>
-                <li>Users arrange rides at their own risk</li>
-                <li>We do not guarantee the safety, quality, or legality of rides</li>
-                <li>Any agreements or disputes are between drivers and passengers</li>
-              </ul>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.1 Platform Role</h3>
+                <p className="text-[#5A6275] leading-relaxed mb-3">
+                  Majestor facilitates connections between drivers and passengers within university communities. You acknowledge that:
+                </p>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li>Majestor is a matching platform, not a transportation provider</li>
+                  <li>Drivers must hold a valid driving license and carry appropriate insurance</li>
+                  <li>Users arrange rides entirely at their own risk</li>
+                  <li>We do not guarantee the safety, quality, or legality of any ride</li>
+                  <li>Fare arrangements are made directly between drivers and passengers; Majestor does not process payments</li>
+                  <li>A driver may only have one active ride posting at a time</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.2 Driver Responsibilities</h3>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li>Ride details (pickup location, time, available seats) may not be changed after a booking has been accepted</li>
+                  <li>The number of passengers carried must not exceed the number posted</li>
+                  <li>Drivers must arrive at the agreed pickup point within the scheduled time</li>
+                  <li>If cancellation is necessary, drivers must cancel at least 1 hour before the scheduled pickup time</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.3 Passenger Responsibilities</h3>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li>Passengers must be present at the agreed pickup location at the scheduled time</li>
+                  <li>If cancellation is necessary, passengers must cancel at least 30 minutes before the scheduled pickup time</li>
+                  <li>Passengers must treat the driver&apos;s vehicle with respect</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.4 No-Show Policy</h3>
+                <p className="text-[#5A6275] leading-relaxed mb-3">
+                  A &quot;no-show&quot; occurs when a driver or passenger fails to appear at the agreed location without prior cancellation.
+                </p>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li><span className="font-medium text-[#3A6FF8]">Grace period:</span> The waiting party is required to wait up to 10 minutes past the agreed time before marking a no-show</li>
+                  <li><span className="font-medium text-[#3A6FF8]">Driver no-show:</span> If the driver does not arrive within the grace period, the passenger may report a driver no-show through the app. The booking will be cancelled at no fault to the passenger</li>
+                  <li><span className="font-medium text-[#3A6FF8]">Passenger no-show:</span> If the passenger does not arrive within the grace period, the driver may report a passenger no-show and leave. The booking will be cancelled</li>
+                  <li>Late cancellations (within the required window) are treated as no-shows</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.5 Strike System</h3>
+                <p className="text-[#5A6275] leading-relaxed mb-3">
+                  Majestor enforces a three-strike system to maintain reliability for all users:
+                </p>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li><span className="font-medium text-[#121826]">1st strike:</span> Warning notification sent to the user</li>
+                  <li><span className="font-medium text-[#121826]">2nd strike:</span> Carpool feature (posting or booking, depending on role) suspended for 7 days</li>
+                  <li><span className="font-medium text-[#121826]">3rd strike:</span> Permanent suspension from the carpool feature. The user may still access other Majestor features</li>
+                </ul>
+                <p className="text-[#5A6275] leading-relaxed mt-3">
+                  Strikes are issued for: no-shows, late cancellations, and confirmed policy violations. Strikes do not expire automatically. Users may appeal a strike by contacting us within 7 days of issuance.
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.6 Safety & Conduct</h3>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li>Any form of harassment, intimidation, or misconduct during a ride must be reported immediately</li>
+                  <li>Confirmed harassment results in immediate account suspension and escalation to university administration</li>
+                  <li>If you believe you are in danger, contact emergency services first (115/1122), then report to Majestor</li>
+                  <li>Phone numbers are only visible to both parties after a booking is accepted</li>
+                </ul>
+              </div>
+
+              <div>
+                <h3 className="text-lg font-semibold text-[#121826] mb-2">7.7 Disputes</h3>
+                <ul className="list-disc list-inside text-[#5A6275] space-y-2 ml-4">
+                  <li>Disputes must be filed within 24 hours of the scheduled ride time</li>
+                  <li>Majestor will review disputes within 48 hours</li>
+                  <li>Supporting evidence (chat screenshots, timestamps) may be submitted during the review</li>
+                  <li>Majestor&apos;s decision on disputes is final and binding</li>
+                  <li>Majestor is not liable for any loss, injury, or damage arising from carpool arrangements</li>
+                </ul>
+              </div>
             </section>
 
             {/* User Conduct and Responsibilities */}
