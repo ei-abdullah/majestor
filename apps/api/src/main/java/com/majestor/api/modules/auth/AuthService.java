@@ -2,6 +2,8 @@ package com.majestor.api.modules.auth;
 
 import com.majestor.api.infra.emailservice.EmailService;
 import com.majestor.api.infra.exception.DuplicateResourceException;
+import com.majestor.api.infra.exception.InsufficientAuthenticationException;
+import com.majestor.api.infra.exception.ResourceNotFoundException;
 import com.majestor.api.infra.jwt.JwtService;
 import com.majestor.api.modules.academia.faculty.Faculty;
 import com.majestor.api.modules.academia.faculty.FacultyRepository;
@@ -16,7 +18,6 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -51,10 +53,10 @@ public class AuthService {
         }
 
         University university = universityRepository.findById(request.getUniversityId())
-                .orElseThrow(() -> new EntityNotFoundException("University not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("University not found"));
 
         Faculty faculty = facultyRepository.findById(request.getFacultyId())
-                .orElseThrow(() -> new EntityNotFoundException("Faculty not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Faculty not found"));
 
         String email = request.getEmail().trim().toLowerCase();
         String domain = email.substring(email.indexOf("@") + 1);
@@ -115,8 +117,11 @@ public class AuthService {
     ) {
         String lowerCasedEmail = request.getEmail().trim().toLowerCase();
 
-        User user = userRepository.findByEmail(lowerCasedEmail)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + lowerCasedEmail));
+        Optional<User> user = userRepository.findByEmail(lowerCasedEmail);
+
+        if (user.isEmpty()) {
+            throw new ResourceNotFoundException("User not found with email: " + lowerCasedEmail);
+        }
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -129,10 +134,10 @@ public class AuthService {
             throw new InsufficientAuthenticationException("Invalid email or password");
         }
 
-        String accessToken = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String accessToken = jwtService.generateAccessToken(user.get());
+        String refreshToken = jwtService.generateRefreshToken(user.get());
 
-        AuthUserDTO authUserDTO = authMapper.toAuthUserDTO(user);
+        AuthUserDTO authUserDTO = authMapper.toAuthUserDTO(user.get());
 
         return authMapper.toAuthResponseDTO(accessToken, refreshToken, authUserDTO);
     }
