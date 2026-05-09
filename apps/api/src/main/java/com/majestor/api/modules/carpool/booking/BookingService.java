@@ -13,7 +13,7 @@ import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.notification.NotificationService;
 import com.majestor.api.modules.notification.NotificationType;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,8 +45,16 @@ public class BookingService {
         RideRequest rideRequest = rideRequestRepository.findById(rideRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride Request not found with id: " + rideRequestId));
 
+        if (Boolean.TRUE.equals(rideRequest.getRideRequester().isCarpoolSuspended())) {
+            throw new IllegalStateException("Your carpool access is currently suspended");
+        }
+
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        if (Boolean.TRUE.equals(ride.getRidePoster().isCarpoolSuspended())) {
+            throw new IllegalStateException("This ride is no longer available");
+        }
 
         Booking booking = Booking
                 .builder()
@@ -123,7 +131,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.ACCEPTED);
 
         // Reject all other bookings
-        List<Booking> allBookings = bookingRepository.findByRideId(ride.getId());
+        List<Booking> allBookings = bookingRepository.findAllActiveByRideId(ride.getId());
         List<Booking> otherBookings = new ArrayList<>();
 
         for (Booking otherBooking : allBookings) {

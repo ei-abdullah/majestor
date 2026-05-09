@@ -46,6 +46,10 @@ public class RideService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
 
+        if (Boolean.TRUE.equals(user.isCarpoolSuspended())) {
+            throw new IllegalStateException("Your carpool access is currently suspended");
+        }
+
         Ride ride = rideMapper.toRide(uploadRideDTO, user);
 
         try {
@@ -179,7 +183,7 @@ public class RideService {
         }
 
         // Canceling booking to ride
-        List<Booking> pendingBookings = bookingRepository.findByRideId(rideId);
+        List<Booking> pendingBookings = bookingRepository.findAllActiveByRideId(rideId);
 
         for(Booking booking : pendingBookings) {
             booking.setStatus(BookingStatus.CANCELLED);

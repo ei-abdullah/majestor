@@ -36,3 +36,7 @@ export const acceptBookingApi = async (bookingId: number): Promise<void> => {
 export const rejectBookingApi = async (bookingId: number): Promise<void> => {
     await api.patch(`/booking/rejectBooking/${bookingId}`);
 }
+
+export const reportNoShowApi = async (bookingId: number): Promise<void> => {
+    await api.post(`/carpool/policy/report-no-show/${bookingId}`);
+}

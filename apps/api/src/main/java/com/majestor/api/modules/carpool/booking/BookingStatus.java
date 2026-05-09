@@ -5,5 +5,6 @@ public enum BookingStatus {
     ACCEPTED, // Ride accepted by Rider/Poster
     COMPLETED, // Ride completed by Rider
     REJECTED, // Ride rejected by Rider/Poster
-    CANCELLED // Ride canceled by booker/ride requester or rider
+    CANCELLED, // Ride canceled by booker/ride requester or rider
+    NO_SHOW // Reported by either party after grace period
 }

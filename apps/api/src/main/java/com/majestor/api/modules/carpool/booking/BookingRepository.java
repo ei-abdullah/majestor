@@ -19,4 +19,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             """)
     List<Booking> findByRideId(@Param("rideId") Long rideId);
 
+    @Query("""
+            SELECT b FROM Booking b
+            JOIN FETCH b.bookedRide br
+            WHERE b.ride.id = :rideId
+            AND b.status IN ('BOOKED', 'ACCEPTED')
+            """)
+    List<Booking> findAllActiveByRideId(@Param("rideId") Long rideId);
+
 }

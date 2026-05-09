@@ -3,6 +3,7 @@ import {View, Text} from "react-native";
 import {Image} from "expo-image";
 import {SafeAreaView} from "react-native-safe-area-context";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
+import {Feather} from "@expo/vector-icons";
 
 import AuthTabs from "@/src/components/screens/auth/AuthTabs";
 import LoginForm from "@/src/components/screens/auth/LoginForm";
@@ -27,57 +28,105 @@ function Auth() {
 
     return (
         <GradientView>
-            <SafeAreaView className="flex-1 px-6 pt-8 justify-start">
+            <SafeAreaView style={{flex: 1}}>
                 <KeyboardAwareScrollView
                     bottomOffset={62}
-                    nestedScrollEnabled={true}
+                    nestedScrollEnabled
                     showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingBottom: 40}}
                 >
-                    <View className={"flex-row items-center mb-16 gap-4"}>
-                        <View style={{borderRadius: 20, overflow: "hidden"}}>
+                    {/* ── Branding ─────────────────────────────────────────── */}
+                    <View style={{alignItems: 'center', paddingTop: 48, paddingBottom: 36}}>
+                        <View style={{borderRadius: 22, overflow: 'hidden', marginBottom: 16}}>
                             <Image
                                 source={require("@/assets/images/majestor-logo.png")}
-                                style={{width: 60, height: 60}}
+                                style={{width: 68, height: 68}}
                             />
                         </View>
-                        <View>
-                            <Text className={"font-sans-bold text-2xl"}>Majestor</Text>
-                            <Text className={"font-sans text-sm text-mj-text-secondary"}>Your campus life,
-                                unified</Text>
-                        </View>
+                        <Text style={{
+                            fontSize: 28,
+                            fontFamily: 'Inter_800ExtraBold',
+                            color: '#1A2340',
+                            letterSpacing: -0.8,
+                            marginBottom: 6,
+                        }}>
+                            Majestor
+                        </Text>
                     </View>
-                    {message && (
-                        <Card className={"bg-red-50 border border-red-200 mb-4 p-8"}>
-                            <View>
-                                <Text
-                                    className={`text-center font-sans-medium ${message.name === "error" ? "text-red-600" : "text-green-600"}`}
-                                >
-                                    {message.message}
-                                </Text>
-                            </View>
-                        </Card>
-                    )}
-                    <Card className={"p-8"}>
+
+                    {/* ── Form card ─────────────────────────────────────────── */}
+                    <Card className="p-6">
+                        <Text style={{
+                            fontSize: 17,
+                            fontFamily: 'Inter_800ExtraBold',
+                            color: '#1A2340',
+                            marginBottom: 4,
+                        }}>
+                            {tab === "Login" ? "Welcome back" : "Create account"}
+                        </Text>
+                        <Text style={{
+                            fontSize: 13,
+                            fontFamily: 'Inter_400Regular',
+                            color: '#9CA3AF',
+                            marginBottom: 20,
+                        }}>
+                            {tab === "Login"
+                                ? "Sign in with your university email"
+                                : "Join your university community"}
+                        </Text>
+
                         <AuthTabs
                             value={tab}
                             loading={loading}
                             onChange={handleTabChange}
                         />
 
-                        <View className="mt-8">
-                            {tab === "Login" ?
+                        {/* Message banner */}
+                        {message && (
+                            <View style={{
+                                marginTop: 16,
+                                padding: 14,
+                                borderRadius: 12,
+                                backgroundColor: message.name === 'error' ? '#FEF2F2' : '#F0FDF4',
+                                borderWidth: 1,
+                                borderColor: message.name === 'error' ? '#FECACA' : '#BBF7D0',
+                                flexDirection: 'row',
+                                alignItems: 'flex-start',
+                                gap: 10,
+                            }}>
+                                <Feather
+                                    name={message.name === 'error' ? 'alert-circle' : 'check-circle'}
+                                    size={16}
+                                    color={message.name === 'error' ? '#DC2626' : '#16A34A'}
+                                    style={{marginTop: 1}}
+                                />
+                                <Text style={{
+                                    flex: 1,
+                                    fontSize: 13,
+                                    fontFamily: 'Inter_500Medium',
+                                    color: message.name === 'error' ? '#DC2626' : '#16A34A',
+                                    lineHeight: 18,
+                                }}>
+                                    {message.message}
+                                </Text>
+                            </View>
+                        )}
+
+                        <View style={{marginTop: 24}}>
+                            {tab === "Login" ? (
                                 <LoginForm
                                     loading={loading}
                                     setLoading={setLoading}
                                     setMessage={setMessage}
-                                /> :
+                                />
+                            ) : (
                                 <SignupForm
                                     loading={loading}
                                     setLoading={setLoading}
                                     setMessage={setMessage}
                                     setTab={setTab}
                                 />
-                            }
+                            )}
                         </View>
                     </Card>
                 </KeyboardAwareScrollView>
