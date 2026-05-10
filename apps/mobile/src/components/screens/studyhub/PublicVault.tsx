@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, ScrollView, TouchableOpacity} from "react-native";
+import {View, Text, ScrollView} from "react-native";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useVault} from "@/src/queries/studyhub.queries";
 import GradientView from "@/src/components/ui/GradientView";
@@ -11,7 +11,6 @@ import OutlineButton from "@/src/components/ui/OutlineButton";
 import {filterByLike, type, years} from "@/src/constants";
 import {Filters} from "@/src/types/studyHub";
 import {Feather} from "@expo/vector-icons";
-import {router} from "expo-router";
 import FloatingActionButton from "@/src/components/ui/FloatingActionButton";
 
 export default function PublicVault() {

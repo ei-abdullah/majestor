@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, TouchableOpacity, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, Pressable} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 import {QueryClient} from "@tanstack/react-query";
@@ -35,7 +35,10 @@ export default function NetworkErrorScreen({queryClient}: Props) {
                     Check your internet connection and try again.
                 </Text>
 
-                <TouchableOpacity onPress={handleRetry} activeOpacity={0.85} style={styles.button}>
+                <Pressable
+                    onPress={handleRetry}
+                    style={styles.button}
+                >
                     <LinearGradient
                         colors={["#3A6FF8", "#6FD0C5"]}
                         start={{x: 0, y: 0}}
@@ -45,7 +48,7 @@ export default function NetworkErrorScreen({queryClient}: Props) {
                         <Feather name="refresh-cw" size={15} color="white"/>
                         <Text style={styles.buttonText}>Try Again</Text>
                     </LinearGradient>
-                </TouchableOpacity>
+                </Pressable>
             </LinearGradient>
         </View>
     );

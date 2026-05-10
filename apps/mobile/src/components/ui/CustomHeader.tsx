@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, TouchableOpacity, StyleSheet} from "react-native";
+import {View, Text, StyleSheet, Pressable} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
 import {BlurView} from "expo-blur";
@@ -39,9 +39,12 @@ function CustomHeader(
                 <View className={"w-1/5 items-start"}>
                     {
                         leftIcon && onLeftPress && (
-                            <TouchableOpacity onPress={onLeftPress} className={"p-1"}>
+                            <Pressable
+                                onPress={onLeftPress}
+                                className={"p-1"}
+                            >
                                 <Feather name={leftIcon} size={22} color={"#333"}/>
-                            </TouchableOpacity>
+                            </Pressable>
                         )
                     }
                 </View>
@@ -54,9 +57,12 @@ function CustomHeader(
                 {/* Right Action Area */}
                 <View className={"w-1/5 items-end"}>
                     {rightIcon && onRightPress && (
-                        <TouchableOpacity onPress={onRightPress} className="p-1">
+                        <Pressable
+                            onPress={onRightPress}
+                            className="p-1"
+                        >
                             <Feather name={rightIcon} size={22} color={"#333"}/>
-                        </TouchableOpacity>
+                        </Pressable>
                     )}
                 </View>
             </View>

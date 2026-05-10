@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, ImageBackground, TouchableOpacity, Pressable, Animated} from "react-native";
+import {View, Text, ImageBackground, Pressable, Animated} from "react-native";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
 
@@ -61,7 +61,7 @@ function DocumentCard({document}: { document: any }) {
         return null;
     }
 
-    // Check if user has an active elite subscription
+    // Check if a user has an active elite subscription
     const isElite = user?.premiumUntil ? new Date(user.premiumUntil).getTime() > Date.now() : false;
 
     // A document is locked if it's premium-only AND the user is neither Elite nor Faculty
@@ -108,7 +108,7 @@ function DocumentCard({document}: { document: any }) {
 
                                     {/* Actions */}
                                     <View className="items-end gap-2">
-                                        <TouchableOpacity 
+                                        <Pressable
                                             onPress={() => handleLike(user!.id, document.id)}
                                             className="bg-white/20 w-10 h-10 rounded-2xl items-center justify-center border border-white/20"
                                         >
@@ -118,17 +118,17 @@ function DocumentCard({document}: { document: any }) {
                                                     {document.likesCount || 0}
                                                 </Text>
                                             </View>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                         
                                         {isLocked ? (
-                                            <TouchableOpacity
+                                            <Pressable
                                                 onPress={() => openPremiumModal("Upgrade to Elite to download premium resources.")}
                                                 className="bg-mj-yellow-500 w-10 h-10 rounded-2xl items-center justify-center shadow-sm"
                                             >
                                                 <Feather name="lock" size={16} color="#121826" />
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         ) : (
-                                            <TouchableOpacity
+                                            <Pressable
                                                 disabled={isDownloading}
                                                 onPress={handleDownload}
                                                 className="bg-mj-blue-600 w-10 h-10 rounded-2xl items-center justify-center shadow-blue"
@@ -138,7 +138,7 @@ function DocumentCard({document}: { document: any }) {
                                                     size={16} 
                                                     color="white"
                                                 />
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         )}
                                     </View>
                                 </View>

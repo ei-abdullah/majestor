@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {View, Text, TouchableOpacity, Pressable} from "react-native";
+import {View, Text, Pressable} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {useLocationStore} from "@/src/stores/locationStore";
@@ -270,13 +270,13 @@ export default function PostRide() {
 
                             <View className="flex-row items-center justify-between mb-2">
                                 <Text className="text-xs text-gray-500">From</Text>
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={handleUseMyLocation}
                                     className="flex-row items-center gap-1 px-2 py-1 rounded-full bg-mj-blue-50"
                                 >
                                     <Ionicons name="locate" size={14} color="#3A6FF8"/>
                                     <Text className="text-xs text-mj-blue font-sans-medium">Use My Location</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                             <Pressable
                                 onPress={() => setModalField('start')}

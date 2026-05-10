@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useCallback, useMemo} from "react";
-import {View, Text, TouchableOpacity, FlatList, ActivityIndicator} from "react-native";
+import {View, Text, Pressable, FlatList, ActivityIndicator} from "react-native";
 import {BottomSheetModal, BottomSheetView, BottomSheetBackdrop, BottomSheetTextInput} from "@gorhom/bottom-sheet";
 import {Feather} from "@expo/vector-icons";
 import {useUserSearch, useSendInvite} from "@/src/queries/studyhub.queries";
@@ -129,7 +129,7 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                                 <Text style={{flex: 1, color: '#1A2340', fontFamily: 'Inter_700Bold', fontSize: 14}}>
                                     {item.username}
                                 </Text>
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={() => handleInvite(item)}
                                     disabled={isSending}
                                     style={{
@@ -140,7 +140,7 @@ function InviteModal({groupId, inviterId, ref}: Props) {
                                     }}
                                 >
                                     <Text style={{color: 'white', fontFamily: 'Inter_700Bold', fontSize: 12}}>Invite</Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
                         )}
                     />

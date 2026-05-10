@@ -1,5 +1,5 @@
 import React, {useState, useMemo, useRef} from "react";
-import {View, Text, ScrollView, TouchableOpacity, RefreshControl, Pressable} from "react-native";
+import {View, Text, ScrollView, RefreshControl, Pressable} from "react-native";
 import {BottomSheetModal} from "@gorhom/bottom-sheet";
 import {router, useLocalSearchParams} from "expo-router";
 import {Feather} from "@expo/vector-icons";
@@ -112,7 +112,7 @@ export default function StudyGroupDetail() {
                                     <Text className="text-white font-sans-bold ml-2 text-base">Open Chat</Text>
                                 </Pressable>
                             ) : (
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={() => joinGroup({groupId, userId: user!.id})}
                                     disabled={isJoining}
                                     className="flex-1 bg-mj-blue-600 py-5 rounded-[28px] flex-row items-center justify-center shadow-blue"
@@ -121,24 +121,24 @@ export default function StudyGroupDetail() {
                                     <Text className="text-white font-sans-bold ml-2 text-base">
                                         {isJoining ? "Joining..." : "Join Group"}
                                     </Text>
-                                </TouchableOpacity>
+                                </Pressable>
                             )}
 
                             {isHost && (
-                                <TouchableOpacity
+                                <Pressable
                                     onPress={() => inviteSheetRef.current?.present()}
                                     className="bg-white w-16 h-16 rounded-[28px] items-center justify-center shadow-sm border border-mj-bg-blue"
                                 >
                                     <Feather name="user-plus" size={22} color="#3A6FF8"/>
-                                </TouchableOpacity>
+                                </Pressable>
                             )}
 
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => rateGroup({groupId, userId: user!.id})}
                                 className="bg-white w-16 h-16 rounded-[28px] items-center justify-center shadow-sm border border-mj-bg-blue"
                             >
                                 <Feather name="thumbs-up" size={24} color={group.popularityScore > 0 ? "#FBCB43" : "#9E9E9E"} />
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </Card>
 
@@ -200,12 +200,12 @@ export default function StudyGroupDetail() {
                                     noShadow={true}
                                 />
                                 {(filters.docType || filters.year || filters.sortByLikes) && (
-                                    <TouchableOpacity 
+                                    <Pressable
                                         onPress={() => setFilters({docType: '', year: '', sortByLikes: ''})}
                                         className="bg-mj-blue-50 px-4 items-center justify-center rounded-xl border border-mj-blue-100"
                                     >
                                         <Text className="text-mj-blue font-sans-extrabold text-[10px] uppercase tracking-widest">Reset</Text>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 )}
                             </ScrollView>
                         </View>
@@ -232,12 +232,12 @@ export default function StudyGroupDetail() {
                                         <Feather name="lock" size={32} color="#3A6FF8" />
                                     </View>
                                     <Text className="text-mj-text-main font-sans-bold text-lg text-center px-10">Join group to unlock all resources</Text>
-                                    <TouchableOpacity 
+                                    <Pressable
                                         onPress={() => joinGroup({groupId, userId: user!.id})}
                                         className="bg-mj-blue-600 px-12 py-4 rounded-[22px] mt-6 shadow-blue"
                                     >
                                         <Text className="text-white font-sans-bold text-base uppercase">Unlock Vault</Text>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 </LinearGradient>
                             </View>
                         )}

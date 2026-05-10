@@ -172,7 +172,7 @@ public class DataInitializer implements CommandLineRunner {
         User admin = User.builder()
                 .email("bcs233188@cust.pk")
                 .username("AZ")
-                .passwordHash(passwordEncoder.encode("Cust@23"))
+                .passwordHash(passwordEncoder.encode("zeeshan@cust"))
                 .phone("03155180641")
                 .avatar("")
                 .hasOnboarded(Boolean.FALSE)

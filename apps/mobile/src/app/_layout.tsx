@@ -73,7 +73,7 @@ const navigationIntegration = Sentry.reactNavigationIntegration({
 
 Sentry.init({
     dsn: 'https://955f5849bf09988aeed526b5b587d901@o4511044632903680.ingest.de.sentry.io/4511044954423376',
-    sendDefaultPii: false,
+    sendDefaultPii: true,
     integrations: [navigationIntegration, Sentry.feedbackIntegration()],
 });
 

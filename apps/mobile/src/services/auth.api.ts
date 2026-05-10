@@ -13,3 +13,8 @@ export const signup = async (payload: SignupPayload): Promise<AxiosResponse<Sign
         headers: { skipAuth: true }
     });
 
+export const forgotPasswordApi = async (email: string): Promise<void> =>
+    api.post("/auth/forgot-password", { email }, {
+        headers: { skipAuth: true }
+    });
+
