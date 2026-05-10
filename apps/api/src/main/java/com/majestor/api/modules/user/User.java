@@ -68,6 +68,12 @@ public class User {
 
     @Builder.Default
     @Column(nullable = false)
+    private Integer carpoolStrikeCount = 0;
+
+    private Instant carpoolSuspendedUntil;
+
+    @Builder.Default
+    @Column(nullable = false)
     @NotNull(message = "Storage used is required")
     private Long storageUsed = 0L;
 
@@ -152,5 +158,10 @@ public class User {
     @Transient
     public Boolean isElite() {
         return this.premiumUntil != null && this.premiumUntil.isAfter(Instant.now());
+    }
+
+    @Transient
+    public Boolean isCarpoolSuspended() {
+        return this.carpoolSuspendedUntil != null && this.carpoolSuspendedUntil.isAfter(Instant.now());
     }
 }

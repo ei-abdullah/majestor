@@ -186,7 +186,25 @@ public class DataInitializer implements CommandLineRunner {
                 .updatedAt(Instant.now())
                 .build();
 
+        User user = User.builder()
+                .email("bcs233189@cust.pk")
+                .username("ZA")
+                .passwordHash(passwordEncoder.encode("Cust@23"))
+                .phone("03155180641")
+                .avatar("")
+                .hasOnboarded(Boolean.FALSE)
+                .university(firstUniversity)
+                .faculty(firstFaculty)
+                .roles(List.of(Role.ADMIN, Role.STUDENT))
+                .isFaculty(false)
+                .isVerified(true)
+                .verificationToken(null)
+                .createdAt(Instant.now())
+                .updatedAt(Instant.now())
+                .build();
+
         userRepository.save(admin);
+        userRepository.save(user);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)

@@ -1,7 +1,10 @@
-import {Stack} from "expo-router";
+import {Stack, useRouter} from "expo-router";
+import {Href} from "expo-router";
 import CustomHeader from "@/src/components/ui/CustomHeader";
 
 export default function Layout() {
+    const router = useRouter();
+
     return (
         <Stack
             screenOptions={{
@@ -11,7 +14,7 @@ export default function Layout() {
                     <CustomHeader
                         title={options.title ?? "Ride"}
                         leftIcon={navigation.canGoBack() ? "arrow-left" : undefined}
-                        onLeftPress={() => navigation.popToTop()}
+                        onLeftPress={() => router.replace("/(tabs)/carpool" as Href)}
                     />
                 )
             }}

@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {View, Text, Image, Pressable} from "react-native";
+import {View, Text, Image, Pressable, Linking} from "react-native";
 import {useIsFocused} from "@react-navigation/native";
 import {Href, useRouter} from "expo-router";
 import {useQueryClient} from "@tanstack/react-query";
@@ -11,7 +11,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons";
 
-import {useCreateBooking, useGetBookingStatus} from "@/src/queries/booking.queries";
+import {useCreateBooking, useGetBookingStatus, useMarkArrived, useReportNoShow} from "@/src/queries/booking.queries";
 import {useCancelRide, useFareConfig} from "@/src/queries/ride.queries";
 import {calculateFare} from "@/src/utils/fare.utils";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
@@ -48,6 +48,9 @@ export default function RideDetails({ride}: Props) {
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showArrivedConfirm, setShowArrivedConfirm] = useState(false);
+    const [showNoShowConfirm, setShowNoShowConfirm] = useState(false);
+    const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
 
     const rideRequest = useRideRequestStore();
     const bookingId = useRideRequestStore((state) => state.bookingId);
@@ -72,10 +75,20 @@ export default function RideDetails({ride}: Props) {
         setOutcomeModal("cancelled");
     });
 
+    const {mutate: markArrived, isPending: isArriving} = useMarkArrived(() => {
+        setOutcomeModal("completed");
+    });
+
+    const {mutate: reportNoShow, isPending: isReporting} = useReportNoShow(() => {
+        isNavigating.current = true;
+        rideRequest.clearRideRequestDetails();
+        router.replace("/(tabs)/carpool" as Href);
+    });
+
     const hasBooked = Boolean(bookingId);
     const isAccepted = bookingStatus === "ACCEPTED";
     const headerOffset = insets.top + 72;
-    const snapPoints = ["30%", "55%", "100%"];
+    const snapPoints = ["30%", "55%", "90%"];
 
     // Effect: Subscribe to real-time booking status updates
     useEffect(() => {
@@ -117,10 +130,8 @@ export default function RideDetails({ride}: Props) {
             });
             router.replace("/(tabs)/carpool" as Href);
         } else if (bookingStatusData.status === "COMPLETED") {
-            // Show modal first — store is cleared only when the user dismisses
             setOutcomeModal("completed");
-        } else if (bookingStatusData.status === "CANCELLED") {
-            // Driver canceled the ride — show modal then clean up
+        } else if (bookingStatusData.status === "CANCELLED" || bookingStatusData.status === "NO_SHOW") {
             setOutcomeModal("cancelled");
         }
     }, [bookingStatusData?.status]);
@@ -132,7 +143,7 @@ export default function RideDetails({ride}: Props) {
         }
     }, []);
 
-    // Effect: Animate map to pickup location on mount
+    // Effect: Animate a map to pickup location on a mount
     useEffect(() => {
         if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
             animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
@@ -152,7 +163,6 @@ export default function RideDetails({ride}: Props) {
     }
 
     function onSubmit() {
-
         const createBookingDetails: CreateBookingDetails = {
             deviationKm: parseFloat(Math.abs((rideRequest.routeDistanceKm ?? 0) - (ride.routeDistanceKm ?? 0)).toFixed(2))
         }
@@ -316,7 +326,7 @@ export default function RideDetails({ride}: Props) {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 56}}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
@@ -531,15 +541,46 @@ export default function RideDetails({ride}: Props) {
                             />
                         )}
 
-                        {/* Done button — only shown when accepted */}
+                        {/* Accepted ride actions */}
                         {isAccepted && (
-                            <OutlineButton
-                                title={"Cancel Ride"}
-                                variant="destructive"
-                                className="flex-1"
-                                disabled={isCancelling}
-                                onPress={() => setShowCancelConfirm(true)}
-                            />
+                            <View className="gap-3">
+                                <PrimaryButton
+                                    title={isArriving ? "Marking..." : "I've Arrived"}
+                                    disabled={isArriving || isCancelling || isReporting}
+                                    onPress={() => setShowArrivedConfirm(true)}
+                                />
+                                <OutlineButton
+                                    title={isCancelling ? "Cancelling..." : "Cancel Ride"}
+                                    variant="destructive"
+                                    disabled={isArriving || isCancelling || isReporting}
+                                    onPress={() => setShowCancelConfirm(true)}
+                                />
+                                <OutlineButton
+                                    title={isReporting ? "Reporting..." : "Report No-Show"}
+                                    variant="destructive"
+                                    disabled={isArriving || isCancelling || isReporting}
+                                    onPress={() => setShowNoShowConfirm(true)}
+                                />
+                                <Pressable
+                                    onPress={() => setShowEmergencyConfirm(true)}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 8,
+                                        backgroundColor: '#FEF3C7',
+                                        borderWidth: 1.5,
+                                        borderColor: '#F59E0B',
+                                        borderRadius: 12,
+                                        paddingVertical: 12,
+                                    }}
+                                >
+                                    <Ionicons name="warning" size={18} color="#B45309"/>
+                                    <Text style={{color: '#B45309', fontWeight: '600', fontSize: 14}}>
+                                        Emergency — Call Police (15)
+                                    </Text>
+                                </Pressable>
+                            </View>
                         )}
                     </View>
                 </BottomSheetScrollView>
@@ -563,6 +604,42 @@ export default function RideDetails({ride}: Props) {
                     cancelRide({rideId: ride.id!, bookingId: bookingId!});
                 }}
                 onCancel={() => setShowCancelConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showArrivedConfirm}
+                title="I've Arrived"
+                message="Confirm you've reached your dropoff point. This will complete your ride and notify your driver."
+                confirmLabel="Yes, I've Arrived"
+                cancelLabel="Not Yet"
+                onConfirm={() => {
+                    setShowArrivedConfirm(false);
+                    if (bookingId) markArrived(bookingId);
+                }}
+                onCancel={() => setShowArrivedConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showNoShowConfirm}
+                title="Report No-Show"
+                message="Are you sure the driver didn't show up? This will issue them a strike per our Carpool Policy."
+                confirmLabel="Report No-Show"
+                cancelLabel="Cancel"
+                onConfirm={() => {
+                    setShowNoShowConfirm(false);
+                    if (bookingId) reportNoShow(bookingId);
+                }}
+                onCancel={() => setShowNoShowConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showEmergencyConfirm}
+                title="Call Police Emergency?"
+                message="This will open your phone dialer with 15 (Police Emergency) pre-dialled. Only use this in a genuine emergency."
+                confirmLabel="Call 15"
+                cancelLabel="Cancel"
+                onConfirm={() => {
+                    setShowEmergencyConfirm(false);
+                    Linking.openURL('tel:15');
+                }}
+                onCancel={() => setShowEmergencyConfirm(false)}
             />
         </GestureHandlerRootView>
     )

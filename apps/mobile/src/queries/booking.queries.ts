@@ -6,7 +6,9 @@ import {
     createBookingApi,
     getBookingsApi,
     getBookingStatusApi,
-    rejectBookingApi
+    markArrivedApi,
+    rejectBookingApi,
+    reportNoShowApi
 } from "@/src/services/booking.api";
 import {
     CreateBookingDetails,
@@ -44,7 +46,7 @@ export const useCreateBooking = (onCallback?: (data: CreateBookingResponse) => v
 
 export const useGetBookings = (rideId: number, options?: Partial<UseQueryOptions<GetBookingsResponse[]>>) => {
     return useQuery({
-        queryKey: ["booking"],
+        queryKey: ["booking", rideId],
         queryFn: () => getBookingsApi(rideId),
         enabled: Boolean(rideId),
         ...options,
@@ -80,6 +82,56 @@ export const useAcceptBooking = (onCallback?: () => void) => {
         }
     })
 }
+
+export const useReportNoShow = (onCallback?: () => void) => {
+    return useMutation({
+        mutationFn: (bookingId: number) => reportNoShowApi(bookingId),
+        onSuccess: () => {
+            Toast.show({
+                type: "success",
+                text1: "No-Show Reported",
+                text2: "The other party has been notified and a strike has been issued.",
+                position: "top",
+                visibilityTime: 4000,
+            });
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: "error",
+                text1: "Failed to Report No-Show",
+                text2: error?.response?.data?.message || error?.message || "Something went wrong.",
+                position: "top",
+            });
+        }
+    });
+}
+
+export const useMarkArrived = (onCallback?: () => void) => {
+    return useMutation({
+        mutationFn: (bookingId: number) => markArrivedApi(bookingId),
+        onSuccess: () => {
+            Toast.show({
+                type: "success",
+                text1: "Arrived!",
+                text2: "Your driver has been notified. Thanks for riding!",
+                position: "top",
+                visibilityTime: 4000,
+            });
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: "error",
+                text1: "Failed to Mark Arrival",
+                text2: error?.response?.data?.message || error?.message || "Something went wrong.",
+                position: "top",
+            });
+        }
+    });
+};
 
 export const useRejectBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();

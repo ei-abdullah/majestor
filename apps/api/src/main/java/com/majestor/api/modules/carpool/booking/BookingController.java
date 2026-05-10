@@ -4,12 +4,14 @@ import com.majestor.api.modules.carpool.booking.dto.CreateBookingDTO;
 import com.majestor.api.modules.carpool.booking.dto.CreateBookingResponseDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingDTO;
 import com.majestor.api.modules.carpool.booking.dto.GetBookingStatusResponseDTO;
+import com.majestor.api.modules.user.UserPrincipal;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -103,6 +105,15 @@ public class BookingController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .build();
+    }
+
+    @PatchMapping("/arrive/{bookingId}")
+    public ResponseEntity<Void> markArrived(
+            @PathVariable @NotNull @Positive Long bookingId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        bookingService.markArrived(bookingId, principal.getId());
+        return ResponseEntity.ok().build();
     }
 
 }

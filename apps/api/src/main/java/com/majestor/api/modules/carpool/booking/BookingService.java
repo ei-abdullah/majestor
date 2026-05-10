@@ -13,7 +13,7 @@ import com.majestor.api.modules.carpool.rideRequest.RideRequest;
 import com.majestor.api.modules.carpool.rideRequest.RideRequestRepository;
 import com.majestor.api.modules.notification.NotificationService;
 import com.majestor.api.modules.notification.NotificationType;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -45,8 +45,16 @@ public class BookingService {
         RideRequest rideRequest = rideRequestRepository.findById(rideRequestId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride Request not found with id: " + rideRequestId));
 
+        if (Boolean.TRUE.equals(rideRequest.getRideRequester().isCarpoolSuspended())) {
+            throw new IllegalStateException("Your carpool access is currently suspended");
+        }
+
         Ride ride = rideRepository.findById(rideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ride not found with id: " + rideId));
+
+        if (Boolean.TRUE.equals(ride.getRidePoster().isCarpoolSuspended())) {
+            throw new IllegalStateException("This ride is no longer available");
+        }
 
         Booking booking = Booking
                 .builder()
@@ -79,6 +87,7 @@ public class BookingService {
         return bookingMapper.toCreateBookingResponseDTO(booking);
     }
 
+    @Transactional
     public List<GetBookingDTO> getBookings(
             Long rideId
     ) {
@@ -123,7 +132,7 @@ public class BookingService {
         booking.setStatus(BookingStatus.ACCEPTED);
 
         // Reject all other bookings
-        List<Booking> allBookings = bookingRepository.findByRideId(ride.getId());
+        List<Booking> allBookings = bookingRepository.findAllActiveByRideId(ride.getId());
         List<Booking> otherBookings = new ArrayList<>();
 
         for (Booking otherBooking : allBookings) {
@@ -159,6 +168,47 @@ public class BookingService {
         } catch (Exception e) {
             log.error("Error while accepting booking: {}", e.getMessage());
             throw new RuntimeException("Failed to accept booking: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional
+    public void markArrived(Long bookingId, Long passengerId) {
+        Booking booking = bookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with id: " + bookingId));
+
+        if (booking.getStatus() != BookingStatus.ACCEPTED) {
+            throw new IllegalStateException("Ride must be in ACCEPTED state to mark as arrived");
+        }
+
+        RideRequest rideRequest = booking.getBookedRide();
+        if (!rideRequest.getRideRequester().getId().equals(passengerId)) {
+            throw new IllegalArgumentException("Only the passenger can mark as arrived");
+        }
+
+        Ride ride = booking.getRide();
+
+        booking.setStatus(BookingStatus.COMPLETED);
+        rideRequest.setRideRequestStatus(com.majestor.api.modules.carpool.rideRequest.RideRequestStatus.COMPLETED);
+        ride.setRideStatus(RideStatus.COMPLETED);
+
+        try {
+            bookingRepository.save(booking);
+            rideRequestRepository.save(rideRequest);
+            rideRepository.save(ride);
+
+            webSocketService.sendMessage("/topic/booking-status/" + bookingId, "STATUS_UPDATED");
+
+            notificationService.sendNotification(
+                    ride.getRidePoster(),
+                    rideRequest.getRideRequester(),
+                    NotificationType.PASSENGER_ARRIVED,
+                    "Passenger Arrived",
+                    rideRequest.getRideRequester().getUsername() + " has marked the ride as complete.",
+                    ride.getId()
+            );
+        } catch (Exception e) {
+            log.error("Error while marking arrival for bookingId: {}", bookingId, e);
+            throw new RuntimeException("Failed to mark arrival. Please try again.", e);
         }
     }
 

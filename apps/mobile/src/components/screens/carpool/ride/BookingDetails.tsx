@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import {View, Text, Image, Pressable} from "react-native";
+import {View, Text, Image, Pressable, Linking} from "react-native";
 import MapView, {Marker, PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetScrollView} from "@gorhom/bottom-sheet";
 import {GestureHandlerRootView} from "react-native-gesture-handler";
@@ -8,7 +8,9 @@ import {Href, useRouter} from "expo-router";
 
 import {GetBookingsResponse} from "@/src/types/booking";
 import {useRideStore} from "@/src/stores/rideStore";
-import {useAcceptBooking, useRejectBooking} from "@/src/queries/booking.queries";
+import {useAcceptBooking, useRejectBooking, useGetBookingStatus, useReportNoShow} from "@/src/queries/booking.queries";
+import {useQueryClient} from "@tanstack/react-query";
+import {stompService} from "@/src/services/stompService";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
 import {GOOGLE_API_KEY} from "@/src/constants";
 import CustomMarker from "@/src/components/ui/CustomMarker";
@@ -18,6 +20,7 @@ import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
 import {useCancelRide, useCompleteRide, useFareConfig} from "@/src/queries/ride.queries";
+import Toast from "react-native-toast-message";
 import {calculateFare} from "@/src/utils/fare.utils";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
 import ConfirmModal from "@/src/components/ui/ConfirmModal";
@@ -37,14 +40,18 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const {clearBooking} = useSelectedBookingStore();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
-    const snapPoints = ["35%", "55%", "85%"];
+    const snapPoints = ["35%", "55%", "90%"];
     const hasAccepted = Boolean(bookingId);
 
     const isNavigating = useRef(false);
+    const hasMounted = useRef(false);
+    const queryClient = useQueryClient();
 
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showNoShowConfirm, setShowNoShowConfirm] = useState(false);
+    const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
 
     const {
         id: rideId,
@@ -66,6 +73,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const headerOffset = insets.top + 72;
 
     const {data: fareConfig} = useFareConfig();
+    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
     const estimatedFare = (fareConfig && deviationKm != null)
         ? calculateFare(deviationKm, vehicleType as 'CAR' | 'BIKE', fareConfig)
         : null;
@@ -87,6 +95,13 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         setOutcomeModal("cancelled");
     });
 
+    const {mutate: reportNoShow, isPending: isReporting} = useReportNoShow(() => {
+        isNavigating.current = true;
+        clearBooking();
+        clearRideDetails();
+        router.replace("/(tabs)/carpool" as Href);
+    });
+
     function handleOutcomeDismiss() {
         const current = outcomeModal;
         isNavigating.current = true;
@@ -104,6 +119,33 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
             animateToLocation(booking.pickupLocationLat, booking.pickupLocationLng);
         }
     }, []);
+
+    useEffect(() => {
+        if (!bookingId || !hasAccepted) return;
+        stompService.connect();
+        const topic = `/topic/booking-status/${bookingId}`;
+        stompService.subscribe(topic, async () => {
+            await queryClient.invalidateQueries({queryKey: ['bookingStatus', bookingId]});
+        });
+        return () => {
+            stompService.unsubscribe(topic);
+        };
+    }, [bookingId, hasAccepted]);
+
+    useEffect(() => {
+        if (!hasMounted.current) {
+            hasMounted.current = true;
+            return;
+        }
+
+        if (!bookingStatusData) return;
+
+        if (bookingStatusData.status === "NO_SHOW") {
+            setOutcomeModal("cancelled");
+        } else if (bookingStatusData.status === "COMPLETED") {
+            setOutcomeModal("completed");
+        }
+    }, [bookingStatusData?.status]);
 
     const isPending = [
         isAccepting,
@@ -230,7 +272,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                 handleIndicatorStyle={{backgroundColor: '#d1d5db'}}
             >
                 <BottomSheetScrollView
-                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 130}}
+                    contentContainerStyle={{paddingHorizontal: 24, paddingTop: 16, paddingBottom: 56}}
                     showsVerticalScrollIndicator={false}
                 >
                     <View className="flex gap-4">
@@ -420,20 +462,47 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
                         {/* Reject & Accept buttons */}
                         {hasAccepted ? (
-                            <View className="flex-row gap-3">
+                            <View className="gap-3">
+                                <View className="flex-row gap-3">
+                                    <OutlineButton
+                                        title={isCancelling ? "Cancelling..." : "Cancel Ride"}
+                                        variant="destructive"
+                                        className="flex-1"
+                                        disabled={isPending || isReporting}
+                                        onPress={() => setShowCancelConfirm(true)}
+                                    />
+                                    <PrimaryButton
+                                        title={isCompleting ? "Completing..." : "Complete Ride"}
+                                        className="flex-1"
+                                        disabled={isPending || isReporting}
+                                        onPress={() => completeRide({rideId, bookingId: booking.bookingId})}
+                                    />
+                                </View>
                                 <OutlineButton
-                                    title={isCancelling ? "Cancelling Ride" : "Cancel Ride"}
+                                    title={isReporting ? "Reporting..." : "Report No-Show"}
                                     variant="destructive"
-                                    className="flex-1"
-                                    disabled={isPending}
-                                    onPress={() => setShowCancelConfirm(true)}
+                                    disabled={isPending || isReporting}
+                                    onPress={() => setShowNoShowConfirm(true)}
                                 />
-                                <PrimaryButton
-                                    title={isCompleting ? "Completing Ride" : "Complete Ride"}
-                                    className="flex-1"
-                                    disabled={isPending}
-                                    onPress={() => completeRide({rideId, bookingId: booking.bookingId})}
-                                />
+                                <Pressable
+                                    onPress={() => setShowEmergencyConfirm(true)}
+                                    style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        gap: 8,
+                                        backgroundColor: '#FEF3C7',
+                                        borderWidth: 1.5,
+                                        borderColor: '#F59E0B',
+                                        borderRadius: 12,
+                                        paddingVertical: 12,
+                                    }}
+                                >
+                                    <Ionicons name="warning" size={18} color="#B45309"/>
+                                    <Text style={{color: '#B45309', fontWeight: '600', fontSize: 14}}>
+                                        Emergency — Call Police (15)
+                                    </Text>
+                                </Pressable>
                             </View>
                         ) : (
                             <View className="flex-row gap-3">
@@ -474,6 +543,30 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                     cancelRide({rideId, bookingId: booking.bookingId});
                 }}
                 onCancel={() => setShowCancelConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showNoShowConfirm}
+                title="Report No-Show"
+                message="Are you sure the passenger didn't show up? This will issue them a strike per our Carpool Policy."
+                confirmLabel="Report No-Show"
+                cancelLabel="Cancel"
+                onConfirm={() => {
+                    setShowNoShowConfirm(false);
+                    reportNoShow(booking.bookingId);
+                }}
+                onCancel={() => setShowNoShowConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showEmergencyConfirm}
+                title="Call Police Emergency?"
+                message="This will open your phone dialer with 15 (Police Emergency) pre-dialled. Only use this in a genuine emergency."
+                confirmLabel="Call 15"
+                cancelLabel="Cancel"
+                onConfirm={() => {
+                    setShowEmergencyConfirm(false);
+                    Linking.openURL('tel:15');
+                }}
+                onCancel={() => setShowEmergencyConfirm(false)}
             />
         </GestureHandlerRootView>
     );

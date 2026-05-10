@@ -75,7 +75,7 @@ export default function BookRide() {
     const [modalField, setModalField] = useState<'pickup' | 'dropoff' | null>(null);
     const headerOffset = insets.top + 72;
 
-    const snapPoints = useMemo(() => ["25%", "60%", "80%"], []);
+    const snapPoints = useMemo(() => ["25%", "60%", "90%"], []);
 
     // Get current form values safely
     let pickupLocation = watch('pickupLocation');
@@ -232,7 +232,7 @@ export default function BookRide() {
                     contentContainerStyle={{
                         paddingHorizontal: 24,
                         paddingTop: 16,
-                        paddingBottom: 36,
+                        paddingBottom: 56,
                     }}
                     showsVerticalScrollIndicator={false}
                 >
