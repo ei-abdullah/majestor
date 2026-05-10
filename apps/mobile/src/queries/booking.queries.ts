@@ -6,6 +6,7 @@ import {
     createBookingApi,
     getBookingsApi,
     getBookingStatusApi,
+    markArrivedApi,
     rejectBookingApi,
     reportNoShowApi
 } from "@/src/services/booking.api";
@@ -106,6 +107,31 @@ export const useReportNoShow = (onCallback?: () => void) => {
         }
     });
 }
+
+export const useMarkArrived = (onCallback?: () => void) => {
+    return useMutation({
+        mutationFn: (bookingId: number) => markArrivedApi(bookingId),
+        onSuccess: () => {
+            Toast.show({
+                type: "success",
+                text1: "Arrived!",
+                text2: "Your driver has been notified. Thanks for riding!",
+                position: "top",
+                visibilityTime: 4000,
+            });
+            onCallback?.();
+        },
+        onError: (error: any) => {
+            Sentry.captureException(error);
+            Toast.show({
+                type: "error",
+                text1: "Failed to Mark Arrival",
+                text2: error?.response?.data?.message || error?.message || "Something went wrong.",
+                position: "top",
+            });
+        }
+    });
+};
 
 export const useRejectBooking = (onCallback?: () => void) => {
     const queryClient = useQueryClient();

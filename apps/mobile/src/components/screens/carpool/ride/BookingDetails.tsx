@@ -142,6 +142,8 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
         if (bookingStatusData.status === "NO_SHOW") {
             setOutcomeModal("cancelled");
+        } else if (bookingStatusData.status === "COMPLETED") {
+            setOutcomeModal("completed");
         }
     }, [bookingStatusData?.status]);
 

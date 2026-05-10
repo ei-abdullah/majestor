@@ -9,5 +9,6 @@ public enum NotificationType {
     STUDY_GROUP_INVITE,
     CARPOOL_STRIKE,
     CARPOOL_SUSPENDED,
+    PASSENGER_ARRIVED,
     SYSTEM
 }

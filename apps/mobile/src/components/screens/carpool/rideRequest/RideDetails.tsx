@@ -11,7 +11,7 @@ import {useSafeAreaInsets} from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import {Ionicons} from "@expo/vector-icons";
 
-import {useCreateBooking, useGetBookingStatus, useReportNoShow} from "@/src/queries/booking.queries";
+import {useCreateBooking, useGetBookingStatus, useMarkArrived, useReportNoShow} from "@/src/queries/booking.queries";
 import {useCancelRide, useFareConfig} from "@/src/queries/ride.queries";
 import {calculateFare} from "@/src/utils/fare.utils";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
@@ -48,6 +48,7 @@ export default function RideDetails({ride}: Props) {
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showArrivedConfirm, setShowArrivedConfirm] = useState(false);
     const [showNoShowConfirm, setShowNoShowConfirm] = useState(false);
     const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
 
@@ -72,6 +73,10 @@ export default function RideDetails({ride}: Props) {
     // Passenger-initiated cancel — show modal, then clean up on dismissing
     const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
         setOutcomeModal("cancelled");
+    });
+
+    const {mutate: markArrived, isPending: isArriving} = useMarkArrived(() => {
+        setOutcomeModal("completed");
     });
 
     const {mutate: reportNoShow, isPending: isReporting} = useReportNoShow(() => {
@@ -539,16 +544,21 @@ export default function RideDetails({ride}: Props) {
                         {/* Accepted ride actions */}
                         {isAccepted && (
                             <View className="gap-3">
+                                <PrimaryButton
+                                    title={isArriving ? "Marking..." : "I've Arrived"}
+                                    disabled={isArriving || isCancelling || isReporting}
+                                    onPress={() => setShowArrivedConfirm(true)}
+                                />
                                 <OutlineButton
                                     title={isCancelling ? "Cancelling..." : "Cancel Ride"}
                                     variant="destructive"
-                                    disabled={isCancelling || isReporting}
+                                    disabled={isArriving || isCancelling || isReporting}
                                     onPress={() => setShowCancelConfirm(true)}
                                 />
                                 <OutlineButton
                                     title={isReporting ? "Reporting..." : "Report No-Show"}
                                     variant="destructive"
-                                    disabled={isCancelling || isReporting}
+                                    disabled={isArriving || isCancelling || isReporting}
                                     onPress={() => setShowNoShowConfirm(true)}
                                 />
                                 <Pressable
@@ -594,6 +604,18 @@ export default function RideDetails({ride}: Props) {
                     cancelRide({rideId: ride.id!, bookingId: bookingId!});
                 }}
                 onCancel={() => setShowCancelConfirm(false)}
+            />
+            <ConfirmModal
+                visible={showArrivedConfirm}
+                title="I've Arrived"
+                message="Confirm you've reached your dropoff point. This will complete your ride and notify your driver."
+                confirmLabel="Yes, I've Arrived"
+                cancelLabel="Not Yet"
+                onConfirm={() => {
+                    setShowArrivedConfirm(false);
+                    if (bookingId) markArrived(bookingId);
+                }}
+                onCancel={() => setShowArrivedConfirm(false)}
             />
             <ConfirmModal
                 visible={showNoShowConfirm}
