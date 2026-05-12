@@ -44,6 +44,7 @@ export const useRecentRides = (options?: Partial<UseQueryOptions<RecentRideRespo
         queryKey: ["ride"],
         queryFn: () => recentRidesApi(),
         enabled: true,
+        refetchInterval: 30_000,
         ...options
     })
 }

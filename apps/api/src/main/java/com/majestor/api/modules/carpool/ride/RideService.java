@@ -83,13 +83,13 @@ public class RideService {
         return rideMapper.getRecentRidesDTOS(recentRidesList);
     }
 
-    @Scheduled(fixedDelay = 2 * 60 * 60 * 1000) // runs after every 2 hours
+    @Scheduled(fixedDelay = 2 * 60 * 60 * 1000) // sweeps every 2 hours; feed/booking already enforce the 10-min window
     @Transactional
     public void expireOldRides() {
-        Instant cutoffTime = Instant.now().minus(2, ChronoUnit.HOURS);
+        Instant cutoffTime = Instant.now().minus(10, ChronoUnit.MINUTES);
         try {
             rideRepository.updateExpiredRides(cutoffTime, RideStatus.ACTIVE, RideStatus.EXPIRED);
-            log.info("Expired rides older than 2 hours at {}", Instant.now());
+            log.info("Expired rides older than 10 minutes at {}", Instant.now());
         } catch (Exception e) {
             log.error("Error while expiring old rides: {}", e.getMessage());
         }
