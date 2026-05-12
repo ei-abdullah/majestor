@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Text, View, TouchableOpacity, Pressable, StyleSheet} from "react-native";
+import {Text, View, Pressable, StyleSheet} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {KeyboardAwareScrollView} from "react-native-keyboard-controller";
 
-import {semesterType, type, years} from "@/src/constants";
+import {semesterType, type} from "@/src/constants";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useCourse} from "@/src/queries/course.queries";
 import {useUploadDocument, useStudyHubFeed} from "@/src/queries/studyhub.queries";
@@ -14,7 +14,6 @@ import GradientView from "@/src/components/ui/GradientView";
 import ImageUpload from "@/src/components/ui/ImageUpload";
 import ImageCarousel from "@/src/components/ui/ImageCarousel";
 import StyledModalWithSearch from "@/src/components/ui/StyledModalWithSearch";
-import ErrorText from "@/src/components/ui/ErrorText";
 import StyledDropDown from "@/src/components/ui/StyledDropDown";
 import StyledTextInput from "@/src/components/ui/StyledTextInput";
 import Card from "@/src/components/ui/Card";
@@ -309,13 +308,13 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                                 control={control}
                                 name="isPremiumOnly"
                                 render={({field: {onChange, value}}) => (
-                                    <TouchableOpacity
+                                    <Pressable
                                         onPress={() => onChange(!value)}
                                         className={`w-10 h-10 rounded-xl items-center justify-center ${value ? 'bg-mj-blue shadow-blue' : 'bg-white border border-mj-blue-200'}`}
                                     >
                                         <Feather name={value ? "check" : "square"} size={20}
                                                  color={value ? "white" : "#A3BFFF"}/>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 )}
                             />
                         </View>
@@ -323,13 +322,13 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
 
                     {/* Action Buttons */}
                     <View className="mt-8 flex-row gap-4">
-                        <TouchableOpacity
+                        <Pressable
                             onPress={handleReset}
                             className="flex-1 py-5 rounded-3xl bg-mj-bg-light items-center justify-center border border-mj-bg-blue"
                         >
                             <Text className="text-mj-text-secondary font-sans-bold">Reset</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
+                        </Pressable>
+                        <Pressable
                             onPress={handleSubmit(onSubmit)}
                             disabled={isUploading}
                             className="flex-[2] py-5 rounded-3xl bg-mj-blue-600 items-center justify-center shadow-blue"
@@ -342,7 +341,7 @@ function UploadDocument({initialDestination, initialCourseId, initialStudyGroupI
                                     <Text className="text-white font-sans-bold ml-2 text-lg">Confirm Upload</Text>
                                 </View>
                             )}
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
                 </View>
             </KeyboardAwareScrollView>

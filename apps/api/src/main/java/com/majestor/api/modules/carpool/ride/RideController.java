@@ -65,8 +65,8 @@ public class RideController {
     }
 
     /**
-     * Get a list of recent posted rides with uploaded time < 10 mins
-     * and only have a status of BOOKED.
+     * Get a list of recent posted rides created within the last 10 minutes
+     * with status ACTIVE. Rides older than 10 minutes are considered expired.
      */
     @GetMapping("/recentRides")
     public ResponseEntity<List<GetRecentRidesDTO>> getRecentRides() {

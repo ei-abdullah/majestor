@@ -1,5 +1,5 @@
 import React from 'react';
-import {Modal, View, Text, TouchableOpacity} from 'react-native';
+import {Modal, View, Text, Pressable} from 'react-native';
 import {Feather} from '@expo/vector-icons';
 import {usePremiumModalStore} from '@/src/stores/premiumModalStore';
 import Card from './Card';
@@ -36,17 +36,20 @@ const PremiumModal = () => {
                             resources.
                         </Text>
 
-                        <TouchableOpacity
+                        <Pressable
                             className="w-full bg-mj-blue-600 py-4 rounded-2xl items-center shadow-blue mb-3"
                             onPress={handleUpgrade}
                         >
                             <Text className="text-white font-sans-extrabold text-base uppercase">Upgrade Now</Text>
-                        </TouchableOpacity>
+                        </Pressable>
 
-                        <TouchableOpacity onPress={close} className="py-2">
+                        <Pressable
+                            onPress={close}
+                            className="py-2"
+                        >
                             <Text className="text-mj-text-muted font-sans-bold text-xs uppercase tracking-widest">Maybe
                                 Later</Text>
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
                 </Card>
             </View>

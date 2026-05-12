@@ -2,11 +2,10 @@ import React, {useCallback, useRef, useState} from "react";
 import {
     View,
     Text,
-    TouchableOpacity,
     FlatList,
     Modal,
     TouchableWithoutFeedback,
-    Pressable, Platform,
+    Pressable
 } from "react-native";
 import {Feather} from "@expo/vector-icons";
 
@@ -156,8 +155,7 @@ const StyledDropDown = <T extends Record<string, any>>(
                                         const active = option[valueField] === selectedOption?.[valueField];
 
                                         return (
-                                            <TouchableOpacity
-                                                activeOpacity={0.8}
+                                            <Pressable
                                                 onPress={() => onSelect(option)}
                                                 className={`px-2 py-3 rounded-lg ${active ? "bg-gray-50" : "bg-white"}`}
                                             >
@@ -169,7 +167,7 @@ const StyledDropDown = <T extends Record<string, any>>(
                                                 >
                                                     {option[labelField]}
                                                 </Text>
-                                            </TouchableOpacity>
+                                            </Pressable>
                                         );
                                     }}
                                     ItemSeparatorComponent={() => (

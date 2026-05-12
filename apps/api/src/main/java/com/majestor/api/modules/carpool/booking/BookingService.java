@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +55,11 @@ public class BookingService {
 
         if (Boolean.TRUE.equals(ride.getRidePoster().isCarpoolSuspended())) {
             throw new IllegalStateException("This ride is no longer available");
+        }
+
+        if (ride.getRideStatus() != RideStatus.ACTIVE
+                || ride.getCreatedAt().isBefore(Instant.now().minus(10, ChronoUnit.MINUTES))) {
+            throw new IllegalStateException("This ride has expired");
         }
 
         Booking booking = Booking

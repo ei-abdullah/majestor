@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, TouchableOpacity,} from "react-native";
+import {View, Text, Pressable,} from "react-native";
 import {ErrorBoundaryProps} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
@@ -55,9 +55,8 @@ export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
                     </View>
                 )}
 
-                <TouchableOpacity
+                <Pressable
                     onPress={retry}
-                    activeOpacity={0.85}
                     style={{width: '100%'}}
                 >
                     <LinearGradient
@@ -73,7 +72,7 @@ export default function ErrorBoundary({error, retry}: ErrorBoundaryProps) {
                             </Text>
                         </View>
                     </LinearGradient>
-                </TouchableOpacity>
+                </Pressable>
             </LinearGradient>
         </SafeAreaView>
     );

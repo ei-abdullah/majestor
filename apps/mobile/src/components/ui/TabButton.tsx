@@ -1,4 +1,4 @@
-import {Text, Pressable, TouchableOpacity} from "react-native"
+import {Text, Pressable} from "react-native"
 import {memo} from "react"
 
 type Props = {
@@ -10,7 +10,7 @@ type Props = {
 
 const TabButton = memo(function TabButton({label, active, disabled, onPress}: Props) {
     return (
-        <TouchableOpacity
+        <Pressable
             onPress={onPress}
             disabled={disabled}
             className={active ? "flex-1 py-3 rounded-xl items-center bg-white" : "flex-1 py-3 rounded-xl items-center bg-transparent"}
@@ -20,7 +20,7 @@ const TabButton = memo(function TabButton({label, active, disabled, onPress}: Pr
             >
                 {label}
             </Text>
-        </TouchableOpacity>
+        </Pressable>
     )
 })
 

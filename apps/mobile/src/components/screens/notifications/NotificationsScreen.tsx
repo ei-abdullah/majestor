@@ -1,5 +1,5 @@
 import React, {useEffect} from "react";
-import {View, Text, ScrollView, RefreshControl, TouchableOpacity} from "react-native";
+import {View, Text, ScrollView, RefreshControl, Pressable} from "react-native";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {Feather} from "@expo/vector-icons";
 import {router} from "expo-router";
@@ -111,24 +111,24 @@ function NotificationItem({notification}: { notification: Notification }) {
                 ) : (
                     <View style={{flexDirection: 'row', gap: 10, marginTop: 12, marginLeft: 58}}>
                         <View style={{flex: 1}}>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => acceptInvite(notification.relatedId!)}
                                 disabled={isAccepting || isRejecting}
                                 style={{backgroundColor: '#E8F5E9', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#A5D6A7'}}
                             >
                                 <Feather name="check" size={14} color="#2E7D32"/>
                                 <Text style={{color: '#2E7D32', fontFamily: 'Inter_700Bold', fontSize: 12}}>Accept</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                         <View style={{flex: 1}}>
-                            <TouchableOpacity
+                            <Pressable
                                 onPress={() => rejectInvite(notification.relatedId!)}
                                 disabled={isAccepting || isRejecting}
                                 style={{backgroundColor: '#FFEBEE', borderRadius: 12, paddingVertical: 9, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 6, borderWidth: 1, borderColor: '#FFCDD2'}}
                             >
                                 <Feather name="x" size={14} color="#C62828"/>
                                 <Text style={{color: '#C62828', fontFamily: 'Inter_700Bold', fontSize: 12}}>Decline</Text>
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
                     </View>
                 )

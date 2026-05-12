@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, ScrollView, TouchableOpacity} from "react-native";
+import {View, Text, ScrollView, Pressable} from "react-native";
 import {Href, router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {useAuthStore} from "@/src/stores/authStore";
@@ -29,14 +29,14 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                         Official Channels
                     </Text>
                 </View>
-                <TouchableOpacity
+                <Pressable
                     onPress={() => router.push("/(tabs)/studyhub/officialGroup" as Href)}
                     style={{backgroundColor: '#FFF8E1', paddingHorizontal: 14, paddingVertical: 8, borderRadius: 12, borderWidth: 1, borderColor: '#FFE082'}}
                 >
                     <Text style={{color: '#C6941F', fontFamily: 'Inter_700Bold', fontSize: 11, textTransform: 'uppercase', letterSpacing: 0.5}}>
                         View All
                     </Text>
-                </TouchableOpacity>
+                </Pressable>
             </View>
 
             <ScrollView
@@ -45,13 +45,12 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                 contentContainerStyle={{paddingRight: 8}}
             >
                 {filteredGroups.map((group) => (
-                    <TouchableOpacity
+                    <Pressable
                         key={group.id}
                         onPress={() => router.push({
                             pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                             params: {id: group.id}
                         })}
-                        activeOpacity={0.75}
                         style={{marginRight: 12}}
                     >
                         <View style={{
@@ -92,10 +91,10 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                                 </View>
                             </LinearGradient>
                         </View>
-                    </TouchableOpacity>
+                    </Pressable>
                 ))}
 
-                <TouchableOpacity
+                <Pressable
                     onPress={() => router.push("/(tabs)/studyhub/officialGroup" as Href)}
                     style={{justifyContent: 'center', marginLeft: 4}}
                 >
@@ -112,7 +111,7 @@ export default function OfficialGroup({groups}: { groups: Group[] }) {
                     }}>
                         <Feather name="arrow-right" size={18} color="#C6941F" opacity={0.7}/>
                     </View>
-                </TouchableOpacity>
+                </Pressable>
             </ScrollView>
         </View>
     );

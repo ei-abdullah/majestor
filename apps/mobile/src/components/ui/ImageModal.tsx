@@ -2,11 +2,9 @@ import React from "react";
 import {
     View,
     Modal,
-    TouchableOpacity,
     Image,
     Pressable,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
 
 type Props = {
     visible: boolean;

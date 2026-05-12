@@ -1,6 +1,6 @@
 import React from "react";
 import {Href, useRouter} from "expo-router";
-import {Text, View} from "react-native";
+import {Pressable, Text, View} from "react-native";
 import {Controller, useForm} from "react-hook-form";
 import {isAxiosError} from "axios";
 
@@ -132,7 +132,11 @@ function LoginForm({loading, setLoading, setMessage}: Props) {
                 />
             </View>
 
-            <Text className={"text-mj-teal-400 underline underline-offset-2"}>Forgot Password?</Text>
+            <Pressable
+                onPress={() => router.push("/(auth)/forgotPassword" as Href)}
+            >
+                <Text className={"text-mj-teal-400 underline underline-offset-2"}>Forgot Password?</Text>
+            </Pressable>
 
             <PrimaryButton
                 title={loading ? "Loading..." : "Login to Majestor"} className={"w-full"} disabled={loading}

@@ -3,7 +3,6 @@ import {
     Pressable,
     View,
     Text,
-    TouchableOpacity,
     Modal,
     FlatList,
     KeyboardAvoidingView,
@@ -37,7 +36,7 @@ const ListItem = React.memo(({
     isSelected: boolean;
     onPress: () => void;
 }) => (
-    <TouchableOpacity
+    <Pressable
         onPress={onPress}
         className="py-4 border-b border-gray-50 flex-row justify-between items-center"
     >
@@ -48,7 +47,7 @@ const ListItem = React.memo(({
         {isSelected && (
             <Feather name="check-circle" size={20} color="#4CB8AD"/>
         )}
-    </TouchableOpacity>
+    </Pressable>
 ));
 
 const StyledModalWithSearch = (
@@ -141,9 +140,11 @@ const StyledModalWithSearch = (
                                 <Text className="text-xl font-sans-bold text-gray-900">
                                     {label || placeholder}
                                 </Text>
-                                <TouchableOpacity onPress={() => setIsVisible(false)}>
+                                <Pressable
+                                    onPress={() => setIsVisible(false)}
+                                >
                                     <Feather name="x-circle" size={28} color="#9ca3af"/>
-                                </TouchableOpacity>
+                                </Pressable>
                             </View>
 
                             <StyledTextInput

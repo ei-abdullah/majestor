@@ -1,5 +1,5 @@
 import React from "react";
-import {View, Text, TouchableOpacity} from "react-native";
+import {View, Text, Pressable} from "react-native";
 import {router} from "expo-router";
 import {Feather} from "@expo/vector-icons";
 import {LinearGradient} from "expo-linear-gradient";
@@ -39,13 +39,12 @@ export default function UniversityGroup({groups}: { groups: Group[] }) {
                 {groups.map((group, index) => {
                     const isLast = index === groups.length - 1;
                     return (
-                        <TouchableOpacity
+                        <Pressable
                             key={group.id}
                             onPress={() => router.push({
                                 pathname: "/(tabs)/studyhub/studyGroupDetail" as any,
                                 params: {id: group.id}
                             })}
-                            activeOpacity={0.7}
                         >
                             <View style={{
                                 flexDirection: 'row',
@@ -85,7 +84,7 @@ export default function UniversityGroup({groups}: { groups: Group[] }) {
                                     <Feather name="chevron-right" size={14} color="#6FD0C5"/>
                                 </View>
                             </View>
-                        </TouchableOpacity>
+                        </Pressable>
                     );
                 })}
             </LinearGradient>

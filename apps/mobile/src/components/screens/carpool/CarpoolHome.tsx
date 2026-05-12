@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useRef, useState} from "react";
-import {View, TouchableOpacity, Text, Platform} from "react-native";
+import {View, Text, Platform, Pressable} from "react-native";
 import MapView, {PROVIDER_GOOGLE} from "react-native-maps";
 import BottomSheet, {BottomSheetView} from '@gorhom/bottom-sheet';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
@@ -86,7 +86,7 @@ export default function CarpoolHome() {
                     zIndex: 99
                 }}>
                     {/* My Location Button */}
-                    <TouchableOpacity
+                    <Pressable
                         onPress={centerOnUserLocation}
                         style={{
                             backgroundColor: 'white',
@@ -108,7 +108,7 @@ export default function CarpoolHome() {
                             size={24}
                             color={hasLocationPermission ? "#3A6FF8" : "#EF4444"}
                         />
-                    </TouchableOpacity>
+                    </Pressable>
                 </View>
 
                 <BottomSheet
@@ -134,7 +134,7 @@ export default function CarpoolHome() {
                                         </View>
                                     </View>
                                     <Card className={`p-0 overflow-hidden border shadow-sm ${rideStore.bookingId ? 'border-mj-teal-200' : 'border-mj-blue-200'}`}>
-                                        <TouchableOpacity
+                                        <Pressable
                                             onPress={() => {
                                                 if (rideStore.bookingId) {
                                                     router.push("/(tabs)/carpool/ride/bookingDetails" as Href);
@@ -142,7 +142,6 @@ export default function CarpoolHome() {
                                                     router.push("/(tabs)/carpool/ride/bookingRequests" as Href);
                                                 }
                                             }}
-                                            activeOpacity={0.7}
                                         >
                                             <View className={`p-4 flex-row items-center justify-between ${rideStore.bookingId ? 'bg-mj-teal-50' : 'bg-mj-blue-50'}`}>
                                                 <View className="flex-row items-center flex-1">
@@ -176,7 +175,7 @@ export default function CarpoolHome() {
                                                     </Text>
                                                 </View>
                                             </View>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     </Card>
                                 </View>
                             ) : isPassengerActive ? (
@@ -192,7 +191,7 @@ export default function CarpoolHome() {
                                     </View>
                                     
                                     <Card className={`p-0 overflow-hidden border shadow-sm ${rideRequestStore.bookingId ? 'border-mj-teal-200' : 'border-mj-yellow-200'}`}>
-                                        <TouchableOpacity
+                                        <Pressable
                                             onPress={() => {
                                                 if (rideRequestStore.bookingId) {
                                                     router.push("/(tabs)/carpool/rideRequest/rideDetails" as Href);
@@ -200,7 +199,6 @@ export default function CarpoolHome() {
                                                     router.push("/(tabs)/carpool/rideRequest/availableRides" as Href);
                                                 }
                                             }}
-                                            activeOpacity={0.7}
                                         >
                                             <View className={`p-4 flex-row items-center justify-between ${rideRequestStore.bookingId ? 'bg-mj-teal-50' : 'bg-mj-yellow-50'}`}>
                                                 <View className="flex-row items-center flex-1">
@@ -234,14 +232,13 @@ export default function CarpoolHome() {
                                                     </Text>
                                                 </View>
                                             </View>
-                                        </TouchableOpacity>
+                                        </Pressable>
                                     </Card>
                                 </View>
                             ) : hasLocationPermission ? (
                                 <View className="flex-row gap-4 px-1 mt-4">
                                     {/* Passenger Action */}
-                                    <TouchableOpacity 
-                                        activeOpacity={0.8}
+                                    <Pressable
                                         onPress={() => router.push("/(tabs)/carpool/rideRequest/bookRide" as Href)}
                                         className="flex-1 shadow-xl elevation-5 rounded-[32px] overflow-hidden"
                                         style={{ aspectRatio: 1 }}
@@ -258,11 +255,10 @@ export default function CarpoolHome() {
                                             <Text className="text-white font-sans-bold text-base text-center">Find a Ride</Text>
                                             <Text className="text-white/80 text-[10px] font-sans-bold uppercase tracking-widest mt-0.5">Passenger</Text>
                                         </LinearGradient>
-                                    </TouchableOpacity>
+                                    </Pressable>
 
                                     {/* Driver Action */}
-                                    <TouchableOpacity 
-                                        activeOpacity={0.8}
+                                    <Pressable
                                         onPress={() => router.push("/(tabs)/carpool/ride/postRide" as Href)}
                                         className="flex-1 bg-white rounded-[32px] items-center justify-center shadow-xl elevation-5 border border-mj-blue-50"
                                         style={{ aspectRatio: 1 }}
@@ -272,7 +268,7 @@ export default function CarpoolHome() {
                                         </View>
                                         <Text className="text-mj-blue-600 font-sans-bold text-base text-center">Offer a Ride</Text>
                                         <Text className="text-mj-blue-400 text-[10px] font-sans-bold uppercase tracking-widest mt-0.5">Driver</Text>
-                                    </TouchableOpacity>
+                                    </Pressable>
                                 </View>
                             ) : (
                                 <>

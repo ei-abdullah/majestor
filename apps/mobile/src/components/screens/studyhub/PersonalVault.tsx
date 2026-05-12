@@ -1,11 +1,10 @@
 import React from "react";
-import {View, Text, TouchableOpacity, ScrollView} from "react-native";
+import {View, Text, ScrollView} from "react-native";
 import {useAuthStore} from "@/src/stores/authStore";
 import {useVault} from "@/src/queries/studyhub.queries";
 import {useUserDetails} from "@/src/queries/user.queries";
 import GradientView from "@/src/components/ui/GradientView";
 import DocumentList from "./DocumentList";
-import Card from "@/src/components/ui/Card";
 import SearchBar from "@/src/components/ui/SearchBar";
 import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import StyledDropDown from "@/src/components/ui/StyledDropDown";
