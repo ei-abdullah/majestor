@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import * as Location from 'expo-location';
 import Toast from 'react-native-toast-message';
 import { useLocationStore } from '@/src/stores/locationStore';
@@ -25,11 +26,57 @@ export const useLocationPermissions = () => {
         }
     }, [permission?.granted]);
 
+    const appState = useRef(AppState.currentState);
+    const lastServicesEnabled = useRef<boolean | null>(null);
+
+    const checkLocationServices = async () => {
+        try {
+            const enabled = await Location.hasServicesEnabledAsync();
+            const previous = lastServicesEnabled.current;
+            lastServicesEnabled.current = enabled;
+
+            if (!enabled) {
+                if (previous !== false) handleLocationDisabled();
+                return;
+            }
+
+            // Only act on services-off → services-on transitions.
+            // The first run (previous === null) is handled by the permission effect above;
+            // steady-state (previous === true) must not refetch GPS or re-prompt.
+            if (previous !== false) return;
+
+            const current = await Location.getForegroundPermissionsAsync();
+            if (current.granted) {
+                setHasLocationPermission(true);
+                fetchAndSetLocation().catch(handleLocationError);
+            } else if (current.canAskAgain) {
+                await requestPermission();
+            } else {
+                handlePermissionDenied();
+            }
+        } catch (error: any) {
+            Sentry.captureException(error);
+        }
+    };
+
     useEffect(() => {
-        Location.hasServicesEnabledAsync().then((enabled) => {
-            if (!enabled) handleLocationDisabled();
-            else requestPermission();
+        void checkLocationServices();
+
+        const interval = setInterval(() => {
+            if (AppState.currentState === 'active') void checkLocationServices();
+        }, 3000);
+
+        const subscription = AppState.addEventListener('change', (next: AppStateStatus) => {
+            if (appState.current.match(/inactive|background/) && next === 'active') {
+                void checkLocationServices();
+            }
+            appState.current = next;
         });
+
+        return () => {
+            clearInterval(interval);
+            subscription.remove();
+        };
     }, []);
 
     const requestLocationPermission = async () => {
