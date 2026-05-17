@@ -1,0 +1,14 @@
+How did I make Majestor? The stack stacks up.
+
+Majestor, being a mobile app, isn't completely based on one simple language. Instead, it's built on two. 
+
+- On the frontend part, I have used React Native + Expo to build a close-to-native cross-platform app. Since I already worked with React before, picking up React Native & Expo wasn't that much of a difficulty.
+
+- On the backend, I have decided not to go with the typical JS full-stack route. Instead, I pushed myself towards learning something new. So I decided to go with Java & Spring Boot. And let me be honest, I'm not planning to go back anytime soon.
+
+- For the database, I am using a Postgres database to store data alongside using JPA as an ORM. 
+
+- Related to hosting, both the server and database are hosted on the DigitalOcean App Platform deployed using a Dockerfile. 
+
+
+I've decided to start a series where I will explain how I made the Majestor, what I used to solve what problems, and what issues I faced down the line.
