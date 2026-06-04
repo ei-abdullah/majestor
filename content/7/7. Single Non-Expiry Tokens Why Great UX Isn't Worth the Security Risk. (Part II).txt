@@ -1,0 +1,50 @@
+⚠️ Single Non-Expiry Tokens: How Attackers Steal Them (Part II/II)
+
+In the last post, I talked about how single non-expiring tokens create security vulnerabilities in the system when the tokens fall into the wrong hands.
+
+In this one, I'm going to explain how these tokens actually get stolen. These are termed as attack vectors.
+
+
+
+1. CROSS-SITE REQUEST FORGERY (CSRF)
+
+CSRF exploits the trust that a website has in the user's browser.
+
+It starts when the user logs into the website and upon authentication, the user receives a token. Then the token is stored in the browser (localStorage, cookies, etc.). The user visits some site containing malicious code but is still carrying the token received from the first logged-in site. The malicious code sends a request to the original site and attaches the stored token to the request. The original site accepts the request since the stolen token is a valid one, and hence unauthorized action is executed.
+
+E.g., User is logged into a banking app → Visits a malicious site → Site sends hidden request: "Transfer $10,000" → Browser auto-attaches the user's token → Bank API processes it as a legitimate request → Money transferred without user's knowledge.
+
+Why non-expiring tokens make this worse: The attack window is PERMANENT. As long as the user has that token, they're vulnerable—whether it's today, tomorrow, or months from now.
+
+
+
+2. CROSS-SITE SCRIPTING (XSS)
+
+XSS allows attackers to inject malicious JavaScript into your application.
+
+In this attack, the hacker finds a way to inject JavaScript into the application (vulnerable input field, comment section, etc.). Then the user visits the page containing the malicious script, and the script executes in the user's browser. The script reads the token from localStorage or sessionStorage and sends the token to the attacker's server or destination. Through this process, the hacker gets access to a copy of the user's token.
+
+Why non-expiring tokens make this worse: Once stolen, the attacker has PERMANENT access. They can use it indefinitely to impersonate the user. No expiration means no automatic protection—the token works forever.
+
+
+
+3. MAN-IN-THE-MIDDLE ATTACK (MITM)
+
+MITM attacks occur when communication between client and server is intercepted.
+
+How it works: The user connects to public WiFi at a coffee shop. The network is compromised, or the attacker sets up a fake WiFi hotspot. The user makes a request to the app, and the attacker intercepts the request. The token is accessible through the request header under the header name `Authorization: Bearer {token}`, and then the attacker copies the token through the header. Now the attacker can make requests with the token, pretending to be the user.
+
+Common scenarios:
+→ Unencrypted HTTP connections (not HTTPS)
+→ Public WiFi networks
+→ Compromised routers
+→ Fake WiFi hotspots
+
+Why non-expiring tokens make this worse: A single interception gives the attacker UNLIMITED access. They can use the token forever, from anywhere, on any device.
+
+
+In my upcoming post, I'm going to explain how Majestor's security is setup for that it's users are safe from any unauthorized access. Stay tuned! 
+
+If you have dealt with any of the attacks and what your implementation were to secure against these, so share your experiences below! 
+
+#WebSecurity #CSRF #XSS #MITM #CyberSecurity #Authentication #TokenSecurity #APISecurity #SoftwareEngineering #InfoSec

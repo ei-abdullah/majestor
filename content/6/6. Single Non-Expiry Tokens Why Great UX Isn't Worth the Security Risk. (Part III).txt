@@ -1,0 +1,30 @@
+⚠️ Single Non-Expiry Tokens: Why Great UX Isn't Worth the Security Risk. (Part I/II)
+
+Tokens are used heavily to authenticate the users, and one of the most widely used ones is called an authorization token that is attached to the header of the request as Authorization: {token}. These tokens contain data about their user in an encrypted format within their body, namely "claims."
+
+One of the simplest approaches? A single, non-expiring token. But they have a huge caveat.
+
+But let's find out how it works. A token is granted to the user during login and is then stored permanently on their device. It exhibits the following characteristics:
+- No expiration date
+- Better user experience, since users do not have to repeatedly log in to the system.
+
+The server validates the token and authenticates the token provided the token hasn't been tampered with. 
+
+But this leaves a huge security vulnerability. Starting from if this token falls into wrong hands.
+
+This leaves several conditions:
+- The attacker gains PERMANENT access to the system.
+- They can impersonate the user indefinitely.
+- The exploit can go unnoticed for an indefinite time till discovered.
+
+Now I'll talk in more detail about how these tokens get stolen in part II of this series, but hints are given, including
+- Cross-Site Request Forgery (CSRF)
+- Cross-Site Scripting (XSS)
+- Man-in-the-middle attacks
+- and the strategy to counter these.
+
+So points to remember after reading this post are that a single non-expiry token might give the best user experience to the user, but it leaves a prominent security vulnerability that is just waiting to be exploited and would leave a huge dent in the system and credibility of the security measures of the system. 
+
+And a point worth noting, convenience shouldn't come at the cost of the user's safety.
+
+#SecurityFirst #UserExperience #AuthenticationTokens #Cybersecurity

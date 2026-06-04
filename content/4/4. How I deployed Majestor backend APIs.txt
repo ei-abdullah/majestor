@@ -1,0 +1,40 @@
+How I deployed Majestor's APIs to DigitalOcean using Docker's Dockerfile
+
+So in the last few posts, I talked about compose file which is example docker-compose.yml file which upon running through docker compose -up d will start a container will all the services installed and running upon starting. 
+
+This concept of Dockerfile is entirely a different thing. I contains sets of instruction from creating the executable file to running it as a standalone. 
+
+In my Dockerfile that I build, It works on a two stage system. First one being the building stage and second one being the running stage. 
+
+Let's first turn our attention to Building phase. 
+
+FROM eclipse-temurin:21-jdk-jammy AS builder: It uses Eclipse Temurin JDK 21, a popular open-source Java distribution, used to compile the Java code. and it is labelled as builder to be references later in the file.
+
+WORKDIR /app: It sets the working directory inside the container to /app
+
+COPY .mvn/ .mvn/
+COPY mvnw pom.xml ./
+RUN chmod +x mvnw: It copies the maven wrapper and pom.xml file (where all dependencies required to build the app are listed alongside project details). It allows the Maven wrapper to be executed. 
+
+RUN ./mvnw dependency:go-offline -q: It downloads all the Maven dependencies in advance, The -q flag gives less verbose output. 
+
+COPY src ./src
+RUN ./mvnw package -DskipTests -q: This command copies the source code and builds the application into a JAR file (the single executable file) and -DskipTests allows tests to skip for faster deployment. The ouput goes to /app/target/*.jar
+
+
+Now to the runtime stage.
+
+FROM eclipse-temurin:21-jre-jammy: Uses light weight JRE-only image. This reduces the final image from ~500MB+ (with JDK) to ~200-300MB (JRE only)
+
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar: This command copies the compiled JAR file build during the builder phase only.
+
+EXPOSE 8080: It defines that the app listens on port 8080. It's informational only.
+
+ENTRYPOINT ["java", "-jar", "app.jar"]: This defines commands to run when the container starts. And this is where the springboot application finally starts. 
+
+In my coming post, I'll explain how I used this dockerfile and used DigitalOcean's App platform to deploy the server.
+
+
+P.S It essentially packages your whole app into a single executable file 
+which is deployed on server and then run.
