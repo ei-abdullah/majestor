@@ -1,0 +1,17 @@
+How is security being handled in Majestor? It's Spring Security + JWT configuration.
+
+In this post, I'm showing the architecture that is being used to securely allow authenticated users to access my server. 
+
+All the APIs that you have encountered, e.g., posting a ride, booking the ride, uploading your documents on the server, etc., all go through these processes, and these types of APIs are called protected APIs. and the other, well-public APIs, ig. It's because these protected APIs use some sort of authentication mechanism to only allow authenticated users to consume them.
+
+So it all starts with the user logging into my app with all the information it needs. The tokens to be specific in this case. Both the access and refresh tokens are securely stored inside the app's store. The user sends an API request to the server alongside the access token attached to its authorization header. The server then extracts the token from the header and checks the validity of the token.  Now there are two cases: either the token is valid or invalid. Seems fair. Best case, the token is valid, so the server just performs the business logic it needs to perform and returns a response. Works absolutely beautifully. 
+
+Worst-case scenario, the access token is invalid. There can be many reasons; either the token has expired or someone just threw anything towards the server hoping it would gain access. Luckily he can't. The server sends a 401 HTTP status code that defaults to UNAUTHORIZED back to the mobile app. Upon receiving the 401 status code, the API interceptor, in my case it's the Axios interceptor, catches the 401 and fetches the refresh token stored in this user's mobile app and sends another request to the server to refresh the tokens. Now again, the server checks for the validity of the refresh token again. We'll get back to the best-case scenario, but for the worst case first, even if the refresh token is not valid, the server again sends 401, and this time the user is forcefully logged out of the server. So it can't do any more harm.
+
+Now back to the best-case scenario for the refresh token. If the refresh token passes the sanity and validation checks, it sends back both the refreshed access and refresh tokens back to the user, and upon receiving them from the server, both tokens are then securely stored in the app's secure store. and then it again sends the original intended request with the new access token it just received from the server, and this time the request will be accepted and a 200 HTTP status code is inevitable.
+
+Though I can use advanced mechanisms, e.g., refresh token recycling, storing refresh tokens in the database to force bricking users' accounts, etc., they were way out of the project's scope.
+
+In the upcoming series of posts, we'll be diving deep into the security aspects of the application, and yeah, stay tuned for further updates. Peace out!
+
+#java #programming #technology

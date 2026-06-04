@@ -1,0 +1,25 @@
+In my last post, I described how I am utilizing docker to manage my dependencies/external services.
+In this one. I'll be explaining what each and every line in my case of docker-compose.yml file does. 
+
+The docker's yml file is as follows:
+
+services - It comes at the starting of the file and it's especially list all the containers or services you want to run.
+
+postgres - Right after the services, you name your services. In my case, it' called as postgres. It's basically a label and other services (if added any) will be using this label to communicate with the service.
+
+image - It specifies which docker's image to use. In this case of image: "postgres:latest", it tell docker to fetch and download the latest version of official version of postgres image from docker hub. Note, you can also specify the postgres version e.g postgres:14. 
+
+container_name - This field actually sets the container name and it will be shown when you execute the command docker ps. If you don't specify the container_name, random name will be generated thus will be difficult to manage. 
+
+restart - This field specify if the container reboots, docker will automatically restarts the container. Several other options include: no, on-failure and unless-stopped. 
+
+environment - Now this is the field you set the credentials or environment variables. These will be passed to containers on build time. The field I set in including POSTGRES_DB, POSTGRES_PASSWORD, POSTGRES_USER. All necessary to set up postgres instance.
+
+ports - It's a port mapping section and tell Docker which ports to expose to consume. The format is HOST_PORT:CONTAINER_PORT. It means route the traffic from port 5432 on your computer to port 5432 inside the container. Thus allowing database to connect to the machine. 
+
+Regarding from where did i learn all of these, i have attached links alongside notes from my side.
+
+If you want to earn a professional certification alongside tutoring from a university professor and alongside docker, they also teach the anatomy behind docker i.e the virtualization and also the Kubernetes and perfect to grow as a backend developer, this coursera course is well recommended: https://www.coursera.org/learn/virtualization-docker-kubernetes-data-engineering
+
+Instead, If you want to relaxed learning alongside some humour and animations, this one's perfect: https://youtu.be/DQdB7wFEygo?si=GQep8A_-0r0yU-FD 
+
