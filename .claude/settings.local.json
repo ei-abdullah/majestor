@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "WebSearch",
-      "WebFetch(domain:cust.edu.pk)"
+      "WebFetch(domain:cust.edu.pk)",
+      "Bash(grep -E \"\\\\.java$\")"
     ]
   }
 }
