@@ -1,0 +1,104 @@
+⚠️ How I Secured Majestor with JWT (Part I/II)
+
+The previous posts showed how non-expiry tokens create vulnerabilities and what attacks can occur.
+
+Now, let me show how I implemented backend security in Majestor using Spring Boot and JWT.
+
+
+TECH STACK
+1. Spring Boot + Spring Security
+2. JWT (JJWT library)
+3. BCrypt (Password hashing)
+
+Two-token architecture:
+1. Access Token: 30 min
+2. Refresh Token: 30 days
+
+
+GENERATING TOKENS
+When a user logs in, the backend generates TWO tokens via JwtService.
+
+Access Token contains:
+1. User's email (subject)
+2. Issue timestamp
+3. Expiration: +30 minutes
+4. Signed with secret key
+
+Refresh Token:
+Same structure, but expires in 30 days.
+
+(Code in images)
+
+
+SECRET KEY MANAGEMENT
+Tokens signed with a secret key are stored in the .env file (never hardcoded).
+- Base64 encoded
+- Never in logs/errors
+- Different keys for dev/prod
+
+
+VALIDATING TOKENS
+Every request validates the token before processing.
+
+Steps:
+1. Extract email from token
+2. Compare with authenticated user
+3. Check expiration
+4. Valid? → Proceed
+
+Failed validation:
+- Expired/tampered/invalid → 401 Unauthorized
+
+
+EXTRACTING USER INFO
+Token's subject field contains user email.
+
+Flow:
+Parse token → Verify signature → Extract email → Load user from DB → Authenticate request
+
+
+SPRING SECURITY CONFIG
+Setup:
+1. CORS enabled (for React Native)
+2. CSRF disabled (stateless JWT)
+3. Public endpoints: /login, /signup, /refresh
+4. All other endpoints require auth
+5. Stateless sessions (no server storage)
+6. Custom JWT filter runs first
+
+
+JWT FILTER
+Custom filter processes every request:
+
+1. Extract token from `Authorization: Bearer {token}`
+2. Validate token
+3. Extract user email
+4. Load user from database
+5. Set authentication context
+6. Allow request through
+
+
+ATTACK PREVENTION
+Token Theft:
+✅ 30-min Access Token = limited damage
+✅ Refresh Token revocable in DB
+
+Token Tampering:
+✅ Signed tokens
+✅ Modified = invalid signature
+✅ Rejected immediately
+
+
+NEXT: FRONTEND
+Part IV covers:
+- Secure storage (Expo SecureStore)
+- Axios interceptors
+- Automatic token refresh
+- Race condition handling
+
+Code attached! 📸
+
+
+How do you handle JWT in your projects?
+
+#SpringBoot #JWT #BackendSecurity #APISecurity #SpringSecurity #Authentication #SoftwareEngineering
