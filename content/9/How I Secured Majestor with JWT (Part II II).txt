@@ -1,0 +1,77 @@
+⚠️ How I Secured Majestor with JWT (Part II/II)
+
+Part I covered the backend. Now the React Native frontend — how it handles tokens securely.
+
+TECH STACK
+1. React Native (Expo)
+2. Axios (HTTP client)
+3. Zustand (State management)
+4. Expo SecureStore (OS-level keychain)
+
+THE PROBLEM
+Store tokens wrong on the client and your backend security is useless:
+- Refresh Token in AsyncStorage? → Accessible to JS & backups
+- No auto-refresh? → Users logged out every 30 min
+- Multiple 401s at once? → Floods the refresh endpoint
+
+SECURE STORAGE STRATEGY
+Two stores, based on sensitivity:Access Token → Zustand (AsyncStorage) — short-lived (30 min), used on every request
+Refresh Token → Expo SecureStore (encrypted OS keychain) — long-lived (30 days), used ONLY for /auth/refresh, iOS Keychain / Android Keystore backed
+
+Why split? Even if AsyncStorage leaks, the attacker can't renew access.
+
+AXIOS INTERCEPTORS
+Three interceptors run per request:
+1️ Request Interceptor — Attach token
+- Reads accessToken from store, adds Authorization: Bearer {token}
+- skipAuth flag skips it for /login, /signup
+2️ Response Interceptor — Error & Premium
+- 402 → opens premium upsell modal
+- 400/500 → captured to Sentry
+3️ Response Interceptor — Auto Refresh
+- 401/403 → triggers silent token refresh, retries the original request
+
+AUTOMATIC TOKEN REFRESH
+When a 401 hits:
+1. Interceptor catches it, reads refresh token from SecureStore
+2. POSTs to /auth/refresh (skips auth header)
+3. Stores new access + refresh tokens, replays the original request
+User never sees it. No redirect to login. Seamless.
+
+RACE CONDITION HANDLING
+What if 5 requests fail with 401 at once? Naive → 5 refresh calls → backend chaos.
+
+My solution: a singleton refresh promise.
+- First 401 starts the refresh → stores the promise
+- All other 401s await the SAME promise
+Result: 5 failed requests → 1 refresh call → 5 successful retries.
+
+INFINITE LOOP PREVENTION
+Three guards stop refresh from looping forever:
+1. _retry flag — only one retry allowed
+2. /login, /signup never trigger refresh
+3. If /auth/refresh returns 401 → immediate logout (no retry)
+
+NETWORK RESILIENCE
+- 401/403 from refresh → token invalid → LOGOUT
+- Network error / 500 → retry 3 times (0s → 1s → 2s backoff)
+Flaky Wi-Fi won't log you out, but a revoked token will.
+
+SESSION CLEANUP
+On logout / invalid refresh: delete refresh token, clear React Query cache + auth store, clear Sentry user context.
+No stale data. No zombie sessions.
+
+ATTACK PREVENTION (FRONTEND SIDE)
+Token Theft:
+✅ Refresh token in OS keychain, not JS-readable storage
+✅ Access token short-lived, replaced often
+Token Replay:
+✅ Refresh token rotated on each refresh
+✅ Revoked server-side → instant logout
+Data Leakage:
+✅ Sentry captures errors WITHOUT tokens
+
+Backend signs & validates, frontend stores & refreshes.
+How do you handle secure token storage on mobile?
+
+hashtag#ReactNative hashtag#Expo hashtag#JWT hashtag#MobileSecurity hashtag#Axios hashtag#Authentication hashtag#FrontendEngineering
