@@ -1,6 +1,6 @@
 ⚠️ How I Secured Majestor with JWT (Part II/II)
 
-Part I covered the backend. Now the React Native frontend — how it handles tokens securely.
+Part I covered the backend. Now the React Native frontend — how it handles tokens securely. 
 
 TECH STACK
 1. React Native (Expo)
