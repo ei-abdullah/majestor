@@ -79,7 +79,6 @@ export default function CustomTabBar({ state, descriptors, navigation }: CustomT
           shadowOpacity: 0.15,
           shadowRadius: 12,
           elevation: 8,
-          backdropFilter: 'blur(20px)',
           gap: 4,
         },
         animatedStyle,

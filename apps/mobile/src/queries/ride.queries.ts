@@ -9,7 +9,9 @@ import {
     cancelPostedRideApi,
     completeRideApi,
     getFareConfigApi,
+    getRideByIdApi,
     recentRidesApi,
+    RecentRidesQueryParams,
     uploadRideApi
 } from "@/src/services/ride.api";
 
@@ -30,8 +32,8 @@ export const useUploadRide = (onCallback?: (data: UploadRideResponse) => void) =
             Sentry.captureException(error);
             Toast.show({
                 type: "error",
-                text1: "Failed to Submit Ride Request",
-                text2: error?.response?.data?.message || error?.message || "There was an error submitting your ride request",
+                text1: "Failed to Post Ride",
+                text2: error?.response?.data?.message || error?.message || "There was an error posting your ride",
                 position: "top",
                 visibilityTime: 4000,
             })
@@ -39,10 +41,22 @@ export const useUploadRide = (onCallback?: (data: UploadRideResponse) => void) =
     })
 }
 
-export const useRecentRides = (options?: Partial<UseQueryOptions<RecentRideResponse[]>>) => {
+export const useGetRideById = (rideId: number, options?: Partial<UseQueryOptions<RecentRideResponse>>) => {
     return useQuery({
-        queryKey: ["ride"],
-        queryFn: () => recentRidesApi(),
+        queryKey: ["ride", "detail", rideId],
+        queryFn: () => getRideByIdApi(rideId),
+        enabled: Boolean(rideId),
+        ...options
+    });
+}
+
+export const useRecentRides = (
+    params?: RecentRidesQueryParams,
+    options?: Partial<UseQueryOptions<RecentRideResponse[]>>
+) => {
+    return useQuery({
+        queryKey: ["ride", params],
+        queryFn: () => recentRidesApi(params),
         enabled: true,
         refetchInterval: 30_000,
         ...options
@@ -59,7 +73,8 @@ export const useCompleteRide = (onCallback?: () => void) => {
             bookingId: number
         }) => completeRideApi(rideId, bookingId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
             Toast.show({
                 type: "success",
                 text1: "Ride Completed Successfully",
@@ -90,10 +105,11 @@ export const useCancelRide = (onCallback?: () => void) => {
             bookingId: number
         }) => cancelBookedRideApi(rideId, bookingId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
             Toast.show({
                 type: "success",
-                text1: "Ride Cancelled Successfully",
+                text1: "Booking Cancelled Successfully",
             })
             onCallback?.();
         },
@@ -101,7 +117,8 @@ export const useCancelRide = (onCallback?: () => void) => {
             Sentry.captureException(error);
             Toast.show({
                 type: "error",
-                text1: "Failed to Cancel Ride",
+                text1: "Failed to Cancel Booking",
+                text2: error?.response?.data?.message || error?.message || "There was an error cancelling the booking",
                 position: "top",
                 visibilityTime: 4000,
             })
@@ -124,7 +141,8 @@ export const useCancelPostedRide = (onCallback?: () => void) => {
         mutationKey: ["ride"],
         mutationFn: (rideId: number) => cancelPostedRideApi(rideId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["ride"]})
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
             Toast.show({
                 type: "success",
                 text1: "Ride Cancelled Successfully",
@@ -136,6 +154,7 @@ export const useCancelPostedRide = (onCallback?: () => void) => {
             Toast.show({
                 type: "error",
                 text1: "Failed to Cancel Ride",
+                text2: error?.response?.data?.message || error?.message || "There was an error cancelling your ride",
                 position: "top",
                 visibilityTime: 4000,
             })

@@ -1,14 +1,16 @@
 package com.majestor.api.modules.carpool.rideRequest;
 
+import com.majestor.api.infra.exception.AccessDeniedException;
 import com.majestor.api.modules.carpool.rideRequest.dto.UploadRideRequestDTO;
 import com.majestor.api.modules.carpool.rideRequest.dto.UploadRideRequestResponseDTO;
+import com.majestor.api.modules.user.UserPrincipal;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.annotations.Parameter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,8 +25,13 @@ public class RideRequestController {
     @PostMapping("/uploadRideRequest/{userId}")
     public ResponseEntity<UploadRideRequestResponseDTO> uploadRideRequest(
             @Valid @RequestBody UploadRideRequestDTO uploadRideRequestDTO,
-            @PathVariable @NotNull @Positive Long userId
+            @PathVariable @NotNull @Positive Long userId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
+        if (principal != null && !principal.getId().equals(userId)) {
+            throw new AccessDeniedException("You can only create ride requests for your own account");
+        }
+
         UploadRideRequestResponseDTO uploadedRide = rideRequestService.uploadRideRequest(uploadRideRequestDTO, userId);
 
         return ResponseEntity
@@ -34,10 +41,11 @@ public class RideRequestController {
 
     @PatchMapping("/cancelRideRequest/{rideRequestId}")
     public ResponseEntity<?> cancelRideRequest(
-            @PathVariable Long rideRequestId
-     ) {
-
-        rideRequestService.cancelRideRequest(rideRequestId);
+            @PathVariable @NotNull @Positive Long rideRequestId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        Long callerId = principal != null ? principal.getId() : null;
+        rideRequestService.cancelRideRequest(rideRequestId, callerId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

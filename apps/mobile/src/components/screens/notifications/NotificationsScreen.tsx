@@ -30,6 +30,14 @@ function getNotificationMeta(type: NotificationType): NotificationMeta {
             return {icon: 'flag', bg: '#E8F9F7', iconColor: '#22B5A6'};
         case 'RIDE_CANCELLED':
             return {icon: 'alert-circle', bg: '#FFF3E0', iconColor: '#E65100'};
+        case 'PASSENGER_ARRIVED':
+            return {icon: 'map-pin', bg: '#E8F9F7', iconColor: '#22B5A6'};
+        case 'CARPOOL_MESSAGE':
+            return {icon: 'message-circle', bg: '#EEF3FF', iconColor: '#3A6FF8'};
+        case 'CARPOOL_STRIKE':
+            return {icon: 'alert-triangle', bg: '#FFF3E0', iconColor: '#E65100'};
+        case 'CARPOOL_SUSPENDED':
+            return {icon: 'slash', bg: '#FFEBEE', iconColor: '#C62828'};
         case 'STUDY_GROUP_INVITE':
             return {icon: 'users', bg: '#F3E5F5', iconColor: '#7B1FA2'};
         default:

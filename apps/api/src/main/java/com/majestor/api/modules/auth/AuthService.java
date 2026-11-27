@@ -40,8 +40,9 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final EmailService emailService;
+    private final com.majestor.api.modules.utils.Utils utils;
 
-    @Value("${app.free-trial:false}")
+    @Value("${app.free-trial:true}")
     private boolean freeTrial;
 
     @Transactional
@@ -81,6 +82,7 @@ public class AuthService {
 
         if (freeTrial) {
             user.setPremiumUntil(Instant.now().plus(60, ChronoUnit.DAYS));
+            user.setStorageLimit(utils.EliteStorageLimit());
         }
 
         userRepository.save(user);

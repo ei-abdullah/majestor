@@ -10,5 +10,6 @@ public enum NotificationType {
     CARPOOL_STRIKE,
     CARPOOL_SUSPENDED,
     PASSENGER_ARRIVED,
+    CARPOOL_MESSAGE,
     SYSTEM
 }

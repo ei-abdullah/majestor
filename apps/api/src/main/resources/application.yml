@@ -38,7 +38,7 @@ spring:
             required: true
 
 app:
-  free-trial: ${FREE_TRIAL:false}
+  free-trial: ${FREE_TRIAL:true}
 
 logging:
   level:

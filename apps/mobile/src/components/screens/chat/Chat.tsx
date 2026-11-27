@@ -8,20 +8,61 @@ import {useHeaderHeight} from "@react-navigation/elements";
 import {SafeAreaView} from "react-native-safe-area-context";
 import * as Sentry from "@sentry/react-native";
 import {stompService} from "@/src/services/stompService";
+import {getCarpoolChatHistoryApi} from "@/src/services/booking.api";
 
 function Chat() {
     const router = useRouter();
     const headerHeight = useHeaderHeight();
 
-    const {receiverEmail, receiverUsername} = useLocalSearchParams<{
-        receiverEmail: string,
-        receiverUsername: string
+    const {receiverEmail, receiverUsername, bookingId} = useLocalSearchParams<{
+        receiverEmail: string;
+        receiverUsername: string;
+        bookingId?: string;
     }>();
     const {user} = useAuthStore();
 
     const [messages, setMessages] = useState<IMessage[]>([]);
-    // const [connected, setConnected] = useState<boolean>(false);
-    const connected = stompService.status === "CONNECTED";
+    const [connected, setConnected] = useState<boolean>(stompService.status === "CONNECTED");
+
+    useEffect(() => {
+        const unsubscribeStatus = stompService.subscribeStatus((status) => {
+            setConnected(status === "CONNECTED");
+        });
+        return unsubscribeStatus;
+    }, []);
+
+    useEffect(() => {
+        if (!user || !receiverEmail) return;
+        let isMounted = true;
+
+        getCarpoolChatHistoryApi(receiverEmail)
+            .then((history) => {
+                if (!isMounted || !Array.isArray(history)) return;
+                // GiftedChat expects messages sorted newest-first
+                const formatted: IMessage[] = history
+                    .map((item) => ({
+                        _id: item.id ? String(item.id) : `${item.date}-${Math.random()}`,
+                        text: item.message,
+                        createdAt: item.date ? new Date(item.date) : new Date(),
+                        user: {
+                            _id: item.senderName,
+                            name:
+                                item.senderName === user.email
+                                    ? user.username
+                                    : item.senderUsername || receiverUsername || item.senderName,
+                        },
+                    }))
+                    .reverse();
+                setMessages(formatted);
+            })
+            .catch((error) => {
+                Sentry.captureException(error);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, [user, receiverEmail, receiverUsername]);
 
     useEffect(() => {
         if (!user) return;
@@ -33,7 +74,7 @@ function Chat() {
         const subscriptionPath = `/private/${user.email}`;
 
         // 3. Use the service to subscribe
-        const subscription = stompService.subscribe(subscriptionPath, (message) => {
+        stompService.subscribe(subscriptionPath, (message) => {
             if (message.body) {
                 try {
                     const body = JSON.parse(message.body);
@@ -41,12 +82,12 @@ function Chat() {
                     // Only show messages from the person we are chatting with
                     if (body.senderName === receiverEmail) {
                         const newMessage: IMessage = {
-                            _id: Math.random().toString(),
+                            _id: body.id ? String(body.id) : Math.random().toString(),
                             text: body.message,
-                            createdAt: new Date(body.date),
+                            createdAt: body.date ? new Date(body.date) : new Date(),
                             user: {
                                 _id: body.senderName,
-                                name: body.senderName,
+                                name: body.senderUsername || receiverUsername || body.senderName,
                             },
                         };
                         setMessages(previous => GiftedChat.append(previous, [newMessage]));
@@ -61,7 +102,7 @@ function Chat() {
         return () => {
             stompService.unsubscribe(subscriptionPath);
         };
-    }, [user, receiverEmail]);
+    }, [user, receiverEmail, receiverUsername]);
 
     const onSend = useCallback((newMessages: IMessage[] = []) => {
         if (!user) {
@@ -73,7 +114,9 @@ function Chat() {
 
         const payload = {
             senderName: user.email,
+            senderUsername: user.username,
             receiverName: receiverEmail,
+            bookingId: bookingId ? Number(bookingId) : undefined,
             message: msgText,
             date: new Date().toISOString(),
             status: "MESSAGE"
@@ -82,7 +125,7 @@ function Chat() {
         stompService.publish("/app/private-message", JSON.stringify(payload));
 
         setMessages(previous => GiftedChat.append(previous, newMessages));
-    }, [user, receiverEmail]);
+    }, [user, receiverEmail, bookingId]);
 
     if (!user) {
         return (

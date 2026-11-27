@@ -1,8 +1,11 @@
 package com.majestor.api.modules.carpool.ride.dto;
 
 import com.majestor.api.modules.carpool.ride.VehicleType;
-import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -50,6 +53,8 @@ public class GetRecentRidesDTO {
     @Enumerated(EnumType.STRING)
     private VehicleType vehicleType;
 
+    private String rideStatus;
+
     @NotBlank(message = "Phone number is required")
     private String phone;
 
@@ -65,6 +70,14 @@ public class GetRecentRidesDTO {
 
     @NotBlank(message = "Ride poster's email is required")
     private String ridePosterEmail;
+
+    private Boolean isPosterElite;
+
+    private Double pickupDistanceKm;
+
+    private Double dropoffDistanceKm;
+
+    private Double estimatedDetourKm;
 
     @NotNull(message = "Ride creation date is required")
     private Instant createdAt;

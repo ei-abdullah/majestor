@@ -27,18 +27,21 @@ public class BookingController {
     private final BookingService bookingService;
 
     /**
-     * Create a new booking for poster to see all booking for his ride
+     * Create a new booking for poster to see all bookings for their ride
      */
     @PostMapping("/createBooking/{rideRequestId}/{rideId}")
     public ResponseEntity<CreateBookingResponseDTO> createBooking(
             @PathVariable @NotNull @Positive Long rideRequestId,
             @PathVariable @NotNull @Positive Long rideId,
-            @RequestBody @Valid CreateBookingDTO createBookingDTO
+            @RequestBody @Valid CreateBookingDTO createBookingDTO,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
+        Long callerId = principal != null ? principal.getId() : null;
         CreateBookingResponseDTO booking = bookingService.createBooking(
                 rideRequestId,
                 rideId,
-                createBookingDTO
+                createBookingDTO,
+                callerId
         );
 
         return ResponseEntity
@@ -47,14 +50,15 @@ public class BookingController {
     }
 
     /**
-     * Get recent bookings for a particular ride for poster rider to see
-     * and confirm or reject the ride
+     * Get active bookings (accepted + pending requests) for a particular ride for driver to manage
      */
     @GetMapping("/getBookings/{rideId}")
     public ResponseEntity<List<GetBookingDTO>> getBookings(
-            @PathVariable @NotNull @Positive Long rideId
+            @PathVariable @NotNull @Positive Long rideId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        List<GetBookingDTO> bookings = bookingService.getBookings(rideId);
+        Long callerId = principal != null ? principal.getId() : null;
+        List<GetBookingDTO> bookings = bookingService.getBookings(rideId, callerId);
 
         return ResponseEntity
                 .ok()
@@ -62,9 +66,19 @@ public class BookingController {
     }
 
     /**
-     * For constant polling for ride requestor to check for his ride
-     * status, if accepted by rider, move to the final screen
-     * else back to Available Rides
+     * Get full details of a specific booking by ID (used to recover state on app restart)
+     */
+    @GetMapping("/details/{bookingId}")
+    public ResponseEntity<GetBookingDTO> getBookingDetails(
+            @PathVariable @NotNull @Positive Long bookingId,
+            @AuthenticationPrincipal UserPrincipal principal
+    ) {
+        Long callerId = principal != null ? principal.getId() : null;
+        return ResponseEntity.ok(bookingService.getBookingDetails(bookingId, callerId));
+    }
+
+    /**
+     * For polling/checking booking status
      */
     @GetMapping("/getBookingStatus/{bookingId}")
     public ResponseEntity<GetBookingStatusResponseDTO> getBookingStatus(
@@ -78,14 +92,15 @@ public class BookingController {
     }
 
     /**
-     * Accept the booking and set the status of booking to ACCEPTED and
-     * ride to ACCEPTED. So it won't be listing in Available Rides
+     * Accept the booking, decrement availableSeats, and only mark ride ACCEPTED when availableSeats == 0
      */
     @PatchMapping("/acceptBooking/{bookingId}")
     public ResponseEntity<?> acceptBooking(
-            @PathVariable @NotNull @Positive Long bookingId
+            @PathVariable @NotNull @Positive Long bookingId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        bookingService.acceptBooking(bookingId);
+        Long callerId = principal != null ? principal.getId() : null;
+        bookingService.acceptBooking(bookingId, callerId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -93,14 +108,15 @@ public class BookingController {
     }
 
     /**
-     * Reject the booking and set the status of booking to REJECTED, and
-     * it won't be listing in Booking Request for poster rider to see (/getBookings)
+     * Reject a pending booking request
      */
     @PatchMapping("/rejectBooking/{bookingId}")
     public ResponseEntity<?> rejectBooking(
-            @PathVariable @NotNull @Positive Long bookingId
+            @PathVariable @NotNull @Positive Long bookingId,
+            @AuthenticationPrincipal UserPrincipal principal
     ) {
-        bookingService.rejectBooking(bookingId);
+        Long callerId = principal != null ? principal.getId() : null;
+        bookingService.rejectBooking(bookingId, callerId);
 
         return ResponseEntity
                 .status(HttpStatus.OK)

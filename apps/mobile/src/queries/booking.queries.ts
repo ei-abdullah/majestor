@@ -4,6 +4,7 @@ import * as Sentry from "@sentry/react-native";
 import {
     acceptBookingApi,
     createBookingApi,
+    getBookingDetailsApi,
     getBookingsApi,
     getBookingStatusApi,
     markArrivedApi,
@@ -53,6 +54,15 @@ export const useGetBookings = (rideId: number, options?: Partial<UseQueryOptions
     })
 }
 
+export const useGetBookingDetails = (bookingId: number, options?: Partial<UseQueryOptions<GetBookingsResponse>>) => {
+    return useQuery({
+        queryKey: ["bookingDetail", bookingId],
+        queryFn: () => getBookingDetailsApi(bookingId),
+        enabled: Boolean(bookingId),
+        ...options,
+    })
+}
+
 export const useGetBookingStatus = (bookingId: number, options?: Partial<UseQueryOptions<GetBookingStatusResponse>>) => {
     return useQuery({
         queryKey: ["bookingStatus", bookingId],
@@ -69,7 +79,8 @@ export const useAcceptBooking = (onCallback?: () => void) => {
         mutationKey: ["booking"],
         mutationFn: (bookingId: number) => acceptBookingApi(bookingId),
         onSuccess: async () => {
-            await queryClient.invalidateQueries({queryKey: ["booking"]})
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
             onCallback?.();
         },
         onError: (error: any) => {
@@ -84,9 +95,13 @@ export const useAcceptBooking = (onCallback?: () => void) => {
 }
 
 export const useReportNoShow = (onCallback?: () => void) => {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: (bookingId: number) => reportNoShowApi(bookingId),
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
             Toast.show({
                 type: "success",
                 text1: "No-Show Reported",
@@ -109,9 +124,13 @@ export const useReportNoShow = (onCallback?: () => void) => {
 }
 
 export const useMarkArrived = (onCallback?: () => void) => {
+    const queryClient = useQueryClient();
+
     return useMutation({
         mutationFn: (bookingId: number) => markArrivedApi(bookingId),
-        onSuccess: () => {
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({queryKey: ["booking"]});
+            await queryClient.invalidateQueries({queryKey: ["ride"]});
             Toast.show({
                 type: "success",
                 text1: "Arrived!",

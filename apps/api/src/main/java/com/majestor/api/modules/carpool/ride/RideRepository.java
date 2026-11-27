@@ -7,9 +7,23 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface RideRepository extends JpaRepository<Ride, Long> {
-    List<Ride> findByCreatedAtAfter(Instant createdAtAfter);
+
+    @Query("""
+            SELECT r FROM Ride r
+            JOIN FETCH r.ridePoster
+            WHERE r.createdAt >= :createdAtAfter
+            """)
+    List<Ride> findByCreatedAtAfter(@Param("createdAtAfter") Instant createdAtAfter);
+
+    @Query("""
+            SELECT r FROM Ride r
+            JOIN FETCH r.ridePoster
+            WHERE r.id = :rideId
+            """)
+    Optional<Ride> findByIdWithPoster(@Param("rideId") Long rideId);
 
     long countByRidePosterId(Long ridePosterId);
 

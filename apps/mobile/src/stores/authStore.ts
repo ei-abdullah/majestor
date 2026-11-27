@@ -5,6 +5,12 @@ import * as Sentry from "@sentry/react-native";
 import {AuthState} from "@/src/types/auth";
 import {deleteRefreshToken} from "@/src/stores/secureStore";
 import {queryClient} from "@/src/lib/queryClient";
+import {useRideStore} from "@/src/stores/rideStore";
+import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {useCarpoolDraftStore} from "@/src/stores/carpoolDraftStore";
+import {useSelectedRideStore} from "@/src/stores/selectedRideStore";
+import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
+import {stompService} from "@/src/services/stompService";
 
 export const useAuthStore = create<AuthState>()(
     persist(
@@ -30,6 +36,12 @@ export const useAuthStore = create<AuthState>()(
                 Sentry.setUser(null);
                 await deleteRefreshToken();
                 queryClient.clear();
+                useRideStore.getState().clearRideDetails();
+                useRideRequestStore.getState().clearRideRequestDetails();
+                useCarpoolDraftStore.getState().clearDrafts();
+                useSelectedRideStore.getState().clearRide();
+                useSelectedBookingStore.getState().clearBooking();
+                stompService.disconnect();
                 set({user: null, accessToken: null, isLoggedIn: false});
             },
         }),

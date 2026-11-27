@@ -122,6 +122,22 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<ApiError> handleException(
+            IllegalStateException exception,
+            HttpServletRequest request
+    ) {
+        ApiError apiError = ApiError
+                .builder()
+                .path(request.getRequestURI())
+                .message(exception.getMessage())
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .instantDateTime(Instant.now())
+                .build();
+
+        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+    }
+
     // Accessing a secured resource without valid authentication
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<ApiError> handleException(
@@ -267,7 +283,8 @@ public class GlobalExceptionHandler {
         HttpStatus status = HttpStatus.BAD_REQUEST;
 
         // Specifically check for unique constraint violations
-        if (e.getMostSpecificCause().getMessage().contains("violates unique constraint")) {
+        String causeMessage = e.getMostSpecificCause().getMessage();
+        if (causeMessage != null && causeMessage.contains("violates unique constraint")) {
             message = "This resource already exists. Please provide a unique value.";
             status = HttpStatus.CONFLICT; // 409 is the correct status for duplicates
         }

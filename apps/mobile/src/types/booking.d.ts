@@ -9,8 +9,12 @@ export interface CreateBookingResponse {
 }
 
 export interface GetBookingsResponse {
+    rideId?: number,
     rideRequestId: number,
     bookingId: number,
+    status?: string,
+    deviationKm?: number,
+    acceptedAt?: string,
     rideRequesterUsername: string,
     rideRequesterAvatar: string,
     rideRequesterEmail: string,
@@ -28,4 +32,7 @@ export interface GetBookingsResponse {
 export interface GetBookingStatusResponse {
     id: number,
     status: string,
+    rideStatus?: string,
+    availableSeats?: number,
+    acceptedAt?: string,
 }

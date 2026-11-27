@@ -4,6 +4,13 @@ import api from "@/src/services/index";
 import {RecentRideResponse, UploadRideDetails, UploadRideResponse} from "@/src/types/ride";
 import {FareConfig} from "@/src/utils/fare.utils";
 
+export interface RecentRidesQueryParams {
+    pickupLat?: number;
+    pickupLng?: number;
+    dropoffLat?: number;
+    dropoffLng?: number;
+    passengers?: number;
+}
 
 export const uploadRideApi = async (
     uploadRideDetails: UploadRideDetails,
@@ -13,8 +20,15 @@ export const uploadRideApi = async (
     return res.data!;
 }
 
-export const recentRidesApi = async (): Promise<RecentRideResponse[]> => {
-    const res: AxiosResponse<RecentRideResponse[]> = await api.get(`/ride/recentRides`);
+export const getRideByIdApi = async (rideId: number): Promise<RecentRideResponse> => {
+    const res: AxiosResponse<RecentRideResponse> = await api.get(`/ride/${rideId}`);
+    return res.data;
+}
+
+export const recentRidesApi = async (params?: RecentRidesQueryParams): Promise<RecentRideResponse[]> => {
+    const res: AxiosResponse<RecentRideResponse[]> = await api.get(`/ride/recentRides`, {
+        params,
+    });
     return res.data;
 }
 

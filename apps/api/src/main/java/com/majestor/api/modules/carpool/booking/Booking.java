@@ -41,6 +41,8 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     private BookingStatus status = BookingStatus.BOOKED;
 
+    private Instant acceptedAt;
+
     private Instant createdAt;
     private Instant updatedAt;
 }

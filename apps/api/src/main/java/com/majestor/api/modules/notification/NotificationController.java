@@ -36,8 +36,6 @@ public class NotificationController {
 
     @GetMapping("/has-unread/{userId}")
     public ResponseEntity<Map<String, Boolean>> hasUnread(@PathVariable Long userId) {
-        notificationService.markAllRead(userId);
-
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(Map.of("hasUnread", notificationService.hasUnread(userId)));

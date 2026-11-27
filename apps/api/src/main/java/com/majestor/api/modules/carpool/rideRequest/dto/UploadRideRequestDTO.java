@@ -20,8 +20,8 @@ public class UploadRideRequestDTO {
     private BigDecimal pickupLocationLat;
 
     @NotNull(message = "Pickup location lng is required")
-    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
-    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private BigDecimal pickupLocationLng;
 
     @NotBlank(message = "Pickup location address is required")
@@ -33,8 +33,8 @@ public class UploadRideRequestDTO {
     private BigDecimal dropoffLocationLat;
 
     @NotNull(message = "DropOff location lng is required")
-    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
-    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private BigDecimal dropoffLocationLng;
 
     @NotBlank(message = "Dropoff location address is required")

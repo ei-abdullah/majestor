@@ -13,6 +13,8 @@ import {useCurrentLocation} from "@/src/hooks/useCurrentLocation";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
 import {useRideStore} from "@/src/stores/rideStore";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
+import {useGetRideById} from "@/src/queries/ride.queries";
+import {useGetBookingStatus} from "@/src/queries/booking.queries";
 import {LinearGradient} from "expo-linear-gradient";
 
 export default function CarpoolHome() {
@@ -31,6 +33,39 @@ export default function CarpoolHome() {
 
     const isDriverActive = rideStore.id !== 0;
     const isPassengerActive = rideRequestStore.id !== 0;
+
+    const { data: liveRideData } = useGetRideById(isDriverActive ? rideStore.id : 0);
+    const { data: livePassengerBooking } = useGetBookingStatus(
+        isPassengerActive && rideRequestStore.bookingId ? rideRequestStore.bookingId : 0
+    );
+
+    useEffect(() => {
+        if (!isDriverActive || !liveRideData) return;
+        if (
+            liveRideData.rideStatus === "COMPLETED" ||
+            liveRideData.rideStatus === "CANCELLED" ||
+            (liveRideData.rideStatus === "EXPIRED" && !rideStore.bookingId)
+        ) {
+            rideStore.clearRideDetails();
+            return;
+        }
+        if (
+            liveRideData.availableSeats !== undefined &&
+            liveRideData.availableSeats !== rideStore.availableSeats
+        ) {
+            rideStore.updateAvailableSeats(liveRideData.availableSeats);
+        }
+    }, [isDriverActive, liveRideData]);
+
+    useEffect(() => {
+        if (!isPassengerActive || !livePassengerBooking) return;
+        const status = livePassengerBooking.status;
+        if (status === "COMPLETED" || status === "CANCELLED" || status === "NO_SHOW") {
+            rideRequestStore.clearRideRequestDetails();
+        } else if (status === "REJECTED") {
+            rideRequestStore.clearBookingDetails();
+        }
+    }, [isPassengerActive, livePassengerBooking]);
 
     const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number; address: string } | null>(null);
     const headerOffset = insets.top + 72;
@@ -157,7 +192,9 @@ export default function CarpoolHome() {
                                                             {rideStore.bookingId ? "Passenger Confirmed" : "Your Ride is Live"}
                                                         </Text>
                                                         <Text className={`text-xs mt-0.5 ${rideStore.bookingId ? 'text-mj-teal-700' : 'text-mj-blue-600'}`} numberOfLines={1}>
-                                                            {rideStore.bookingId ? "Tap to view trip details" : "Offering ride to others"}
+                                                            {rideStore.bookingId
+                                                                ? `${rideStore.availableSeats} seat${rideStore.availableSeats === 1 ? '' : 's'} remaining • Tap for trip details`
+                                                                : `${rideStore.availableSeats} seat${rideStore.availableSeats === 1 ? '' : 's'} available • Tap to view requests`}
                                                         </Text>
                                                     </View>
                                                 </View>
