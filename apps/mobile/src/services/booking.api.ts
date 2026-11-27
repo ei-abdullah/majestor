@@ -8,6 +8,18 @@ import {
     GetBookingStatusResponse
 } from "@/src/types/booking";
 
+export interface CarpoolChatMessage {
+    id?: number;
+    senderName: string;
+    senderUsername?: string;
+    receiverName: string;
+    bookingId?: number;
+    message: string;
+    date: string;
+    messageStatus?: string;
+    createdAt?: string;
+}
+
 export const createBookingApi = async (
     createBookingDetails: CreateBookingDetails,
     rideRequestId: number,
@@ -21,6 +33,13 @@ export const getBookingsApi = async (
     rideId: number
 ): Promise<GetBookingsResponse[]> => {
     const res: AxiosResponse<GetBookingsResponse[]> = await api.get(`/booking/getBookings/${rideId}`);
+    return res.data;
+}
+
+export const getBookingDetailsApi = async (
+    bookingId: number
+): Promise<GetBookingsResponse> => {
+    const res: AxiosResponse<GetBookingsResponse> = await api.get(`/booking/details/${bookingId}`);
     return res.data;
 }
 
@@ -43,4 +62,11 @@ export const reportNoShowApi = async (bookingId: number): Promise<void> => {
 
 export const markArrivedApi = async (bookingId: number): Promise<void> => {
     await api.patch(`/booking/arrive/${bookingId}`);
+}
+
+export const getCarpoolChatHistoryApi = async (peerEmail: string): Promise<CarpoolChatMessage[]> => {
+    const res: AxiosResponse<CarpoolChatMessage[]> = await api.get(`/carpool/messages/history`, {
+        params: {peerEmail},
+    });
+    return res.data;
 }

@@ -14,15 +14,18 @@ public class BookingMapper {
 
     private final Utils utils;
 
-    // Maps a RideRequest to its detail DTO
     public GetBookingDTO toGetBookingDTO(Booking booking) {
         RideRequest bookedRide = booking.getBookedRide();
         User rideRequester = bookedRide.getRideRequester();
         String imageUri = utils.DownloadUserAvatar(rideRequester);
         return GetBookingDTO
                 .builder()
+                .rideId(booking.getRide() != null ? booking.getRide().getId() : null)
                 .bookingId(booking.getId())
                 .rideRequestId(bookedRide.getId())
+                .status(booking.getStatus() != null ? booking.getStatus().name() : null)
+                .deviationKm(booking.getDeviationKm())
+                .acceptedAt(booking.getAcceptedAt())
                 .rideRequesterUsername(rideRequester.getUsername())
                 .rideRequesterAvatar(imageUri)
                 .rideRequesterEmail(rideRequester.getEmail())

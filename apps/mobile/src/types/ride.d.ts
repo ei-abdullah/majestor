@@ -1,4 +1,3 @@
-
 export interface UploadRideDetails {
     startLocationLat: number,
     startLocationLng: number,
@@ -43,12 +42,17 @@ export interface RecentRideResponse {
     licensePlate: string,
     availableSeats: number,
     vehicleType: "CAR" | "BIKE",
+    rideStatus?: string,
     phone: string,
     routeDistanceKm: number,
     ridePosterImageUrl: string,
     ridePosterUsername: string,
     ridePosterEmail: string,
-    createdAt: number
+    isPosterElite?: boolean,
+    pickupDistanceKm?: number,
+    dropoffDistanceKm?: number,
+    estimatedDetourKm?: number,
+    createdAt: number | string
 }
 
 
@@ -57,6 +61,8 @@ export interface RideState extends UploadRideResponse {
     bookingStatus?: string,
     setRideDetails: (rideDetails: UploadRideResponse) => void;
     setAcceptedBooking: (bookingId: number, bookingStatus: string) => void;
+    clearAcceptedBooking: () => void;
+    updateAvailableSeats: (availableSeats: number) => void;
     clearRideDetails: () => void;
     isEmpty: () => boolean;
 }

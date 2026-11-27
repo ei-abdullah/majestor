@@ -20,8 +20,7 @@ import PrimaryButton from "@/src/components/ui/PrimaryButton";
 import OutlineButton from "@/src/components/ui/OutlineButton";
 import {useSelectedBookingStore} from "@/src/stores/selectedBookingStore";
 import {useCancelRide, useCompleteRide, useFareConfig} from "@/src/queries/ride.queries";
-import Toast from "react-native-toast-message";
-import {calculateFare} from "@/src/utils/fare.utils";
+import {calculateFare, estimateDetourKm} from "@/src/utils/fare.utils";
 import RideOutcomeModal from "@/src/components/ui/RideOutcomeModal";
 import ConfirmModal from "@/src/components/ui/ConfirmModal";
 import {useSafeAreaInsets} from "react-native-safe-area-context";
@@ -36,12 +35,16 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const {animateToLocation} = useMapLocation(mapRef);
     const insets = useSafeAreaInsets();
 
-    const {setAcceptedBooking, bookingId, clearRideDetails} = useRideStore();
-    const {clearBooking} = useSelectedBookingStore();
+    const {
+        setAcceptedBooking,
+        clearAcceptedBooking,
+        updateAvailableSeats,
+        clearRideDetails,
+    } = useRideStore();
+    const {clearBooking, setBooking} = useSelectedBookingStore();
 
     const bottomSheetRef = useRef<BottomSheet>(null);
     const snapPoints = ["35%", "55%", "90%"];
-    const hasAccepted = Boolean(bookingId);
 
     const isNavigating = useRef(false);
     const hasMounted = useRef(false);
@@ -52,6 +55,11 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
     const [showNoShowConfirm, setShowNoShowConfirm] = useState(false);
     const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
+
+    // Multi-leg route distances for accurate detour calculation
+    const [leg1Km, setLeg1Km] = useState<number | null>(null);
+    const [leg2Km, setLeg2Km] = useState<number | null>(null);
+    const [leg3Km, setLeg3Km] = useState<number | null>(null);
 
     const {
         id: rideId,
@@ -67,24 +75,48 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         routeDistanceKm,
     } = useRideStore();
 
-    const deviationKm = (booking.routeDistanceKm != null && routeDistanceKm != null)
-        ? Math.abs(booking.routeDistanceKm - routeDistanceKm)
+    const {data: fareConfig} = useFareConfig();
+    const {data: bookingStatusData} = useGetBookingStatus(booking.bookingId);
+
+    const currentStatus = bookingStatusData?.status ?? booking.status;
+    const hasAccepted = currentStatus === "ACCEPTED";
+    const currentAvailableSeats = bookingStatusData?.availableSeats ?? availableSeats;
+
+    const fallbackDetourKm = booking.deviationKm != null
+        ? Math.max(0, Number(booking.deviationKm))
+        : estimateDetourKm({
+            driverStartLat: startLocationLat,
+            driverStartLng: startLocationLng,
+            driverEndLat: endLocationLat,
+            driverEndLng: endLocationLng,
+            pickupLat: booking.pickupLocationLat,
+            pickupLng: booking.pickupLocationLng,
+            dropoffLat: booking.dropoffLocationLat,
+            dropoffLng: booking.dropoffLocationLng,
+        });
+
+    const totalModifiedRouteKm = (leg1Km != null && leg2Km != null && leg3Km != null)
+        ? leg1Km + leg2Km + leg3Km
         : null;
+
+    const deviationKm = (totalModifiedRouteKm != null && routeDistanceKm != null)
+        ? Math.round(Math.max(0, totalModifiedRouteKm - routeDistanceKm) * 100) / 100
+        : fallbackDetourKm;
+
     const headerOffset = insets.top + 72;
 
-    const {data: fareConfig} = useFareConfig();
-    const {data: bookingStatusData} = useGetBookingStatus(bookingId!);
     const estimatedFare = (fareConfig && deviationKm != null)
         ? calculateFare(deviationKm, vehicleType as 'CAR' | 'BIKE', fareConfig)
         : null;
 
     const {mutate: accept, isPending: isAccepting} = useAcceptBooking(() => {
         setAcceptedBooking(booking.bookingId, "ACCEPTED");
+        setBooking({...booking, status: "ACCEPTED"});
     });
 
     const {mutate: reject, isPending: isRejecting} = useRejectBooking(() => {
         clearBooking();
-        router.replace( "/(tabs)/carpool/ride/bookingRequests" as Href);
+        router.replace("/(tabs)/carpool/ride/bookingRequests" as Href);
     });
 
     const {mutate: completeRide, isPending: isCompleting} = useCompleteRide(() => {
@@ -96,23 +128,29 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     });
 
     const {mutate: reportNoShow, isPending: isReporting} = useReportNoShow(() => {
-        isNavigating.current = true;
-        clearBooking();
-        clearRideDetails();
-        router.replace("/(tabs)/carpool" as Href);
+        setOutcomeModal("cancelled");
     });
 
     function handleOutcomeDismiss() {
-        const current = outcomeModal;
         isNavigating.current = true;
         setOutcomeModal(null);
         clearBooking();
-        if (current === "completed" || current === "cancelled") {
+
+        const latestRideStatus = bookingStatusData?.rideStatus;
+        if (latestRideStatus === "COMPLETED" || latestRideStatus === "CANCELLED" || latestRideStatus === "EXPIRED") {
             clearRideDetails();
+            router.replace("/(tabs)/carpool" as Href);
+        } else {
+            clearAcceptedBooking();
+            router.replace("/(tabs)/carpool/ride/bookingRequests" as Href);
         }
-        router.replace("/(tabs)/carpool" as Href);
     }
 
+    useEffect(() => {
+        if (bookingStatusData?.availableSeats != null) {
+            updateAvailableSeats(bookingStatusData.availableSeats);
+        }
+    }, [bookingStatusData?.availableSeats]);
 
     useEffect(() => {
         if (booking.pickupLocationLat && booking.pickupLocationLng) {
@@ -121,16 +159,17 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
     }, []);
 
     useEffect(() => {
-        if (!bookingId || !hasAccepted) return;
+        if (!booking.bookingId) return;
         stompService.connect();
-        const topic = `/topic/booking-status/${bookingId}`;
+        const topic = `/topic/booking-status/${booking.bookingId}`;
         stompService.subscribe(topic, async () => {
-            await queryClient.invalidateQueries({queryKey: ['bookingStatus', bookingId]});
+            await queryClient.invalidateQueries({queryKey: ['bookingStatus', booking.bookingId]});
+            await queryClient.invalidateQueries({queryKey: ['booking']});
         });
         return () => {
             stompService.unsubscribe(topic);
         };
-    }, [bookingId, hasAccepted]);
+    }, [booking.bookingId, queryClient]);
 
     useEffect(() => {
         if (!hasMounted.current) {
@@ -140,7 +179,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
 
         if (!bookingStatusData) return;
 
-        if (bookingStatusData.status === "NO_SHOW") {
+        if (bookingStatusData.status === "NO_SHOW" || bookingStatusData.status === "CANCELLED") {
             setOutcomeModal("cancelled");
         } else if (bookingStatusData.status === "COMPLETED") {
             setOutcomeModal("completed");
@@ -221,7 +260,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                         />
                     )}
 
-                    {/* Driver start → booker pickup */}
+                    {/* Leg 1: Driver start → booker pickup */}
                     {startLocationLat && startLocationLng && booking.pickupLocationLat && booking.pickupLocationLng && (
                         <MapViewDirections
                             origin={{latitude: startLocationLat, longitude: startLocationLng}}
@@ -231,10 +270,11 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             mode="DRIVING"
                             precision="high"
                             apikey={GOOGLE_API_KEY}
+                            onReady={(result) => setLeg1Km(result.distance)}
                         />
                     )}
 
-                    {/* Booker pickup → dropoff */}
+                    {/* Leg 2: Booker pickup → dropoff */}
                     {booking.pickupLocationLat && booking.pickupLocationLng && booking.dropoffLocationLat && booking.dropoffLocationLng && (
                         <MapViewDirections
                             origin={{latitude: booking.pickupLocationLat, longitude: booking.pickupLocationLng}}
@@ -244,10 +284,11 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             mode="DRIVING"
                             precision="high"
                             apikey={GOOGLE_API_KEY}
+                            onReady={(result) => setLeg2Km(result.distance)}
                         />
                     )}
 
-                    {/* Booker dropoff → driver end */}
+                    {/* Leg 3: Booker dropoff → driver end */}
                     {booking.dropoffLocationLat && booking.dropoffLocationLng && endLocationLat && endLocationLng && (
                         <MapViewDirections
                             origin={{latitude: booking.dropoffLocationLat, longitude: booking.dropoffLocationLng}}
@@ -258,6 +299,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             mode="DRIVING"
                             precision="high"
                             apikey={GOOGLE_API_KEY}
+                            onReady={(result) => setLeg3Km(result.distance)}
                         />
                     )}
                 </MapView>
@@ -280,11 +322,21 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                         {/* Confirmed banner — only shown after acceptance */}
                         {hasAccepted && (
                             <Card className="bg-green-50 border border-green-200 px-5 py-4">
-                                <View className="flex-row items-center justify-center gap-2">
-                                    <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
-                                    <Text className="text-sm font-sans-semibold text-green-700">
-                                        Booking Accepted
-                                    </Text>
+                                <View className="flex-row items-center justify-between">
+                                    <View className="flex-row items-center gap-2">
+                                        <Ionicons name="checkmark-circle" size={20} color="#22c55e"/>
+                                        <Text className="text-sm font-sans-semibold text-green-700">
+                                            Booking Accepted
+                                        </Text>
+                                    </View>
+                                    <Pressable
+                                        onPress={() => router.replace("/(tabs)/carpool/ride/bookingRequests" as Href)}
+                                        className="bg-green-600 px-3 py-1.5 rounded-lg"
+                                    >
+                                        <Text className="text-xs font-sans-semibold text-white">
+                                            All Passengers ({currentAvailableSeats} seats left)
+                                        </Text>
+                                    </Pressable>
                                 </View>
                             </Card>
                         )}
@@ -329,7 +381,8 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                                 pathname: "/chat" as any,
                                                 params: {
                                                     receiverEmail: booking.rideRequesterEmail,
-                                                    receiverUsername: booking.rideRequesterUsername
+                                                    receiverUsername: booking.rideRequesterUsername,
+                                                    bookingId: String(booking.bookingId),
                                                 }
                                             })}
                                             className={"flex-row items-center gap-1"}
@@ -422,7 +475,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                 <View className="flex-row items-center gap-2">
                                     <Ionicons name="people-outline" size={18} color="#6FD0C5"/>
                                     <Text className="text-sm font-sans-medium text-mj-text-main">
-                                        {availableSeats} {availableSeats === 1 ? "seat" : "seats"}
+                                        {currentAvailableSeats} {currentAvailableSeats === 1 ? "seat left" : "seats left"}
                                     </Text>
                                 </View>
                             </View>
@@ -442,7 +495,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             </View>
 
                             <View className="flex-row justify-between mb-3">
-                                <Text className="text-sm text-mj-text-secondary">Rider's route</Text>
+                                <Text className="text-sm text-mj-text-secondary">Passenger's trip</Text>
                                 <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {booking.routeDistanceKm != null
                                         ? `${booking.routeDistanceKm.toFixed(2)} km`
@@ -453,7 +506,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <View className="h-px bg-gray-200 mb-3"/>
 
                             <View className="flex-row justify-between">
-                                <Text className="text-sm text-mj-text-secondary">Extra distance</Text>
+                                <Text className="text-sm text-mj-text-secondary">Extra detour distance</Text>
                                 <Text className="text-sm font-sans-semibold text-mj-blue">
                                     {deviationKm != null ? `+${deviationKm.toFixed(2)} km` : "—"}
                                 </Text>
@@ -465,7 +518,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                             <View className="gap-3">
                                 <View className="flex-row gap-3">
                                     <OutlineButton
-                                        title={isCancelling ? "Cancelling..." : "Cancel Ride"}
+                                        title={isCancelling ? "Cancelling..." : "Cancel Booking"}
                                         variant="destructive"
                                         className="flex-1"
                                         disabled={isPending || isReporting}
@@ -479,7 +532,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
                                     />
                                 </View>
                                 <OutlineButton
-                                    title={isReporting ? "Reporting..." : "Report No-Show"}
+                                    title={isReporting ? "Reporting..." : "Report No-Show (10m grace)"}
                                     variant="destructive"
                                     disabled={isPending || isReporting}
                                     onPress={() => setShowNoShowConfirm(true)}
@@ -534,10 +587,10 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
             )}
             <ConfirmModal
                 visible={showCancelConfirm}
-                title="Cancel Ride"
-                message="Are you sure you want to cancel this ride? The passenger will be notified."
-                confirmLabel="Cancel Ride"
-                cancelLabel="Keep Ride"
+                title="Cancel Booking"
+                message="Are you sure you want to cancel this passenger's booking? Their seats will be released and they will be notified."
+                confirmLabel="Cancel Booking"
+                cancelLabel="Keep Booking"
                 onConfirm={() => {
                     setShowCancelConfirm(false);
                     cancelRide({rideId, bookingId: booking.bookingId});
@@ -547,7 +600,7 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
             <ConfirmModal
                 visible={showNoShowConfirm}
                 title="Report No-Show"
-                message="Are you sure the passenger didn't show up? This will issue them a strike per our Carpool Policy."
+                message="Are you sure the passenger didn't show up after the 10-minute grace period? This will issue them a strike per our Carpool Policy."
                 confirmLabel="Report No-Show"
                 cancelLabel="Cancel"
                 onConfirm={() => {
@@ -571,4 +624,3 @@ export default function BookingDetails({booking}: BookingDetailsProps) {
         </GestureHandlerRootView>
     );
 }
-

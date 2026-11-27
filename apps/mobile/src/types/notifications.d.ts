@@ -5,6 +5,10 @@ export type NotificationType =
     | 'RIDE_COMPLETED'
     | 'RIDE_CANCELLED'
     | 'STUDY_GROUP_INVITE'
+    | 'CARPOOL_STRIKE'
+    | 'CARPOOL_SUSPENDED'
+    | 'PASSENGER_ARRIVED'
+    | 'CARPOOL_MESSAGE'
     | 'SYSTEM';
 
 export interface Notification {

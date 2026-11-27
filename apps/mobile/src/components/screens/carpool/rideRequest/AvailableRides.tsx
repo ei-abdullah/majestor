@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useMemo, useState} from "react";
 import {View, Text, Pressable, ActivityIndicator} from "react-native";
 import {Href, useRouter} from "expo-router";
 import {Ionicons} from "@expo/vector-icons";
@@ -22,7 +22,11 @@ function AvailableRides() {
 
     const {
         id,
+        pickupLocationLat,
+        pickupLocationLng,
         pickupLocationAddress,
+        dropoffLocationLat,
+        dropoffLocationLng,
         dropoffLocationAddress,
         numberOfPassengers,
         routeDistanceKm,
@@ -30,7 +34,15 @@ function AvailableRides() {
     } = useRideRequestStore();
     const {setRide} = useSelectedRideStore();
 
-    const {data: recentRides, isPending: isLoadingRides, isError, refetch} = useRecentRides();
+    const searchParams = useMemo(() => ({
+        pickupLat: pickupLocationLat || undefined,
+        pickupLng: pickupLocationLng || undefined,
+        dropoffLat: dropoffLocationLat || undefined,
+        dropoffLng: dropoffLocationLng || undefined,
+        passengers: numberOfPassengers || undefined,
+    }), [pickupLocationLat, pickupLocationLng, dropoffLocationLat, dropoffLocationLng, numberOfPassengers]);
+
+    const {data: recentRides, isPending: isLoadingRides, isError, refetch} = useRecentRides(searchParams);
     const {mutate: cancelRideRequest, isPending: isCancelingRequest} = useCancelRideRequest(() => {
         clearRideRequestDetails();
         router.replace("/(tabs)/carpool" as Href)
@@ -42,7 +54,7 @@ function AvailableRides() {
 
         const topic = '/topic/available-rides';
 
-        const subscription = stompService.subscribe(topic, async (message) => {
+        stompService.subscribe(topic, async () => {
             await queryClient.invalidateQueries({ queryKey: ['ride'] });
         });
 
@@ -103,9 +115,9 @@ function AvailableRides() {
                 </View>
             </Card>
 
-            {!isLoadingRides && !isError && (
+            {!isLoadingRides && !isError && recentRides && (
                 <Text className="text-xs font-sans-semibold text-mj-text-secondary mb-2 uppercase tracking-wide">
-                    {recentRides.length > 0 ? `${recentRides.length} ride${recentRides.length === 1 ? "" : "s"} found` : "Available Rides"}
+                    {recentRides.length > 0 ? `${recentRides.length} ride${recentRides.length === 1 ? "" : "s"} found (sorted by proximity)` : "Available Rides"}
                 </Text>
             )}
         </View>
@@ -130,7 +142,12 @@ function AvailableRides() {
                 cancelLabel="Keep Searching"
                 onConfirm={() => {
                     setShowCancelConfirm(false);
-                    cancelRideRequest(id);
+                    if (id) {
+                        cancelRideRequest(id);
+                    } else {
+                        clearRideRequestDetails();
+                        router.replace("/(tabs)/carpool" as Href);
+                    }
                 }}
                 onCancel={() => setShowCancelConfirm(false)}
             />

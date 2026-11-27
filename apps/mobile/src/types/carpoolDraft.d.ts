@@ -1,4 +1,3 @@
-
 export interface LocationDraft {
     latitude: number;
     longitude: number;
@@ -27,4 +26,5 @@ export interface CarpoolDraftState {
     bookRide: BookRideDraft;
     savePostRide: (draft: Partial<PostRideDraft>) => void;
     saveBookRide: (draft: Partial<BookRideDraft>) => void;
+    clearDrafts: () => void;
 }

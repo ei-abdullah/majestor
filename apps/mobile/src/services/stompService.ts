@@ -3,14 +3,15 @@ import SockJS from "sockjs-client";
 import {WEBSOCKET_URL} from '../constants';
 import * as Sentry from "@sentry/react-native";
 
-type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
+export type ConnectionStatus = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED';
 
 class StompService {
     private static instance: StompService;
     private client: Client;
     status: ConnectionStatus = 'DISCONNECTED';
     private subscriptions: Map<string, StompSubscription> = new Map();
-    private pendingSubscription: Array<() => void> = [];
+    private topicCallbacks: Map<string, (message: IMessage) => void> = new Map();
+    private statusListeners: Set<(status: ConnectionStatus) => void> = new Set();
 
     private constructor() {
         this.client = new Client({
@@ -22,9 +23,19 @@ class StompService {
             heartbeatOutgoing: 4000,
 
             onConnect: () => {
-                this.status = 'CONNECTED';
-                this.pendingSubscription.forEach(callback => callback());
-                this.pendingSubscription = [];
+                this.setStatus('CONNECTED');
+                // Re-subscribe all registered active topic callbacks on connect / reconnect
+                this.topicCallbacks.forEach((callback, topic) => {
+                    if (this.subscriptions.has(topic)) {
+                        try {
+                            this.subscriptions.get(topic)?.unsubscribe();
+                        } catch {
+                            // Ignore stale subscription errors on reconnect
+                        }
+                    }
+                    const subscription = this.client.subscribe(topic, callback);
+                    this.subscriptions.set(topic, subscription);
+                });
             },
             onStompError: (frame) => {
                 Sentry.captureMessage(`STOMP Broker Error: ${frame.headers['message']}`);
@@ -32,10 +43,26 @@ class StompService {
             onWebSocketError: (event) => {
                 Sentry.captureException(new Error(`WebSocket Error: ${JSON.stringify(event)}`));
             },
+            onWebSocketClose: () => {
+                this.setStatus('DISCONNECTED');
+            },
             onDisconnect: () => {
-                this.status = 'DISCONNECTED';
+                this.setStatus('DISCONNECTED');
             }
         });
+    }
+
+    private setStatus(newStatus: ConnectionStatus): void {
+        this.status = newStatus;
+        this.statusListeners.forEach(listener => listener(newStatus));
+    }
+
+    public subscribeStatus(listener: (status: ConnectionStatus) => void): () => void {
+        this.statusListeners.add(listener);
+        listener(this.status);
+        return () => {
+            this.statusListeners.delete(listener);
+        };
     }
 
     public static getInstance(): StompService {
@@ -47,35 +74,40 @@ class StompService {
     }
 
     public connect(): void {
-        if (this.status === 'DISCONNECTED') {
-            this.status = 'CONNECTING';
+        if (this.status === 'DISCONNECTED' && !this.client.active) {
+            this.setStatus('CONNECTING');
             this.client.activate();
+        } else if (this.client.connected && this.status !== 'CONNECTED') {
+            this.setStatus('CONNECTED');
         }
     }
 
     public disconnect(): void {
-        if (this.status !== "DISCONNECTED") {
+        this.topicCallbacks.clear();
+        this.subscriptions.clear();
+        if (this.status !== "DISCONNECTED" || this.client.active) {
             this.client.deactivate();
+            this.setStatus('DISCONNECTED');
         }
     }
 
     public subscribe(topic: string, callback: (message: IMessage) => void): StompSubscription {
-        const subscribeAction = () => {
+        this.topicCallbacks.set(topic, callback);
+
+        if (this.status === 'CONNECTED' && this.client.connected) {
             if (this.subscriptions.has(topic)) {
-                this.subscriptions.get(topic)?.unsubscribe();
+                try {
+                    this.subscriptions.get(topic)?.unsubscribe();
+                } catch {
+                    // ignore
+                }
             }
             const subscription = this.client.subscribe(topic, callback);
             this.subscriptions.set(topic, subscription);
-        };
-
-        if (this.status === 'CONNECTED') {
-            subscribeAction();
-        } else {
-            this.pendingSubscription.push(subscribeAction);
         }
 
-        // Return an object with a working unsubscribe method
         return {
+            id: topic,
             unsubscribe: () => {
                 this.unsubscribe(topic);
             },
@@ -83,7 +115,7 @@ class StompService {
     }
 
     public publish(destination: string, body: string): void {
-        if (this.status === 'CONNECTED') {
+        if (this.status === 'CONNECTED' && this.client.connected) {
             this.client.publish({destination, body});
         } else {
             Sentry.captureMessage(`Attempted to publish to ${destination} while disconnected.`);
@@ -91,8 +123,13 @@ class StompService {
     }
 
     public unsubscribe(topic: string): void {
+        this.topicCallbacks.delete(topic);
         if (this.subscriptions.has(topic)) {
-            this.subscriptions.get(topic)?.unsubscribe();
+            try {
+                this.subscriptions.get(topic)?.unsubscribe();
+            } catch {
+                // ignore
+            }
             this.subscriptions.delete(topic);
         }
     }

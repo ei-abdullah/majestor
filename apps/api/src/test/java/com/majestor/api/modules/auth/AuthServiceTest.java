@@ -52,6 +52,8 @@ class AuthServiceTest {
     private JwtService jwtService;
     @Mock
     private EmailService emailService;
+    @Mock
+    private com.majestor.api.modules.utils.Utils utils;
 
     @InjectMocks
     private AuthService authService;

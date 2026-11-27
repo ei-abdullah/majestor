@@ -33,8 +33,8 @@ public class RideRequest {
 
     @Column(nullable = false, precision = 10, scale = 7)
     @NotNull(message = "Pickup location lng is required")
-    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
-    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private BigDecimal pickupLocationLng;
 
     @Column(nullable = false)
@@ -49,8 +49,8 @@ public class RideRequest {
 
     @Column(nullable = false, precision = 10, scale = 7)
     @NotNull(message = "DropOff location lng is required")
-    @DecimalMin(value = "-90.0", message = "Latitude must be >= -90")
-    @DecimalMax(value = "90.0", message = "Latitude must be <= 90")
+    @DecimalMin(value = "-180.0", message = "Longitude must be >= -180")
+    @DecimalMax(value = "180.0", message = "Longitude must be <= 180")
     private BigDecimal dropoffLocationLng;
 
     @Column(nullable = false)

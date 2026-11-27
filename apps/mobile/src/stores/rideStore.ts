@@ -39,6 +39,14 @@ export const useRideStore = create<RideState>()(
                 set(() => ({bookingId, bookingStatus}))
             },
 
+            clearAcceptedBooking: () => {
+                set(() => ({bookingId: undefined, bookingStatus: undefined}))
+            },
+
+            updateAvailableSeats: (availableSeats: number) => {
+                set(() => ({availableSeats}))
+            },
+
             isEmpty: () => {
                 const {id, startLocationAddress, endLocationAddress} = get();
                 return id === 0 || startLocationAddress === "" || endLocationAddress === "";

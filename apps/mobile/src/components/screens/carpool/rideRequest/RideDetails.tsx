@@ -13,7 +13,7 @@ import {Ionicons} from "@expo/vector-icons";
 
 import {useCreateBooking, useGetBookingStatus, useMarkArrived, useReportNoShow} from "@/src/queries/booking.queries";
 import {useCancelRide, useFareConfig} from "@/src/queries/ride.queries";
-import {calculateFare} from "@/src/utils/fare.utils";
+import {calculateFare, estimateDetourKm} from "@/src/utils/fare.utils";
 import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 import {stompService} from "@/src/services/stompService";
 import {useMapLocation} from "@/src/hooks/useMapLocation";
@@ -48,18 +48,43 @@ export default function RideDetails({ride}: Props) {
     // Modal state — shown on completion or cancellation before navigating away
     const [outcomeModal, setOutcomeModal] = useState<"completed" | "cancelled" | null>(null);
     const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+    const [showCancelPendingConfirm, setShowCancelPendingConfirm] = useState(false);
     const [showArrivedConfirm, setShowArrivedConfirm] = useState(false);
     const [showNoShowConfirm, setShowNoShowConfirm] = useState(false);
     const [showEmergencyConfirm, setShowEmergencyConfirm] = useState(false);
+
+    // Multi-leg route distances for accurate detour calculation
+    const [leg1Km, setLeg1Km] = useState<number | null>(null);
+    const [leg2Km, setLeg2Km] = useState<number | null>(null);
+    const [leg3Km, setLeg3Km] = useState<number | null>(null);
 
     const rideRequest = useRideRequestStore();
     const bookingId = useRideRequestStore((state) => state.bookingId);
     const bookingStatus = useRideRequestStore((state) => state.bookingStatus);
 
     const {data: fareConfig} = useFareConfig();
-    const deviationKm = (rideRequest.routeDistanceKm != null && ride.routeDistanceKm != null)
-        ? Math.abs(rideRequest.routeDistanceKm - ride.routeDistanceKm)
+
+    const fallbackDetourKm = ride.estimatedDetourKm != null
+        ? Math.max(0, ride.estimatedDetourKm)
+        : estimateDetourKm({
+            driverStartLat: ride.startLocationLat,
+            driverStartLng: ride.startLocationLng,
+            driverEndLat: ride.endLocationLat,
+            driverEndLng: ride.endLocationLng,
+            pickupLat: rideRequest.pickupLocationLat,
+            pickupLng: rideRequest.pickupLocationLng,
+            dropoffLat: rideRequest.dropoffLocationLat,
+            dropoffLng: rideRequest.dropoffLocationLng,
+        });
+
+    const totalModifiedRouteKm = (leg1Km != null && leg2Km != null && leg3Km != null)
+        ? leg1Km + leg2Km + leg3Km
         : null;
+
+    const deviationKm = (totalModifiedRouteKm != null && ride.routeDistanceKm != null)
+        ? Math.round(Math.max(0, totalModifiedRouteKm - ride.routeDistanceKm) * 100) / 100
+        : fallbackDetourKm;
+
     const estimatedFare = (fareConfig && deviationKm != null)
         ? calculateFare(deviationKm, ride.vehicleType, fareConfig)
         : null;
@@ -70,9 +95,15 @@ export default function RideDetails({ride}: Props) {
         rideRequest.setBookingDetails(response.id, response.status);
     });
 
-    // Passenger-initiated cancel — show modal, then clean up on dismissing
+    // Passenger-initiated cancel on an accepted ride — show modal, then clean up on dismissing
     const {mutate: cancelRide, isPending: isCancelling} = useCancelRide(() => {
         setOutcomeModal("cancelled");
+    });
+
+    // Passenger-initiated cancel on a pending booking request — return to Available Rides
+    const {mutate: cancelPendingBooking, isPending: isCancellingPending} = useCancelRide(() => {
+        rideRequest.clearBookingDetails();
+        router.replace("/(tabs)/carpool/rideRequest/availableRides" as Href);
     });
 
     const {mutate: markArrived, isPending: isArriving} = useMarkArrived(() => {
@@ -86,7 +117,7 @@ export default function RideDetails({ride}: Props) {
     });
 
     const hasBooked = Boolean(bookingId);
-    const isAccepted = bookingStatus === "ACCEPTED";
+    const isAccepted = bookingStatus === "ACCEPTED" || bookingStatusData?.status === "ACCEPTED";
     const headerOffset = insets.top + 72;
     const snapPoints = ["30%", "55%", "90%"];
 
@@ -98,7 +129,7 @@ export default function RideDetails({ride}: Props) {
 
         const topic = `/topic/booking-status/${bookingId}`;
 
-        const subscription = stompService.subscribe(topic, async (message) => {
+        stompService.subscribe(topic, async () => {
             await queryClient.invalidateQueries({queryKey: ['bookingStatus', bookingId]});
         });
 
@@ -107,7 +138,7 @@ export default function RideDetails({ride}: Props) {
         };
     }, [bookingId, queryClient]);
 
-    // Effect: On mount, clear a previously rejected booking
+    // Effect: Watch for status transitions
     useEffect(() => {
         if (!hasMounted.current) {
             hasMounted.current = true;
@@ -128,7 +159,7 @@ export default function RideDetails({ride}: Props) {
                 autoHide: true,
                 position: "top"
             });
-            router.replace("/(tabs)/carpool" as Href);
+            router.replace("/(tabs)/carpool/rideRequest/availableRides" as Href);
         } else if (bookingStatusData.status === "COMPLETED") {
             setOutcomeModal("completed");
         } else if (bookingStatusData.status === "CANCELLED" || bookingStatusData.status === "NO_SHOW") {
@@ -143,7 +174,7 @@ export default function RideDetails({ride}: Props) {
         }
     }, []);
 
-    // Effect: Animate a map to pickup location on a mount
+    // Effect: Animate a map to pickup location on mount
     useEffect(() => {
         if (rideRequest.pickupLocationLat && rideRequest.pickupLocationLng)
             animateToLocation(rideRequest.pickupLocationLat, rideRequest.pickupLocationLng);
@@ -154,9 +185,7 @@ export default function RideDetails({ride}: Props) {
         const current = outcomeModal;
         isNavigating.current = true;
         setOutcomeModal(null);
-        if (current === "completed") {
-            rideRequest.clearRideRequestDetails();
-        } else if (current === "cancelled") {
+        if (current === "completed" || current === "cancelled") {
             rideRequest.clearRideRequestDetails();
         }
         router.replace("/(tabs)/carpool" as Href);
@@ -164,8 +193,8 @@ export default function RideDetails({ride}: Props) {
 
     function onSubmit() {
         const createBookingDetails: CreateBookingDetails = {
-            deviationKm: parseFloat(Math.abs((rideRequest.routeDistanceKm ?? 0) - (ride.routeDistanceKm ?? 0)).toFixed(2))
-        }
+            deviationKm: parseFloat(Math.max(0, deviationKm ?? 0).toFixed(2))
+        };
         createBooking({
             createBookingDetails,
             rideRequestId: rideRequest.id,
@@ -257,7 +286,7 @@ export default function RideDetails({ride}: Props) {
                         )
                     }
 
-                    {/* Deviation: driver start → booker pickup */}
+                    {/* Leg 1: driver start → booker pickup */}
                     {rideRequest.pickupLocationLat && rideRequest.pickupLocationLng &&
                         ride.startLocationLat && ride.startLocationLng && (
                             <MapViewDirections
@@ -271,11 +300,12 @@ export default function RideDetails({ride}: Props) {
                                 mode={"DRIVING"}
                                 precision={"high"}
                                 apikey={GOOGLE_API_KEY}
+                                onReady={(result) => setLeg1Km(result.distance)}
                             />
                         )
                     }
 
-                    {/* Ride Requestor's pickup → dropoff */}
+                    {/* Leg 2: Ride Requestor's pickup → dropoff */}
                     {rideRequest.pickupLocationLat && rideRequest.pickupLocationLng &&
                         rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng && (
                             <MapViewDirections
@@ -292,11 +322,12 @@ export default function RideDetails({ride}: Props) {
                                 mode={"DRIVING"}
                                 precision={"high"}
                                 apikey={GOOGLE_API_KEY}
+                                onReady={(result) => setLeg2Km(result.distance)}
                             />
                         )
                     }
 
-                    {/* Deviation: booker dropoff → driver end */}
+                    {/* Leg 3: booker dropoff → driver end */}
                     {rideRequest.dropoffLocationLat && rideRequest.dropoffLocationLng &&
                         ride.endLocationLat && ride.endLocationLng && (
                             <MapViewDirections
@@ -311,6 +342,7 @@ export default function RideDetails({ride}: Props) {
                                 mode={"DRIVING"}
                                 precision={"high"}
                                 apikey={GOOGLE_API_KEY}
+                                onReady={(result) => setLeg3Km(result.distance)}
                             />
                         )
                     }
@@ -394,6 +426,7 @@ export default function RideDetails({ride}: Props) {
                                                 params: {
                                                     receiverEmail: ride.ridePosterEmail,
                                                     receiverUsername: ride.ridePosterUsername,
+                                                    bookingId: bookingId ? String(bookingId) : undefined,
                                                 }
                                             })}
                                             className={"flex-row items-center gap-1"}
@@ -449,7 +482,7 @@ export default function RideDetails({ride}: Props) {
                                 <View className="flex-1 items-center gap-1">
                                     <Ionicons name="people-outline" size={22} color="#6FD0C5"/>
                                     <Text className="text-sm font-sans-semibold text-mj-text-main">
-                                        {ride.availableSeats ?? "—"}
+                                        {bookingStatusData?.availableSeats ?? ride.availableSeats ?? "—"}
                                     </Text>
                                     <Text className="text-xs text-mj-text-secondary">Available seats</Text>
                                 </View>
@@ -505,7 +538,7 @@ export default function RideDetails({ride}: Props) {
                             </View>
 
                             <View className="flex-row justify-between mb-3">
-                                <Text className="text-sm text-mj-text-secondary">Your route</Text>
+                                <Text className="text-sm text-mj-text-secondary">Your trip</Text>
                                 <Text className="text-sm font-sans-medium text-mj-text-main">
                                     {rideRequest.routeDistanceKm != null
                                         ? `${rideRequest.routeDistanceKm.toFixed(2)} km`
@@ -541,6 +574,16 @@ export default function RideDetails({ride}: Props) {
                             />
                         )}
 
+                        {/* Pending booking cancel button — allows passenger to cancel while waiting for driver */}
+                        {hasBooked && !isAccepted && (
+                            <OutlineButton
+                                title={isCancellingPending ? "Cancelling..." : "Cancel Booking Request"}
+                                variant="destructive"
+                                disabled={isCancellingPending}
+                                onPress={() => setShowCancelPendingConfirm(true)}
+                            />
+                        )}
+
                         {/* Accepted ride actions */}
                         {isAccepted && (
                             <View className="gap-3">
@@ -556,7 +599,7 @@ export default function RideDetails({ride}: Props) {
                                     onPress={() => setShowCancelConfirm(true)}
                                 />
                                 <OutlineButton
-                                    title={isReporting ? "Reporting..." : "Report No-Show"}
+                                    title={isReporting ? "Reporting..." : "Report No-Show (10m grace)"}
                                     variant="destructive"
                                     disabled={isArriving || isCancelling || isReporting}
                                     onPress={() => setShowNoShowConfirm(true)}
@@ -594,6 +637,23 @@ export default function RideDetails({ride}: Props) {
                 />
             )}
             <ConfirmModal
+                visible={showCancelPendingConfirm}
+                title="Cancel Booking Request"
+                message="Are you sure you want to withdraw this booking request and browse other rides?"
+                confirmLabel="Cancel Request"
+                cancelLabel="Keep Waiting"
+                onConfirm={() => {
+                    setShowCancelPendingConfirm(false);
+                    if (bookingId) {
+                        cancelPendingBooking({rideId: ride.id!, bookingId});
+                    } else {
+                        rideRequest.clearBookingDetails();
+                        router.replace("/(tabs)/carpool/rideRequest/availableRides" as Href);
+                    }
+                }}
+                onCancel={() => setShowCancelPendingConfirm(false)}
+            />
+            <ConfirmModal
                 visible={showCancelConfirm}
                 title="Cancel Ride"
                 message="Are you sure you want to cancel this ride? The driver will be notified."
@@ -620,7 +680,7 @@ export default function RideDetails({ride}: Props) {
             <ConfirmModal
                 visible={showNoShowConfirm}
                 title="Report No-Show"
-                message="Are you sure the driver didn't show up? This will issue them a strike per our Carpool Policy."
+                message="Are you sure the driver didn't show up after the 10-minute grace period? This will issue them a strike per our Carpool Policy."
                 confirmLabel="Report No-Show"
                 cancelLabel="Cancel"
                 onConfirm={() => {
@@ -642,5 +702,5 @@ export default function RideDetails({ride}: Props) {
                 onCancel={() => setShowEmergencyConfirm(false)}
             />
         </GestureHandlerRootView>
-    )
+    );
 }

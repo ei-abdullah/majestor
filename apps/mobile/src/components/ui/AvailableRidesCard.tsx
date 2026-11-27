@@ -5,7 +5,8 @@ import Card from "@/src/components/ui/Card";
 import {RecentRideResponse} from "@/src/types/ride";
 import {timeAgo} from "@/src/utils/time.utils";
 import {useFareConfig} from "@/src/queries/ride.queries";
-import {calculateFare} from "@/src/utils/fare.utils";
+import {calculateFare, estimateDetourKm} from "@/src/utils/fare.utils";
+import {useRideRequestStore} from "@/src/stores/rideRequestStore";
 
 interface AvailableRidesCardProps {
     recentRide: RecentRideResponse;
@@ -16,7 +17,28 @@ interface AvailableRidesCardProps {
 
 function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}: AvailableRidesCardProps) {
     const vehicleIcon = recentRide.vehicleType === "CAR" ? "car-sport-outline" : "bicycle-outline";
-    const deviationKm = recentRide.routeDistanceKm - rideDistance!;
+    const {
+        pickupLocationLat,
+        pickupLocationLng,
+        dropoffLocationLat,
+        dropoffLocationLng,
+    } = useRideRequestStore();
+
+    const fallbackDetourKm = estimateDetourKm({
+        driverStartLat: recentRide.startLocationLat,
+        driverStartLng: recentRide.startLocationLng,
+        driverEndLat: recentRide.endLocationLat,
+        driverEndLng: recentRide.endLocationLng,
+        pickupLat: pickupLocationLat,
+        pickupLng: pickupLocationLng,
+        dropoffLat: dropoffLocationLat,
+        dropoffLng: dropoffLocationLng,
+    });
+
+    const deviationKm = recentRide.estimatedDetourKm != null
+        ? Math.max(0, recentRide.estimatedDetourKm)
+        : fallbackDetourKm;
+
     const {data: fareConfig} = useFareConfig();
     const estimatedFare = fareConfig ? calculateFare(deviationKm, recentRide.vehicleType, fareConfig) : null;
 
@@ -39,9 +61,16 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                         </View>
                     )}
                     <View className="flex-1">
-                        <Text className="text-sm font-sans-semibold text-mj-text-main" numberOfLines={1}>
-                            {recentRide.ridePosterUsername}
-                        </Text>
+                        <View className="flex-row items-center gap-1.5">
+                            <Text className="text-sm font-sans-semibold text-mj-text-main" numberOfLines={1}>
+                                {recentRide.ridePosterUsername}
+                            </Text>
+                            {recentRide.isPosterElite && (
+                                <View className="bg-amber-100 px-1.5 py-0.5 rounded-full">
+                                    <Text className="text-[10px] font-sans-bold text-amber-700">Elite</Text>
+                                </View>
+                            )}
+                        </View>
                         <Text className="text-xs text-mj-text-secondary" numberOfLines={1}>
                             {recentRide.ridePosterEmail}
                         </Text>
@@ -86,18 +115,28 @@ function AvailableRidesCard({recentRide, rideDistance, className = "", onPress}:
                     <View className="flex-row items-center">
                         <Ionicons name="people-outline" size={16} color="#5A6275"/>
                         <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
-                            {recentRide.availableSeats} seats
+                            {recentRide.availableSeats} {recentRide.availableSeats === 1 ? "seat" : "seats"}
                         </Text>
                     </View>
                 </View>
 
-                {/* Deviation + Fare */}
+                {/* Proximity + Deviation + Fare */}
                 <View className="flex-row items-center justify-between">
-                    <View className="flex-row items-center">
-                        <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
-                        <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
-                            +{deviationKm.toFixed(2)} km deviation
-                        </Text>
+                    <View className="flex-row items-center gap-3">
+                        <View className="flex-row items-center">
+                            <Ionicons name="git-branch-outline" size={16} color="#5A6275"/>
+                            <Text className="text-xs font-sans-medium text-mj-text-secondary ml-1">
+                                +{deviationKm.toFixed(2)} km detour
+                            </Text>
+                        </View>
+                        {recentRide.pickupDistanceKm != null && (
+                            <View className="flex-row items-center">
+                                <Ionicons name="navigate-outline" size={14} color="#3A6FF8"/>
+                                <Text className="text-xs font-sans-medium text-mj-blue ml-1">
+                                    {recentRide.pickupDistanceKm.toFixed(1)} km away
+                                </Text>
+                            </View>
+                        )}
                     </View>
                     {estimatedFare != null && (
                         <View className="flex-row items-center">
